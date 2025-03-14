@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMRQHZ</title>
+    <title>AMR QHZ</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
         
         * {
             margin: 0;
@@ -14,93 +14,181 @@
         }
         
         body {
-            background-color: #f5f5f5;
+            background-color: #121212;
             font-family: 'Inter', sans-serif;
-            color: #333;
+            color: #fff;
             line-height: 1.6;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
-            max-width: 800px;
-            margin: 60px auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
         }
         
         header {
-            margin-bottom: 40px;
             text-align: center;
+            margin-bottom: 80px;
         }
         
         .name {
-            font-size: 2.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
             font-weight: 500;
             margin-bottom: 10px;
-            color: #333;
+            color: #fff;
         }
         
-        .bio {
-            color: #666;
-            max-width: 600px;
-            margin: 0 auto 20px;
-            font-size: 1rem;
+        .hero {
+            text-align: center;
+            margin: 100px auto;
+            max-width: 900px;
+        }
+        
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 50px;
+            font-weight: 500;
         }
         
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
+            gap: 30px;
+            margin-top: 40px;
         }
         
         .social-link {
-            color: #555;
+            color: #fff;
             text-decoration: none;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.3s;
             font-size: 0.9rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
         }
         
         .social-link:hover {
-            border-color: #555;
+            opacity: 1;
         }
         
-        .tweets-section {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            padding: 30px;
-            margin-bottom: 40px;
+        section {
+            margin: 120px 0;
         }
         
         .section-title {
-            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            text-align: center;
             font-weight: 500;
-            color: #333;
-            font-size: 1.5rem;
+        }
+        
+        .design-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .design-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            aspect-ratio: 16/9;
+            background-color: #1a1a1a;
+        }
+        
+        .design-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .design-item:hover img {
+            transform: scale(1.03);
+        }
+        
+        .design-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .design-item:hover .design-overlay {
+            opacity: 1;
+        }
+        
+        .design-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .design-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .tweets-section {
+            background-color: #1a1a1a;
+            padding: 60px 20px;
+            margin: 120px 0;
         }
         
         .tweets-container {
-            min-height: 400px; /* Ensure there's space for the Twitter embed */
+            max-width: 600px;
+            margin: 0 auto;
+            min-height: 400px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: #fff;
+            color: #121212;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-top: 40px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
         }
         
         footer {
             text-align: center;
-            color: #888;
-            font-size: 0.8rem;
-            margin-top: 40px;
+            padding: 40px 0;
+            opacity: 0.7;
+            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
-            .container {
-                margin: 30px auto;
+            .hero-title {
+                font-size: 2.5rem;
             }
             
-            .name {
-                font-size: 2rem;
+            .section-title {
+                font-size: 1.8rem;
             }
             
-            .tweets-section {
-                padding: 20px;
+            section {
+                margin: 80px 0;
             }
         }
     </style>
@@ -109,7 +197,11 @@
     <div class="container">
         <header>
             <h1 class="name">AMRQHZ</h1>
-            <p class="bio">Pharmacy student with a passion for technology. Exploring front-end development, mobile apps, UI/UX design, and cheminformatics.</p>
+        </header>
+        
+        <div class="hero">
+            <h2 class="hero-title">Pharmacy student. Developer. Designer. Bridging healthcare and technology with innovation.</h2>
+            
             <div class="social-links">
                 <a href="https://twitter.com/amrqhz" class="social-link" target="_blank">Twitter</a>
                 <a href="https://instagram.com/amrqhz" class="social-link" target="_blank">Instagram</a>
@@ -117,24 +209,53 @@
                 <a href="www.linkedin.com/in/amirhossein-gholizadeh" class="social-link" target="_blank">LinkedIn</a>
                 <a href="https://github.com/amrqhz" class="social-link" target="_blank">GitHub</a>
             </div>
-        </header>
+        </div>
         
-        <section class="tweets-section">
-            <h2 class="section-title">Latest Tweets</h2>
+        <section>
+            <h2 class="section-title">Design Portfolio</h2>
+            <div class="design-showcase">
+                <div class="design-item">
+                    <img src="/api/placeholder/600/340" alt="UI Design for Healthcare App">
+                    <div class="design-overlay">
+                        <h3 class="design-title">Healthcare Mobile App</h3>
+                        <p class="design-description">UI/UX design for medication tracking system</p>
+                    </div>
+                </div>
+                <div class="design-item">
+                    <img src="/api/placeholder/600/340" alt="Molecular Visualization Tool">
+                    <div class="design-overlay">
+                        <h3 class="design-title">Molecule Visualizer</h3>
+                        <p class="design-description">Interactive cheminformatics web application</p>
+                    </div>
+                </div>
+                <div class="design-item">
+                    <img src="/api/placeholder/600/340" alt="Pharmacy Resource Platform">
+                    <div class="design-overlay">
+                        <h3 class="design-title">Pharmacy Hub</h3>
+                        <p class="design-description">Educational resource platform interface design</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <section class="tweets-section">
+        <div class="container">
+            <h2 class="section-title">Connect with me</h2>
             <div class="tweets-container">
                 <!-- Twitter embed code -->
                 <a href="https://twitter.com/intent/tweet?button_hashtag=amrqhz&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #amrqhz</a>
                 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 
-                <!-- Adding a Twitter timeline to show your tweets -->
-                <a class="twitter-timeline" href="https://twitter.com/amrqhz?ref_src=twsrc%5Etfw">Tweets by amrqhz</a>
+                <!-- Adding a Twitter timeline -->
+                <a class="twitter-timeline" data-theme="dark" href="https://twitter.com/amrqhz?ref_src=twsrc%5Etfw">Tweets by amrqhz</a>
                 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
-        </section>
-        
-        <footer>
-            &copy; 2025 AMRQHZ. All rights reserved.
-        </footer>
-    </div>
+        </div>
+    </section>
+    
+    <footer>
+        &copy; 2025 AMRQHZ. All rights reserved.
+    </footer>
 </body>
 </html>
