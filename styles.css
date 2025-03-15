@@ -233,8 +233,8 @@ h1 {
 .resume-button {
     display: inline-block;
     padding: 1rem 3rem;
-    background-color: #e0e0e0;
-    color: #333;
+    background-color: #333;
+    color: #fff;
     text-decoration: none;
     border-radius: 50px;
     font-weight: 500;
@@ -295,7 +295,7 @@ footer {
 
 .footer-credit {
     font-size: 0.9rem;
-    color: #666;
+    color: #474747;
 }
 
 /* Responsive styles */
