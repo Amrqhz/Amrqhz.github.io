@@ -3,259 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMRQHZ</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background-color: #121212;
-            font-family: 'Inter', sans-serif;
-            color: #fff;
-            line-height: 1.6;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 80px;
-        }
-        
-        .name {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 500;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-        
-        .hero {
-            text-align: center;
-            margin: 100px auto;
-            max-width: 900px;
-        }
-        
-        .hero-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            line-height: 1.2;
-            margin-bottom: 50px;
-            font-weight: 500;
-        }
-        
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .social-link {
-            color: #fff;
-            text-decoration: none;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 0.5px;
-        }
-        
-        .social-link:hover {
-            opacity: 1;
-        }
-        
-        section {
-            margin: 120px 0;
-        }
-        
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            margin-bottom: 40px;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        .design-showcase {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 60px;
-        }
-        
-        .design-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 4px;
-            aspect-ratio: 16/9;
-            background-color: #1a1a1a;
-        }
-        
-        .design-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .design-item:hover img {
-            transform: scale(1.03);
-        }
-        
-        .design-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .design-item:hover .design-overlay {
-            opacity: 1;
-        }
-        
-        .design-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        
-        .design-description {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .tweets-section {
-            background-color: #1a1a1a;
-            padding: 60px 20px;
-            margin: 120px 0;
-        }
-        
-        .tweets-container {
-            max-width: 600px;
-            margin: 0 auto;
-            min-height: 400px;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background-color: #fff;
-            color: #121212;
-            padding: 12px 30px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            margin-top: 40px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
-        }
-        
-        footer {
-            text-align: center;
-            padding: 40px 0;
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-        
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .section-title {
-                font-size: 1.8rem;
-            }
-            
-            section {
-                margin: 80px 0;
-            }
-        }
-    </style>
+    <title>Amir Hossein Gholizadeh - Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1 class="name">AMRQHZ</h1>
+            <div class="logo">
+                <img src="assets/mylogo 1.png" alt="Logo" class="brand-logo">
+            </div>
+            <div class="name-container">
+                <h1>AMIR HOSSEIN <br> GHOLIZADEH</h1>
+            </div>
+            <div class="profile-pic">
+                <img src="assets/logo.png" alt="Profile" class="avatar">
+            </div>
         </header>
-        
-        <div class="hero">
-            <h2 class="hero-title">Pharmacy student. Developer. Designer. Bridging healthcare and technology with innovation.</h2>
-            
-            <div class="social-links">
-                <a href="https://twitter.com/amrqhz" class="social-link" target="_blank">Twitter</a>
-                <a href="https://instagram.com/amrqhz" class="social-link" target="_blank">Instagram</a>
-                <a href="https://t.me/amrqhz" class="social-link" target="_blank">Telegram</a>
-                <a href="www.linkedin.com/in/amirhossein-gholizadeh" class="social-link" target="_blank">LinkedIn</a>
-                <a href="https://github.com/amrqhz" class="social-link" target="_blank">GitHub</a>
+
+        <main>
+            <section class="portfolio-tiles">
+                <div class="tile" id="papers-tile">
+                    <h2>Recent Papers</h2>
+                    <div class="image-slider">
+                        <div class="slide active">
+                            <img src="assets/paper.png" alt="Recent papers preview" class="tile-image">
+                        </div>
+                        <div class="slide">
+                            <img src="assets/paper1.png" alt="Recent papers preview" class="tile-image">
+                        </div>
+                        <div class="slide">
+                            <img src="assets/papers-3.png" alt="Recent papers preview" class="tile-image">
+                        </div>
+                    </div>
+                    <a href="assets/papers.html" class="tile-link"></a>
+                </div>
+
+                <div class="tile" id="design-tile">
+                    <h2>Recent Design</h2>
+                    <div class="image-slider">
+                        <div class="slide active">
+                            <img src="assets/design-1.png" alt="Recent design preview" class="tile-image">
+                        </div>
+                        <div class="slide">
+                            <img src="assets/design-2.png" alt="Recent design preview" class="tile-image">
+                        </div>
+                        <div class="slide">
+                            <img src="assets/design-3.png" alt="Recent design preview" class="tile-image">
+                        </div>
+                    </div>
+                    <a href="design.html" class="tile-link"></a>
+                </div>
+
+                <div class="tile" id="apps-tile">
+                    <h2>Recent Apps & Web</h2>
+                    <p>Developmental</p>
+                    <div class="image-slider">
+                        <div class="slide active">
+                            <img src="assets/apps-1.png" alt="Recent apps preview" class="tile-image">
+                        </div>
+                        <div class="slide">
+                            <img src="assets/apps-2.png" alt="Recent apps preview" class="tile-image">
+                        </div>
+                        <div class="slide">
+                            <img src="assets/apps-3.png" alt="Recent apps preview" class="tile-image">
+                        </div>
+                    </div>
+                    <span class="availability-status">Available soon</span>
+                    <a href="apps.html" class="tile-link"></a>
+                </div>
+            </section>
+
+            <!-- New Important Links Section -->
+            <section class="important-links-section">
+                <h2>Featured Projects</h2>
+                <div class="important-links">
+                    <a href="https://example.com/app-download" class="important-link">
+                        <div class="link-icon">
+                            <img src="assets/app-icon.png" alt="App Icon">
+                        </div>
+                        <div class="link-details">
+                            <h3>My App Name</h3>
+                            <p>Download the latest version</p>
+                        </div>
+                        <div class="link-action">
+                            <span class="action-button">Download</span>
+                        </div>
+                    </a>
+                    <a href="https://example.com/app-download" class="important-link">
+                        <div class="link-icon">
+                            <img src="assets/app-icon.png" alt="App Icon">
+                        </div>
+                        <div class="link-details">
+                            <h3>My App Name</h3>
+                            <p>Download the latest version</p>
+                        </div>
+                        <div class="link-action">
+                            <span class="action-button">Download</span>
+                        </div>
+                    </a>
+                    <a href="https://example.com/app-download" class="important-link">
+                        <div class="link-icon">
+                            <img src="assets/app-icon.png" alt="App Icon">
+                        </div>
+                        <div class="link-details">
+                            <h3>My App Name</h3>
+                            <p>Download the latest version</p>
+                        </div>
+                        <div class="link-action">
+                            <span class="action-button">Download</span>
+                        </div>
+                    </a>
+                    
+                    <a href="https://example.com/project" class="important-link">
+                        <div class="link-icon">
+                            <img src="assets/project-icon.png" alt="Project Icon">
+                        </div>
+                        <div class="link-details">
+                            <h3>Featured Project</h3>
+                            <p>See my latest work in action</p>
+                        </div>
+                        <div class="link-action">
+                            <span class="action-button">View Project</span>
+                        </div>
+                    </a>
+                    
+                    <a href="https://example.com/research" class="important-link">
+                        <div class="link-icon">
+                            <img src="assets/research-icon.png" alt="Research Icon">
+                        </div>
+                        <div class="link-details">
+                            <h3>Research Paper</h3>
+                            <p>Read my published research</p>
+                        </div>
+                        <div class="link-action">
+                            <span class="action-button">Read Paper</span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+            <section class="resume-section">
+                <a href="resume.html" class="resume-button">Resume</a>
+            </section>
+
+            <section class="social-links">
+                <a href="https://github.com/amrqhz" class="social-icon github">
+                    <img src="assets/github.png" alt="GitHub">
+                    <span>GitHub</span>
+                </a>
+                <a href="https://t.me/amrqhz" class="social-icon telegram">
+                    <img src="assets/telegram.png" alt="Telegram">
+                    <span>Telegram</span>
+                </a>
+                <a href="https://twitter.com/amrqhz" class="social-icon twitter">
+                    <img src="assets/twitter.png" alt="Twitter">
+                    <span>Twitter</span>
+                </a>
+                <a href="https://linkedin.com/in/amirhossein-gholizadeh" class="social-icon linkedin">
+                    <img src="assets/linkedin.png" alt="LinkedIn">
+                    <span>LinkedIn</span>
+                </a>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-dots">•••</div>
+            <div class="footer-credit">
+                <p>Created By:</p>
+                <p>Amirqhz</p>
             </div>
-        </div>
-        
-        <section>
-            <h2 class="section-title">Design Portfolio</h2>
-            <div class="design-showcase">
-                <div class="design-item">
-                    <img src="/Group 19.png" alt="UI Design for Healthcare App">
-                    <div class="design-overlay">
-                        <h3 class="design-title">Healthcare Mobile App</h3>
-                        <p class="design-description">UI/UX design for medication tracking system</p>
-                    </div>
-                </div>
-                <div class="design-item">
-                    <img src="/Group 20.jpg" alt="Molecular Visualization Tool">
-                    <div class="design-overlay">
-                        <h3 class="design-title">Molecule Visualizer</h3>
-                        <p class="design-description">Interactive cheminformatics web application</p>
-                    </div>
-                </div>
-                <div class="design-item">
-                    <img src="/api/placeholder/600/340" alt="Pharmacy Resource Platform">
-                    <div class="design-overlay">
-                        <h3 class="design-title">Pharmacy Hub</h3>
-                        <p class="design-description">Educational resource platform interface design</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </footer>
     </div>
     
-    <section class="tweets-section">
-        <div class="container">
-            <h2 class="section-title">Connect with me</h2>
-            <div class="tweets-container">
-                <!-- Twitter embed code -->
-                <a href="https://twitter.com/intent/tweet?button_hashtag=amrqhz&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-show-count="false">Tweet #amrqhz</a>
-                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                
-                <!-- Adding a Twitter timeline -->
-                <a class="twitter-timeline" data-theme="dark" href="https://twitter.com/amrqhz?ref_src=twsrc%5Etfw">Tweets by amrqhz</a>
-                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-            </div>
-        </div>
-    </section>
-    
-    <footer>
-        &copy; 2025 AMRQHZ. All rights reserved.
-    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
