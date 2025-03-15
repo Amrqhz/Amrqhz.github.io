@@ -227,7 +227,7 @@ h1 {
 .resume-section {
     display: flex;
     justify-content: center;
-    margin: 3rem 0;
+    margin: 7rem 0;
 }
 
 .resume-button {
@@ -254,7 +254,7 @@ h1 {
     display: flex;
     justify-content: space-between;
     max-width: 600px;
-    margin: 0 auto 3rem;
+    margin: 15rem auto 3rem;
 }
 
 .social-icon {
