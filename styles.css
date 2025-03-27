@@ -156,7 +156,7 @@ h1 {
 .important-links {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
     max-width: 800px;
     margin: 0 auto;
 }
@@ -219,18 +219,40 @@ h1 {
 .action-button {
     display: inline-block;
     padding: 0.5rem 1.2rem;
-    background: #333;
-    color: #fff;
+    color: #333;
     border-radius: 30px;
     font-size: 0.9rem;
     transition: all 0.3s ease;
 }
 
-.important-link:hover .action-button {
-    background: #555;
+.action-button:hover {
+    background: #55555521;
+    color: #fff;
 }
 
+.download-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
 
+.store-button {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+
+}
+
+.store-button:hover {
+    transform: scale(1.5);
+
+}
 
 /* Resume section */
 .resume-section {
@@ -333,6 +355,17 @@ footer {
     .social-icon {
         margin: 0 1rem;
     }
+    .download-group {
+        justify-content: center; /* Center buttons on small screens */
+        gap: 1rem; /* More space between buttons */
+    }
+
+    .store-button {
+        width: 20px; /* Larger touch target on mobile */
+        height: 20px;
+        margin-top: 15px ; /* More margin for touch targets */
+    }
+
 }
 
 @media (max-width: 576px) {
@@ -350,5 +383,15 @@ footer {
     
     .tile {
         height: 300px;
+    }
+    .download-group {
+        justify-content: center; /* Center buttons on small screens */
+        gap: 1rem; /* More space between buttons */
+    }
+
+    .store-button {
+        width: 20px; /* Larger touch target on mobile */
+        height: 20px;
+        margin-top: 15px; /* More margin for touch targets */
     }
 }
