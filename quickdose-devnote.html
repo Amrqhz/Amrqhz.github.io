@@ -17,6 +17,64 @@
             padding: 2rem;
         }
         
+        /* Enhanced styles for note-image */
+        .note-image {
+            margin-top: 1.5rem;
+            margin-bottom: 2.5rem;
+            margin-left: 1.5rem;
+            margin-right: 1.5rem;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+            filter: brightness(75%);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .note-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: all 0.4s ease;
+        }
+
+        /* Hover effects */
+        .note-image:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            filter: brightness(100%);
+        }
+
+        .note-image:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.04);
+        }
+
+        /* Image caption/overlay effect */
+        .note-image a {
+            position: relative;
+            display: block;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .note-image a::after {
+            content: "Click to expand";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .note-image:hover a::after {
+            opacity: 1;
+        }
         .notes-header {
             text-align: center;
             margin-bottom: 3rem;
@@ -92,6 +150,19 @@
             .note-entry {
                 padding: 1.5rem;
             }
+            .note-image {
+                margin-top: 1rem;
+                border-radius: 8px;
+            }
+            
+            .note-image:hover {
+                transform: translateY(-3px);
+            }
+            
+            .note-image a::after {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -130,6 +201,11 @@
                         <p>2. Better IDE support and autocompletion</p>
                         <p>3. Catching errors during development instead of runtime</p>
                         <p>Next, I'll explore setting up a more advanced configuration with Webpack and Babel manually.</p>
+                    </div>
+                    <div class="note-image">
+                        <a href="./assets/w3.jpg">
+                            <img src="./assets/w3.jpg" alt=" Click to view ">
+                        </a>
                     </div>
                 </div>
                 <div class="note-entry">
