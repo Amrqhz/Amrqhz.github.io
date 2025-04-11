@@ -369,7 +369,7 @@ footer {
     margin-top: 1rem;
 }
 hr.solid{
-    border-bottom: 50px solid #bbb;
+    border-bottom: 10px solid #bbb;
 }
 .notes-icon {
     width: 40px;
