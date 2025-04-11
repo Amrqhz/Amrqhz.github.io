@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Notes - Amir Hossein Gholizadeh</title>
+    <link rel="icon" href="/assets/mylogo.png" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional styles for the Dev Notes page */
+        .notes-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .notes-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .notes-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .notes-header p {
+            color: #555;
+            font-size: 1.1rem;
+        }
+        
+        .note-entry {
+            background-color: #cccccc59;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.55);
+        }
+        
+        .note-date {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        
+        .note-title {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .note-content {
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        
+        .note-content p {
+            margin-bottom: 0.25rem;
+        }
+        
+        .note-content code {
+            background-color: #e4e4e4;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 3rem;
+            padding: 0.8rem 2rem;
+            background-color: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background-color: #555;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .notes-container {
+                padding: 1rem;
+            }
+            
+            .note-entry {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="assets/mylogo 1.png" alt="Logo" class="brand-logo">
+            </div>
+            <div class="name-container">
+                <h1>DEV NOTES</h1>
+            </div>
+            <div class="profile-pic">
+                <a href="index.html">
+                    <img src="assets/logo.png" alt="Profile" class="avatar">
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <div class="notes-container">
+                <div class="notes-header">
+                    <h1>My Development Notes</h1>
+                    <p>These are my thoughts, learnings, and code snippets from my journey as a developer.</p>
+                </div>
+                
+                <!-- Example Note Entry 1 -->
+                <div class="note-entry">
+                    <div class="note-date">April 11, 2025</div>
+                    <h2 class="note-title">Preparing the Server for the back-end</h2>
+                    <div class="note-content">
+                        <p>Today, i bought a sever from <a href="https://parspack.com/">Parspack</a>. SO after testing the server i can't login to the root</p>
+                        <p><code>npx create-react-app my-app --template typescript</code></p>
+                        <p>The key benefits I discovered about using TypeScript with React:</p>
+                        <p>1. Type checking for props and state</p>
+                        <p>2. Better IDE support and autocompletion</p>
+                        <p>3. Catching errors during development instead of runtime</p>
+                        <p>Next, I'll explore setting up a more advanced configuration with Webpack and Babel manually.</p>
+                    </div>
+                </div>
+                <div class="note-entry">
+                    <div class="note-date">April 10, 2025</div>
+                    <h2 class="note-title">Setting Up a React Project with TypeScript</h2>
+                    <div class="note-content">
+                        <p>Today I learned how to set up a React project with TypeScript using Create React App. Here's the command I used:</p>
+                        <p><code>npx create-react-app my-app --template typescript</code></p>
+                        <p>The key benefits I discovered about using TypeScript with React:</p>
+                        <p>1. Type checking for props and state</p>
+                        <p>2. Better IDE support and autocompletion</p>
+                        <p>3. Catching errors during development instead of runtime</p>
+                        <p>Next, I'll explore setting up a more advanced configuration with Webpack and Babel manually.</p>
+                    </div>
+                </div>
+                
+                <!-- Example Note Entry 2 -->
+                <div class="note-entry">
+                    <div class="note-date">April 5, 2025</div>
+                    <h2 class="note-title">Optimizing Database Queries</h2>
+                    <div class="note-content">
+                        <p>I've been working on optimizing database queries for the Nerds book shop project. Found that adding proper indexes improved query performance by over 200%!</p>
+                        <p>Key takeaways:</p>
+                        <p>1. Always index columns used in WHERE clauses</p>
+                        <p>2. Composite indexes can be more efficient than multiple single-column indexes</p>
+                        <p>3. EXPLAIN ANALYZE is your best friend for understanding query execution plans</p>
+                        <p>Next step: Implement query caching to further improve performance for frequently accessed data.</p>
+                    </div>
+                </div>
+                
+                <!-- Add more note entries as needed -->
+                
+                <a href="index.html" class="back-link">Back to Portfolio</a>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-dots">•••</div>
+            <div class="footer-credit">
+                <p>Created By:</p>
+                <p>Amrqhz</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
