@@ -344,7 +344,7 @@ footer {
     background-color: #cccccc59;
     border-radius: 25px;
     padding: 2rem;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     max-width: 800px;
     margin: 0 auto;
     display: flex;
@@ -356,7 +356,7 @@ footer {
 
 .dev-notes-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.65);
     background-color: #d4d4d480;
 }
 
@@ -369,7 +369,7 @@ footer {
     margin-top: 1rem;
 }
 hr.solid{
-    border-bottom: 10px solid #bbb;
+    border-bottom: 15px solid #bbb;
 }
 .notes-icon {
     width: 40px;
