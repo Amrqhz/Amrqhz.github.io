@@ -182,13 +182,9 @@
             border-right: 0.15em solid #333;
             white-space: nowrap;
             margin: 0 auto;
-            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+            animation: blink-caret 0.75s step-end infinite;
         }
         
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
         
         @keyframes blink-caret {
             from, to { border-color: transparent }
@@ -330,20 +326,43 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const text = "Hi there. My name is max! Nice too meet you";
+            const text = "HI my name is max! nice too meet you";
             const typingElement = document.getElementById('typing-text');
             let i = 0;
+            let isDeleting = false;
+            let typingSpeed = 100;
+            let deletingSpeed = 50;
+            let pauseBeforeDelete = 1200; // Pause time before starting to delete
+            let pauseBeforeType = 500;    // Pause time before starting to type again
             
-            function typeWriter() {
-                if (i < text.length) {
-                    typingElement.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, 100); // Speed of typing
+            function loop() {
+                // Current text displayed
+                const currentText = typingElement.textContent;
+                
+                // Typing
+                if (!isDeleting && currentText.length < text.length) {
+                    typingElement.textContent = text.substring(0, currentText.length + 1);
+                    setTimeout(loop, typingSpeed);
+                } 
+                // Pause before deleting
+                else if (!isDeleting && currentText.length === text.length) {
+                    isDeleting = true;
+                    setTimeout(loop, pauseBeforeDelete);
+                } 
+                // Deleting
+                else if (isDeleting && currentText.length > 0) {
+                    typingElement.textContent = text.substring(0, currentText.length - 1);
+                    setTimeout(loop, deletingSpeed);
+                } 
+                // Pause before typing again
+                else if (isDeleting && currentText.length === 0) {
+                    isDeleting = false;
+                    setTimeout(loop, pauseBeforeType);
                 }
             }
             
-            // Start the typing animation
-            typeWriter();
+            // Start the animation loop
+            loop();
         });
     </script>
 </body>
