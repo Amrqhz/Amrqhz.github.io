@@ -84,7 +84,6 @@
             height: auto;
             margin-left: auto;
             margin-right: auto;
-            margin-bottom: 3rem;
             margin-top: 0.5rem;
         }
         .notes-header h1 {
@@ -165,6 +164,37 @@
             display: block;
             transition: all 0.4s ease;
         }
+        .typing-container {
+            font-family: 'Space Grotesk', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 30px;
+            border-radius: 12px;
+            text-align: center;
+            
+        }
+        .typing-text {
+            display: inline-block;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            overflow: hidden;
+            border-right: 0.15em solid #333;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #333 }
+        }
+
 
 
 
@@ -172,7 +202,9 @@
             .notes-container {
                 padding: 1rem;
             }
-            
+            .typing-text {
+                font-size: 1.1rem;
+            }
             .note-entry {
                 padding: 1.5rem;
             }
@@ -223,6 +255,9 @@
                     <h1>My Development Notes</h1>
                     <p>These are my thoughts, learnings, and code snippets from my journey as a developer.</p>
                     <img src="./assets/ChatGPT Image Apr 13, 2025, 01_11_01 PM.png" alt="">
+                    <div class="typing-container">
+                        <div class="typing-text" id="typing-text"></div>
+                    </div>
                 </div>
                 
                 <!-- Example Note Entry 1 -->
@@ -293,5 +328,23 @@
             </div>
         </footer>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const text = "Hi there. My name is max! Nice too meet you";
+            const typingElement = document.getElementById('typing-text');
+            let i = 0;
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    typingElement.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 100); // Speed of typing
+                }
+            }
+            
+            // Start the typing animation
+            typeWriter();
+        });
+    </script>
 </body>
 </html>
