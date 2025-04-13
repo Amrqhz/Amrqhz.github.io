@@ -83,8 +83,7 @@
         .notes-header h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
-        }
-        
+        }        
         .notes-header p {
             color: #555;
             font-size: 1.1rem;
@@ -141,6 +140,26 @@
             transform: translateY(-3px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+        .note-video {
+            width: 50%;
+            margin-top: 1.5rem;
+            margin-bottom: 2.5rem;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .note-video video {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: all 0.4s ease;
+        }
+
+
 
         @media (max-width: 768px) {
             .notes-container {
@@ -163,9 +182,16 @@
                 padding: 8px;
                 font-size: 0.8rem;
             }
+            .note-video {
+                margin-top: 1rem;
+                border-radius: 8px;
+            }
         }
     </style>
+
 </head>
+
+
 <body>
     <div class="container">
         <header>
@@ -192,6 +218,23 @@
                 </div>
                 
                 <!-- Example Note Entry 1 -->
+                <div class="note-entry">
+                    <div class="note-date">April 13, 2025</div>
+                    <h2 class="note-title">Beta 1.1 release is here!</h2>
+                    <div class="note-content">
+                        <!---<p><code>npx create-react-app my-app --template typescript</code></p>--->
+                        <p>How ever there is a majot bug which is "TOKEN REFRESH" and "TOKEN EXPIRE" issue which is only 30 min after the each login.</p>
+                        <p>I don't know how to handle that. I've tested more than one way but all of them is not a solution So i startes to learn about the "TOKEN REFRESH" </p>
+                    </div>
+                    <div class="note-video">
+                        <a href="./assets/beta 1.1 release.mp4">
+                            <video controls autoplay muted playsinline loop>
+                                <source src="./assets/beta 1.1 release.mp4" type="video/mp4">
+                            </video>
+                        </a>
+                    </div>
+                </div>
+                
                 <div class="note-entry">
                     <div class="note-date">April 11, 2025</div>
                     <h2 class="note-title">Preparing the Server for the back-end</h2>
