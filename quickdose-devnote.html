@@ -157,10 +157,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
             transition: all 0.3s ease-in-out;
         }
-        .note-image-mobile a:hover img {
-            transform: scale(1.05);
-            filter: brightness(1.04);
-        }
         .note-image-mobile {
             display: flex;
             justify-content: space-between;
@@ -177,40 +173,22 @@
             width: 48%; /* Slightly less than 50% to create a gap between images */
             position: relative;
             display: block;
-            color: #fff;
             text-decoration: none;
             overflow: hidden;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
-            transition: all 0.3s ease-in-out;
+
         }
 
         .note-image-mobile img {
             width: 100%;
             height: auto;
             display: inline-block;
-            transition: all 0.4s ease;
         }
 
-        /* Image caption/overlay effect */
-        .note-image-mobile a::after {
-            content: "Click to expand";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
 
-        .note-image-mobile a:hover::after {
-            opacity: 1;
-        }
+
+
 
 
         .note-video video {
@@ -260,6 +238,8 @@
             .typing-container{
                 padding: 1rem; 
                 max-width: 100%;
+                margin-left: auto;
+                margin-right: auto;
                 width: 100%;  
             }
             .note-entry {
@@ -277,18 +257,7 @@
                 margin-left: auto;
                 margin-right: auto;
             }
-            .note-image-mobile a::after {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                padding: 12px;
-                text-align: center;
-            }
             
-            .note-image:hover {
-                transform: translateY(-3px);
-            }
             
             .note-image a::after {
                 padding: 8px;
