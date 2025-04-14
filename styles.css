@@ -172,6 +172,7 @@ h1 {
     color: #333;
     transition: all 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0.3, 0.5);
+    width: 1000px;
 }
 
 .important-link:hover {
