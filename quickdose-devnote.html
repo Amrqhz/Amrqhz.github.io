@@ -157,6 +157,62 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
             transition: all 0.3s ease-in-out;
         }
+        .note-image-mobile a:hover img {
+            transform: scale(1.05);
+            filter: brightness(1.04);
+        }
+        .note-image-mobile {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            margin-bottom: 2.5rem;
+            width: 70%; /* Changed from 50% to take full width available */
+            /* Can also set a max-width if desired */
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .note-image-mobile a {
+            width: 48%; /* Slightly less than 50% to create a gap between images */
+            position: relative;
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+            filter: brightness(75%);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .note-image-mobile img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: all 0.4s ease;
+        }
+
+        /* Image caption/overlay effect */
+        .note-image-mobile a::after {
+            content: "Click to expand";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .note-image-mobile a:hover::after {
+            opacity: 1;
+        }
+
 
         .note-video video {
             width: 100%;
@@ -203,16 +259,24 @@
             }
             
             .typing-container{
-                padding: 1.5rem; 
-                max-width: 500;  
+                padding: 1rem; 
+                max-width: 100%;
+                width: 100%;  
             }
             .note-entry {
                 padding: 1.5rem;
             }
 
-            .note-image {
-                margin-top: 1rem;
-                border-radius: 8px;
+            .note-image-mobile {
+                flex-direction: column;
+                
+            }
+
+            .note-image-mobile a {
+                width: 80%;
+                margin-bottom: 3rem;
+                margin-left: auto;
+                margin-right: auto;
             }
             
             .note-image:hover {
@@ -224,6 +288,10 @@
                 font-size: 0.8rem;
             }
             .note-video {
+                margin-top: 1rem;
+                border-radius: 8px;
+            }
+            .note-image-mobile img{
                 margin-top: 1rem;
                 border-radius: 8px;
             }
@@ -263,6 +331,28 @@
                 </div>
                 
                 <!-- Example Note Entry 1 -->
+                <div class="note-entry">
+                    <div class="note-date">April 14, 2025</div>
+                    <h2 class="note-title">Beta 1.1.3 release is finally out!</h2>
+                    <div class="note-content">
+                        <p>After some debugin, i finally solve the token bug and it dosent need a relogin after 15 min</p>
+                        <P>Also have some changes : </P>
+                        <p>1. Background color changes -> i make the light theme a bit lighter and also the dark theme a bit darker</p>
+                        <p>2. I also added the theme saved seesion to the app, now after restartin the app, you don't need to set the theme if you have selected the dark theme</p>
+                        <p> IN next version: </p>
+                        <p>1. I try to set each account to login in one device only</p>
+                        <p>2. Update the drugs </p>
+                    </div>
+                    <div class="note-image-mobile">
+                        <a href="./assets/photo_2_2025-04-14_16-03-36.jpg">
+                            <img src="./assets/photo_2_2025-04-14_16-03-36.jpg" alt=" Click to view ">
+                        </a>   
+                        <a href="./assets/photo_1_2025-04-14_16-03-36.jpg">
+                            <img src="./assets/photo_1_2025-04-14_16-03-36.jpg" alt=" Click to view ">
+                        </a>
+                    </div>
+                </div>
+
                 <div class="note-entry">
                     <div class="note-date">April 12, 2025</div>
                     <h2 class="note-title">Beta 1.1 release is here!</h2>
