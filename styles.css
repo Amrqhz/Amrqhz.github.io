@@ -424,6 +424,33 @@ hr.solid{
     h1 {
         font-size: 2rem;
     }
+    .important-link {
+        width: 90%;
+        padding: 1.5rem;
+        margin: 3rem auto;
+    }
+    
+    .link-icon {
+        width: 55px;
+        height: 55px;
+        min-width: 55px;
+        margin-right: 1.25rem;
+    }
+    
+    .link-details h3 {
+        font-size: 1.2rem;
+    }
+    
+    .link-details h5, 
+    .link-details p {
+        font-size: 0.85rem;
+    }
+    
+    /* Ensure action buttons display properly */
+    .action-button {
+        padding: 0.45rem 1rem;
+        font-size: 0.85rem;
+    }
 }
 
 @media (max-width: 768px) {
