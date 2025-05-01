@@ -405,6 +405,16 @@ hr.solid{
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.footer-credit h1{
+    font-family:  Satisfy;
+    margin-top: 1.5rem;
+    font-size: 30px;
+    color: black;
+}
+.footer-credit h3{
+    margin-top: 3rem;
+}
+
 @media (max-width: 768px) {
     .dev-notes-card {
         padding: 1.5rem;
