@@ -1,210 +1,115 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amir Hossein Gholizadeh - Portfolio
-    </title>
-    <link rel="icon" href="/assets/mylogo.png" sizes="any">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">   
-    <link rel="stylesheet" href="styles.css">
+<!DOCTYPE html><html><head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="quickdose">
+  <link rel="apple-touch-icon" href="app icon.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="app icon.png">
+
+  <title>quickdose</title>
+  <link rel="manifest" href="manifest.json">
+  
+  
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  
+  
+  
+  
+  <style id="splash-screen-style">
+    html {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      background-color: #ffffff;
+          background-size: 100% 100%;
+    }
+
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      -ms-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .contain {
+      display:block;
+      width:100%; height:100%;
+      object-fit: contain;
+    }
+
+    .stretch {
+      display:block;
+      width:100%; height:100%;
+    }
+
+    .cover {
+      display:block;
+      width:100%; height:100%;
+      object-fit: cover;
+    }
+
+    .bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      -ms-transform: translate(-50%, 0);
+      transform: translate(-50%, 0);
+    }
+
+    .bottomLeft {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .bottomRight {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  </style>
+  <script id="splash-screen-script">
+    function removeSplashFromWeb() {
+      document.getElementById("splash")?.remove();
+      document.getElementById("splash-branding")?.remove();
+      document.body.style.background = "transparent";
+    }
+  </script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <a href="index.html">
-                    <img src="assets/mylogo 1.png" alt="Logo" class="brand-logo">
-                </a>
-            </div>
-            <div class="name-container">
-                <h1>AMIR HOSSEIN <br> GHOLIZADEH</h1>
-            </div>
-            <div class="profile-pic">
-                <a href="index.html">
-                    <img src="assets/logo.png" alt="Profile" class="avatar">
-                </a>
-            </div>
-        </header>
+  <picture id="splash">
+      <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
+      <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+      <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+  
+  
+  
+  <script src="flutter_bootstrap.js" async=""></script>
 
-        <main>
-            <section class="portfolio-tiles">
-                <div class="tile" id="papers-tile">
-                    <h2>Recent Papers</h2>
-                    <div class="image-slider">
-                        <div class="slide active">
-                            <img src="assets/paper.png" alt="Recent papers preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/paper1.png" alt="Recent papers preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/w4.jpg" alt="Recent papers preview" class="tile-image">
-                        </div>
-                    </div>
-                    <a href="assets/papers.html" class="tile-link"></a>
-                </div>
 
-                <div class="tile" id="design-tile">
-                    <h2>Recent Design</h2>
-                    <div class="image-slider">
-                        <div class="slide active">
-                            <img src="assets/w3.jpg" alt="Recent design preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/w2.jpeg" alt="Recent design preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/w1.jpeg" alt="Recent design preview" class="tile-image">
-                        </div>
-                    </div>
-                    <a href="design.html" class="tile-link"></a>
-                </div>
-
-                <div class="tile" id="apps-tile">
-                    <h2>Recent Apps & Web</h2>
-                    <p>Developmental</p>
-                    <div class="image-slider">
-                        <div class="slide active">
-                            <img src="" alt="" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="" alt="" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="" alt="" class="tile-image">
-                        </div>
-                    </div>
-                    <span class="availability-status">Available soon</span>
-                    <a href="apps.html" class="tile-link"></a>
-                </div>
-            </section>
-            <section class="dev-notes-section">
-                <h2 class="section-title">Dev Notes</h2>
-                <div class="dev-notes-card">
-                    <div class="notes-preview">
-                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
-                        <p>My development journey, thoughts, and code snippets</p>
-                    </div>
-                    <a href="quickdose-devnote.html" class="notes-link">View Notes</a>
-                    <hr class="solid">
-                    <!-- New Important Links Section 
-                    <div class="notes-preview">
-                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
-                        <p>My development journey, thoughts, and code snippets</p>
-                    </div>
-                    <a href="devnotes.html" class="notes-link">View Notes</a>
-                    <hr class="solid">
-                    <div class="notes-preview">
-                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
-                        <p>My development journey, thoughts, and code snippets</p>
-                    </div>
-                    <a href="devnotes.html" class="notes-link">View Notes</a>
-                    -->
-                </div>
-            </section>
-            <!-- New Important Links Section -->
-            <section class="important-links-section">
-                <h2>Featured Projects</h2>
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="assets/g48.png" alt="Quick Dose Icon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Quick Dose</h3>
-                        <h5>Dose calculator for pharmacist</h5>
-                        <p>Download the latest version</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="https://github.com/amrqhz">
-                                <span class="action-button">Download</span>
-                            </a>
-                            <a href="http://130.185.73.72">
-                                <img src="assets/app-store.png" alt="App Store" class="store-button">
-                            </a>
-                            <a href="https://t.me/TA_Pharmacy">
-                                <img src="assets/play-store.png" alt="Google Play" class="store-button">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="assets/app.png" alt="Nerds Icon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Nerds</h3>
-                        <h5>Book shop</h5>
-                        <p>sell&buy second-hand books</p>
-                        <p>Download the latest version</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <span class="action-button">Download</span>
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <img src="assets/app-store.png" alt="App Store" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <img src="assets/play-store.png" alt="Google Play" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <img src="assets/linux.png" alt="App Store" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">    
-                                <img src="assets/windows-store.png" alt="Google Play" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">    
-                                <img src="assets/apple.png" alt="Google Play" class="store-button"> 
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-            </section>
-            <section class="resume-section">
-                <a href="resume.html" class="resume-button">Resume</a>
-            </section>
-
-            <section class="social-links">
-                <a href="https://github.com/amrqhz" class="social-icon github">
-                    <img src="assets/github.png" alt="GitHub">
-                    <span>GitHub</span>
-                </a>
-                <a href="https://t.me/amrqhz" class="social-icon telegram">
-                    <img src="assets/telegram.png" alt="Telegram">
-                    <span>Telegram</span>
-                </a>
-                <a href="https://twitter.com/amrqhz" class="social-icon twitter">
-                    <img src="assets/twitter.png" alt="Twitter">
-                    <span>Twitter</span>
-                </a>
-                <a href="https://linkedin.com/in/amirhossein-gholizadeh" class="social-icon linkedin">
-                    <img src="assets/linkedin.png" alt="LinkedIn">
-                    <span>LinkedIn</span>
-                </a>
-            </section>
-        </main>
-
-        <footer>
-            <div class="footer-dots">•••</div>
-            <div class="footer-credit">
-                <h4>Thanks for visiting.</h4>
-                <p>Be kind, stay creative, drink water.</p>
-                <h6>AmirHossein Gholizadeh</h6>
-            </div>
-        </footer>
-    </div>
-
-    
-
-    <script src="script.js"></script>
-</body>
-</html>
+</body></html>
