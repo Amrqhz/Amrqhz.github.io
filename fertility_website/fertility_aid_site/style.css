@@ -1,0 +1,636 @@
+/* =====================================================
+   CSS Variables for Theme System
+   ===================================================== */
+:root {
+    --bg-color: #fef7f4;
+    --text-color: #1a1a1a;
+    --border-color: #e0e0e0;
+    --accent-color: #1a1a1a;
+    --hover-color: #333333;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #f5f5f5;
+    --border-color: #404040;
+    --accent-color: #f5f5f5;
+    --hover-color: #cccccc;
+}
+
+/* =====================================================
+   Reset and Base Styles
+   ===================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: 'Playfair Display', serif;
+}
+.video {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+
+    margin: 2rem 0;
+}
+
+.video video {
+    max-width: 600px;
+    width: 90%;
+    height: auto;
+    border-radius: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.img_app {
+    position: relative;
+    max-width: 300px;
+    margin: 2rem auto;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Slider Wrapper */
+.slider-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* Individual Images */
+.img_app img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    flex: 0 0 100%;
+    display: block;
+}
+
+/* Navigation Arrows */
+.slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.276);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    color: #333;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.slider-nav:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.slider-nav.prev {
+    left: 20px;
+}
+
+.slider-nav.next {
+    right: 20px;
+}
+
+/* Dots Indicator */
+.slider-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.2);
+}
+
+.dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+
+[data-lang="fa"] {
+    font-family: 'Lalezar', sans-serif;
+    
+}
+
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: var(--hover-color);
+}
+
+/* =====================================================
+   Language Toggle Button
+   ===================================================== */
+.language-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: var(--accent-color);
+    color: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    font-family: inherit;
+    width: 150px;
+}
+
+.language-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .language-toggle:hover {
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.language-flag {
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+.language-toggle:hover .language-flag {
+    transform: scale(1.2);
+}
+
+
+
+/* =====================================================
+   Theme Toggle Button
+   ===================================================== */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-color);
+    color: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    font-family: inherit;
+    width: 150px;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.theme-icon {
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover .theme-icon {
+    transform: rotate(20deg);
+}
+
+/* =====================================================
+   Header Styles
+   ===================================================== */
+.header-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+
+
+.logo-image {
+    height: 120px;
+    width: auto;
+    filter: brightness(1);
+    transition: filter 0.3s ease;
+}
+
+[data-theme="dark"] .logo-image {
+    filter: brightness(0) invert(1);
+}
+
+/* =====================================================
+   Global Layout
+   ===================================================== */
+.global-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.site-header {
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.site-header__masthead {
+    height: 1px;
+    background-color: var(--bg-color);
+}
+
+.site-header__links {
+    padding: 16px 0;
+}
+
+.site-header__links-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.site-header__links-toc {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-color);
+}
+
+.site-header__links-menu {
+    display: flex;
+    list-style: none;
+    gap: 40px;
+}
+
+.site-header__links-menu a {
+    font-size: 16px;
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+/* =====================================================
+   Main Content
+   ===================================================== */
+.site-main {
+    flex: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px;
+    width: 100%;
+}
+
+.single-article__hero {
+    height: 60px;
+}
+
+.single-article__header-wrapper {
+    margin-bottom: 80px;
+}
+
+.article-header__head {
+    padding: 0;
+}
+
+.article-header__head-inner {
+    padding: 40px 0;
+}
+
+.article-header__head-title {
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+
+[data-lang="fa"] .article-header__head-title {
+    font-family: 'Lalezar', sans-serif;
+    font-weight: 800;
+    letter-spacing: 0;
+}
+
+/* Horizontal line after title */
+.article-header__head-title::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: var(--accent-color);
+    margin-top: 40px;
+}
+
+/* =====================================================
+   Footer Styles
+   ===================================================== */
+.site-footer {
+    background-color: var(--bg-color);
+    margin-top: auto;
+    padding: 60px 0 40px 0;
+}
+
+.site-footer__inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.site-footer__inner-content {
+    width: 100%;
+}
+
+.site-footer__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+
+.site-footer__title-text {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: -0.01em;
+}
+
+
+[data-lang="fa"] .site-footer__title-text {
+    font-family: 'Lalezar', sans-serif;
+    font-weight: 800;
+    letter-spacing: 0;
+}
+
+.site-footer__title-back {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    transition: color 0.3s ease;
+}
+
+.site-footer__title-back span:first-child {
+    font-size: 14px;
+}
+
+.site-footer__title-back:hover {
+    text-decoration: underline;
+    color: var(--hover-color);
+}
+
+.site-footer__links {
+    margin-bottom: 40px;
+}
+
+.site-footer__links-row {
+    margin-bottom: 32px;
+}
+
+.site-footer__links-row:last-child {
+    margin-bottom: 0;
+}
+
+.site-footer__links-title {
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+/* Persian links title - keeping LTR */
+[data-lang="fa"] .site-footer__links-title {
+    font-family: 'Lalezar', sans-serif;
+    font-weight: 700;
+}
+
+.site-footer__links-link {
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.site-footer__nav {
+    list-style: none;
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+
+
+.site-footer__nav a {
+    color: var(--text-color);
+    font-size: 16px;
+}
+
+.site-footer__baseline {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 32px;
+    border-top: 1px solid var(--accent-color);
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+
+
+.site-footer__baseline-copyright {
+    font-weight: 400;
+}
+
+.site-footer__baseline-separator {
+    color: var(--text-color);
+}
+
+.site-footer__baseline a {
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+/* =====================================================
+   Interactive Elements
+   ===================================================== */
+.copyable-email {
+    cursor: pointer;
+    user-select: all;
+    transition: color 0.3s ease;
+}
+
+.copyable-email:hover {
+    color: var(--hover-color);
+}
+
+/* =====================================================
+   Language-specific adjustments
+   ===================================================== */
+[data-lang="fa"] {
+    font-family: 'Lalezar', sans-serif;
+}
+
+[data-lang="fa"] h1,
+[data-lang="fa"] h2,
+[data-lang="fa"] h3,
+[data-lang="fa"] h4,
+[data-lang="fa"] h5,
+[data-lang="fa"] h6 {
+    font-family: 'Lalezar', sans-serif;
+}
+
+[data-lang="fa"] button {
+    font-family: 'Lalezar', sans-serif;
+}
+
+
+
+/* =====================================================
+   Responsive Design
+   ===================================================== */
+@media (max-width: 768px) {
+    .site-header__links-inner,
+    .site-main,
+    .site-footer__inner {
+        padding: 0 24px;
+    }
+    
+    .site-header__links-inner {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 24px;
+    }
+    
+    .site-header__links-menu {
+        gap: 24px;
+    }
+    
+    .article-header__head-title {
+        font-size: 48px;
+    }
+    
+    .site-footer__title {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+    
+
+    
+    .site-footer__nav {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .site-footer__baseline {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+
+
+    .theme-toggle,
+    .language-toggle {
+        top: 15px;
+        padding: 10px 16px;
+        font-size: 12px;
+    }
+    
+    .theme-toggle {
+        right: 15px;
+    }
+    
+    .language-toggle {
+        left: 15px;
+    }
+    
+
+}
+
+@media (max-width: 480px) {
+    .site-header__links-inner,
+    .site-main,
+    .site-footer__inner {
+        padding: 0 16px;
+    }
+    
+    .article-header__head-title {
+        font-size: 36px;
+    }
+    
+    .site-footer__title-text {
+        font-size: 28px;
+    }
+    
+    .site-header__links-menu {
+        gap: 16px;
+    }
+
+    .header-content-wrapper {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+
+    .logo-image {
+        height: 80px;
+    }
+    
+    .language-toggle {
+        left: 15px;
+    }
+    
+}
