@@ -34,22 +34,23 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
     font-family: 'Playfair Display', serif;
 }
+
 .video {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 2rem 1rem;
-
     margin: 2rem 0;
 }
 
 .video video {
     max-width: 600px;
-    width: 90%;
+    width: 100%;
     height: auto;
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .img_app {
     position: relative;
     max-width: 300px;
@@ -72,6 +73,49 @@ body {
     object-fit: cover;
     flex: 0 0 100%;
     display: block;
+}
+.tile {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+}
+
+
+.image-slider {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.tile-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(87, 87, 87, 0.5);
 }
 
 /* Navigation Arrows */
@@ -137,13 +181,9 @@ body {
     background: rgba(255, 255, 255, 0.8);
 }
 
-
 [data-lang="fa"] {
     font-family: 'Lalezar', sans-serif;
-    
 }
-
-
 
 a {
     color: inherit;
@@ -177,6 +217,14 @@ a:hover {
     z-index: 1000;
     font-family: inherit;
     width: 150px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.language-toggle.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
 }
 
 .language-toggle:hover {
@@ -196,8 +244,6 @@ a:hover {
 .language-toggle:hover .language-flag {
     transform: scale(1.2);
 }
-
-
 
 /* =====================================================
    Theme Toggle Button
@@ -221,6 +267,14 @@ a:hover {
     z-index: 1000;
     font-family: inherit;
     width: 150px;
+    opacity: 1;
+    visibility: visible;
+}
+
+.theme-toggle.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
 }
 
 .theme-toggle:hover {
@@ -250,8 +304,6 @@ a:hover {
     align-items: center;
     width: 100%;
 }
-
-
 
 .logo-image {
     height: 120px;
@@ -350,7 +402,6 @@ a:hover {
     letter-spacing: -0.02em;
 }
 
-
 [data-lang="fa"] .article-header__head-title {
     font-family: 'Lalezar', sans-serif;
     font-weight: 800;
@@ -395,14 +446,12 @@ a:hover {
     border-bottom: 1px solid var(--accent-color);
 }
 
-
 .site-footer__title-text {
     font-size: 32px;
     font-weight: 700;
     color: var(--text-color);
     letter-spacing: -0.01em;
 }
-
 
 [data-lang="fa"] .site-footer__title-text {
     font-family: 'Lalezar', sans-serif;
@@ -451,7 +500,6 @@ a:hover {
     font-size: 16px;
 }
 
-/* Persian links title - keeping LTR */
 [data-lang="fa"] .site-footer__links-title {
     font-family: 'Lalezar', sans-serif;
     font-weight: 700;
@@ -469,8 +517,6 @@ a:hover {
     flex-wrap: wrap;
 }
 
-
-
 .site-footer__nav a {
     color: var(--text-color);
     font-size: 16px;
@@ -485,8 +531,6 @@ a:hover {
     font-size: 16px;
     color: var(--text-color);
 }
-
-
 
 .site-footer__baseline-copyright {
     font-weight: 400;
@@ -534,11 +578,36 @@ a:hover {
     font-family: 'Lalezar', sans-serif;
 }
 
-
-
 /* =====================================================
-   Responsive Design
+   Enhanced Responsive Design
    ===================================================== */
+
+/* Large Tablets and Small Desktops */
+@media (max-width: 1024px) {
+    .site-header__links-inner,
+    .site-main,
+    .site-footer__inner {
+        max-width: 900px;
+        padding: 0 28px;
+    }
+    
+    .article-header__head-title {
+        font-size: 56px;
+    }
+    
+    .site-footer__title-text {
+        font-size: 30px;
+    }
+    
+    .theme-toggle,
+    .language-toggle {
+        width: 140px;
+        padding: 11px 18px;
+        font-size: 13px;
+    }
+}
+
+/* Standard Tablets */
 @media (max-width: 768px) {
     .site-header__links-inner,
     .site-main,
@@ -548,44 +617,56 @@ a:hover {
     
     .site-header__links-inner {
         flex-direction: column;
-        gap: 16px;
-        padding: 16px 24px;
+        gap: 20px;
+        padding: 20px 24px;
+        text-align: center;
     }
     
     .site-header__links-menu {
-        gap: 24px;
+        gap: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
     .article-header__head-title {
         font-size: 48px;
+        line-height: 1.2;
     }
     
     .site-footer__title {
         flex-direction: column;
-        gap: 16px;
+        gap: 20px;
         align-items: flex-start;
+        text-align: left;
     }
-    
-
     
     .site-footer__nav {
         flex-direction: column;
-        gap: 16px;
+        gap: 20px;
     }
     
     .site-footer__baseline {
         flex-direction: column;
         align-items: flex-start;
-        gap: 8px;
+        gap: 12px;
     }
     
-
-
+    .header-content-wrapper {
+        flex-direction: column;
+        gap: 24px;
+        text-align: center;
+    }
+    
+    .logo-image {
+        height: 100px;
+    }
+    
     .theme-toggle,
     .language-toggle {
         top: 15px;
         padding: 10px 16px;
         font-size: 12px;
+        width: 130px;
     }
     
     .theme-toggle {
@@ -596,9 +677,18 @@ a:hover {
         left: 15px;
     }
     
-
+    .video {
+        padding: 1.5rem 0.5rem;
+        margin: 1.5rem 0;
+    }
+    
+    .img_app {
+        max-width: 280px;
+        margin: 1.5rem auto;
+    }
 }
 
+/* Large Mobile Devices */
 @media (max-width: 480px) {
     .site-header__links-inner,
     .site-main,
@@ -606,31 +696,158 @@ a:hover {
         padding: 0 16px;
     }
     
-    .article-header__head-title {
-        font-size: 36px;
-    }
-    
-    .site-footer__title-text {
-        font-size: 28px;
+    .site-header__links-inner {
+        padding: 16px;
+        gap: 16px;
     }
     
     .site-header__links-menu {
-        gap: 16px;
-    }
-
-    .header-content-wrapper {
-        flex-direction: column;
         gap: 20px;
-        text-align: center;
+        font-size: 15px;
     }
     
-
+    .article-header__head-title {
+        font-size: 36px;
+        line-height: 1.3;
+    }
+    
+    .site-footer__title-text {
+        font-size: 26px;
+    }
+    
+    .site-footer__links-title {
+        font-size: 15px;
+    }
+    
+    .site-footer__links-link,
+    .site-footer__nav a,
+    .site-footer__baseline {
+        font-size: 15px;
+    }
+    
     .logo-image {
         height: 80px;
     }
     
+    .theme-toggle,
     .language-toggle {
+        top: 12px;
+        padding: 8px 14px;
+        font-size: 11px;
+        width: 120px;
+    }
+    
+    .theme-toggle {
+        right: 12px;
+    }
+    
+    .language-toggle {
+        left: 12px;
+    }
+    
+    .video {
+        padding: 1rem 0.25rem;
+        margin: 1rem 0;
+    }
+    
+    .img_app {
+        max-width: 260px;
+        margin: 1rem auto;
+    }
+    
+    .slider-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .slider-nav.prev {
         left: 15px;
     }
     
+    .slider-nav.next {
+        right: 15px;
+    }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 360px) {
+    .site-header__links-inner,
+    .site-main,
+    .site-footer__inner {
+        padding: 0 12px;
+    }
+    
+    .site-header__links-menu {
+        gap: 16px;
+        font-size: 14px;
+    }
+    
+    .article-header__head-title {
+        font-size: 32px;
+    }
+    
+    .site-footer__title-text {
+        font-size: 24px;
+    }
+    
+    .logo-image {
+        height: 70px;
+    }
+    
+    .theme-toggle,
+    .language-toggle {
+        top: 10px;
+        padding: 6px 12px;
+        font-size: 10px;
+        width: 110px;
+    }
+    
+    .theme-toggle {
+        right: 10px;
+    }
+    
+    .language-toggle {
+        left: 10px;
+    }
+    
+    .img_app {
+        max-width: 240px;
+    }
+    
+    .slider-nav {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .slider-nav.prev {
+        left: 10px;
+    }
+    
+    .slider-nav.next {
+        right: 10px;
+    }
+    
+    .dot {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1200px) {
+    .site-header__links-inner,
+    .site-main,
+    .site-footer__inner {
+        max-width: 1100px;
+    }
+    
+    .article-header__head-title {
+        font-size: 72px;
+    }
+    
+    .site-footer__title-text {
+        font-size: 36px;
+    }
 }
