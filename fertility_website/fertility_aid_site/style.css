@@ -423,7 +423,7 @@ a:hover {
    Language Toggle Button
    ===================================================== */
 .language-toggle {
-    position: fixed;
+    position: absolute;
     top: 20px;
     left: 20px;
     background: var(--accent-color);
@@ -473,7 +473,7 @@ a:hover {
    Theme Toggle Button
    ===================================================== */
 .theme-toggle {
-    position: fixed;
+    position: absolute;
     top: 20px;
     right: 20px;
     background: var(--accent-color);
@@ -490,7 +490,7 @@ a:hover {
     transition: all 0.3s ease;
     z-index: 1000;
     font-family: inherit;
-    width: 120px;
+    width: 150px;
     opacity: 1;
     visibility: visible;
 }
