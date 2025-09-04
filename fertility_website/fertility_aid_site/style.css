@@ -440,7 +440,7 @@ a:hover {
     transition: all 0.3s ease;
     z-index: 1000;
     font-family: inherit;
-    width: 150px;
+    width: 120px;
     opacity: 1;
     visibility: visible;
 }
@@ -490,7 +490,7 @@ a:hover {
     transition: all 0.3s ease;
     z-index: 1000;
     font-family: inherit;
-    width: 150px;
+    width: 120px;
     opacity: 1;
     visibility: visible;
 }
