@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-US" data-theme="light" data-lang="en">
     <head>
         <meta charSet="utf-8"/>
         <meta http-equiv="x-ua-compatible" content="ie=edge"/>
@@ -8,6 +8,7 @@
         <title data-react-helmet="true">Fertility AId</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="style.css">
@@ -33,7 +34,7 @@
                                 <div class="article-header__head">
                                     <div class="article-header__head-inner">
                                         <div class="header-content-wrapper">
-                                            <h1 class="article-header__head-title">Fertility AId</h1>
+                                            <h1 class="article-header__head-title" data-key="title">Fertility AId</h1>
                                             <div class="header-logo">
                                                 <img src="./2335.png" alt="Logo" class="logo-image">
                                             </div>
@@ -42,57 +43,236 @@
                                 </div>
                             </header>
                         </div>
-
-                        <div class="tile" id="design-tile">
-                            <div class="image-slider">
-                                <div class="slide active">
-                                    <img src="./image copy 2.png" alt="Recent design preview" class="tile-image">
-                                </div>
-                                <div class="slide">
-                                    <img src="./image copy.png" alt="Recent design preview" class="tile-image">
-                                </div>
-                                <div class="slide">
-                                    <img src="./image.png" alt="Recent design preview" class="tile-image">
-                                </div>
-                            </div>
-                        </div>
                         <div class="video">
                             <video src="./video_2025-06-08_13-24-48.mp4" controls muted></video>   
                         </div>
                         <div class="img_app">
-                            <div class="slider-wrapper" id="sliderWrapper">
-                                <img src="./photo_4_2025-06-08_13-38-37.jpg" alt="Image 1">
-                                <img src="./photo_1_2025-06-08_13-38-37.jpg" alt="Image 2">
-                                <img src="./photo_2_2025-06-08_13-38-37.jpg" alt="Image 3">
-                                <img src="./photo_3_2025-06-08_13-38-37.jpg" alt="Image 4">
-                            </div>
-                            
-                            <!-- Navigation Arrows -->
-                            <button class="slider-nav prev" onclick="changeSlide(-1)">‹</button>
-                            <button class="slider-nav next" onclick="changeSlide(1)">›</button>
-                            
-                            <!-- Dots Indicator -->
-                            <div class="slider-dots">
-                                <span class="dot active" onclick="currentSlide(1)"></span>
-                                <span class="dot" onclick="currentSlide(2)"></span>
-                                <span class="dot" onclick="currentSlide(3)"></span>
-                                <span class="dot" onclick="currentSlide(4)"></span>
+                            <!-- Images Container -->
+                            <div class="images-container">
+                                <div class="image-item">
+                                    <img src="./photo_4_2025-06-08_13-38-37.jpg" alt="Image 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="image-placeholder" style="display: none;">Image 1</div>
+                                </div>
+                                
+                                <div class="image-item">
+                                    <img src="./photo_1_2025-06-08_13-38-37.jpg" alt="Image 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="image-placeholder" style="display: none;">Image 2</div>
+                                </div>
+                                
+                                <div class="image-item">
+                                    <img src="./photo_2_2025-06-08_13-38-37.jpg" alt="Image 3" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="image-placeholder" style="display: none;">Image 3</div>
+                                </div>
+                                
+                                <div class="image-item">
+                                    <img src="./photo_3_2025-06-08_13-38-37.jpg" alt="Image 4" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="image-placeholder" style="display: none;">Image 4</div>
+                                </div>
                             </div>
                         </div>
+                         <!-- Learning Section -->
+                        <section class="learning-section">
+                            <div class="learning-header">
+                                <h2 class="learning-title" data-key="sectionTitle">Learning Center</h2>
+                                <p class="learning-subtitle" data-key="sectionSubtitle">Evidence-based insights and expert guidance for your fertility journey</p>
+                            </div>
+
+                            <!-- Controls -->
+                            <div class="learning-controls">
+                                <div class="search-container">
+                                    <input type="text" class="search-input" data-key-placeholder="searchPlaceholder" placeholder="Search articles..." id="searchInput">
+                                </div>
+                                <div class="filter-tabs">
+                                    <button class="filter-tab active" data-category="all" data-key="filterAll">All</button>
+                                    <button class="filter-tab" data-category="menstrual-health" data-key="filterMenstrual">Menstrual Health</button>
+                                    <button class="filter-tab" data-category="nutrition" data-key="filterNutrition">Nutrition</button>
+                                    <button class="filter-tab" data-category="pregnancy" data-key="filterPregnancy">Pregnancy</button>
+                                    <button class="filter-tab" data-category="hormones" data-key="filterHormones">Hormones</button>
+                                </div>
+                            </div>
+
+                            <!-- Articles Grid -->
+                            <div class="articles-grid" id="articlesGrid">
+                                <!-- Article 1 -->
+                                <article class="article-card" data-category="menstrual-health">
+                                    <div class="article-content">
+                                        <div class="article-category" data-key="article1Category">Menstrual Health</div>
+                                        <h3 class="article-title" data-key="article1Title">Understanding Your Menstrual Cycle: A Complete Guide</h3>
+                                        <p class="article-excerpt" data-key="article1Excerpt">Learn about the four phases of your menstrual cycle and how hormonal changes affect your body, mood, and fertility throughout the month.</p>
+                                        <div class="article-meta">
+                                            <div class="article-author">
+                                                <div class="author-avatar">
+                                                    DR
+                                                    <div class="author-tooltip" data-key="article1Tooltip">
+                                                        Dr. Rooshan Mirzaei<br>
+                                                        Specialist in Gynecology<br>
+                                                        15+ years experience
+                                                    </div>
+                                                </div>
+                                                <div class="author-info">
+                                                    <span class="author-name" data-key="article1Author">Dr. Rooshan Mirzaei</span>
+                                                    <span class="article-date" data-key="article1Date">March 15, 2024</span>
+                                                </div>
+                                            </div>
+                                            <span class="reading-time" data-key="article1Reading">8 min read</span>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <!-- Article 2 -->
+                                <article class="article-card" data-category="nutrition">
+                                    <div class="article-content">
+                                        <div class="article-category" data-key="article2Category">Nutrition</div>
+                                        <h3 class="article-title" data-key="article2Title">Essential Nutrients for Preconception Health</h3>
+                                        <p class="article-excerpt" data-key="article2Excerpt">Discover the key vitamins, minerals, and nutrients that support fertility and prepare your body for a healthy pregnancy.</p>
+                                        <div class="article-meta">
+                                            <div class="article-author">
+                                                <div class="author-avatar">
+                                                    SA
+                                                    <div class="author-tooltip" data-key="article2Tooltip">
+                                                        Sarah Ahmad<br>
+                                                        Registered Dietitian<br>
+                                                        Fertility Nutrition Specialist
+                                                    </div>
+                                                </div>
+                                                <div class="author-info">
+                                                    <span class="author-name" data-key="article2Author">Sarah Ahmad</span>
+                                                    <span class="article-date" data-key="article2Date">March 12, 2024</span>
+                                                </div>
+                                            </div>
+                                            <span class="reading-time" data-key="article2Reading">6 min read</span>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <!-- Article 3 -->
+                                <article class="article-card" data-category="pregnancy">
+                                    <div class="article-content">
+                                        <div class="article-category" data-key="article3Category">Pregnancy</div>
+                                        <h3 class="article-title" data-key="article3Title">Nutrition During First Trimester: What to Eat and Avoid</h3>
+                                        <p class="article-excerpt" data-key="article3Excerpt">A comprehensive guide to proper nutrition during early pregnancy, including safe foods, essential supplements, and foods to avoid.</p>
+                                        <div class="article-meta">
+                                            <div class="article-author">
+                                                <div class="author-avatar">
+                                                    LK
+                                                    <div class="author-tooltip" data-key="article3Tooltip">
+                                                        Dr. Lisa Kim<br>
+                                                        Obstetrician & Gynecologist<br>
+                                                        Board Certified
+                                                    </div>
+                                                </div>
+                                                <div class="author-info">
+                                                    <span class="author-name" data-key="article3Author">Dr. Lisa Kim</span>
+                                                    <span class="article-date" data-key="article3Date">March 10, 2024</span>
+                                                </div>
+                                            </div>
+                                            <span class="reading-time" data-key="article3Reading">10 min read</span>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <!-- Article 4 -->
+                                <article class="article-card" data-category="hormones">
+                                    <div class="article-content">
+                                        <div class="article-category" data-key="article4Category">Hormones</div>
+                                        <h3 class="article-title" data-key="article4Title">Hormonal Balance and Fertility: Key Connections</h3>
+                                        <p class="article-excerpt" data-key="article4Excerpt">Understand how hormones like estrogen, progesterone, and insulin affect your fertility and learn natural ways to support hormonal balance.</p>
+                                        <div class="article-meta">
+                                            <div class="article-author">
+                                                <div class="author-avatar">
+                                                    MR
+                                                    <div class="author-tooltip" data-key="article4Tooltip">
+                                                        Dr. Michael Roberts<br>
+                                                        Reproductive Endocrinologist<br>
+                                                        Fertility Specialist
+                                                    </div>
+                                                </div>
+                                                <div class="author-info">
+                                                    <span class="author-name" data-key="article4Author">Dr. Michael Roberts</span>
+                                                    <span class="article-date" data-key="article4Date">March 8, 2024</span>
+                                                </div>
+                                            </div>
+                                            <span class="reading-time" data-key="article4Reading">7 min read</span>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <!-- Article 5 -->
+                                <article class="article-card" data-category="menstrual-health">
+                                    <div class="article-content">
+                                        <div class="article-category" data-key="article5Category">Menstrual Health</div>
+                                        <h3 class="article-title" data-key="article5Title">Tracking Ovulation: Methods and Best Practices</h3>
+                                        <p class="article-excerpt" data-key="article5Excerpt">Learn various methods to track ovulation, from basal body temperature to ovulation predictor kits, and find what works best for you.</p>
+                                        <div class="article-meta">
+                                            <div class="article-author">
+                                                <div class="author-avatar">
+                                                    EM
+                                                    <div class="author-tooltip" data-key="article5Tooltip">
+                                                        Dr. Emily Martinez<br>
+                                                        Reproductive Health Specialist<br>
+                                                        Women's Health Expert
+                                                    </div>
+                                                </div>
+                                                <div class="author-info">
+                                                    <span class="author-name" data-key="article5Author">Dr. Emily Martinez</span>
+                                                    <span class="article-date" data-key="article5Date">March 5, 2024</span>
+                                                </div>
+                                            </div>
+                                            <span class="reading-time" data-key="article5Reading">9 min read</span>
+                                        </div>
+                                    </div>
+                                </article>
+
+                                <!-- Article 6 -->
+                                <article class="article-card" data-category="nutrition">
+                                    <div class="article-content">
+                                        <div class="article-category" data-key="article6Category">Nutrition</div>
+                                        <h3 class="article-title" data-key="article6Title">Mediterranean Diet for Fertility: Benefits and Guidelines</h3>
+                                        <p class="article-excerpt" data-key="article6Excerpt">Explore how the Mediterranean diet can boost fertility in both men and women, with practical meal planning tips and recipes.</p>
+                                        <div class="article-meta">
+                                            <div class="article-author">
+                                                <div class="author-avatar">
+                                                    SA
+                                                    <div class="author-tooltip" data-key="article6Tooltip">
+                                                        Sarah Ahmad<br>
+                                                        Registered Dietitian<br>
+                                                        Fertility Nutrition Specialist
+                                                    </div>
+                                                </div>
+                                                <div class="author-info">
+                                                    <span class="author-name" data-key="article6Author">Sarah Ahmad</span>
+                                                    <span class="article-date" data-key="article6Date">March 3, 2024</span>
+                                                </div>
+                                            </div>
+                                            <span class="reading-time" data-key="article6Reading">12 min read</span>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+
+                            <!-- Medical Disclaimer -->
+                            <div class="medical-disclaimer">
+                                <h3 class="disclaimer-title" data-key="disclaimerTitle">Medical Disclaimer</h3>
+                                <p class="disclaimer-text" data-key="disclaimerText">
+                                    The information provided in our learning center is for educational purposes only and should not replace professional medical advice. 
+                                    Always consult with your healthcare provider before making any decisions about your health or treatment.
+                                </p>
+                            </div>
+                        </section>
                     </main>
                     <footer class="site-footer">
                         <div class="site-footer__inner">
                             <div class="site-footer__inner-content">
                                 <div class="site-footer__title">
-                                    <div class="site-footer__title-text">Contact</div>
+                                    <div class="site-footer__title-text" data-key="contact">Contact</div>
                                     <button class="site-footer__title-back" onclick="scrollToTop()">
                                         <span>↑</span>                 
-                                        <span>Back to top</span>
+                                        <span data-key="backToTop">Back to top</span>
                                     </button>
                                 </div>
                                 <div class="site-footer__links">
                                     <div class="site-footer__links-row">
-                                        <div class="site-footer__links-title">Email</div>
+                                        <div class="site-footer__links-title" data-key="email">Email</div>
                                         <div class="site-footer__links-link">
                                             <span class="copyable-email" data-email="Fertilityaid1@gmail.com">
                                                 Fertilityaid1@gmail.com
@@ -100,23 +280,23 @@
                                         </div>
                                     </div>
                                     <div class="site-footer__links-row">
-                                        <div class="site-footer__links-title">Subscribe</div>
+                                        <div class="site-footer__links-title" data-key="subscribe">Subscribe</div>
                                         <div class="site-footer__links-link">
                                             <ul class="site-footer__nav">
                                                 <li class="">
-                                                    <a href="#">Our privacy policy</a>
+                                                    <a href="#" data-key="privacyPolicy">Our privacy policy</a>
                                                 </li>
                                                 <li class="">
-                                                    <a href="#">Ethics &amp; standards</a>
+                                                    <a href="#" data-key="ethicsStandards">Ethics &amp; standards</a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="site-footer__baseline">
-                                    <div class="site-footer__baseline-copyright">Fertility AId ©2025</div>      
+                                    <div class="site-footer__baseline-copyright" data-key="copyright">Fertility AId ©2025</div>      
                                     <div class="site-footer__baseline-separator">|</div>
-                                    <a href="https://amrqhz.github.io" target="_blank" rel="noreferrer">Designed by amrqhz</a>
+                                    <a href="https://amrqhz.github.io" target="_blank" rel="noreferrer" data-key="designedBy">Designed by amrqhz</a>
                                 </div>
                             </div>
                         </div>
