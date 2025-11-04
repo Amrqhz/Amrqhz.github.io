@@ -67,7 +67,11 @@ header {
     text-decoration: none;
     }
 }
-
+.email{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
 
 
 .note-content p {
