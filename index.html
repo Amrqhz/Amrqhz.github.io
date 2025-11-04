@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amir Hossein Gholizadeh - Portfolio
     </title>
-    <link rel="icon" href="/assets/mylogo.png" sizes="any">
+    <link rel="icon" href="l.png" sizes="any">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,74 +17,27 @@
 <body>
     <div class="container">
         <header>
-            <div class="logo">
-                <a href="index.html">
-                    <img src="assets/mylogo 1.png" alt="Logo" class="brand-logo">
-                </a>
-            </div>
-            <div class="name-container">
-                <h1>AMIR HOSSEIN <br> GHOLIZADEH</h1>
-            </div>
-            <div class="profile-pic">
-                <a href="index.html">
-                    <img src="assets/logo.png" alt="Profile" class="avatar">
-                </a>
-            </div>
+            <h1>AMIR H. GHOLIZADEH</h1>
+            <nav>
+                <a href="#dev-notes" class="nav">devnotes</a>
+                <a href="#Featured" class="nav">Projects</a>
+                <a href="#social" class="nav">contact</a>
+            </nav>
         </header>
+        <div class="notes-container">
+            <img class="brand-logo" src="l.png">
+            <div class="note-entry">
+                <div class="note-date">Nov 4, 2025</div>
+                <!-- <h2 class="note-title"></h2> -->
+                <div class="note-content">
+                    <p>Hi, <br>it's my pleasure that you visit my portfolio.</p>
+                    <p>contact :<a href="#social"> 🤝🏻</a> </p>
+                </div>
+            </div>
+        </div>
 
         <main>
-            <section class="portfolio-tiles">
-                <div class="tile" id="papers-tile">
-                    <h2>Recent Papers</h2>
-                    <div class="image-slider">
-                        <div class="slide active">
-                            <img src="assets/paper.png" alt="Recent papers preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/paper1.png" alt="Recent papers preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/w4.jpg" alt="Recent papers preview" class="tile-image">
-                        </div>
-                    </div>
-                    <a href="assets/papers.html" class="tile-link"></a>
-                </div>
-
-                <div class="tile" id="design-tile">
-                    <h2>Recent Design</h2>
-                    <div class="image-slider">
-                        <div class="slide active">
-                            <img src="assets/w3.jpg" alt="Recent design preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/w2.jpeg" alt="Recent design preview" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="assets/w1.jpeg" alt="Recent design preview" class="tile-image">
-                        </div>
-                    </div>
-                    <a href="design.html" class="tile-link"></a>
-                </div>
-
-                <div class="tile" id="apps-tile">
-                    <h2>Recent Apps & Web</h2>
-                    <p>Developmental</p>
-                    <div class="image-slider">
-                        <div class="slide active">
-                            <img src="" alt="" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="" alt="" class="tile-image">
-                        </div>
-                        <div class="slide">
-                            <img src="" alt="" class="tile-image">
-                        </div>
-                    </div>
-                    <span class="availability-status">Available soon</span>
-                    <a href="apps.html" class="tile-link"></a>
-                </div>
-            </section>
-            <section class="dev-notes-section">
+            <section class="dev-notes-section" id="dev-notes">
                 <h2 class="section-title">Dev Notes</h2>
                 <div class="dev-notes-card">
                     <div class="notes-preview">
@@ -93,23 +46,10 @@
                     </div>
                     <a href="quickdose-devnote.html" class="notes-link">View Notes</a>
                     <hr class="solid">
-                    <!-- New Important Links Section 
-                    <div class="notes-preview">
-                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
-                        <p>My development journey, thoughts, and code snippets</p>
-                    </div>
-                    <a href="devnotes.html" class="notes-link">View Notes</a>
-                    <hr class="solid">
-                    <div class="notes-preview">
-                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
-                        <p>My development journey, thoughts, and code snippets</p>
-                    </div>
-                    <a href="devnotes.html" class="notes-link">View Notes</a>
-                    -->
                 </div>
             </section>
             <!-- New Important Links Section -->
-            <section class="important-links-section">
+            <section class="important-links-section" id="Featured">
                 <h2>Featured Projects</h2>
                 <div class="important-link">
                     <div class="link-icon">
@@ -196,7 +136,7 @@
                 <a href="assets/cv.pdf" class="resume-button">Resume</a>
             </section>
 
-            <section class="social-links">
+            <section class="social-links" id="social">
                 <a href="https://github.com/amrqhz" class="social-icon github">
                     <img src="assets/github.png" alt="GitHub">
                     <span>GitHub</span>
