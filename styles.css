@@ -7,66 +7,75 @@
 
 body {
     font-family: 'Space Grotesk', sans-serif;
-    color: #333;
     line-height: 1.6;
-    background-color: #9b9b9b;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    background-position: 0 0;
-    background-size: 200px 200px ;
-    
-    background-blend-mode: overlay;
+    color: #fff;
+    background: linear-gradient(-45deg, #4a1d94, #98b9ff, #4c4c8a, #4f16d4);
+    background-size: 400% 400%;
+    animation: gradientMove 15s ease infinite;
+    min-height: 100vh;
+    overflow-x: hidden;
+
+}
+/* Animated gradient background */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .container {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    margin: auto;
+    padding: 1rem 2rem;
 }
 
 /* Header styles */
 header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 4rem;
-    animation: ease-in 1.2s
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 4rem;
+  /* position: sticky; */
+  position: relative;
+  top: 0;
+  background: rgba(0, 0, 0, 0.075);
+  backdrop-filter: blur(5px);
+  border-radius: 1rem 1rem 1rem 1rem;
+  z-index: 10;
 }
 
 .brand-logo {
-    width: 250px;
-    height: auto;
-    transform: translate(230px, -50px);
-    margin: 0 auto;
-    justify-content: center;
-    justify-items: center;
-    display: flex;
+  width: 180px;
+  border-radius: 50%;
+  margin: 2rem 0;
+  animation: float 6s ease-in-out infinite;
 }
-
-.note-entry {
-    transform: translate(30px, -250px);
-
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
-
-
-
-
-.note-date {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-.note-title {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-}
-
 .note-content {
-    line-height: 1.5;
-    white-space: pre-wrap;
-    a{
-    text-decoration: none;
-    }
+  font-size: 1.2rem;
+  line-height: 1.8;
+  max-width: 600px;
 }
+
+.note-content a {
+  text-decoration: none;
+  color: #ffb703;
+  transition: color 0.3s;
+}
+
+.note-content a:hover {
+  color: #ffdd57;
+}
+
+/* Subtle fade-in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .email{
     display: flex;
     justify-content: center;
@@ -74,28 +83,48 @@ header {
 }
 
 
-.note-content p {
-    margin-bottom: 0.25rem;
-}
+
 
 
 .notes-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: calc(100vh - 150px);
+  animation: fadeIn 1.5s ease;
 }
         
 h1 {
-    font-size: 2.5rem;
-    font-weight: 600;
-    line-height: 1.2;
-    text-align: center;
-    margin: auto;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 1.8rem;
 
 }
-.nav{
-    padding-left: 20px;
+
+nav a {
+  color: #fff;
+  margin-left: 2rem;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s ease;
 }
+nav a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #fff;
+  transition: width 0.3s ease;
+}
+nav a:hover::after {
+  width: 100%;
+}                                                                                                                                                                                    
+
+
 
 /* Portfolio tiles section */
 .portfolio-tiles {
@@ -376,9 +405,6 @@ footer {
 }
 
 /* Dev Notes Section Styles */
-.dev-notes-section {
-    transform: translate(0 ,-160px);
-}
 
 .section-title {
     text-align: center;
@@ -450,8 +476,9 @@ hr.solid{
 .footer-credit h6{
     font-family:  Satisfy;
     margin-top: 1.5rem;
-    font-size: 30px;
+    font-size: 25px;
     color: rgb(68, 68, 68);
+
     
 }
 .footer-credit h4{
@@ -459,363 +486,204 @@ hr.solid{
 }
 
 
-@media (max-width: 968px) {
-    .portfolio-tiles {
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-    
-    .brand-logo {
-        width: 200px;
-        transform: translate(250px, -20px);
-    }
-    
-    .note-entry {
-        transform: translate(20px, -200px);
-    }
-    
-    .important-link {
-        width: 90%;
-        padding: 1.5rem;
-        margin: 3rem auto;
-    }
-    
-    .link-icon {
-        width: 55px;
-        height: 55px;
-        min-width: 55px;
-        margin-right: 1.25rem;
-    }
-    
-    .link-details h3 {
-        font-size: 1.2rem;
-    }
-    
-    .link-details h5, 
-    .link-details p {
-        font-size: 0.85rem;
-    }
-    
-    .action-button {
-        padding: 0.45rem 1rem;
-        font-size: 0.85rem;
-    }
-    
-    .social-links {
-        max-width: 500px;
-        margin: 10rem auto 3rem;
-    }
-    
-    .dev-notes-section {
-        transform: translate(0, -120px);
-    }
-    
-    .notes-container {
-        padding: 3rem;
-    }
+/* ===== Responsive Design ===== */
+
+@media (max-width: 1024px) {
+  header {
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: 1.5rem 2rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  nav a {
+    margin: 0 1rem;
+  }
+
+  .portfolio-tiles {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .brand-logo {
+    width: 160px;
+    margin: 1rem auto;
+    transform: none;
+  }
+
+  .note-entry {
+    transform: none;
+    text-align: center;
+  }
+
+  .notes-container {
+    padding: 3rem 2rem;
+    height: auto;
+  }
+
+  .important-link {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    max-width: 90%;
+  }
+
+  .social-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    margin: 6rem auto 3rem;
+  }
 }
 
 @media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        gap: 1.5rem;
-        margin-bottom: 3rem;
-    }
-    
-    .brand-logo {
-        width: 180px;
-        transform: translate(200px, -10px);
-    }
-    
-    .note-entry {
-        transform: translate(10px, -150px);
-        font-size: 0.9rem;
-    }
-    
-    .portfolio-tiles {
-        gap: 1.5rem;
-    }
-    
-    .tile {
-        height: 320px;
-        padding: 1.25rem;
-    }
-    
-    .tile h2 {
-        font-size: 1.3rem;
-    }
-    
-    .important-link {
-        width: 95%;
-        padding: 1rem;
-        margin: 2rem auto;
-    }
-    
-    .link-icon {
-        width: 50px;
-        height: 50px;
-        min-width: 50px;
-        margin-right: 1rem;
-    }
-    
-    .link-details h3 {
-        font-size: 1.1rem;
-    }
-    
-    .link-details h5,
-    .link-details p {
-        font-size: 0.8rem;
-    }
-    
-    .link-action {
-        margin-left: 1rem;
-    }
-    
-    .action-button {
-        padding: 0.4rem 1rem;
-        font-size: 0.8rem;
-    }
-    
-    .download-group {
-        justify-content: center;
-        gap: 1rem;
-    }
+  .portfolio-tiles {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 
-    .store-button {
-        width: 20px;
-        height: 20px;
-        margin-top: 15px;
-    }
-    
-    .resume-section {
-        margin: 5rem 0;
-    }
-    
-    .resume-button {
-        padding: 0.9rem 2.5rem;
-        font-size: 1.1rem;
-    }
+  h1 {
+    font-size: 1.8rem;
+  }
 
-    .social-links {
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        justify-content: center;
-        margin: 8rem auto 3rem;
-        max-width: 400px;
-    }
-    
-    .social-icon {
-        margin: 0 1rem;
-    }
-    
-    .social-icon img {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .dev-notes-section {
-        transform: translate(0, -100px);
-    }
-    
-    .dev-notes-card {
-        padding: 1.5rem;
-    }
-    
-    .notes-preview p {
-        font-size: 1rem;
-    }
-    
-    .notes-container {
-        padding: 2rem;
-    }
-    
-    .section-title {
-        font-size: 1.8rem;
-    }
+  .note-content {
+    font-size: 1rem;
+    max-width: 90%;
+  }
+
+  .brand-logo {
+    width: 140px;
+  }
+
+  .tile {
+    height: auto;
+    padding: 1.25rem;
+  }
+
+  .important-link {
+    max-width: 95%;
+    padding: 1.2rem;
+  }
+
+  .link-icon {
+    margin-bottom: 1rem;
+    width: 55px;
+    height: 55px;
+  }
+
+  .resume-section {
+    margin: 5rem 0;
+  }
+
+  .resume-button {
+    padding: 0.9rem 2.2rem;
+    font-size: 1.1rem;
+  }
+
+  .social-icon img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .dev-notes-card {
+    padding: 1.5rem;
+  }
+
+  .notes-preview p {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.8rem;
+  }
 }
 
 @media (max-width: 576px) {
-    .portfolio-tiles {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-    
-    .container {
-        padding: 1rem;
-    }
-    
-    .brand-logo {
-        width: 100px;
-        transform: translate(120px);
-    }
-    
-    .note-entry {
-        transform: translate(0, -100px);
-        font-size: 0.8rem;
-    }
-    
-    h1 {
-        font-size: 1.8rem;
-    }
-    
-    .tile {
-        height: 300px;
-        padding: 1rem;
-    }
-    
-    .tile h2 {
-        font-size: 1.2rem;
-    }
-    
-    .tile p {
-        font-size: 0.9rem;
-    }
-    
-    .image-slider {
-        height: 180px;
-    }
-    
-    .important-link {
-        flex-direction: column;
-        text-align: center;
-        padding: 1.5rem 1rem;
-        width: 100%;
-    }
-    
-    .link-icon {
-        margin-right: 0;
-        margin-bottom: 1rem;
-        width: 55px;
-        height: 55px;
-    }
-    
-    .link-details {
-        margin-bottom: 1rem;
-        width: 100%;
-    }
-    
-    .link-details h3 {
-        font-size: 1.15rem;
-    }
-    
-    .link-action {
-        margin-left: 0;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-    
-    .download-group {
-        justify-content: center;
-        gap: 1rem;
-    }
+  .container {
+    padding: 1rem;
+  }
 
-    .store-button {
-        width: 18px;
-        height: 18px;
-        margin-top: 10px;
-    }
-    
-    .resume-section {
-        margin: 4rem 0;
-    }
-    
-    .resume-button {
-        padding: 0.8rem 2rem;
-        font-size: 1rem;
-    }
-    
-    .social-links {
-        margin: 6rem auto 2rem;
-        gap: 1rem;
-    }
-    
-    .social-icon img {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .social-icon span {
-        font-size: 0.8rem;
-    }
-    
-    .dev-notes-section {
-        transform: translate(0, -80px);
-    }
-    
-    .section-title {
-        font-size: 1.6rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .dev-notes-card {
-        padding: 1.25rem;
-    }
-    
-    .notes-preview p {
-        font-size: 0.95rem;
-    }
-    
-    .notes-link {
-        padding: 0.7rem 1.5rem;
-        font-size: 0.9rem;
-    }
-    
-    .notes-container {
-        padding: 1.5rem;
-    }
-    
-    .footer-credit h6 {
-        font-size: 24px;
-    }
-    
-    .footer-credit h4 {
-        margin-top: 2rem;
-        font-size: 0.9rem;
-    }
+  header {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .brand-logo {
+    width: 120px;
+  }
+
+  .note-content {
+    font-size: 0.95rem;
+  }
+
+  .important-link {
+    padding: 1.2rem 1rem;
+    flex-direction: column;
+  }
+
+  .tile {
+    padding: 1rem;
+  }
+
+  .tile h2 {
+    font-size: 1.2rem;
+  }
+
+  .resume-button {
+    font-size: 1rem;
+    padding: 0.8rem 1.8rem;
+  }
+
+  .social-links {
+    flex-direction: column;
+    gap: 1.2rem;
+    margin: 4rem auto 2rem;
+  }
+
+  .social-icon span {
+    font-size: 0.85rem;
+  }
+
+  .footer-credit h6 {
+    font-size: 1.4rem;
+  }
+
+  .footer-credit h4 {
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 400px) {
-    .brand-logo {
-        width: 100px;
-        transform: translate(0, -30px);
-    }
-    
-    .note-entry {
-        transform: translate(0, -80px);
-        font-size: 0.75rem;
-    }
-    
-    h1 {
-        font-size: 1.5rem;
-    }
-    
-    .tile {
-        height: 280px;
-    }
-    
-    .important-link {
-        padding: 1.25rem 0.75rem;
-    }
-    
-    .link-details h3 {
-        font-size: 1.05rem;
-    }
-    
-    .resume-button {
-        padding: 0.7rem 1.5rem;
-        font-size: 0.95rem;
-    }
-    
-    .section-title {
-        font-size: 1.4rem;
-    }
-    
-    .notes-container {
-        padding: 1rem;
-    }
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  .brand-logo {
+    width: 100px;
+  }
+
+  .note-content {
+    font-size: 0.85rem;
+  }
+
+  .tile h2 {
+    font-size: 1.1rem;
+  }
+
+  .resume-button {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .section-title {
+    font-size: 1.4rem;
+  }
 }
