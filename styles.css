@@ -55,9 +55,9 @@ header {
   50% { transform: translateY(-10px); }
 }
 .note-content {
-  font-size: 1.2rem;
-  line-height: 1.8;
-  max-width: 600px;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  max-width: 800px;
 }
 
 .note-content a {
@@ -410,6 +410,7 @@ footer {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 2rem;
+    margin-top: 7rem;
 }
 
 .dev-notes-card {
