@@ -24,3 +24,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Tab switching functionality
+const tabs = document.querySelectorAll('.tab');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            if (content.id === targetTab) {
+                content.classList.add('active');
+            }
+        });
+    });
+});
+
+// Theme toggle (placeholder functionality)
+const themeToggle = document.querySelector('.theme-toggle');
+themeToggle.addEventListener('click', () => {
+    themeToggle.textContent = themeToggle.textContent === '☀' ? '🌙' : '☀';
+});
+
+// Book card click handler
+const bookCards = document.querySelectorAll('.book-card');
+bookCards.forEach(card => {
+    card.addEventListener('click', () => {
+        const title = card.querySelector('.book-title').textContent;
+        alert(`You clicked on: ${title}\n\nThis would link to a detailed review page.`);
+    });
+});

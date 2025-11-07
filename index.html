@@ -22,6 +22,9 @@
                 <a href="#dev-notes" class="nav">Devnotes</a>
                 <a href="#Featured" class="nav">Projects</a>
                 <a href="#social" class="nav">Contact</a>
+                <a href="#library" class="nav">Library</a>
+                <a href="#resume" class="nav">Resume</a>
+                <!-- <a  class="theme-toggle" href="">☀</a> -->
             </nav>
         </header>
         <div class="notes-container">
@@ -30,24 +33,13 @@
                 <!-- <div class="note-date">Nov 4, 2025</div> -->
                 <!-- <h2 class="note-title"></h2> -->
                 <div class="note-content">
-                    <p>Hi, <br>I’m Amir Hossein Gholizadeh, a final-year Pharmacy student at Ardabil University of Medical Sciences who’s passionate about using technology to solve real-world healthcare problems.<br>My work sits at the intersection of pharmacy and tech — I love designing and developing digital tools that make medication use safer and smarter. One example is Quick Dose, a mobile app I built from scratch to help pharmacy professionals and students calculate accurate drug doses. Through this project, I combined my pharmaceutical background with skills in front-end development, UI/UX design, and mobile app creation.<br>At my core, I’m driven by one thing — building technology that genuinely improves healthcare outcomes. Whether it’s through coding, design, or innovation, I aim to create tools that make a meaningful difference for patients and professionals alike.</p>
+                    <p>Hi, <br>I’m Amir Hossein Gholizadeh, a final-year Pharmacy student at Ardabil University of Medical Sciences who’s passionate about using technology to solve real-world healthcare problems.<br>My work sits at the intersection of pharmacy and tech — I love designing and developing digital tools that make medication use safer and smarter. One example is <a href="quickdose-devnote.html">Quick Dose</a>, a mobile app I built from scratch to help pharmacy professionals and students calculate accurate drug doses. Through this project, I combined my pharmaceutical background with skills in front-end development, UI/UX design, and mobile app creation.<br>At my core, I’m driven by one thing — building technology that genuinely improves healthcare outcomes. Whether it’s through coding, design, or innovation, I aim to create tools that make a meaningful difference for patients and professionals alike.</p>
                     <!-- <p>contact :<a href="#social"> 🤝🏻</a> </p> -->
                 </div>
             </div>
         </div>
 
         <main>
-            <section class="dev-notes-section" id="dev-notes">
-                <h2 class="section-title">Dev Notes</h2>
-                <div class="dev-notes-card">
-                    <div class="notes-preview">
-                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
-                        <p>My development journey, thoughts, and code snippets</p>
-                    </div>
-                    <a href="quickdose-devnote.html" class="notes-link">View Notes</a>
-                    <hr class="solid">
-                </div>
-            </section>
             <!-- New Important Links Section -->
             <section class="important-links-section" id="Featured">
                 <h2>Featured Projects</h2>
@@ -132,9 +124,127 @@
                 </div>
                 
             </section>
-            <section class="resume-section">
+            
+            <section class="library" id="library">
+                <div class="library-label">LIBRARY</div>
+                <h1>Bookshelf</h1>
+                <p class="subtitle">Books I've read, with reviews and notes. Each cover links to a longer take.</p>
+
+                <div class="tabs">
+                    <div class="tab" data-tab="want">WANT TO READ</div>
+                    <div class="tab" data-tab="reading">READING</div>
+                    <div class="tab active" data-tab="read">READ</div>
+                </div>
+
+                <div id="want" class="tab-content">
+                    <div class="books-grid">
+                        <!-- Want to Read books will be added here -->
+                        <div class="book-card">
+                            <div class="book-cover" style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300">
+                                    <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="60" font-family="serif" font-style="italic">V.</text>
+                                </svg>
+                            </div>
+                            <div class="book-title">Gravity's Rainbow</div>
+                            <div class="book-author">Thomas Pynchon</div>
+                        </div>
+
+                        <div class="book-card">
+                            <div class="book-cover" style="background: linear-gradient(180deg, #c41e3a 0%, #8b0000 100%);">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300">
+                                    <text x="50%" y="35%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ISAAC</text>
+                                    <text x="50%" y="45%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ASIMOV</text>
+                                    <rect x="70" y="140" width="60" height="80" fill="#1a1a1a" stroke="white" stroke-width="2"/>
+                                    <text x="50%" y="85%" text-anchor="middle" fill="white" font-size="20" font-weight="bold" font-family="sans-serif">I, ROBOT</text>
+                                </svg>
+                            </div>
+                            <div class="book-title">I, Robot</div>
+                            <div class="book-author">Isaac Asimov</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reading" class="tab-content">
+                    <div class="books-grid">
+                        <!-- Currently Reading books will be added here -->
+                    </div>
+                </div>
+
+                <div id="read" class="tab-content active">
+                    <div class="books-grid">
+                        <div class="book-card">
+                            <div class="book-cover" style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300">
+                                    <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="60" font-family="serif" font-style="italic">V.</text>
+                                </svg>
+                            </div>
+                            <div class="book-title">Gravity's Rainbow</div>
+                            <div class="book-author">Thomas Pynchon</div>
+                        </div>
+
+                        <div class="book-card">
+                            <div class="book-cover" style="background: linear-gradient(180deg, #c41e3a 0%, #8b0000 100%);">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300">
+                                    <text x="50%" y="35%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ISAAC</text>
+                                    <text x="50%" y="45%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ASIMOV</text>
+                                    <rect x="70" y="140" width="60" height="80" fill="#1a1a1a" stroke="white" stroke-width="2"/>
+                                    <text x="50%" y="85%" text-anchor="middle" fill="white" font-size="20" font-weight="bold" font-family="sans-serif">I, ROBOT</text>
+                                </svg>
+                            </div>
+                            <div class="book-title">I, Robot</div>
+                            <div class="book-author">Isaac Asimov</div>
+                        </div>
+
+                        <div class="book-card">
+                            <div class="book-cover" style="background: #1a1a1a;">
+                                <div class="finished-badge">Finished 2025</div>
+                                <svg width="100%" height="100%" viewBox="0 0 200 300">
+                                    <text x="50%" y="40%" text-anchor="middle" fill="white" font-size="32" font-family="serif">A</text>
+                                    <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="22" font-family="serif">MAN</text>
+                                    <text x="50%" y="57%" text-anchor="middle" fill="white" font-size="18" font-family="serif">&</text>
+                                    <text x="50%" y="64%" text-anchor="middle" fill="white" font-size="22" font-family="serif">HIS</text>
+                                    <text x="50%" y="74%" text-anchor="middle" fill="white" font-size="32" font-family="serif">WATCH</text>
+                                </svg>
+                            </div>
+                            <div class="book-title">A Man & His Watch: Iconic Watches and Stories from the Men Who Wore Them</div>
+                            <div class="book-author">Matt Hranek</div>
+                        </div>
+
+                        <div class="book-card">
+                            <div class="book-cover" style="background: linear-gradient(135deg, #d4521a 0%, #c44916 100%);">
+                                <div class="finished-badge">Finished 2025</div>
+                                <svg width="100%" height="100%" viewBox="0 0 200 300">
+                                    <circle cx="100" cy="100" r="30" fill="#f4a460"/>
+                                    <circle cx="100" cy="100" r="25" fill="#d4521a"/>
+                                    <text x="50%" y="60%" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="sans-serif">THE</text>
+                                    <text x="50%" y="70%" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="sans-serif">MARTIAN</text>
+                                    <text x="50%" y="85%" text-anchor="middle" fill="white" font-size="16" font-family="sans-serif">ANDY WEIR</text>
+                                </svg>
+                            </div>
+                            <div class="book-title">The Martian</div>
+                            <div class="book-author">Andy Weir</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="dev-notes-section" id="dev-notes">
+                <h2 class="section-title">Dev Notes</h2>
+                <p class="subtitle">Some notes, if you want to come along with my work-path for each project.</p>
+
+                <div class="dev-notes-card">
+                    <div class="notes-preview">
+                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
+                        <p>My development journey, thoughts, and code snippets</p>
+                    </div>
+                    <a href="quickdose-devnote.html" class="notes-link">View Notes</a>
+                    <hr class="solid">
+                </div>
+            </section>
+            <section class="resume-section" id="resume">
                 <a href="assets/cv.pdf" class="resume-button">Resume</a>
             </section>
+
 
             <section class="social-links" id="social">
                 <a href="https://github.com/amrqhz" class="social-icon github">
