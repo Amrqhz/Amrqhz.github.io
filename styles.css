@@ -797,7 +797,7 @@ hr.solid{
   }
 
   .resume-button {
-    padding: 0.7rem 1.5rem;
+    padding: 0.8rem 1.5rem;
     font-size: 0.95rem;
   }
 
@@ -811,7 +811,7 @@ hr.solid{
 
 nav a {
   margin-left: 0.5rem;
-  font-size: 6px;
+  font-size: 12px;
 }
 
 .finished-badge {
