@@ -250,7 +250,7 @@ nav a:hover::after {
 .important-link:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0.3, 0.65);
-    background-color: #d4d4d480;
+    background-color: #d4d4d4c0;
 }
 
 .link-icon {
@@ -430,7 +430,7 @@ footer {
 .dev-notes-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.65);
-    background-color: #d4d4d480;
+    background-color: #d4d4d4c0;
 }
 
 .notes-preview {
