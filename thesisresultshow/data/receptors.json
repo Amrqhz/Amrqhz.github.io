@@ -1,0 +1,232 @@
+{
+  "5MO4": {
+    "name": "5MO4 (Wild Type)",
+    "pdb": "receptors/5MO4.pdb",
+    "ligands": [
+  {
+      "name": "ALBENDAZOLE.allostric",
+      "file": "ligands/5mo4_allostric/ALBENDAZOLE.pdb",
+      "binding_energy": -6.76,
+      "rmsd": 4.912,
+      "hbonds": -8.22,
+      "electrostatic": -0.03
+    },
+    {
+      "name": "DIETHYLCARBAMAZINEcitrat.allostric",
+      "file": "ligands/5mo4_allostric/DIETHYLCARBAMAZINEcitrat.pdb",
+      "binding_energy": -3.75,
+      "rmsd": 4.207,
+      "hbonds": -5.32,
+      "electrostatic": -0.11
+    },
+    {
+      "name": "DIETHYLCARBAMAZINE.allostric",
+      "file": "ligands/5mo4_allostric/DIETHYLCARBAMAZINE.pdb",
+      "binding_energy": -5.02,
+      "rmsd": 5.557,
+      "hbonds": -6.53,
+      "electrostatic": -0.0
+    },
+    {
+      "name": "HEXYLRESORCINOL.allostric",
+      "file": "ligands/5mo4_allostric/HEXYLRESORCINOL.pdb",
+      "binding_energy": -5.93,
+      "rmsd": 4.011,
+      "hbonds": -7.34,
+      "electrostatic": -0.07
+    },
+    {
+      "name": "MEBENDAZOLE.allostric",
+      "file": "ligands/5mo4_allostric/MEBENDAZOLE.pdb",
+      "binding_energy": -7.93,
+      "rmsd": 4.053,
+      "hbonds": -9.48,
+      "electrostatic": -0.03
+    },
+    {
+      "name": "PIPERAZINE.allostric",
+      "file": "ligands/5mo4_allostric/PIPERAZINE.pdb",
+      "binding_energy": -2.04,
+      "rmsd": 6.862,
+      "hbonds": -3.51,
+      "electrostatic": -0.02
+    },
+    {
+      "name": "PRAZIQUANTEL.allostric",
+      "file": "ligands/5mo4_allostric/PRAZIQUANTEL.pdb",
+      "binding_energy": -7.97,
+      "rmsd": 2.63,
+      "hbonds": -9.48,
+      "electrostatic": null
+    },
+    {
+      "name": "PYRANTELpamoat.allostric",
+      "file": "ligands/5mo4_allostric/PYRANTELpamoat.pdb",
+      "binding_energy": -7.01,
+      "rmsd": 3.265,
+      "hbonds": -8.16,
+      "electrostatic": -0.34
+    },
+    {
+      "name": "PYRANTEL.allostric",
+      "file": "ligands/5mo4_allostric/PYRANTEL.pdb",
+      "binding_energy": -5.79,
+      "rmsd": 6.085,
+      "hbonds": -7.28,
+      "electrostatic": -0.0
+    },
+    {
+      "name": "PYRVINIUM.allostric",
+      "file": "ligands/5mo4_allostric/PYRVINIUM.pdb",
+      "binding_energy": -8.12,
+      "rmsd": 2.79,
+      "hbonds": -9.59,
+      "electrostatic": -0.02
+    },
+    {
+      "name": "THIABENDAZOLE.allostric",
+      "file": "ligands/5mo4_allostric/THIABENDAZOLE.pdb",
+      "binding_energy": -4.8,
+      "rmsd": 4.681,
+      "hbonds": -6.27,
+      "electrostatic": -0.01
+    },
+    {
+      "name": "TRICLABENDAZOLE.allostric",
+      "file": "ligands/5mo4_allostric/TRICLABENDAZOLE.pdb",
+      "binding_energy": -7.21,
+      "rmsd": 5.624,
+      "hbonds": -8.69,
+      "electrostatic": -0.02
+    },
+    
+    {
+    "name": "ALBENDAZOLE.catalytic",
+    "file": "ligands/5mo4_catalytic/ALBENDAZOLE.pdb",
+    "binding_energy": -6.18,
+    "rmsd": 7.204,
+    "hbonds": -8.06,
+    "electrostatic": -0.21
+  },
+  {
+    "name": "DIETHYLCARBAMAZINEcitrat.catalytic",
+    "file": "ligands/5mo4_catalytic/DIETHYLCARBAMAZINEcitrat.pdb",
+    "binding_energy": -2.04,
+    "rmsd": 8.086,
+    "hbonds": -3.92,
+    "electrostatic": -0.21
+  },
+  {
+    "name": "DIETHYLCARBAMAZINE.catalytic",
+    "file": "ligands/5mo4_catalytic/DIETHYLCARBAMAZINE.pdb",
+    "binding_energy": -3.63,
+    "rmsd": 5.17,
+    "hbonds": -5.69,
+    "electrostatic": -0.02
+  },
+  {
+    "name": "HEXYLRESORCINOL.catalytic",
+    "file": "ligands/5mo4_catalytic/HEXYLRESORCINOL.pdb",
+    "binding_energy": -5.5,
+    "rmsd": 6.986,
+    "hbonds": -7.21,
+    "electrostatic": -0.38
+  },
+  {
+    "name": "MEBENDAZOLE.catalytic",
+    "file": "ligands/5mo4_catalytic/MEBENDAZOLE.pdb",
+    "binding_energy": -7.07,
+    "rmsd": 8.181,
+    "hbonds": -9.12,
+    "electrostatic": -0.04
+  },
+  {
+    "name": "NICLOSAMIDE.catalytic",
+    "file": "ligands/5mo4_catalytic/NICLOSAMIDE.pdb",
+    "binding_energy": -7.09,
+    "rmsd": 4.117,
+    "hbonds": -8.96,
+    "electrostatic": -0.21
+  },
+  {
+    "name": "PIPERAZINE.catalytic",
+    "file": "ligands/5mo4_catalytic/PIPERAZINE.pdb",
+    "binding_energy": -1.44,
+    "rmsd": 9.296,
+    "hbonds": -3.51,
+    "electrostatic": -0.02
+  },
+  {
+    "name": "PRAZIQUANTEL.catalytic",
+    "file": "ligands/5mo4_catalytic/PRAZIQUANTEL.pdb",
+    "binding_energy": -5.34,
+    "rmsd": 5.597,
+    "hbonds": -7.28,
+    "electrostatic": -0.16
+  },
+  {
+    "name": "PYRANTELpamoat.catalytic",
+    "file": "ligands/5mo4_catalytic/PYRANTELpamoat.pdb",
+    "binding_energy": -3.79,
+    "rmsd": 7.195,
+    "hbonds": -5.55,
+    "electrostatic": -0.32
+  },
+  {
+    "name": "PYRANTEL.catalytic",
+    "file": "ligands/5mo4_catalytic/PYRANTEL.pdb",
+    "binding_energy": -4.9,
+    "rmsd": 6.179,
+    "hbonds": -6.97,
+    "electrostatic": -0.02
+  },
+  {
+    "name": "PYRVINIUM.catalytic",
+    "file": "ligands/5mo4_catalytic/PYRVINIUM.pdb",
+    "binding_energy": -7.03,
+    "rmsd": 5.153,
+    "hbonds": -9.1,
+    "electrostatic": -0.02
+  },
+  {
+    "name": "THIABENDAZOLE.catalytic",
+    "file": "ligands/5mo4_catalytic/THIABENDAZOLE.pdb",
+    "binding_energy": -4.18,
+    "rmsd": 10.645,
+    "hbonds": -6.24,
+    "electrostatic": -0.02
+  },
+  {
+    "name": "TRICLABENDAZOLE.catalytic",
+    "file": "ligands/5mo4_catalytic/TRICLABENDAZOLE.pdb",
+    "binding_energy": -6.54,
+    "rmsd": 8.012,
+    "hbonds": -8.74,
+    "electrostatic": -0.16
+  }
+
+    ]
+  },
+  "6HD4": {
+    "name": "6HD4 (T315I)",
+    "pdb": "receptors/6HD4.pdb",
+    "ligands": [
+      {
+        "name": "run 1 validation result_imatinib.pdb",
+        "file": "ligands/run 1 validation result_imatinib.pdb",
+        "binding_energy": -8.2,
+        "rmsd": 1.4,
+        "hbondss": 2,
+        "hydrophobic": 4
+      },
+      {
+        "name": "asci-like-validation.pdb",
+        "file": "ligands/asci-like-validation.pdb",
+        "binding_energy": -8.2,
+        "rmsd": 1.4,
+        "hbondss": 2,
+        "hydrophobic": 4
+      }
+    ]
+  }
+}

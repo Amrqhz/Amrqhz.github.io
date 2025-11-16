@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repurposing Anthelmintic Drugs for CML Treatment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-color: #383838;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --accent: #cecece;
+            --accent-hover: #e2e2e2;
+            
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-card: #252525;
+            --text-primary: #e5e5e5;
+            --text-secondary: #a0a0a0;
+            --border-color: #3b82f6;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+        .dm-serif-text-regular {
+        font-family: "DM Serif Text", serif;
+        font-weight: 400;
+        font-style: normal;
+        }
+
+        .dm-serif-text-regular-italic {
+        font-family: "DM Serif Text", serif;
+        font-weight: 400;
+        font-style: italic;
+        }
+
+        body {
+            /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            /* border-bottom: 2px solid var(--border-color); */
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: var(--accent);
+            margin: auto;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Container */
+        .container {
+            margin-top: 10px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Section Styling */
+        .section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+        }
+
+        .section-card {
+            /* background: var(--bg-secondary); */
+            /* border: 1px solid var(--border-color); */
+            border-radius: 12px;
+            padding: 2rem;
+            /* box-shadow: 0 4px 15px var(--shadow); */
+            min-height: 500px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--border-color);
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        /* Title Section */
+        .logo{
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            margin: auto;
+            width: 130px;
+            height: 160px;
+
+        }
+        .title-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            /* background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%); */
+            color: var(--text-primary);
+            border-radius: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .title-section h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .title-section .author {
+            font-size: 1.3rem;
+            margin: 1.5rem 0;
+        }
+
+        .title-section .supervisor {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+        }
+
+        .title-section .institution {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 1.5rem;
+        }
+
+        /* Docking Section */
+        .docking-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        select, button {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent-hover);
+        }
+
+
+        /* Ligand Selection Styling */
+        #ligand-select {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-size: 14px;
+            height: auto;
+            min-height: 120px;
+            overflow-y: auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #ligand-select option {
+            padding: 0.5rem;
+            margin: 0.2rem 0;
+            border-radius: 6px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: background 0.2s, color 0.2s;
+        }
+
+        #ligand-select option:hover {
+            background: var(--accent-hover);
+            color: var(--border-color);
+        }
+
+        #ligand-select option:checked {
+            background: var(--border-color);
+            color: #fff;
+            font-weight: 900;
+        }
+        .hint-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+            }
+
+
+
+        button {
+            background: rgba(54, 53, 53, 0.774) ;
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* 3D Viewer */
+        .viewer-container {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        #viewer-3d {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            border-radius: 12px;
+            /* background: #000; */
+        }
+
+        .row{
+            margin-bottom: 2rem;
+            display: inline;
+            justify-content: center;
+            align-items: center;
+            display: overlay;
+
+        }
+
+
+
+        /* Floating Binding Info Overlay */
+        .info-overlay {
+        position:relative;
+        background: rgba(54, 53, 53, 0.774) ;
+        color: #ffffff;
+        padding: 1rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        backdrop-filter: blur(5px);
+        pointer-events: none; /* don't block viewer mouse interaction */
+        z-index: 50;
+        }
+
+        .info-overlay h4 {
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        color: #fff;
+        border-bottom: 1px solid rgba(255,255,255,0.3);
+        padding-bottom: 0.25rem;
+        }
+
+        .info-overlay .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        }
+
+
+
+
+
+
+
+        /* Info Panel */
+        .info-panel {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .info-item .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .info-item .value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* MD Results Section */
+        .md-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .chart-container {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: calc(100% - 2rem);
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* DFT Section */
+        .dft-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .dft-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .property-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .property-list li {
+            padding: 0.75rem;
+            background: var(--bg-card);
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .property-list li span:first-child {
+            color: var(--text-secondary);
+        }
+
+        .property-list li span:last-child {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        .bottom-logo{
+            text-align: center;
+            font-size: 25px;
+            margin-bottom: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .title-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .dft-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #viewer-3d {
+                height: 400px;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <!-- <nav class="navbar">
+        <div class="nav-links">
+            <a href="#title">Home</a>
+            <a href="#docking">Docking</a>
+            <a href="#md">MD Simulation</a>
+            <a href="#dft">DFT Analysis</a>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
+    </nav> -->
+
+    <!-- Container -->
+    <div class="container">
+        <!-- Title Section -->
+        <section id="title" class="section">
+            <img class="logo" src="./logo-arums.png" alt="">
+            <div class="title-section">
+                <h1>Repurposing Anthelmintic Drugs as inhibitors of mutant BCR-ABL Kinase in CML Patients</h1><h2 style="margin-bottom: 40px;">from Molecular Docking, Molecular Dynamics and DFT insight</h2>
+                <p class="author">Amir Hossein Gholizadeh</p>
+                <p class="supervisor"style="line-height: 1.5rem;">Supervisor:<br>Dr. Nima Razzaghi-Asl</p>
+                <div class="institution" style="line-height: 1.5rem;">
+                    Ardabil University of Medical Sciences<br>
+                    School of pharmacy<br>
+                    Thesis submitted for degree of PharmD
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Docking Section -->
+        <section id="docking" class="section">
+            <div class="section-card">
+                <h2 class="section-title">DOCKING RESULT</h2>
+                
+                <div class="docking-controls">
+                    <div class="control-group">
+                        <label for="receptor-select">Receptor name</label>
+                        <select id="receptor-select">
+                            <option value="">Select Receptor</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="pdb-code">PDB file code</label>
+                        <input type="text" id="pdb-code" readonly style="padding: 0.75rem;font-weight: 600; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); color: var(--text-secondary);">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="ligand-select">Ligand Selection</label>
+                        <select id="ligand-select">
+                            <!-- <option value="">Select ligand</option> -->
+                        </select>
+                        <p class="hint-text">Select Receptor First! You can choose up to 2 ligands.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <button id="snapshot-btn" class="btn small">Snapshot</button>
+                    <button id="spin-btn" class="btn ghost small">Spin</button>
+                </div>
+                <div class="viewer-container">
+                    <div id="viewer-3d"></div>
+                    <div class="info-overlay">
+                        <h4 style="margin-bottom: 1rem;">Binding Info</h4>
+                        <div class="info-row"><span>ΔG:</span> <span id="binding-energy">- kcal/mol</span></div>
+                        <div class="info-row"><span>RMSD:</span> <span id="rmsd-value">- Å</span></div>
+                        <div class="info-row"><span>H-Bonds:</span> <span id="hbonds">-</span></div>
+                        <div class="info-row"><span>Hydrophobic:</span> <span id="hydrophobic">-</span></div>
+                        
+                    </div>
+
+                </div>
+
+
+
+
+
+                <!-- <div class="info-panel">
+                    <h3 style="margin-bottom: 1rem;">Binding Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="label">Binding Energy</div>
+                            <div class="value" id="binding-energy">- kcal/mol</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">RMSD</div>
+                            <div class="value" id="rmsd-value">- Å</div>
+                        </div>
+                        <div class="info-item"> 
+                            <div class="label">H-Bonds</div>
+                            <div class="value" id="hbonds">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">Hydrophobic Contacts</div>
+                            <div class="value" id="hydrophobic">-</div>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </section>
+
+        <!-- MD Results Section -->
+        <section id="md" class="section">
+            <div class="section-card">
+                <h2 class="section-title">MD RESULT</h2>
+                
+                <div class="md-grid">
+                    <div class="chart-container">
+                        <h3 class="chart-title">RMSD Analysis</h3>
+                        <div class="chart-placeholder">RMSD vs Time plot will be displayed here</div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="chart-title">RMSF Analysis</h3>
+                        <div class="chart-placeholder">RMSF vs Residue plot will be displayed here</div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="chart-title">Radius of Gyration (Rg)</h3>
+                        <div class="chart-placeholder">Rg vs Time plot will be displayed here</div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="chart-title">Hydrogen Bonds</h3>
+                        <div class="chart-placeholder">H-Bonds vs Time plot will be displayed here</div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="chart-title">SASA Analysis</h3>
+                        <div class="chart-placeholder">SASA vs Time plot will be displayed here</div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="chart-title">Binding Energy</h3>
+                        <div class="chart-placeholder">Energy vs Time plot will be displayed here</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DFT Section -->
+        <section id="dft" class="section">
+            <div class="section-card">
+                <h2 class="section-title">DFT ANALYSIS</h2>
+                
+                <div class="dft-grid">
+                    <div class="dft-card">
+                        <h3 class="chart-title">Molecular Properties</h3>
+                        <ul class="property-list">
+                            <li>
+                                <span>HOMO Energy</span>
+                                <span>- eV</span>
+                            </li>
+                            <li>
+                                <span>LUMO Energy</span>
+                                <span>- eV</span>
+                            </li>
+                            <li>
+                                <span>Energy Gap (ΔE)</span>
+                                <span>- eV</span>
+                            </li>
+                            <li>
+                                <span>Dipole Moment</span>
+                                <span>- Debye</span>
+                            </li>
+                            <li>
+                                <span>Ionization Potential (IP)</span>
+                                <span>- eV</span>
+                            </li>
+                            <li>
+                                <span>Electron Affinity (EA)</span>
+                                <span>- eV</span>
+                            </li>
+                            <li>
+                                <span>Electronegativity (χ)</span>
+                                <span>- eV</span>
+                            </li>
+                            <li>
+                                <span>Chemical Hardness (η)</span>
+                                <span>- eV</span>
+                            </li>
+                            <li>
+                                <span>Chemical Softness (S)</span>
+                                <span>- eV⁻¹</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="dft-card">
+                        <h3 class="chart-title">Molecular Orbital Visualization</h3>
+                        <div class="chart-placeholder" style="height: 300px;">HOMO/LUMO visualization will be displayed here</div>
+                        
+                        <h3 class="chart-title" style="margin-top: 2rem;">Electrostatic Potential Map</h3>
+                        <div class="chart-placeholder" style="height: 300px;">MEP map will be displayed here</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="bottom-logo">
+            <p class="small">trust the process</p>
+        </div>
+    </div>
+
+   <!-- Replace your existing <script> ... </script> with this script -->
+    <script>
+    /*
+    Docking section enhanced JS
+    - Programmatically enable multi-select for ligand-select (max 2 shown)
+    - Preload (cache) ligand pdb files
+    - Show receptor surface gray (opacity 0.6)
+    - Show homo ligands (from receptor pdb) in blue sticks
+    - Show selected ligand(s) in green sticks
+    - Add labels for ligands and update info panel
+    - Preserve theme/spin/snapshot behavior
+    */
+
+    let viewer;
+    let data = {}; // populated from data/receptors.json
+    let pdbCache = {}; // cache of fetched pdbText for ligand files (key = path)
+    let receptorModel = null;
+    let ligandModels = {}; // name -> model
+    let ligandLabels = {}; // name -> label id
+    let homoResns = []; // co-crystallized ligands in receptor
+    let currentTheme = 'light';
+    let spinning = false;
+    let spinInterval = null;
+
+    // Utility: fetch and cache text
+    async function fetchTextCached(path) {
+    if (!path) throw new Error("No path provided");
+    if (pdbCache[path]) return pdbCache[path];
+    const res = await fetch(path);
+    if (!res.ok) throw new Error("Failed to load: " + path);
+    const txt = await res.text();
+    pdbCache[path] = txt;
+    return txt;
+    }
+
+    // Initialize 3Dmol viewer
+    function initViewer() {
+    const el = document.getElementById("viewer-3d");
+    // default background black to look nicer; theme toggle will update it
+    viewer = $3Dmol.createViewer(el, { backgroundColor: "white" });
+    viewer.setViewStyle({ style: "outline", color: "white", width: 0.01 });
+    }
+
+    // programmatically make ligand-select a multi-select (no HTML change needed)
+    function ensureLigandMultiSelect() {
+    const ligandSelect = document.getElementById("ligand-select");
+    ligandSelect.multiple = true;
+    ligandSelect.size = 6; // visual height so users can see multiple
+    }
+
+    // Load receptors.json and build receptor-select options
+    async function loadData() {
+    try {
+        const res = await fetch("data/receptors.json");
+        data = await res.json();
+
+        const receptorSelect = document.getElementById("receptor-select");
+        receptorSelect.innerHTML = '<option value="">Select Receptor</option>';
+        for (const key in data) {
+        const opt = document.createElement("option");
+        opt.value = key;
+        opt.textContent = data[key].name || key;
+        receptorSelect.appendChild(opt);
+        }
+
+        // Optionally preload ALL ligand pdb files (the user requested preloading)
+        // We'll fetch them in background and cache contents into pdbCache to speed later loads.
+        preloadAllLigands();
+    } catch (err) {
+        console.error("Failed to load receptors.json:", err);
+        alert("Could not load /data/receptors.json");
+    }
+    }
+
+    // Preload all ligand pdbs referenced in receptors.json (non-blocking)
+    async function preloadAllLigands() {
+    const toFetch = new Set();
+    for (const rKey in data) {
+        const receptor = data[rKey];
+        // receptor pdb
+        if (receptor.pdb) toFetch.add("data/" + receptor.pdb);
+        if (Array.isArray(receptor.ligands)) {
+        receptor.ligands.forEach(l => {
+            if (l.file) toFetch.add("data/" + l.file);
+        });
+        }
+    }
+    // perform fetches in parallel but limited concurrency to be nice (simple)
+    const promises = Array.from(toFetch).map(path =>
+        fetchTextCached(path).catch(err => {
+        console.warn("preload failed for:", path, err);
+        return null;
+        })
+    );
+    // don't await to block UI, but keep it in background; however for predictability we'll await here but catch failure
+    Promise.all(promises).then(() => console.log("Preloading complete (cached files):", Object.keys(pdbCache).length));
+    }
+
+    // Detect HOMO ligands (resn) from receptor pdb text
+    function detectHomoLigandsFromPDB(pdbText) {
+    const resns = new Set();
+    const lines = pdbText.split("\n");
+    for (const line of lines) {
+        if (line.startsWith("HETATM")) {
+        // PDB HETATM resn starts around cols 17-19 historically
+        const resn = (line.substr(17, 3) || "").trim();
+        if (resn) resns.add(resn);
+        }
+    }
+    return Array.from(resns);
+    }
+
+    // Remove existing ligand models + labels
+    function clearLigandModels() {
+    for (const name in ligandModels) {
+        try {
+        viewer.removeModel(ligandModels[name]);
+        } catch (e) { /* ignore */ }
+    }
+    ligandModels = {};
+    // remove labels
+    for (const name in ligandLabels) {
+        try { viewer.removeLabel(ligandLabels[name]); } catch (e) {}
+    }
+    ligandLabels = {};
+    }
+
+    // Remove receptor model and surfaces
+    function clearReceptorModel() {
+    if (receptorModel) {
+        try { viewer.removeModel(receptorModel); } catch (e) {}
+        receptorModel = null;
+    }
+    try { viewer.removeAllSurfaces(); } catch (e) {}
+    viewer.clearLabels();
+    }
+
+    // Load receptor (pdb), render cartoon + surface + homo ligand sticks in blue
+    async function loadReceptor(receptorKey) {
+    if (!data[receptorKey]) return;
+    currentReceptor = receptorKey;
+    const receptorInfo = data[receptorKey];
+
+    // populate ligand select dropdown options (names)
+    const ligandSelect = document.getElementById("ligand-select");
+    ligandSelect.innerHTML = ''; // clear (we have multiple-select now)
+    // Add placeholder option for empty selection (so first entry shows)
+    const placeholderOpt = document.createElement('option');
+    placeholderOpt.value = "";
+    placeholderOpt.textContent = "Select Ligand(s) (max 2)";
+    placeholderOpt.disabled = true;
+    ligandSelect.appendChild(placeholderOpt);
+
+    receptorInfo.ligands.forEach(l => {
+        const opt = document.createElement("option");
+        opt.value = l.name;
+        opt.textContent = l.displayName || l.name;
+        ligandSelect.appendChild(opt);
+    });
+
+    // load receptor pdb text
+    const pdbText = await fetchTextCached("data/" + receptorInfo.pdb);
+
+    // clear old receptor + ligands
+    clearLigandModels();
+    viewer.removeAllSurfaces();
+    if (receptorModel) viewer.removeModel(receptorModel);
+
+    receptorModel = viewer.addModel(pdbText, "pdb");
+
+    // detect homo ligands from receptor PDB (and also use receptorInfo.homo_ligands if present)
+    if (Array.isArray(receptorInfo.homo_ligands) && receptorInfo.homo_ligands.length > 0) {
+        homoResns = receptorInfo.homo_ligands.map(s => ("" + s).trim());
+    } else {
+        homoResns = detectHomoLigandsFromPDB(pdbText);
+    }
+    console.log("HOMO ligands detected:", homoResns);
+
+    // style receptor: cartoon for protein backbone (non-het), gray surface with opacity 0.6
+    receptorModel.setStyle({ hetflag: false }, { cartoon: { color: "spectrum", opacity: 0.5 } });
+
+    // color and show homo ligands in blue sticks by styling the receptor model (they are part of receptorModel)
+    if (homoResns.length > 0) {
+        receptorModel.setStyle({ resn: homoResns }, { stick: { color: 'lightblue', radius: 0.4 } });
+        // ensure het atoms that are not homo are not hidden (we'll display only homo explicitly)
+    }
+
+    // Add surface based on receptor model (semi-transparent gray)
+    try {
+        viewer.addSurface($3Dmol.SurfaceType.SAS, {
+        opacity: 0.6,
+        color: 'gray',
+        smoothness: 1,
+        maporient: true
+        }, { model: receptorModel });
+    } catch (e) {
+        console.warn("Surface creation fallback:", e);
+        // fallback: create surface from whole viewer if model-specific fails
+        try {
+        viewer.addSurface($3Dmol.SurfaceType.SAS, {
+            opacity: 0.6,
+            color: 'gray'
+        });
+        } catch (err) { console.error("Failed to add surface:", err); }
+    }
+
+    viewer.zoomTo();
+    viewer.render();
+
+    // update pdb code input
+    const pdbCodeInput = document.getElementById("pdb-code");
+    if (pdbCodeInput) pdbCodeInput.value = receptorKey;
+    }
+
+    // Add a ligand model by name (from current receptor data). Return Promise.
+    async function addLigandByName(ligandName) {
+    if (!currentReceptor) throw new Error("No receptor loaded");
+    const receptorInfo = data[currentReceptor];
+    const ligandInfo = receptorInfo.ligands.find(l => l.name === ligandName);
+    if (!ligandInfo) throw new Error("Ligand not found in receptor: " + ligandName);
+    const filePath = "data/" + ligandInfo.file;
+    const pdbText = await fetchTextCached(filePath);
+
+    // Add the ligand as a separate model so we can style independently and toggle multiple ligands
+    const model = viewer.addModel(pdbText, "pdb");
+    ligandModels[ligandName] = model;
+
+    // Style: show as green sticks for user-selected ligands
+    model.setStyle({}, { stick: { color: 'green', radius: 0.35 } });
+
+    // Add a label centered over the ligand (like PyMOL label)
+    const atoms = model.selectedAtoms({});
+    if (atoms && atoms.length > 0) {
+        let cx = 0, cy = 0, cz = 0;
+        atoms.forEach(a => { cx += a.x; cy += a.y; cz += a.z; });
+        cx /= atoms.length; cy /= atoms.length; cz /= atoms.length;
+        const labelText = ligandInfo.displayName || ligandInfo.name || ligandName;
+        const labelId = viewer.addLabel(labelText, { position: { x: cx, y: cy, z: cz }, backgroundColor: 'rgba(0,0,0,0.6)', fontSize: 12, fontColor: 'white' });
+        ligandLabels[ligandName] = labelId;
+    }
+
+    // viewer.zoomTo();
+    viewer.render();
+
+    // Update info panel (append or update)
+    updateInfoPanelWithLigands();
+
+    return model;
+    }
+
+    // Remove ligand by name
+    function removeLigandByName(ligandName) {
+    if (!ligandModels[ligandName]) return;
+    try { viewer.removeModel(ligandModels[ligandName]); } catch (e) {}
+    delete ligandModels[ligandName];
+    if (ligandLabels[ligandName]) {
+        try { viewer.removeLabel(ligandLabels[ligandName]); } catch (e) {}
+        delete ligandLabels[ligandName];
+    }
+    updateInfoPanelWithLigands();
+    viewer.render();
+    }
+
+    // When ligand select changes, load up to 2 chosen ligands (others removed)
+    async function handleLigandSelection() {
+    const select = document.getElementById("ligand-select");
+    // gather selected options (non-empty)
+    const selected = Array.from(select.selectedOptions).map(o => o.value).filter(v => v);
+    // limit to 2
+    const target = selected.slice(0, 2);
+
+    // Remove ligand models that are not in target
+    for (const name in { ...ligandModels }) {
+        if (!target.includes(name)) removeLigandByName(name);
+    }
+
+    // Add any new target ligands
+    for (const name of target) {
+        if (!ligandModels[name]) {
+        try {
+            await addLigandByName(name);
+        } catch (e) {
+            console.error("Failed to add ligand:", name, e);
+        }
+        }
+    }
+
+    // re-center / zoom to show receptor + selected ligands
+    // viewer.zoomTo();
+    viewer.render();
+    }
+
+    // Update the Binding Info panel to show each selected ligand (or placeholder)
+    function updateInfoPanelWithLigands() {
+    const bindingEnergyEl = document.getElementById("binding-energy");
+    const rmsdEl = document.getElementById("rmsd-value");
+    const hbondsEl = document.getElementById("hbonds");
+    const hydrophobicEl = document.getElementById("hydrophobic");
+
+    const select = document.getElementById("ligand-select");
+    const selected = Array.from(select.selectedOptions).map(o => o.value).filter(v => v);
+
+    if (selected.length === 0) {
+        bindingEnergyEl.textContent = "- kcal/mol";
+        rmsdEl.textContent = "- Å";
+        hbondsEl.textContent = "-";
+        hydrophobicEl.textContent = "-";
+        return;
+    }
+
+    // If one ligand selected, show its metrics (if present in receptors.json)
+    // If two, show a combined summary (or join their values)
+    const receptorInfo = data[currentReceptor];
+    const infos = selected.map(name => receptorInfo.ligands.find(l => l.name === name) || { name });
+
+    // Join values for display (if multiple)
+    bindingEnergyEl.textContent = infos.map(i => (i.binding_energy !== undefined ? (i.binding_energy + " kcal/mol") : "-")).join(" | ");
+    rmsdEl.textContent = infos.map(i => (i.rmsd !== undefined ? (i.rmsd + " Å") : "-")).join(" | ");
+    hbondsEl.textContent = infos.map(i => (i.hbonds !== undefined ? i.hbonds : "-")).join(" | ");
+    hydrophobicEl.textContent = infos.map(i => (i.hydrophobic !== undefined ? i.hydrophobic : "-")).join(" | ");
+    }
+
+    // Theme toggle - keep behavior and ensure viewer background updates
+    function toggleTheme() {
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    if (viewer) {
+        // dark theme -> viewer background dark (#1a1a1a); light theme -> black for contrast
+        viewer.setBackgroundColor(currentTheme === 'dark' ? '#1a1a1a' : '#000000');
+        viewer.render();
+    }
+    }
+
+    // Spin toggle - reuse existing spin button (text update done here)
+    function toggleSpin(buttonEl) {
+    spinning = !spinning;
+    buttonEl.textContent = spinning ? 'Stop Spin' : 'Spin';
+    if (spinning) {
+        spinInterval = setInterval(() => {
+        if (viewer) {
+            viewer.rotate(1, 'y');
+            viewer.render();
+        }
+        }, 30);
+    } else {
+        clearInterval(spinInterval);
+        spinInterval = null;
+    }
+    }
+
+    // Snapshot - same behavior
+    function takeSnapshot() {
+    if (!viewer) return;
+    const imageURI = viewer.pngURI();
+    const link = document.createElement('a');
+    link.href = imageURI;
+    link.download = 'snapshot.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    }
+
+    // DOM and event wiring
+    window.addEventListener("load", async () => {
+    initViewer();
+    ensureLigandMultiSelect();
+    await loadData();
+
+    // Wire receptor selection
+    document.getElementById("receptor-select").addEventListener("change", async (e) => {
+        const receptorKey = e.target.value;
+        if (!receptorKey) return;
+        try {
+        await loadReceptor(receptorKey);
+        // clear ligand info displays
+        updateInfoPanelWithLigands();
+        } catch (err) {
+        console.error("Error loading receptor:", err);
+        alert("Failed to load receptor: " + receptorKey);
+        }
+    });
+
+    // Wire ligand selection change for multi-select
+    document.getElementById("ligand-select").addEventListener("change", async () => {
+        // enforce max 2 selection: if more, trim newest to keep first two
+        const select = document.getElementById("ligand-select");
+        const selectedOptions = Array.from(select.selectedOptions).map(o => o.value).filter(v => v);
+        if (selectedOptions.length > 2) {
+        // Keep the first two; unselect others
+        for (let i = 0; i < select.options.length; i++) {
+            const opt = select.options[i];
+            if (!selectedOptions.slice(0, 2).includes(opt.value)) opt.selected = false;
+        }
+        }
+        await handleLigandSelection();
+    });
+
+    // snapshot button
+    const snapshotBtn = document.getElementById('snapshot-btn');
+    if (snapshotBtn) snapshotBtn.addEventListener('click', takeSnapshot);
+
+    // spin button (repurpose existing element)
+    const spinBtn = document.getElementById('spin-btn');
+    if (spinBtn) spinBtn.addEventListener('click', () => toggleSpin(spinBtn));
+
+    // theme toggle (if you still have the button somewhere)
+    window.toggleTheme = toggleTheme; // keep global name to preserve existing HTML onclick if used
+    });
+    </script>
+
+
+
+</body>
+</html>
