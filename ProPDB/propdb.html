@@ -15,20 +15,88 @@
       --card: rgba(11,18,32,0.78);
       --text:#e6eef6;
       --control-bg: rgba(255,255,255,0.02);
-      --btn-bg: linear-gradient(90deg,#6ee7b7,#39a6ff);
+      /* --btn-bg: linear-gradient(90deg,#6ee7b7,#39a6ff); */
+      --btn-bg: #d1d1d1;
+
     }
 
     html,body{height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:var(--text); background:var(--bg);}
 
     .app { display:grid; grid-template-columns:320px 1fr; gap:16px; height:100vh; padding:16px; box-sizing:border-box; }
-    @media (max-width:900px){ .app{ grid-template-columns:1fr; grid-auto-rows:auto 1fr; padding:8px; } }
+    
+    @media (max-width:900px){ 
+      .app{ 
+        grid-template-columns:1fr;
+        height: 100vh;
+        padding: 0;
+        gap: 0;
+      }
+      .hamburger-btn {
+        display: flex;
+      }
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 250px;
+        height: 95vh;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+        padding-bottom: 80px;
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+      }
+      .overlay.active {
+        display: block;
+      }
+      .viewer-wrap {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+      }
+      #viewer {
+        min-height: 100vh;
+      }
+    }
 
+    /* Desktop: hide hamburger */
+    @media (min-width: 901px) {
+      .hamburger-btn { display: none !important; }
+      .overlay { display: none !important; }
+    }
+/* Scrollbar styling */
+    .sidebar::-webkit-scrollbar {
+      width: 7px;
+    }
+    
+    .sidebar::-webkit-scrollbar-track {
+      background: var(--card);
+      border-radius: var(--radius);
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb {
+      background: rgba(110,231,183,0.4);
+      border-radius: var(--radius);
+    }
+    
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(110,231,183,0.6);
+    }
     /* Sidebar */
-    .sidebar { background:var(--card); border-radius:var(--radius); padding:16px; display:flex; flex-direction:column; gap:12px; box-shadow:0 10px 30px rgba(133, 133, 133, 0.6); border:1px solid rgba(255,255,255,0.02); overflow:auto; }
+    .sidebar { background:var(--card); border-radius:var(--radius); padding:16px; display:flex; flex-direction:column; gap:12px; box-shadow:0 10px 30px rgba(133, 133, 133, 0.6); border:1px solid rgba(255,255,255,0.02); overflow-y: auto; }
+    
     .brand { display:flex; gap:10px; align-items:center; background-color: #d1d1d1; border-radius: 12px; justify-content: center;}
-    /* .logo { width:44px;height:44px;border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; color:#02121a; background:linear-gradient(135deg,#43e97b,#28a7ff); } */  
     .logo img { width:45px; height:39px; margin-top: 10px; }
-
 
     .title { font-size:1.05rem; font-weight:700; }
     .subtitle { color:var(--muted); font-size:0.86rem; }
@@ -44,10 +112,48 @@
     .btn.ghost { background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.06); font-weight:600; }
     .btn.small { padding:7px 8px; font-size:0.92rem; border-radius:8px; }
 
+    .hamburger-btn {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      width: 47px;
+      height: 51px;
+      background: var(--btn-bg);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .hamburger-btn span {
+      width: 24px;
+      height: 2px;
+      background: #02121a;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-btn.active span:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    .hamburger-btn.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger-btn.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(8px, -8px);
+    }
+
     /* Viewer */
     .viewer-wrap { border-radius:var(--radius); overflow:hidden; position:relative; display:flex; flex-direction:column; box-shadow:0 10px 30px rgba(133, 133, 133, 0.6); border:1px solid rgba(255,255,255,0.02); }
     #viewer { flex:1; min-height:420px; background:transparent; }
-    .floating-panel { position:absolute; right:10px; bottom:10px; background: #d1d1d171; padding:12px; border-radius:12px; min-width:220px; color:var(--muted); }
+    .floating-panel { position:absolute; right:10px; bottom:10px; background:var(--control-bg) ; padding:12px; border-radius:12px; min-width:100px; color:var(--muted);font-size: 12px;}
     .muted { color:var(--muted); }
 
     .loading-overlay { position:absolute; inset:0; display:none; align-items:center; justify-content:center; z-index:80; background:linear-gradient(180deg, rgba(2,6,23,0.65), rgba(2,6,23,0.45)); font-weight:700; color:var(--muted); }
@@ -56,7 +162,12 @@
     .help-overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:90; background: rgba(2,6,23,0.6); }
     .help-card { background:var(--card); padding:18px; border-radius:10px; width:500px; max-width:95%; color:var(--text); }
 
-    footer.small { font-size:0.78rem; color:var(--muted); text-align:center; padding:8px; }
+    footer.small { font-size:0.78rem; color:var(--muted); text-align:center; padding:8px;}
+    .small a { color:var(--muted); text-decoration:none; transition:color 150ms ease; }
+    .small a:hover { color:var(--text); }
+    .small span { opacity:0.5; }
+    
+
 
     /* smooth */
     .control, .btn, select, input[type="text"]{ transition: all 150ms ease; }
@@ -65,15 +176,21 @@
 </head>
 <body>
   <div class="app" id="app">
-    <aside class="sidebar" aria-label="Controls">
+    <button class="hamburger-btn" id="hamburger-btn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar" aria-label="Controls">
       <div class="brand">
         <div class="logo">
           <img src="Group 84.svg" alt="Pro pdb logo">
         </div>
-        <!-- <div class="logo">P.P</div> -->
         <div>
           <div class="title" style="color: #071421;">ProPDB</div>
-          <!-- <div class="subtitle">3Dmol.js — your new Visualizer</div> -->
         </div>
       </div>
 
@@ -123,8 +240,6 @@
         <small>Ligand style</small>
         <select id="lig-style" class="small-input" style="background-color: #091428;">
           <option value="stick">Stick</option>
-          <!-- <option value="sphere">Sphere</option>
-          <option value="surface">Surface</option> -->
         </select>
 
         <div style="height:8px;"></div>
@@ -154,7 +269,15 @@
       </div>
 
       <div style="flex:1"></div>
-      <footer class="small">Client-side • 3Dmol.js • Ligand dropdown control</footer>
+      <footer class="small">
+          <a href="https://github.com/amrqhz" title="GitHub">GitHub</a>
+          <span>•</span>
+          <a href="#" title="Documentation">Docs</a>
+          <span>•</span>
+          <a href="https://telegram.me/amrqhz" title="Contact">Contact</a>
+          <span>•</span>
+          <span>by amrqhz</span>
+      </footer>
     </aside>
 
     <main class="viewer-wrap" aria-label="Viewer">
@@ -175,27 +298,37 @@
     </main>
   </div>
 
-  <!-- Help modal -->
-  <div class="help-overlay" id="help-overlay">
-    <div class="help-card">
-      <h3 style="margin-top:0">ProfessorX Visualizer — Help</h3>
-      <p class="muted">Shortcuts & tips</p>
-      <ul>
-        <li><strong>C</strong> — Center view</li>
-        <li><strong>R</strong> — Reset camera</li>
-        <li><strong>S</strong> — Save snapshot</li>
-        <li>Use the ligand dropdown to show a specific ligand, All ligands, or None.</li>
-        <li>Change ligand style and color in the ligand panel.</li>
-      </ul>
-      <div style="text-align:right; margin-top:10px;">
-        <button id="help-close" class="btn small ghost">Close</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     // Helper
     const el = id => document.getElementById(id);
+
+    // Hamburger menu
+    const hamburger = el('hamburger-btn');
+    const sidebar = el('sidebar');
+    const overlay = el('overlay');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      hamburger.classList.remove('active');
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+
+    // Close sidebar when a link/control is used on mobile
+    document.querySelectorAll('.control select, .control button').forEach(el => {
+      el.addEventListener('click', () => {
+        if(window.innerWidth <= 900) {
+          hamburger.classList.remove('active');
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+        }
+      });
+    });
 
     // Viewer & state
     const viewerDiv = el('viewer');
@@ -205,7 +338,7 @@
     let selectedAtoms = [];
     let spinInterval = null;
     let spinUsingAPI = false;
-    let ligandGroups = []; // {id: 'ATP A:501', resn:'ATP', chain:'A', resi:'501'}
+    let ligandGroups = [];
 
     // Loading helper
     function showLoading(text){
@@ -244,7 +377,6 @@
         map[key].atoms.push(a);
       }
 
-      // filter out tiny molecules (like single atoms)
       for(const k of Object.keys(map)){
         if(map[k].atoms.length < 6) delete map[k];
       }
@@ -269,8 +401,7 @@
         o.textContent = g.id;
         dd.appendChild(o);
       }
-      // try to restore previous if still valid
-      if([...''].includes(prev)){ dd.value = prev; } // noop but keep structure
+      if([...''].includes(prev)){ dd.value = prev; }
     }
 
     // Clear selection markers and labels
@@ -289,9 +420,7 @@
       if(!currentModel) return;
       const rep = el('rep-select').value;
       const colorSel = el('color-select').value;
-      // clear first
       viewer.setStyle({}, {});
-      // main (exclude hetflag)
       const mainColor = mapColor(colorSel);
       if(rep === 'cartoon' || rep === 'cartoon+stick'){
         viewer.setStyle({hetflag:false}, {cartoon:{color: mainColor}});
@@ -302,14 +431,10 @@
       } else if(rep === 'sphere'){
         viewer.setStyle({hetflag:false}, {sphere:{scale:0.35, color: mainColor}});
       } else if(rep === 'surface'){
-        // surface can be heavy; limit detail by not giving very fine resolution
         viewer.setStyle({hetflag:false}, {surface:{opacity:0.90, color: mainColor}});
       }
 
-      // If rep indicates cartoon+stick, ensure ligands also visible as sticks (or by chosen)
-      // Ligand style applied separately by applyLigandStyle()
-      applyLigandStyle(); // uses dropdown + ligandGroups
-
+      applyLigandStyle();
       viewer.zoomTo();
       viewer.render();
     }
@@ -319,7 +444,7 @@
       if(sel==='residue') return 'residue';
       if(sel==='spectrum') return 'spectrum';
       if(sel==='element') return 'element';
-      if(sel==='secondary') return 'spectrum'; // 3Dmol supports ss but mapping is not standard here
+      if(sel==='secondary') return 'spectrum';
       if(sel==='uniform') return 'grey';
       return 'spectrum';
     }
@@ -327,27 +452,23 @@
     // Apply ligand style based on dropdown selection
     function applyLigandStyle(){
       if(!currentModel) return;
-      const ligSel = el('ligand-dropdown').value; // 'none' | 'all' | JSON
-      const style = el('lig-style').value; // stick/sphere/surface
-      const colorOpt = el('lig-color').value; // element/uniform/chain
+      const ligSel = el('ligand-dropdown').value;
+      const style = el('lig-style').value;
+      const colorOpt = el('lig-color').value;
 
-      // clear existing ligand style (we will reapply)
-      viewer.setStyle({hetflag:true}, {}); // remove
+      viewer.setStyle({hetflag:true}, {});
 
-      // choose color strategy for ligand
       let colorStrategy = 'element';
       if(colorOpt === 'element') colorStrategy = 'element';
       else if(colorOpt === 'uniform') colorStrategy = 'grey';
       else if(colorOpt === 'chain') colorStrategy = 'chain';
 
       if(ligSel === 'none'){
-        // don't render ligands
         viewer.render();
         return;
       }
 
       if(ligSel === 'all'){
-        // apply to all hetflag atoms
         if(style === 'stick'){
           viewer.setStyle({hetflag:true}, {stick:{radius:0.18, colorscheme: colorStrategy}});
         } else if(style === 'sphere'){
@@ -356,11 +477,9 @@
           viewer.setStyle({hetflag:true}, {surface:{opacity:0.95, color: colorStrategy}});
         }
       } else {
-        // parse JSON selection
         let selObj = null;
         try { selObj = JSON.parse(ligSel); } catch(e){ selObj = null; }
         if(selObj){
-          // selection filter: match resn, chain, resi
           const selFilter = {resn: selObj.resn, chain: selObj.chain, resi: selObj.resi};
           if(style === 'stick'){
             viewer.setStyle(selFilter, {stick:{radius:0.18, colorscheme: colorStrategy}});
@@ -378,35 +497,28 @@
     function loadModelFromString(txt, fmt, sourceLabel){
       showLoading('Parsing & rendering...');
       el('load-status').textContent = 'Loading ' + (sourceLabel||'file') + ' ...';
-      // clear viewer
       viewer.clear();
       currentModel = null;
       ligandGroups = [];
-      populateLigandDropdown(); // reset
+      populateLigandDropdown();
 
       try {
         currentModel = viewer.addModel(txt, fmt || 'pdb');
-        // initial quick style while heavy things settle
         viewer.setStyle({}, {cartoon:{color:'spectrum'}});
         viewer.zoomTo();
         viewer.render();
 
-        // detect ligands and populate dropdown
         ligandGroups = detectLigands(currentModel);
         populateLigandDropdown();
 
-        // default: show all ligands if present, else none
         if(ligandGroups.length > 0){
           el('ligand-dropdown').value = 'all';
         } else {
           el('ligand-dropdown').value = 'none';
         }
 
-        // apply user-selected representation and ligand style
         applyRepresentation();
         setTimeout(setupInteractions, 300);
-
-        // setup interactions
         setupInteractions();
 
         hideLoading();
@@ -445,7 +557,6 @@
           loadModelFromString(txt, 'pdb', pid + '.pdb');
           return;
         }
-        // fallback cif
         const resp2 = await fetch(`https://files.rcsb.org/download/${pid}.cif`);
         if(resp2.ok){
           const txt2 = await resp2.text();
@@ -470,10 +581,10 @@
     // Snapshot
     el('snapshot-btn').addEventListener('click', ()=>{
       try {
-        const data = viewer.renderToImage(); // returns dataURL
+        const data = viewer.renderToImage();
         const a = document.createElement('a'); a.href = data; a.download = 'snapshot.png'; document.body.appendChild(a); a.click(); a.remove();
       } catch(e){
-        try { // fallback
+        try {
           const data = viewer.pngURI();
           const a = document.createElement('a'); a.href = data; a.download = 'snapshot.png'; document.body.appendChild(a); a.click(); a.remove();
         } catch(e){
@@ -482,11 +593,10 @@
       }
     });
 
-    // Spin (native if supported, else interval fallback)
+    // Spin
     let fallbackSpinInterval = null;
     function startSpin(){
       try {
-        // try native API (some versions)
         viewer.spin(true);
         spinUsingAPI = true;
       } catch(e){
@@ -543,7 +653,6 @@
         viewerRef.render();
       });
 
-      // hover labels (optional)
       viewer.setHoverable({}, true, function(atom, viewerRef){
         if(atom && !atom._hoverLabel){
           atom._hoverLabel = viewerRef.addLabel(
@@ -561,12 +670,6 @@
       });
     }
 
-
-    // Detect ligands & populate dropdown after model loaded - already done inside loadModelFromString
-    // But add listener so user can open dropdown after load
-    // No-op
-
-    // Clear selection via double-click on viewer (convenience)
     viewerDiv.addEventListener('dblclick', ()=> clearSelection());
 
     // Keyboard shortcuts
@@ -576,14 +679,8 @@
       if(e.key === 's' || e.key === 'S') el('snapshot-btn').click();
     });
 
-    // Initial friendly state
     el('load-status').textContent = 'Ready — load a file or fetch by PDB ID.';
-
-    // Expose a minimal API on window for debugging if needed (optional)
     window._pxv = { viewer, loadModelFromString: loadModelFromString };
-
-    // END
   </script>
 </body>
 </html>
-
