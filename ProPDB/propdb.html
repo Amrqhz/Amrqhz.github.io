@@ -22,11 +22,11 @@
 
     html,body{height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:var(--text); background:var(--bg);}
 
-    .app { 
+   .app { 
       display: grid; 
       grid-template-columns: 320px 1fr; 
       gap: 16px; 
-      height: 100dvh; 
+      height: 100vh; 
       padding: 16px; 
       box-sizing: border-box; 
     } 
@@ -35,9 +35,16 @@
       .app { 
         grid-template-columns: 1fr; 
         height: 100vh;
-        min-height: 100dvh;
+        height: 100dvh;
         padding: 0; 
-        gap: 0; 
+        gap: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        overflow: hidden;
       } 
       
       .hamburger-btn { 
@@ -50,6 +57,7 @@
         top: 0; 
         width: 250px; 
         height: 100vh;
+        height: 100dvh;
         overflow-y: auto;
         transform: translateX(-100%); 
         transition: transform 0.3s ease; 
@@ -75,14 +83,16 @@
       
       .viewer-wrap { 
         width: 100%; 
-        height: auto;
-        min-height: 100vh;
+        height: 100%;
+        overflow: hidden;
         border-radius: 0; 
       } 
       
       #viewer { 
-        min-height: auto; 
-      } 
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+      }
     }
 
     /* Desktop: hide hamburger */
