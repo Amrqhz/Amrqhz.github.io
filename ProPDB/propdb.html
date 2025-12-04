@@ -22,51 +22,67 @@
 
     html,body{height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:var(--text); background:var(--bg);}
 
-    .app { display:grid; grid-template-columns:320px 1fr; gap:16px; height:100dvh; padding:16px; box-sizing:border-box; }
-    
-    @media (max-width:900px){ 
-      .app{ 
-        grid-template-columns:1fr;
-        height: 100dvh;
-        padding: 0;
-        gap: 0;
-      }
-      .hamburger-btn {
-        display: flex;
-      }
-      .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 250px;
-        height: 100dvh;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-        box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+    .app { 
+      display: grid; 
+      grid-template-columns: 320px 1fr; 
+      gap: 16px; 
+      height: 100dvh; 
+      padding: 16px; 
+      box-sizing: border-box; 
+    } 
 
-      }
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      .overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 999;
-      }
-      .overlay.active {
-        display: block;
-      }
-      .viewer-wrap {
-        width: 100%;
-        height: 100dvh;
-        border-radius: 0;
-      }
-      #viewer {
+    @media (max-width: 900px) { 
+      .app { 
+        grid-template-columns: 1fr; 
+        height: 100vh;
         min-height: 100dvh;
-      }
+        padding: 0; 
+        gap: 0; 
+      } 
+      
+      .hamburger-btn { 
+        display: flex; 
+      } 
+      
+      .sidebar { 
+        position: fixed; 
+        left: 0; 
+        top: 0; 
+        width: 250px; 
+        height: 100vh;
+        overflow-y: auto;
+        transform: translateX(-100%); 
+        transition: transform 0.3s ease; 
+        z-index: 1000; 
+        box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
+      } 
+      
+      .sidebar.active { 
+        transform: translateX(0); 
+      } 
+      
+      .overlay { 
+        display: none; 
+        position: fixed; 
+        inset: 0; 
+        background: rgba(0,0,0,0.5); 
+        z-index: 999; 
+      } 
+      
+      .overlay.active { 
+        display: block; 
+      } 
+      
+      .viewer-wrap { 
+        width: 100%; 
+        height: auto;
+        min-height: 100vh;
+        border-radius: 0; 
+      } 
+      
+      #viewer { 
+        min-height: auto; 
+      } 
     }
 
     /* Desktop: hide hamburger */
@@ -268,7 +284,6 @@
         <div class="muted">Tip: C = center, R = reset, S = snapshot</div>
       </div>
 
-      <div style="flex:1"></div>
       <footer class="small">
           <a href="https://github.com/amrqhz" title="GitHub">GitHub</a>
           <span>•</span>
