@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>داروجو — نسخهٔ آزمایشی</title>
+  <style>
+    :root {
+      --bg: #f7fafa;
+      --primary: #2b7a78;
+      --primary-light: #3aafa9;
+      --accent: #0099cc;
+      --card: #ffffff;
+      --muted: #6b6b6b;
+      --radius: 14px;
+      --shadow: 0 6px 18px rgba(0,0,0,0.06);
+    } 
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Vazirmatn', 'Segoe UI', sans-serif;
+      transition: all 0.25s ease;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #f7fafa 0%, #eef6f7 100%);
+      color: #222;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 50px;
+    }
+    .navlink a{
+      color: #222;
+      text-decoration: none;
+      display:inline;
+      position: relative;
+      gap: 20px;
+      padding-left: 20px;
+      padding-right: 20px;
+
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    p.lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      border: 1px solid #edf3f4;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+    }
+
+    .home-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .role-btn {
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.05);
+      background: #f9fbfb;
+      cursor: pointer;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .role-btn:hover {
+      background: var(--primary-light);
+      color: #fff;
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+    .role-btn strong {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .auth {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    input, select {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #dbe5e8;
+      font-size: 14px;
+      background: #fafcfc;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(43,122,120,0.1);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
+    button.primary {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 0;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    button.primary:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    button.primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    button.ghost {
+      background: transparent;
+      border: 1px solid #d8e0e0;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button.ghost:hover {
+      background: #f2f8f8;
+      border-color: var(--primary-light);
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pharm-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .pharm-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #edf3f4;
+      background: #fafcfc;
+    }
+
+    .patient-area, .pharmacy-area {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .patient-area.active, .pharmacy-area.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .presc-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .presc-card {
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px dashed #dce7e8;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #fcfefe;
+    }
+
+    .presc-card:hover {
+      background: #f8fdfd;
+      border-color: var(--primary-light);
+    }
+
+    .presc-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notif {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: #222;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      z-index: 1000;
+      display: none;
+      font-weight: 500;
+    }
+
+    .notif.show { display: block; opacity: 1; }
+    .notif.error { background: #dc2626; }
+    .notif.success { background: #059669; }
+
+    .center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      backdrop-filter: blur(2px);
+    }
+
+    .loader-overlay.active { display: flex; }
+
+    .loader {
+      background: #fff;
+      padding: 28px;
+      border-radius: 14px;
+      min-width: 320px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .countdown {
+      font-weight: 700;
+      font-size: 28px;
+      margin-top: 8px;
+      color: var(--primary);
+    }
+
+    footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-pending { background: #fff8e1; color: #92400e; }
+    .status-accepted { background: #e0f7f4; color: #065f46; }
+    .status-paid { background: #e7f1ff; color: #1e40af; }
+    .status-ready { background: #e8eaff; color: #3730a3; }
+
+    #patientAuthTabs, #pharmAuthTabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    #patientAuthTabs button, #pharmAuthTabs button {
+      flex: 1;
+    }
+
+    @media(max-width:900px) {
+      .grid { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    }
+
+.about {
+  display: flex;
+  justify-content: center;
+  margin-top: 5rem;
+  padding: 0 20px;
+}
+
+.about-card {
+  max-width: 750px;
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.07);
+  text-align: center;
+  border: 1px solid #eef3f3;
+}
+
+.about-card h3 {
+  margin-bottom: 15px;
+  font-size: 24px;
+  color: #2b7a78;
+}
+
+.about-card p {
+  color: #444;
+  line-height: 30px;
+  font-size: 15px;
+}
+
+.about-footer {
+  margin-top: 25px;
+}
+
+.about-footer p {
+  color: #777;
+  margin-bottom: 12px;
+}
+
+.social a {
+  margin: 0 12px;
+  color: #2b7a78;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+.social a:hover {
+  color: #3aafa9;
+  text-decoration: underline;
+}
+
+/* Divider */
+.section-divider {
+  width: 40%;
+  margin: 4rem auto 3rem auto;
+  border: none;
+  height: 2px;
+  background: #d9e6e6;
+}
+
+.connected-title {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Carousel Section */
+.carousel-container {
+  width: 100%;
+  overflow: hidden;
+  padding: 25px 0;
+  margin-bottom: 4rem;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 22px;
+  animation: scroll 22s linear infinite;
+}
+
+/* Cards in carousel */
+.pharm-card {
+  flex: 0 0 260px;
+  background: white;
+  border-radius: 20px;
+  padding: 25px 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  border: 1px solid #eef3f3;
+  text-align: center;
+  font-weight: bold;
+}
+
+.pharm-card p {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">د</div>
+        <div>
+          <h1>داروجو</h1>
+          <p class="lead">پلتفرمِ سفارش و آماده‌سازی دارو برای بیمار و داروخانه</p>
+        </div>
+      </div>
+      <div class="navlink">
+        <a href="#home">خانه</a>
+        <a href="#">ارتباط با ما </a>
+        <a href="#about">درباره ما</a>
+      </div>
+      <!-- <div class="small">آزمایشی — متصل به Backend</div> -->
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h3 id="home">خانه</h3>
+        <div class="home-actions" id="homeAction">
+          <button class="role-btn" id="openPatient">
+            <strong>ورود / ثبت‌نام بیمار</strong>
+            <small class="small">برای ثبت نسخه و جستجوی دارو</small>
+          </button>
+          <button class="role-btn" id="openPharmacy">
+            <strong>ورود / ثبت‌نام داروخانه</strong>
+            <small class="small">برای دریافت نسخه و آماده‌سازی</small>
+          </button>
+          <!-- <div class="small">این نسخه به Backend روی پورت 3000 متصل است.</div> -->
+        </div>
+
+        <div style="margin-top:18px">
+          <div class="patient-area card" id="patientArea">
+            <h4>بیمار — ورود / ثبت‌نام</h4>
+            <div class="auth">
+              <div id="patientAuthTabs">
+                <button class="ghost" id="pLoginBtn">ورود</button>
+                <button class="ghost" id="pSignupBtn">ثبت‌نام</button>
+              </div>
+
+              <div id="pLoginForm" style="display:none">
+                <div class="input"><label>شماره تلفن</label><input id="pLoginPhone" placeholder="09xxxxxxxx" /></div>
+                <div class="input"><label>رمز عبور</label><input id="pLoginPass" type="password" /></div>
+                <div class="row" style="margin-top: 2rem;"><button class="primary" id="pDoLogin">ورود</button><button class="ghost" id="pBack">بازگشت</button></div>
+              </div>
+
+              <div id="pSignupForm" style="display:none">
+                <div class="input"><label>نام و نام خانوادگی</label><input id="pName" /></div>
+                <div class="input"><label>شماره تلفن</label><input id="pPhone" placeholder="09xxxxxxxx" /></div>
+                <div class="input"><label>شهر</label><input id="pCity" /></div>
+                <div class="input"><label>رمز عبور</label><input id="pPass" type="password" /></div>
+                <div class="row"style="margin-top: 2rem;"><button class="primary" id="pDoSignup">ثبت‌نام</button><button class="ghost" id="pBack2">بازگشت</button></div>
+              </div>
+            </div>
+
+            <div id="patientDashboard" style="display:none">
+              <h4>خوش آمدید، <span id="pDisplayName"></span></h4>
+              <div class="presc-form">
+                <div class="input"><label>کد نسخه</label><input id="prescCode" placeholder="مثال: ABC-123" /></div>
+                <div class="input"><label>شماره شناسه</label><input id="prescId" placeholder="مثال: 987654321" /></div>
+                <div class="input"><label>نوع بیمه</label>
+                  <select id="insType">
+                    <option>تأمین اجتماعی</option>
+                    <option>خدمات درمانی</option>
+                    <option>نیروهای مسلح</option>
+                    <option>جانبازان</option>
+                  </select>
+                </div>
+                <div class="row"><button type="button" class="primary" id="searchPresc">ارسال نسخه</button><button type="button" class="ghost" id="pLogout">خروج</button></div>
+              </div>
+
+              <div style="height:12px"></div>
+              <h5>نسخه‌های من</h5>
+              <div id="myPrescriptions"></div>
+            </div>
+          </div>
+
+          <div class="pharmacy-area card" id="pharmacyArea">
+            <h4>داروخانه — ورود / ثبت‌نام</h4>
+            <div class="auth">
+              <div id="pharmAuthTabs">
+                <button class="ghost" id="phLoginBtn">ورود</button>
+                <button class="ghost" id="phSignupBtn">ثبت‌نام</button>
+              </div>
+
+              <div id="phLoginForm" style="display:none">
+                <div class="input"><label>نام کاربری</label><input id="phLoginUser" /></div>
+                <div class="input"><label>رمز عبور</label><input id="phLoginPass" type="password" /></div>
+                <div class="row" style="margin-top: 2rem;"><button class="primary" id="phDoLogin">ورود</button><button class="ghost" id="phBack">بازگشت</button></div>
+              </div>
+
+              <div id="phSignupForm" style="display:none">
+                <div class="input"><label>نام داروخانه</label><input id="phName" /></div>
+                <div class="input"><label>شهر</label><input id="phCity" /></div>
+                <div class="input"><label>شماره تلفن</label><input id="phPhone" /></div>
+                <div class="input"><label>نام مدیر</label><input id="phManager" /></div>
+                <div class="input"><label>نام کاربری</label><input id="phUser" /></div>
+                <div class="input"><label>رمز عبور</label><input id="phPass" type="password" /></div>
+                <div class="row" style="margin-top: 2rem;"><button class="primary" id="phDoSignup">ثبت‌نام</button><button class="ghost" id="phBack2">بازگشت</button></div>
+              </div>
+
+              <div id="pharmacyDashboard" style="display:none">
+                <h4>داروخانه: <span id="phDisplayName"></span></h4>
+                <div>
+                  <h5>نسخه‌های دریافتی</h5>
+                  <button class="ghost" onclick="loadIncomingPrescriptions()" style="margin-bottom:10px">🔄 بارگذاری مجدد</button>
+                  <div id="incomingPrescriptions"></div>
+                </div>
+                <div style="height:10px"></div>
+                <button class="ghost" id="phLogout">خروج</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>راهنما !</h3>
+        <p class="small">فلؤ کاری ساده:</p>
+        <ol class="small">
+          <li>ابتدا وارد شوید (در صورت نداشتن حساب کاری، ثبت نام کنید)</li>
+          <li>کد رهگیری نسخه به همراه کد ملی را وارد کنید و بیمه پایه خود را انتخاب کنید.</li>
+          <li>منتظر باشید تا داروخانه ها نسخه شما را پذیرش کنند.</li>
+          <li></li>
+        </ol>
+
+        <div style="margin-top:12px">
+          <h4>چند یادداشت</h4>
+          <ul>
+            <li class="small">به منظور اطمینان خاطر شما از بابت اطلاعات شخصی، تمام اطلاعات شما پس از گذشت 3 روز حذف میگردد.</li>
+            <li class="small"></li>
+            <li class="small"></li>            
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- <hr class="section-divider" /> -->
+    <h3 class="connected-title" style="margin-top: 6rem;">داروخانه‌های متصل به داروجو</h3>
+    <hr class="section-divider" />
+    <div class="about" id="about">
+      <div class="about-card">
+        <h3>درباره ما</h3>
+        <p>داروجو با هدف ساده‌سازی فرایند سفارش، مدیریت و تحویل نسخه ایجاد شد. ما تلاش می‌کنیم تجربه‌ای سریع، امن و راحت برای بیماران و داروخانه‌ها فراهم کنیم.</p>
+
+        <div class="about-footer">
+          <p>ساخته شده توسط امیرحسین قلی‌زاده — amrqhz</p>
+          <div class="social">
+            <a href="https://github.com/amrqhz" target="_blank">Github</a>
+            <a href="#" target="_blank">Twitter</a>
+            <a href="#" target="_blank">Telegram</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <footer> — نسخهٔ آزمایشی —</footer>
+  </div>
+
+  <div class="loader-overlay" id="loaderOverlay">
+    <div class="loader card center">
+      <div id="loaderTitle">در حال آماده‌سازی نسخه...</div>
+      <div class="countdown" id="loaderTimer">00:00</div>
+      <div style="height:10px"></div>
+      <button class="primary" id="closeLoader">بستن</button>
+    </div>
+  </div>
+
+  <div id="notif" class="notif"></div>
+
+  <script>
+/* ========= CONFIG ========= */
+const API_BASE = "http://localhost:3000/api";
+
+/* ========= GLOBAL STATE ========= */
+let currentPatient = null;
+let currentPharmacy = null;
+
+let patientPrescriptionInterval = null;
+let pharmacyPrescriptionInterval = null;
+
+/* ========= HELPER: API ========= */
+async function apiCall(endpoint, method = 'GET', data = null) {
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: data ? JSON.stringify(data) : undefined
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Server error");
+
+    return result;
+
+  } catch (err) {
+    console.error("API Error:", err);
+    throw err;
+  }
+}
+
+/* ========= HELPER: NOTIFICATION ========= */
+function showNotif(msg, type = "success") {
+  const notif = document.getElementById("notif");
+  notif.textContent = msg;
+  notif.className = `notif ${type} show`;
+  setTimeout(() => notif.classList.remove("show"), 3000);
+}
+
+
+/* ========= make the home section hide after login ======== */
+function hideHome() {
+  document.getElementById("homeAction").style.display = "none";
+}
+
+function showHome() {
+  const home = document.getElementById("homeAction");
+  home.style.display = "";
+}
+
+
+
+/* ========= PATIENT AREA ========= */
+
+document.getElementById('openPatient').onclick = () => {
+  switchTo("patientArea");
+};
+
+/* Switch to only one section visible */
+function switchTo(section) {
+  document.getElementById("patientArea").classList.remove("active");
+  document.getElementById("pharmacyArea").classList.remove("active");
+
+  document.getElementById(section).classList.add("active");
+}
+
+/* ---- Login / Signup switching ---- */
+document.getElementById('pLoginBtn').onclick = () => showSection("pLoginForm");
+document.getElementById('pSignupBtn').onclick = () => showSection("pSignupForm");
+document.getElementById('pBack').onclick = () => hide("pLoginForm");
+document.getElementById('pBack2').onclick = () => hide("pSignupForm");
+
+function showSection(id) {
+  hide("pLoginForm"); hide("pSignupForm");
+  document.getElementById(id).style.display = "block";
+}
+
+function hide(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+/* ---- Patient Signup ---- */
+document.getElementById("pDoSignup").onclick = async () => {
+  const name = v("pName");
+  const phone = v("pPhone");
+  const city = v("pCity");
+  const password = v("pPass");
+
+  if (!name || !phone || !city || !password)
+    return showNotif("لطفاً همه فیلدها را پر کنید", "error");
+
+  try {
+    const res = await apiCall('/patient/signup', 'POST', { name, phone, city, password });
+    currentPatient = res.patient;
+    showNotif("ثبت‌نام موفق");
+    showPatientDashboard(res.patient);
+  } catch (e) {
+    showNotif(e.message, "error");
+  }
+};
+
+/* ---- Patient Login ---- */
+document.getElementById("pDoLogin").onclick = async () => {
+  const phone = v("pLoginPhone");
+  const password = v("pLoginPass");
+
+  if (!phone || !password) return showNotif("تمام فیلدها را وارد کنید", "error");
+
+  try {
+    const res = await apiCall('/patient/login', 'POST', { phone, password });
+    currentPatient = res.patient;
+    showNotif("خوش آمدید");
+    showPatientDashboard(res.patient);
+  } catch (e) {
+    showNotif(e.message, "error");
+  }
+};
+
+function v(id) { return document.getElementById(id).value.trim(); }
+
+function showPatientDashboard(patient) {
+  hideHome();
+  hide("pLoginForm");
+  hide("pSignupForm");
+  document.getElementById("pharmacyArea").classList.remove("active"); // hide other section
+  document.getElementById("patientArea").classList.add("active");
+  document.getElementById("patientDashboard").style.display = "block";
+  document.getElementById("pDisplayName").textContent = patient.name;
+
+  loadMyPrescriptions(patient.id);
+  startPatientPolling(patient.id);
+}
+
+/* ---- Add Prescription ---- */
+document.getElementById("searchPresc").onclick = async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+    if (!currentPatient || !currentPatient.id) {
+    showNotif("ابتدا باید وارد شوید", "error");
+    return;
+  }
+
+  const code = v("prescCode");
+  const idNumber = v("prescId");
+  const insurance = v("insType");
+
+  if (!code || !idNumber)
+    return showNotif("کد نسخه و شناسه را وارد کنید", "error");
+
+  try {
+    await apiCall('/prescription/create', "POST", {
+      patientId: currentPatient.id,
+      code,
+      idNumber,
+      insurance
+    });
+
+    showNotif("نسخه ثبت شد");
+    loadMyPrescriptions(currentPatient.id);
+
+    document.getElementById("prescCode").value = "";
+    document.getElementById("prescId").value = "";
+
+  } catch (err) {
+    showNotif(err.message, "error");
+  }
+};
+
+/* ---- Load My Prescriptions ---- */
+async function loadMyPrescriptions(patientId) {
+  try {
+    const all = await apiCall('/prescription');
+    const my = all.filter(x => x.patientId === patientId);
+
+    const box = document.getElementById("myPrescriptions");
+
+    if (!my.length)
+      return box.innerHTML = "<p class='small'>نسخه‌ای ثبت نشده</p>";
+
+    box.innerHTML = my.map(p => `
+      <div class="presc-card">
+        <div class="presc-card-header">
+          <strong>کد نسخه: ${p.code}</strong>
+          <p class="small">بیمه: ${p.insurance}</p>
+          <p class="small">شناسه: ${p.idNumber}</p>
+          <span class="status-badge status-${p.status}">
+            ${statusToFa(p.status)}
+          </span>
+        </div>
+        ${p.status === "accepted"
+          ? `<button class="primary pay-btn" data-id="${p.id}">پرداخت</button>`
+          : "" }
+      </div>
+    `).join("");
+
+    box.querySelectorAll(".pay-btn").forEach(btn => {
+      btn.onclick = () => payPrescription(btn.dataset.id);
+    });
+
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function statusToFa(st) {
+  return st === "pending" ? "در انتظار"
+       : st === "accepted" ? "قبول شده"
+       : st === "paid" ? "پرداخت شده"
+       : "آماده";
+}
+
+/* ==== POLLING (Patient) ==== */
+function startPatientPolling(id) {
+  clearInterval(patientPrescriptionInterval);
+  patientPrescriptionInterval = setInterval(() => {
+    loadMyPrescriptions(id);
+  }, 5000);
+}
+
+/* ---- Pay ---- */
+async function payPrescription(id) {
+  try {
+    await apiCall('/prescription/pay', 'POST', { presId: id });
+    showNotif("پرداخت موفق");
+
+    loadMyPrescriptions(currentPatient.id);
+    showLoader();
+
+  } catch (e) {
+    showNotif(e.message, "error");
+  }
+}
+
+/* ---- Loader ---- */
+function showLoader() {
+  const overlay = document.getElementById("loaderOverlay");
+  overlay.classList.add("active");
+
+  let secs = 180;
+
+  const timer = setInterval(() => {
+    secs--;
+    let m = String(Math.floor(secs / 60)).padStart(2, "0");
+    let s = String(secs % 60).padStart(2, "0");
+
+    document.getElementById("loaderTimer").textContent = `${m}:${s}`;
+
+    if (secs <= 0) {
+      clearInterval(timer);
+      document.getElementById("loaderTitle").textContent = "نسخه آماده شد ✔️";
+    }
+  }, 1000);
+}
+
+document.getElementById("closeLoader").onclick = () =>
+  document.getElementById("loaderOverlay").classList.remove("active");
+
+/* ---- Logout (Patient) ---- */
+document.getElementById("pLogout").onclick = () => {
+  currentPatient = null;
+  clearInterval(patientPrescriptionInterval);
+
+  document.getElementById("patientDashboard").style.display = "none";
+  document.getElementById("patientArea").classList.remove("active");
+  showHome();
+  // switchTo("patientArea");
+  showNotif("خروج موفق");
+};
+
+/* ========= PHARMACY AREA ========= */
+document.getElementById('openPharmacy').onclick = () => {
+  switchTo("pharmacyArea");
+};
+
+/* ---- Auth Forms ---- */
+document.getElementById('phLoginBtn').onclick = () => showPh("phLoginForm");
+document.getElementById('phSignupBtn').onclick = () => showPh("phSignupForm");
+document.getElementById('phBack').onclick = () => hidePh("phLoginForm");
+document.getElementById('phBack2').onclick = () => hidePh("phSignupForm");
+
+function showPh(id) {
+  hidePh("phLoginForm"); hidePh("phSignupForm");
+  document.getElementById(id).style.display = "block";
+}
+function hidePh(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+/* ---- Pharmacy Signup ---- */
+document.getElementById("phDoSignup").onclick = async () => {
+  const data = {
+    name: v("phName"),
+    city: v("phCity"),
+    phone: v("phPhone"),
+    manager: v("phManager"),
+    username: v("phUser"),
+    password: v("phPass")
+  };
+
+  if (Object.values(data).some(x => !x))
+    return showNotif("تمام فیلدها ضروری است", "error");
+
+  try {
+    const res = await apiCall('/pharmacy/signup', 'POST', data);
+    currentPharmacy = res.pharmacy;
+
+    showNotif("ثبت‌نام موفق");
+    showPharmacyDashboard(res.pharmacy);
+
+  } catch (e) {
+    showNotif(e.message, "error");
+  }
+};
+
+/* ---- Pharmacy Login ---- */
+document.getElementById("phDoLogin").onclick = async () => {
+  const username = v("phLoginUser");
+  const password = v("phLoginPass");
+
+  if (!username || !password)
+    return showNotif("فیلدها را پر کنید", "error");
+
+  try {
+    const res = await apiCall('/pharmacy/login', 'POST', { username, password });
+    currentPharmacy = res.pharmacy;
+
+    showNotif("ورود موفق");
+    showPharmacyDashboard(res.pharmacy);
+
+  } catch (e) {
+    showNotif(e.message, "error");
+  }
+};
+
+/* ---- Pharmacy Dashboard ---- */
+function showPharmacyDashboard(pharmacy) {
+  hideHome();   // ⬅️ ADD THIS
+  hidePh("phLoginForm");
+  hidePh("phSignupForm");
+
+  document.getElementById("patientArea").classList.remove("active"); // hide other section
+  document.getElementById("pharmacyArea").classList.add("active");
+
+  document.getElementById("pharmacyDashboard").style.display = "block";
+  document.getElementById("phDisplayName").textContent = pharmacy.name;
+
+  loadIncomingPrescriptions();
+  startPharmacyPolling();
+}
+
+/* ---- Load Incoming ---- */
+async function loadIncomingPrescriptions() {
+  try {
+    const all = await apiCall("/prescription");
+    const pending = all.filter(p => p.status === "pending");
+
+    const box = document.getElementById("incomingPrescriptions");
+
+    if (!pending.length)
+      return box.innerHTML = "<p class='small'>نسخه‌ای نیست</p>";
+
+    box.innerHTML = pending.map(p => `
+      <div class="presc-card">
+        <strong>کد نسخه: ${p.code}</strong>
+        <p class="small">شناسه: ${p.idNumber}</p>
+        <p class="small">بیمه: ${p.insurance}</p>
+        <p class="small">بیمار: ${p.patientId}</p>
+        <button class="primary accept-btn" data-id="${p.id}">
+          قبول و آماده‌سازی
+        </button>
+      </div>
+    `).join("");
+
+    box.querySelectorAll(".accept-btn").forEach(btn => {
+      btn.onclick = () => acceptPrescription(btn.dataset.id);
+    });
+
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/* ==== POLLING (Pharmacy) ==== */
+function startPharmacyPolling() {
+  clearInterval(pharmacyPrescriptionInterval);
+  pharmacyPrescriptionInterval = setInterval(loadIncomingPrescriptions, 5000);
+}
+
+/* ---- Accept ---- */
+async function acceptPrescription(id) {
+  try {
+    await apiCall("/prescription/accept", "POST", {
+      presId: id,
+      pharmacyId: currentPharmacy.id
+    });
+    showNotif("نسخه قبول شد");
+    loadIncomingPrescriptions();
+
+  } catch (e) {
+    showNotif(e.message, "error");
+  }
+}
+
+/* ---- Logout ---- */
+document.getElementById("phLogout").onclick = () => {
+  currentPharmacy = null;
+  clearInterval(pharmacyPrescriptionInterval);
+
+  document.getElementById("pharmacyDashboard").style.display = "none";
+   document.getElementById("pharmacyArea").classList.remove("active");
+  showHome();
+  //switchTo("pharmacyArea");
+
+  showNotif("خروج موفق");
+};
+</script>
+
+</body>
+</html>

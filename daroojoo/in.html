@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>داروجو - پلتفرم خرید آسان دارو</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Vazirmatn', 'Segoe UI', sans-serif;
+      }
+      :root {
+        --bg: #eeeeee;
+        --primary: #555555;
+        --primary-light: #3aafa9;
+        --accent: #0099cc;
+        --card: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 217, 255, 0.1));
+        --muted: #6b6b6b;
+        --radius: 14px;
+        --shadow: 0 6px 18px rgba(0,0,0,0.06);
+        --button: #ffaa8a;
+        --border: #9b9b9b;
+      }
+
+      html,
+      body {
+        background: linear-gradient(120deg, rgba(255, 107, 53, 0.1), rgba(0, 217, 255, 0.048));
+        color: #e4e4e7;
+        overflow-x: hidden;
+        
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header & Navigation */
+      header {
+        background: rgba(26, 31, 58, 0.8);
+        backdrop-filter: blur(10px);
+        border-bottom: 2px solid var(--shadow);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: #ff0000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 22px;
+        box-shadow: var(--shadow);
+        }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+
+      }
+
+
+
+      nav .links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      nav a {
+        color: #e4e4e7;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: color 0.3s;
+        cursor: pointer;
+      }
+
+      nav a:hover {
+        color: #ff6b35;
+      }
+
+      .nav-buttons {
+        display: flex;
+        gap: 1rem;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-primary {
+        background-color: var(--button);
+        color: var(--muted);
+        box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+      }
+
+      .btn-primary:hover {
+        background-color: #ff8555;
+        box-shadow: 0 0 25px rgba(255, 107, 53, 0.6);
+      }
+
+      .btn-secondary {
+        background-color: var(--button);
+        color: var(--muted);
+      }
+
+      .btn-secondary:hover {
+        background-color: #ff8555;
+        box-shadow: 0 0 25px rgba(255, 107, 53, 0.6);
+      }
+
+      .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      /* Main Screen Selection */
+      .home-screen {
+        display: none;
+      }
+
+      .home-screen.active {
+        display: block;
+      }
+
+      .screen {
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Hero Section */
+      .hero {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 90vh;
+        gap: 4rem;
+      }
+
+      .hero-content h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        text-align: center;
+      }
+
+
+      .hero-content p {
+        font-size: 1rem;
+        color: var(--muted);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .role-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        position: relative;
+      }
+      .floating-icon {
+        position: absolute;
+        top: 1rem;  /* adjust as needed */
+        right: 2;
+        img{
+          width: 30px;
+        }
+      }
+      .floating-icon-2 {
+        position: absolute;
+        img{
+          width: 30px;
+        }
+      }
+      
+
+      .role-card {
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 217, 255, 0.1));
+        /* border: 2px solid rgba(255, 107, 53, 0.3); */
+        border-radius: 1rem;
+        padding: 1rem;      
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .role-card:hover {
+        /* border-color: #666666; */
+        box-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+        transform: translateY(-5px);
+      }
+
+      .role-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #2b2b2b;
+      }
+
+      .role-card p {
+        color: #575757;
+        font-size: 0.95rem;
+      }
+
+      /* Hero Image */
+      /* .hero-image {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .hero-icon {
+        font-size: 10rem;
+        opacity: 0.1;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-30px);
+        }
+      } */
+
+      /* Info Sections */
+      .info-section {
+        margin: 4rem 0;
+        padding: 3rem;
+      }
+
+      .info-section h2 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        color: #2c2c2c;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin: 2rem 0;
+      }
+
+      .feature-item {
+        background: var(--card);
+        border: 1px solid rgba(255, 107, 53, 0.2);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        transition: all 0.3s;
+      }
+
+      .feature-item:hover {
+        border-color: #ff6b35;
+        background: rgba(26, 31, 58, 0.9);
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+        p{
+          color: #00d9ff;
+        }
+        h4{
+          color: #ff6b35;
+        }
+      }
+
+      .feature-item h4 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-item p {
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      /* Footer */
+      footer {
+        padding: 3rem 0;
+        margin-top: 1rem;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .footer-section h4 {
+        color: #ff6b35;
+        margin-bottom: 1rem;
+      }
+
+      .footer-section p,
+      .footer-section a {
+        color: #585858;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        text-decoration: none;
+      }
+
+      .footer-section a:hover {
+        color: #00d9ff;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        color: #a1a1a1;
+        border-top: 1px solid var(--border);
+        padding-top: 2rem;
+      }
+
+      /* Forms */
+      .form-container {
+        background: var(--card);
+        /* border: 2px solid var(--border); */
+        border-radius: 1rem;
+        padding: 2rem 5rem 2rem 5rem;
+        max-width: 800px;
+      }
+
+      .form-container h2 {
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: rgba(165, 165, 165, 0.8);
+        border: 2px solid var(--border);
+        border-radius: 0.5rem;
+        color: var(--muted);
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--border);
+        box-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+      }
+
+      .form-group input::placeholder {
+        color: var(--muted);
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .form-actions button {
+        flex: 1;
+      }
+
+      .toggle-form {
+        text-align: center;
+        margin-top: 1rem;
+        color: #a1a1a1;
+      }
+
+      .toggle-form a {
+        color: #00d9ff;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .toggle-form a:hover {
+        color: #ff6b35;
+      }
+
+      /* Dashboards */
+      .dashboard {
+        padding: 2rem 0;
+      }
+
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 217, 255, 0.1));
+        border: 2px solid rgba(0, 217, 255, 0.2);
+        border-radius: 1rem;
+      }
+
+      .dashboard-header h1 {
+        color: var(--primary);
+      }
+
+      .logout-btn {
+        background-color: #ff3b30;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .logout-btn:hover {
+        background-color: #ff5252;
+      }
+
+      /* Prescription Cards */
+      .prescription-card {
+        background: linear-gradient(135deg, rgba(26, 31, 58, 0.8), rgba(42, 51, 87, 0.5));
+        border: 2px solid rgba(0, 217, 255, 0.2);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s;
+      }
+
+      .prescription-card:hover {
+        border-color: #ff6b35;
+        box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+      }
+
+      .prescription-card h3 {
+        color: #ff6b35;
+        margin-bottom: 0.5rem;
+      }
+
+      .prescription-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .info-item {
+        background: rgba(10, 14, 39, 0.5);
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        border-left: 3px solid #00d9ff;
+      }
+
+      .info-item label {
+        display: block;
+        color: #a1a1a1;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .info-item span {
+        color: #e4e4e7;
+        font-weight: 600;
+      }
+
+      .prescription-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .prescription-actions button {
+        flex: 1;
+      }
+
+      /* Timer/Status */
+      .timer-container {
+        text-align: center;
+        padding: 3rem;
+        background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 217, 255, 0.1));
+        border: 3px solid rgba(0, 217, 255, 0.3);
+        border-radius: 1rem;
+        margin: 2rem 0;
+      }
+
+      .timer-container h2 {
+        color: #00d9ff;
+        margin-bottom: 1rem;
+      }
+
+      .timer {
+        font-size: 3rem;
+        color: #ff6b35;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+        margin: 1rem 0;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        margin-top: 1rem;
+      }
+
+      .status-pending {
+        background-color: rgba(255, 107, 53, 0.2);
+        color: #ff6b35;
+        border: 2px solid #ff6b35;
+      }
+
+      .status-accepted {
+        background-color: rgba(0, 217, 255, 0.2);
+        color: #00d9ff;
+        border: 2px solid #00d9ff;
+      }
+
+      .status-ready {
+        background-color: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        border: 2px solid #22c55e;
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      .modal-content {
+        background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(42, 51, 87, 0.7));
+        border: 2px solid rgba(255, 107, 53, 0.3);
+        border-radius: 1rem;
+        padding: 2rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: #a1a1a1;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .modal-close:hover {
+        color: #ff6b35;
+      }
+
+      /* Notifications */
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, rgba(26, 31, 58, 0.95), rgba(42, 51, 87, 0.8));
+        border: 2px solid rgba(0, 217, 255, 0.5);
+        border-radius: 0.75rem;
+        padding: 1rem 1.5rem;
+        color: #00d9ff;
+        z-index: 2000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 400px;
+      }
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      .notification.success {
+        border-color: #22c55e;
+        color: #22c55e;
+      }
+
+      .notification.error {
+        border-color: #ff3b30;
+        color: #ff3b30;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero {
+          flex-direction: column;
+          min-height: auto;
+          gap: 2rem;
+        }
+
+        .hero-content h1 {
+          font-size: 2.5rem;
+        }
+
+        .hero-icon {
+          font-size: 6rem;
+        }
+
+        nav .links {
+          gap: 1rem;
+          font-size: 0.9rem;
+        }
+
+        .role-buttons {
+          flex-direction: column;
+        }
+
+        .dashboard-header {
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="container">
+        <nav>
+          <div class="logo" onclick="goHome()">د</div>
+          <div>
+            <h1>داروجو</h1>
+            <p class="lead">پلتفرمِ سفارش و آماده‌سازی دارو برای بیمار و داروخانه</p>
+          </div>
+          <ul class="links" id="nav-links">
+            <li><a onclick="showSection('home')">خانه</a></li>
+            <li><a onclick="scrollToSection('about')">درباره ما</a></li>
+            <li><a onclick="scrollToSection('guide')">راهنما</a></li>
+            <li><a onclick="scrollToSection('contact')">تماس</a></li>
+          </ul>
+          <!-- <div class="nav-buttons" id="nav-buttons">
+            <button class="btn btn-secondary btn-small" onclick="showLoginChoice()">ورود</button>
+            <button class="btn btn-primary btn-small" onclick="showSignupChoice()">ثبت نام</button>
+          </div> -->
+        </nav>
+      </div>
+    </header>
+
+    <!-- Home Screen -->
+    <section class="home-screen active">
+      <div class="container">
+        <!-- Hero Section -->
+        <section class="hero" style="margin-top: 1rem">
+          <div class="hero-content" style="text-align: center;">
+            <img src="Pasted_image__2_-removebg-preview.png" alt="">
+            <h1>
+              تهیه دارو به صورت آنلاین
+              <span class="highlight">آسان تر از قبل</span>
+            </h1>
+            <p>
+              داروجو یک پلتفرم نوین برای ارتباط بین بیماران و داروخانه‌ها است. نسخه پزشک خود را بارگذاری کنید و
+              داروخانه‌های نزدیک برای دریافت سفارش صبر می‌کنند.
+            </p>
+
+            <div class="role-buttons">
+              <div class="role-card" onclick="showCustomerAuth('login')">
+                <div class="floating-icon"><img src="ph.png" alt=""></div>
+                <h3>بیماران</h3>
+                <p>نسخه خود را بارگذاری کنید و نزدیک‌ترین داروخانه را پیدا کنید</p>
+              </div>
+              <div class="role-card" onclick="showPharmacyAuth('login')">
+                <div class="floating-icon-2 style="margin-bottom: 1rem"><img src="pt.png" alt=""></div>
+                <h3>داروخانه</h3>
+                <p>نسخه‌های بیماران را دریافت کنید و آنها را تأیید کنید</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- <div class="hero-image">
+            <div class="hero-icon">💉</div>
+          </div> -->
+        </section>
+
+        <!-- Guide Section -->
+        <section class="info-section" id="guide">
+          <h2>راهنما !</h2>
+          <p style="color: var(--muted); margin-bottom: 1.5rem">
+            به راحتی نسخه‌های پزشکی خود را مدیریت کنید و به سرعت دارو دریافت کنید.
+          </p>
+
+          <div class="features-grid">
+            <div class="feature-item">
+              <h4>مرحله ۱: ورود به سیستم</h4>
+              <p>ابتدا ثبت نام کنید یا وارد شوید. برای بیماران و داروخانه‌ها، فرم‌های ثبت نام متفاوت وجود دارد.</p>
+            </div>
+            <div class="feature-item">
+              <h4>مرحله ۲: بارگذاری نسخه (بیماران)</h4>
+              <p>
+                عکس نسخه پزشک را بارگذاری کنید و کد و شماره نسخه را وارد کنید. نوع بیمه خود را انتخاب کنید.
+              </p>
+            </div>
+            <div class="feature-item">
+              <h4>مرحله ۳: تایید نسخه (داروخانه‌ها)</h4>
+              <p>نسخه‌های دریافت‌شده را مرور کنید و اگر دارو موجود است، تأیید کنید.</p>
+            </div>
+            <div class="feature-item">
+              <h4>مرحله ۴: زمان آماده‌سازی</h4>
+              <p>بیماران تایمر آماده‌سازی دارو را مشاهده می‌کنند و می‌توانند دارو را جمع کنند.</p>
+            </div>
+            <div class="feature-item">
+              <h4>انواع بیمه</h4>
+              <p>✓ تامین اجتماعی | ✓ خدمات درمانی | ✓ نیروهای مسلح | ✓ جانبازان</p>
+            </div>
+            <div class="feature-item">
+              <h4>امنیت و حریم‌خصوصی</h4>
+              <p>تمام اطلاعات شما رمزگذاری‌شده و محفوظ است. ما حریم‌خصوصی شما را احترام می‌گذاریم.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="info-section" id="about">
+          <h2>درباره داروجـــــــو</h2>
+          <p style="color: var(--muted); margin-bottom: 1.5rem">
+            داروجو یک پلتفرم نوین در حوزه تکنولوژی سلامت است که به ساده‌تر کردن فرآیند خریدِ دارو کمک می‌کند.
+          </p>
+
+          <div class="features-grid">
+            <div class="feature-item">
+              <h4>✨ ابداع</h4>
+              <p>ما تکنولوژی‌های جدید را استفاده می‌کنیم تا بهترین تجربه را فراهم کنیم.</p>
+            </div>
+            <div class="feature-item">
+              <h4>🤝 پشتیبانی</h4>
+              <p>تیم ما ۲۴/۷ برای کمک به شما آماده است. هر سؤالی داشتید تماس بگیرید.</p>
+            </div>
+            <div class="feature-item">
+              <h4>🚀 سریع و کارآمد</h4>
+              <p>سرعت و کارایی برای ما اولویت است. سیستم ما بسیار سریع و قابل‌اعتماد است.</p>
+            </div>
+            <div class="feature-item">
+              <h4>💡 ایده‌ای خوب</h4>
+              <p>
+                داروجو از نیاز واقعی مردم برای ساده‌سازی فرآیند خریدِ دارو شروع شد و نتیجه یک سرویس حرفه‌ای است.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Creator Section -->
+        <!-- <section class="info-section" id="contact">
+          <h2> درباره توسعه‌دهنده</h2>
+          <div style="padding: 2rem; border-radius: 1rem">
+            <h3 style="color: #ff6b35; margin-bottom: 1rem">تیم توسعه داروجو</h3>
+            <p style="color: #585858; margin-bottom: 1rem; line-height: 1.8">
+              داروجو توسط گروهی از متخصصان فناوری اطلاعات و پزشکی ایجاد شده است که در دل تهران فعالیت می‌کنند. ما
+              تصدیق می‌کنیم که تکنولوژی می‌تواند زندگی مردم را بهتر کند.
+            </p>
+            <p style="color: #585858; margin-bottom: 1rem">
+              <strong>بنیانگذار:</strong> تیمی از متخصصان حوزه سلامت و فناوری
+            </p>
+            <p style="color: #585858; margin-bottom: 1rem">
+              <strong>سال تأسیس:</strong> 2025
+            </p>
+            <p style="color: #585858">
+              <strong>مأموریت:</strong> ساده‌سازی دسترسی به دارو برای تمام مردم ایران
+            </p>
+          </div>
+        </section> -->
+      </div>
+    </section>
+
+    <!-- Customer Login Screen -->
+    <section class="screen" id="customer-login-screen">
+      <div class="container">
+        <div style="display: flex; justify-content: center; margin-top: 3rem">
+          <div class="form-container">
+            <h2>ورود بیمار</h2>
+            <form onsubmit="handleCustomerLogin(event)">
+              <div class="form-group">
+                <label for="customer-phone">شماره تلفن:</label>
+                <input type="tel" id="customer-phone" placeholder="09xxxxxxxxx" required />
+              </div>
+              <div class="form-group">
+                <label for="customer-password">رمز عبور:</label>
+                <input type="password" id="customer-password" placeholder="رمز عبور خود را وارد کنید" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">ورود</button>
+                <button type="button" class="btn btn-secondary" onclick="goHome()">لغو</button>
+              </div>
+            </form>
+            <div class="toggle-form">
+              حساب ندارید؟ <a onclick="showCustomerAuth('signup')">ثبت نام کنید</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Signup Screen -->
+    <section class="screen" id="customer-signup-screen">
+      <div class="container">
+        <div style="display: flex; justify-content: center; margin-top: 3rem">
+          <div class="form-container">
+            <h2>ثبت نام بیمار</h2>
+            <form onsubmit="handleCustomerSignup(event)">
+              <div class="form-group">
+                <label for="customer-name">نام:</label>
+                <input type="text" id="customer-name" placeholder="نام کامل خود را وارد کنید" required />
+              </div>
+              <div class="form-group">
+                <label for="customer-phone-signup">شماره تلفن:</label>
+                <input type="tel" id="customer-phone-signup" placeholder="09xxxxxxxxx" required />
+              </div>
+              <div class="form-group">
+                <label for="customer-city">شهر:</label>
+                <select id="customer-city" required>
+                  <option value="">شهر را انتخاب کنید</option>
+                  <option value="tehran">تهران</option>
+                  <option value="isfahan"> شهرقائم</option>
+                  <option value="shiraz">آمل</option>
+                  <option value="karaj">ساری</option>
+                  <option value="mashad">بابل</option>
+                  <option value="other">سایر شهرها</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="customer-password-signup">رمز عبور:</label>
+                <input type="password" id="customer-password-signup" placeholder="رمز عبور قوی بسازید" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">ثبت نام</button>
+                <button type="button" class="btn btn-secondary" onclick="goHome()">لغو</button>
+              </div>
+            </form>
+            <div class="toggle-form">
+              قبلاً ثبت نام کرده‌اید؟ <a onclick="showCustomerAuth('login')">وارد شوید</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pharmacy Login Screen -->
+    <section class="screen" id="pharmacy-login-screen">
+      <div class="container">
+        <div style="display: flex; justify-content: center; margin-top: 3rem">
+          <div class="form-container">
+            <h2>ورود داروخانه</h2>
+            <form onsubmit="handlePharmacyLogin(event)">
+              <div class="form-group">
+                <label for="pharmacy-username">نام کاربری:</label>
+                <input type="text" id="pharmacy-username" placeholder="نام کاربری خود را وارد کنید" required />
+              </div>
+              <div class="form-group">
+                <label for="pharmacy-password">رمز عبور:</label>
+                <input type="password" id="pharmacy-password" placeholder="رمز عبور خود را وارد کنید" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">ورود</button>
+                <button type="button" class="btn btn-secondary" onclick="goHome()">لغو</button>
+              </div>
+            </form>
+            <div class="toggle-form">
+              حساب ندارید؟ <a onclick="showPharmacyAuth('signup')">ثبت نام کنید</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pharmacy Signup Screen -->
+    <section class="screen" id="pharmacy-signup-screen">
+      <div class="container">
+        <div style="display: flex; justify-content: center; margin-top: 3rem">
+          <div class="form-container">
+            <h2>ثبت نام داروخانه</h2>
+            <form onsubmit="handlePharmacySignup(event)">
+              <div class="form-group">
+                <label for="pharmacy-name">نام داروخانه:</label>
+                <input type="text" id="pharmacy-name" placeholder="نام داروخانه" required />
+              </div>
+              <div class="form-group">
+                <label for="manager-name">نام مدیر:</label>
+                <input type="text" id="manager-name" placeholder="نام مدیر داروخانه" required />
+              </div>
+              <div class="form-group">
+                <label for="pharmacy-phone">شماره تلفن:</label>
+                <input type="tel" id="pharmacy-phone" placeholder="09xxxxxxxxx" required />
+              </div>
+              <div class="form-group">
+                <label for="pharmacy-city">شهر:</label>
+                <select id="pharmacy-city" required>
+                  <option value="">شهر را انتخاب کنید</option>
+                  <option value="tehran">تهران</option>
+                  <option value="isfahan">اصفهان</option>
+                  <option value="shiraz">شیراز</option>
+                  <option value="karaj">کرج</option>
+                  <option value="mashad">مشهد</option>
+                  <option value="other">سایر شهرها</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="pharmacy-username-signup">نام کاربری:</label>
+                <input type="text" id="pharmacy-username-signup" placeholder="نام کاربری خود را انتخاب کنید" required />
+              </div>
+              <div class="form-group">
+                <label for="pharmacy-password-signup">رمز عبور:</label>
+                <input type="password" id="pharmacy-password-signup" placeholder="رمز عبور قوی بسازید" required />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">ثبت نام</button>
+                <button type="button" class="btn btn-secondary" onclick="goHome()">لغو</button>
+              </div>
+            </form>
+            <div class="toggle-form">
+              قبلاً ثبت نام کرده‌اید؟ <a onclick="showPharmacyAuth('login')">وارد شوید</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Dashboard -->
+    <section class="screen" id="customer-dashboard">
+      <div class="container">
+        <div class="dashboard">
+          <div class="dashboard-header">
+            <div>
+              <h1>داشبورد بیمار</h1>
+              <p style="color: #a1a1a1; margin-top: 0.5rem" id="customer-welcome"></p>
+            </div>
+            <button class="logout-btn" onclick="logout()">خروج</button>
+          </div>
+
+          <!-- Prescription Submission -->
+          <div class="info-section" style="margin-bottom: 2rem">
+            <h2>📝 ارسال نسخه جدید</h2>
+            <form onsubmit="handlePrescriptionSubmit(event)">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem">
+                <div class="form-group">
+                  <label for="prescription-code">کد نسخه:</label>
+                  <input type="text" id="prescription-code" placeholder="کد نسخه را وارد کنید" required />
+                </div>
+                <div class="form-group">
+                  <label for="prescription-id">شماره نسخه:</label>
+                  <input type="text" id="prescription-id" placeholder="شماره نسخه را وارد کنید" required />
+                </div>
+                <div class="form-group">
+                  <label for="insurance-type">نوع بیمه:</label>
+                  <select id="insurance-type" required>
+                    <option value="">نوع بیمه را انتخاب کنید</option>
+                    <option value="social">تامین اجتماعی</option>
+                    <option value="health-services">خدمات درمانی</option>
+                    <option value="military">نیروهای مسلح</option>
+                    <option value="disabled-veterans">جانبازان</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" style="margin-top: 1rem">جستجو</button>
+            </form>
+          </div>
+
+          <!-- Active Prescriptions -->
+          <div>
+            <h2 style="color: #00d9ff; margin-bottom: 1.5rem">🔔 نسخه‌های فعال</h2>
+            <div id="customer-prescriptions">
+              <p style="color: #a1a1a1; text-align: center; padding: 2rem">
+                هنوز نسخه‌ای ارسال نکردید. یک نسخه جدید ارسال کنید.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pharmacy Dashboard -->
+    <section class="screen" id="pharmacy-dashboard">
+      <div class="container">
+        <div class="dashboard">
+          <div class="dashboard-header">
+            <div>
+              <h1>داشبورد داروخانه</h1>
+              <p style="color: #a1a1a1; margin-top: 0.5rem" id="pharmacy-welcome"></p>
+            </div>
+            <button class="logout-btn" onclick="logout()">خروج</button>
+          </div>
+
+          <!-- Incoming Prescriptions -->
+          <div>
+            <h2 style="color: #00d9ff; margin-bottom: 1.5rem">📬 نسخه‌های دریافت‌شده</h2>
+            <div id="pharmacy-prescriptions">
+              <p style="color: #a1a1a1; text-align: center; padding: 2rem">هنوز نسخه‌ای دریافت نشده است.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prescription Details Modal -->
+    <div class="modal" id="prescription-modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closePrescriptionModal()">✕</button>
+        <div id="modal-body"></div>
+      </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="payment-modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closePaymentModal()">✕</button>
+        <h2 style="color: #00d9ff; margin-bottom: 1.5rem">💳 تکمیل پرداخت</h2>
+        <div class="info-item" style="margin-bottom: 1rem">
+          <label>مبلغ قابل پرداخت:</label>
+          <span id="payment-amount" style="font-size: 1.5rem">0</span>
+        </div>
+        <form onsubmit="completePayment(event)">
+          <div class="form-group">
+            <label for="card-number">شماره کارت:</label>
+            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required />
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem">
+            <div class="form-group">
+              <label for="card-expiry">تاریخ انقضا:</label>
+              <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" required />
+            </div>
+            <div class="form-group">
+              <label for="card-cvv">CVV:</label>
+              <input type="text" id="card-cvv" placeholder="123" maxlength="3" required />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem">پرداخت</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h4>درباره داروجو</h4>
+            <p>پلتفرم نوین برای خریدِ آسان دارو و ارتباط بین بیماران و داروخانه‌ها.</p>
+          </div>
+          <div class="footer-section">
+            <h4>لینک‌های مفید</h4>
+            <a onclick="scrollToSection('guide')">راهنما</a>
+            <a onclick="scrollToSection('about')">درباره ما</a>
+            <a onclick="scrollToSection('contact')">تماس</a>
+          </div>
+          <div class="footer-section">
+            <h4>تماس با ما</h4>
+            <p>تلفن: 09910420324</p>
+            <p>ایمیل: support@daroujo.com</p>
+          </div>
+          <div class="footer-section">
+            <h4>شبکه‌های اجتماعی</h4>
+            <p>توئیتر | اینستاگرام | فیسبوک</p>
+
+          </div>
+        </div>
+        <!-- <div class="footer-bottom">
+          <p>&copy; 1405 داروجو - تمام حقوق محفوظ است.</p>
+        </div> -->
+      </div>
+    </footer>
+
+    <script>
+      // State Management
+      const state = {
+        currentUser: null,
+        userType: null,
+        customers: JSON.parse(localStorage.getItem('customers')) || {},
+        pharmacies: JSON.parse(localStorage.getItem('pharmacies')) || {},
+        prescriptions: JSON.parse(localStorage.getItem('prescriptions')) || [],
+        notifications: [],
+      };
+
+      // UI Navigation Functions
+      function showSection(sectionId) {
+        const sections = document.querySelectorAll('.screen, .home-screen');
+        sections.forEach((section) => section.classList.remove('active'));
+
+        if (sectionId === 'home') {
+          document.getElementById('home-screen') || document.querySelector('.home-screen')?.classList.add('active');
+          document.querySelector('.home-screen').classList.add('active');
+        } else {
+          const section = document.getElementById(sectionId);
+          if (section) section.classList.add('active');
+        }
+      }
+
+      function goHome() {
+        showSection('home-screen');
+        document.querySelector('.home-screen').classList.add('active');
+        const screens = document.querySelectorAll('.screen');
+        screens.forEach((s) => s.classList.remove('active'));
+      }
+
+      function showLoginChoice() {
+       alert(""); 
+      }
+
+      function showSignupChoice() {
+        alert("");
+      }
+
+      function scrollToSection(id) {
+        const section = document.getElementById(id);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
+      // Authentication Functions
+      function showCustomerAuth(type) {
+        if (type === 'login') {
+          document.querySelector('.home-screen').classList.remove('active');
+          document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+          document.getElementById('customer-login-screen').classList.add('active');
+        } else {
+          document.querySelector('.home-screen').classList.remove('active');
+          document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+          document.getElementById('customer-signup-screen').classList.add('active');
+        }
+      }
+
+      function showPharmacyAuth(type) {
+        if (type === 'login') {
+          document.querySelector('.home-screen').classList.remove('active');
+          document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+          document.getElementById('pharmacy-login-screen').classList.add('active');
+        } else {
+          document.querySelector('.home-screen').classList.remove('active');
+          document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+          document.getElementById('pharmacy-signup-screen').classList.add('active');
+        }
+      }
+
+      function handleCustomerLogin(e) {
+        e.preventDefault();
+        const phone = document.getElementById('customer-phone').value;
+        const password = document.getElementById('customer-password').value;
+
+        if (state.customers[phone] && state.customers[phone].password === password) {
+          state.currentUser = state.customers[phone];
+          state.userType = 'customer';
+          showCustomerDashboard();
+          showNotification('خوش آمدید!', 'success');
+        } else {
+          showNotification('شماره تلفن یا رمز عبور اشتباه است', 'error');
+        }
+      }
+
+      function handleCustomerSignup(e) {
+        e.preventDefault();
+        const name = document.getElementById('customer-name').value;
+        const phone = document.getElementById('customer-phone-signup').value;
+        const city = document.getElementById('customer-city').value;
+        const password = document.getElementById('customer-password-signup').value;
+
+        if (state.customers[phone]) {
+          showNotification('این شماره تلفن قبلاً ثبت شده است', 'error');
+          return;
+        }
+
+        state.customers[phone] = { name, phone, city, password, prescriptions: [] };
+        localStorage.setItem('customers', JSON.stringify(state.customers));
+
+        state.currentUser = state.customers[phone];
+        state.userType = 'customer';
+        showCustomerDashboard();
+        showNotification('ثبت نام موفق!', 'success');
+      }
+
+      function handlePharmacyLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('pharmacy-username').value;
+        const password = document.getElementById('pharmacy-password').value;
+
+        const pharmacy = Object.values(state.pharmacies).find((p) => p.username === username);
+
+        if (pharmacy && pharmacy.password === password) {
+          state.currentUser = pharmacy;
+          state.userType = 'pharmacy';
+          showPharmacyDashboard();
+          showNotification('خوش آمدید!', 'success');
+        } else {
+          showNotification('نام کاربری یا رمز عبور اشتباه است', 'error');
+        }
+      }
+
+      function handlePharmacySignup(e) {
+        e.preventDefault();
+        const name = document.getElementById('pharmacy-name').value;
+        const manager = document.getElementById('manager-name').value;
+        const phone = document.getElementById('pharmacy-phone').value;
+        const city = document.getElementById('pharmacy-city').value;
+        const username = document.getElementById('pharmacy-username-signup').value;
+        const password = document.getElementById('pharmacy-password-signup').value;
+
+        const pharmacyId = Date.now().toString();
+        state.pharmacies[pharmacyId] = {
+          id: pharmacyId,
+          name,
+          manager,
+          phone,
+          city,
+          username,
+          password,
+          prescriptions: [],
+        };
+        localStorage.setItem('pharmacies', JSON.stringify(state.pharmacies));
+
+        state.currentUser = state.pharmacies[pharmacyId];
+        state.userType = 'pharmacy';
+        showPharmacyDashboard();
+        showNotification('ثبت نام داروخانه موفق!', 'success');
+      }
+
+      function logout() {
+        state.currentUser = null;
+        state.userType = null;
+        goHome();
+        showNotification('خروج موفق!', 'success');
+      }
+
+      // Dashboard Functions
+      function showCustomerDashboard() {
+        document.querySelector('.home-screen').classList.remove('active');
+        document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+        document.getElementById('customer-dashboard').classList.add('active');
+        document.getElementById('customer-welcome').textContent = `خوش آمدید ${state.currentUser.name}!`;
+        renderCustomerPrescriptions();
+      }
+
+      function showPharmacyDashboard() {
+        document.querySelector('.home-screen').classList.remove('active');
+        document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+        document.getElementById('pharmacy-dashboard').classList.add('active');
+        document.getElementById('pharmacy-welcome').textContent = `خوش آمدید ${state.currentUser.name}!`;
+        renderPharmacyPrescriptions();
+      }
+
+      // Prescription Management
+      function handlePrescriptionSubmit(e) {
+        e.preventDefault();
+        const code = document.getElementById('prescription-code').value;
+        const id = document.getElementById('prescription-id').value;
+        const insuranceType = document.getElementById('insurance-type').value;
+
+        const prescription = {
+          id: Date.now().toString(),
+          customerId: state.currentUser.phone,
+          customerName: state.currentUser.name,
+          code,
+          prescriptionId: id,
+          insurance: insuranceType,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+          acceptedBy: null,
+          readyTime: null,
+        };
+
+        state.prescriptions.push(prescription);
+        state.currentUser.prescriptions = state.currentUser.prescriptions || [];
+        state.currentUser.prescriptions.push(prescription.id);
+        localStorage.setItem('prescriptions', JSON.stringify(state.prescriptions));
+        localStorage.setItem('customers', JSON.stringify(state.customers));
+
+        showNotification('نسخه با موفقیت ارسال شد!', 'success');
+        document.getElementById('prescription-code').value = '';
+        document.getElementById('prescription-id').value = '';
+        document.getElementById('insurance-type').value = '';
+        renderCustomerPrescriptions();
+      }
+
+      function renderCustomerPrescriptions() {
+        const container = document.getElementById('customer-prescriptions');
+        const userPrescriptions = state.prescriptions.filter(
+          (p) => p.customerId === state.currentUser.phone
+        );
+
+        if (userPrescriptions.length === 0) {
+          container.innerHTML = `
+            <p style="color: #a1a1a1; text-align: center; padding: 2rem">
+              هنوز نسخه‌ای ارسال نکردید. یک نسخه جدید ارسال کنید.
+            </p>
+          `;
+          return;
+        }
+
+        container.innerHTML = userPrescriptions
+          .map(
+            (p) => `
+          <div class="prescription-card">
+            <h3>نسخه کد: ${p.code}</h3>
+            <div class="prescription-info">
+              <div class="info-item">
+                <label>شماره نسخه:</label>
+                <span>${p.prescriptionId}</span>
+              </div>
+              <div class="info-item">
+                <label>نوع بیمه:</label>
+                <span>${getInsuranceLabel(p.insurance)}</span>
+              </div>
+              <div class="info-item">
+                <label>وضعیت:</label>
+                <span class="status-badge status-${p.status}">${getStatusLabel(p.status)}</span>
+              </div>
+            </div>
+            ${
+              p.status === 'accepted'
+                ? `
+              <div class="timer-container">
+                <h3>⏱️ آماده شدن دارو</h3>
+                <div class="timer" id="timer-${p.id}">15:00</div>
+                <p style="color: #a1a1a1">دارو شما در حال آماده‌سازی است</p>
+                <button class="btn btn-primary" onclick="goToPayment('${p.id}')">پرداخت و دریافت</button>
+              </div>
+            `
+                : p.status === 'pending'
+                  ? `
+              <p style="color: #a1a1a1; padding: 1rem 0">
+                منتظر تأیید داروخانه‌ها...
+              </p>
+            `
+                  : ''
+            }
+          </div>
+        `
+          )
+          .join('');
+
+        // Start timers
+        userPrescriptions.forEach((p) => {
+          if (p.status === 'accepted') {
+            startTimer(p.id);
+          }
+        });
+      }
+
+      function renderPharmacyPrescriptions() {
+        const container = document.getElementById('pharmacy-prescriptions');
+        const pharmacyPrescriptions = state.prescriptions.filter(
+          (p) => p.status === 'pending'
+        );
+
+        if (pharmacyPrescriptions.length === 0) {
+          container.innerHTML = `
+            <p style="color: #a1a1a1; text-align: center; padding: 2rem">
+              هنوز نسخه‌ای دریافت نشده است.
+            </p>
+          `;
+          return;
+        }
+
+        container.innerHTML = pharmacyPrescriptions
+          .map(
+            (p) => `
+          <div class="prescription-card">
+            <h3>از: ${p.customerName}</h3>
+            <div class="prescription-info">
+              <div class="info-item">
+                <label>کد نسخه:</label>
+                <span>${p.code}</span>
+              </div>
+              <div class="info-item">
+                <label>شماره نسخه:</label>
+                <span>${p.prescriptionId}</span>
+              </div>
+              <div class="info-item">
+                <label>نوع بیمه:</label>
+                <span>${getInsuranceLabel(p.insurance)}</span>
+              </div>
+            </div>
+            <div class="prescription-actions">
+              <button class="btn btn-primary" onclick="acceptPrescription('${p.id}')">تأیید</button>
+              <button class="btn btn-secondary" onclick="rejectPrescription('${p.id}')">رد کن</button>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      }
+
+      function acceptPrescription(prescriptionId) {
+        const prescription = state.prescriptions.find((p) => p.id === prescriptionId);
+        if (prescription) {
+          prescription.status = 'accepted';
+          prescription.acceptedBy = state.currentUser.name;
+          prescription.readyTime = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+          localStorage.setItem('prescriptions', JSON.stringify(state.prescriptions));
+          renderPharmacyPrescriptions();
+          showNotification('نسخه تأیید شد!', 'success');
+        }
+      }
+
+      function rejectPrescription(prescriptionId) {
+        const prescription = state.prescriptions.find((p) => p.id === prescriptionId);
+        if (prescription) {
+          prescription.status = 'rejected';
+          localStorage.setItem('prescriptions', JSON.stringify(state.prescriptions));
+          renderPharmacyPrescriptions();
+          showNotification('نسخه رد شد!', 'success');
+        }
+      }
+
+      function goToPayment(prescriptionId) {
+        document.getElementById('payment-modal').classList.add('active');
+        document.getElementById('payment-amount').textContent = '150,000 تومان';
+      }
+
+      function closePaymentModal() {
+        document.getElementById('payment-modal').classList.remove('active');
+      }
+
+      function completePayment(e) {
+        e.preventDefault();
+        showNotification('پرداخت با موفقیت انجام شد!', 'success');
+        closePaymentModal();
+        // Simulate payment completion
+        setTimeout(() => {
+          showNotification('دارو شما آماده است. لطفاً به داروخانه مراجعه کنید!', 'success');
+        }, 2000);
+      }
+
+      // Timer Function
+      function startTimer(prescriptionId) {
+        let timeLeft = 15 * 60; // 15 minutes in seconds
+        const timerElement = document.getElementById(`timer-${prescriptionId}`);
+
+        if (!timerElement) return;
+
+        const interval = setInterval(() => {
+          timeLeft--;
+
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+
+          timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds
+            .toString()
+            .padStart(2, '0')}`;
+
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            timerElement.textContent = '✓ آماده است';
+            timerElement.style.color = '#22c55e';
+          }
+        }, 1000);
+      }
+
+      // Notification System
+      function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Utility Functions
+      function getInsuranceLabel(code) {
+        const labels = {
+          social: 'تامین اجتماعی',
+          'health-services': 'خدمات درمانی',
+          military: 'نیروهای مسلح',
+          'disabled-veterans': 'جانبازان',
+        };
+        return labels[code] || code;
+      }
+
+      function getStatusLabel(status) {
+        const labels = {
+          pending: '⏳ در انتظار',
+          accepted: '✓ تأیید شده',
+          rejected: '✗ رد شده',
+          ready: '✓ آماده است',
+        };
+        return labels[status] || status;
+      }
+
+      function closePrescriptionModal() {
+        document.getElementById('prescription-modal').classList.remove('active');
+      }
+
+      // Initialize with sample data
+      function initializeSampleData() {
+        if (Object.keys(state.customers).length === 0) {
+          state.customers['09121234567'] = {
+            name: 'احمد رضایی',
+            phone: '09121234567',
+            city: 'tehran',
+            password: '1234',
+            prescriptions: [],
+          };
+          localStorage.setItem('customers', JSON.stringify(state.customers));
+        }
+
+        if (Object.keys(state.pharmacies).length === 0) {
+          state.pharmacies['1'] = {
+            id: '1',
+            name: 'داروخانه شریف',
+            manager: 'علی احمدی',
+            phone: '02612345678',
+            city: 'tehran',
+            username: 'sharif',
+            password: '1234',
+            prescriptions: [],
+          };
+          localStorage.setItem('pharmacies', JSON.stringify(state.pharmacies));
+        }
+      }
+
+      // Initialize on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeSampleData();
+        console.log('داروجو آماده است!');
+      });
+    </script>
+  </body>
+</html>
