@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUICK DOSE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="icon" href="/g48.png" sizes="any">
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        :root {
+            --primary: #555555;
+            --primary-light: #949494;
+            --secondary: #2CB67D;
+            --text-primary: #16161A;
+            --text-secondary: #72757E;
+            --bg-primary: #FFFFFE;
+            --bg-secondary: #F9F9F9;
+            --bg-tertiary: #F2F4FF;
+            --card-bg: #FFFFFF;
+            --card-shadow: 0 10px 30px rgba(127, 90, 240, 0.1);
+            --btn-shadow: 0 8px 20px rgba(127, 90, 240, 0.3);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --border-radius: 16px;
+        }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-size: 16px;
+            letter-spacing: -0.01em;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 10px;
+        }
+        
+        /* Splash Screen */
+        .splash-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            background: radial-gradient(circle at center, var(--bg-tertiary) 0%, var(--bg-primary) 70%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: opacity 0.8s ease-out, visibility 0.8s;
+        }
+        
+        .splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .splash-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .splash-screen img {
+            width: 60px;
+            height: auto;
+            animation: pulse 2s infinite;
+        }
+        
+        .splash-screen h2 {
+            margin-top: 16px;
+            color: var(--text-secondary);
+            animation: fadeIn 1s ease-in;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-in, transform 1s ease-in;
+        }
+        
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+            position: relative;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            position: relative;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        .cta-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--btn-shadow);
+            letter-spacing: 0.02em;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(127, 90, 240, 0.4);
+            background: var(--primary-light);
+        }
+        
+        /* Header */
+        header {
+            padding: 100px 0 60px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 48px;
+            line-height: 1.6;
+        }
+        
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 0 80px;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .hero-content {
+            flex: 1;
+            min-width: 300px;
+            padding-right: 40px;
+        }
+        
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .hero-image:before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(127, 90, 240, 0.1) 0%, rgba(127, 90, 240, 0) 70%);
+            z-index: -1;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(127, 90, 240, 0.1);
+        }
+        
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+            font-weight: 700;
+        }
+        
+        .hero-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background-color: var(--bg-tertiary);
+            border-radius: 30px;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        
+        .badge svg {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .hero-btn {
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hero-primary-btn {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: var(--btn-shadow);
+        }
+        
+        .hero-primary-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(127, 90, 240, 0.4);
+            background: var(--primary-light);
+        }
+        
+        .hero-secondary-btn {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .hero-secondary-btn:hover {
+            transform: translateY(-3px);
+            background-color: #E8ECFF;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+        }
+        
+        .features-title {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            padding: 36px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            text-align: left;
+            transition: var(--transition);
+            border: 1px solid rgba(127, 90, 240, 0.1);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(127, 90, 240, 0.15);
+        }
+        
+        .feature-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            background: var(--bg-tertiary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-icon-container:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(127, 90, 240, 0.2) 0%, rgba(127, 90, 240, 0) 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover .feature-icon-container:before {
+            opacity: 1;
+        }
+        
+        .feature-icon {
+            font-size: 1.8rem;
+            color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            font-weight: 700;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover h3 {
+            color: var(--primary);
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        .feature-card img{
+            width: 100%;
+            height: auto;
+            align-items: center;
+            margin-top: 1.5rem;
+            border-radius: 18px;
+        }
+        
+        /* Download Section */
+        .download-section {
+            padding: 80px 20px;
+            margin: 40px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: none;
+        }
+        
+        
+        .download-options {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .download-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            width: 320px;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid rgba(127, 90, 240, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .download-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            transition: var(--transition);
+            opacity: 0;
+        }
+        
+        .download-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(127, 90, 240, 0.15);
+        }
+        
+        .download-card:hover:before {
+            opacity: 1;
+        }
+        
+        .download-card img {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 24px;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1));
+            transition: var(--transition);
+        }
+        
+        .download-card:hover img {
+            transform: scale(1.05);
+        }
+        
+        .download-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        
+        .download-card p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(45deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--btn-shadow);
+        }
+        
+        .download-btn svg {
+            width: 20px;
+            height: 20px;
+            transition: var(--transition);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(127, 90, 240, 0.4);
+        }
+        
+        .download-btn:hover svg {
+            transform: translateX(4px);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 60px 0 30px;
+            margin-top: 80px;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-logo {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-logo p {
+            color: var(--text-secondary);
+            margin-top: 20px;
+            max-width: 300px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links-column {
+            min-width: 160px;
+        }
+        
+        .footer-links-column h4 {
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        
+        .footer-links-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links-column ul li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links-column ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .footer-links-column ul li a:hover {
+            color: var(--primary);
+        }
+        
+        .footer-bottom {
+            padding-top: 30px;
+            border-top: 1px solid rgba(127, 90, 240, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            color: var(--text-secondary);
+        }
+        
+        .social-link:hover {
+            transform: translateY(-4px);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Fixed the SVG styling */
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            transition: var(--transition);
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        /* Download Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            width: 80%;
+            max-width: 600px;
+            transform: translateY(-50px);
+            opacity: 0;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+        
+        .modal.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-modal:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--primary);
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border: 1px solid rgba(127, 90, 240, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .qr-code img{
+            width: 100%;
+            height: auto;
+            margin: auto;
+        }
+        
+        .download-steps {
+            list-style-position: inside;
+            padding: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .download-steps li {
+            margin: 10px 0;
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .hero-content {
+                padding-right: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                border-radius: var(--border-radius);
+                z-index: 10;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero-content {
+                order: 2;
+            }
+            
+            .hero-image {
+                order: 1;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .badge {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .hero-text {
+                font-size: 1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .download-card {
+                width: 100%;
+            }
+            
+            .modal-content {
+                margin: 20% auto;
+                padding: 20px;
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splash-screen">
+        <div class="splash-content">
+            <img src="g48.png" alt="Calculator App Logo" class="animate__animated animate__fadeIn">
+            <!-- Splash Screen 
+            <h2 class="animate__animated animate__fadeIn animate__delay-1s">QUICK DOSE</h2>
+            -->                
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="main-content">
+        <!-- Navigation -->
+        <nav>
+            <div class="logo-container">
+                <img src="app icon.png" alt="Logo" class="logo">
+                <span class="logo-text">QUICK DOSE</span>
+            </div>
+            <div class="nav-links" id="nav-links">
+                <a href="#features">Features</a>
+                <a href="#download">Download</a>
+                <a href="#social">Contact</a>
+            </div>
+            <button class="cta-button" id="get-started-btn">Get Started</button>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+        </nav>
+
+        <!-- Header -->
+        <header>
+            <h1>Your Complete Calculator Solution</h1>
+            <p class="subtitle">Powerful, intuitive, and beautiful calculator app for all your mathematical needs, available on Android and iOS.</p>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    Modern Calculator App
+                </div>
+                <h2>Calculate Any drug dosing for pediatrics with Ease and Precision</h2>
+                <p class="hero-text">Our calculator app is designed to make calculations simple, fast, and accurate. With an intuitive interface and powerful features, it's perfect for Pharmacist, General Practitioners, and anyone who needs reliable dose calculations on the go.</p>
+                <div class="hero-buttons">
+                    <a href="#download" class="hero-btn hero-primary-btn">Download Now</a>
+                    <a href="#features" class="hero-btn hero-secondary-btn">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="./cropped-Group 49.png" alt="Calculator App Screenshot">
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="features-title">
+                <h2>Why Choose Our App?</h2>
+                <p class="subtitle">Packed with features to handle all your calculation needs</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+
+                </div>
+                <div class="feature-card">
+                    <h3>Calculations</h3>
+                    <p>Perform calculation with ease and speed.</p>
+                    <img src="./cropped-Group 50.png" alt="">
+                </div>
+                <div class="feature-card">
+
+                </div>
+
+            </div>
+        </section>
+    
+
+        <!-- Features Section 
+        <section class="features" id="features">
+            <div class="features-title">
+                <h2>Why Choose Our Calculator?</h2>
+                <p class="subtitle">Packed with features to handle all your calculation needs</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <div class="feature-icon">➕</div>
+                    </div>
+                    <h3>Basic Calculations</h3>
+                    <p>Perform addition, subtraction, multiplication, and division with ease and speed.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <div class="feature-icon">📊</div>
+                    </div>
+                    <h3>Scientific Functions</h3>
+                    <p>Access advanced mathematical functions including trigonometry, logarithms, and more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <div class="feature-icon">💱</div>
+                    </div>
+                    <h3>Unit Conversion</h3>
+                    <p>Convert between different units of measurement with our built-in converter.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <div class="feature-icon">📝</div>
+                    </div>
+                    <h3>Calculation History</h3>
+                    <p>Keep track of your previous calculations and easily refer back to them.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <div class="feature-icon">🎨</div>
+                    </div>
+                    <h3>Custom Themes</h3>
+                    <p>Personalize your calculator with multiple color themes to suit your style.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon-container">
+                        <div class="feature-icon">📱</div>
+                    </div>
+                    <h3>Cross-Platform</h3>
+                    <p>Available on both Android and iOS devices with seamless sync between them.</p>
+                </div>
+            </div>
+        </section>
+        -->
+
+        <!-- Download Section -->
+        <section class="download-section" id="download">
+            <h2>Download Now</h2>
+            <p class="subtitle">Available on all major platforms</p>
+            <div class="download-options">
+                <div class="download-card">
+                    <img src="/play-store.png" alt="Android Logo">
+                    <h3>Android</h3>
+                    <p>Download from our telegram channel and get started with your calculations today.</p>
+                    <a href="https://t.me/QuickDose_TA">
+                        <button class="download-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Download
+                        </button>
+                    </a>
+                </div>
+                <div class="download-card" >
+                    <img src="/app-store.png" alt="iOS Logo">
+                    <h3>iOS</h3>
+                    <p>Available for IOS as web app and get started with your calculations today.</p>
+                    <a href="http://quickdose.ir/app">
+                        <button class="download-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Download
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="app icon.png" alt="Logo" class="logo">
+                    <span class="logo-text">QUICK DOSE</span>
+                    <p>Your complete seconde brain in pharmacy. Simple, powerful, and intuitive.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#download">Download</a></li>
+                            <li><a href="https://t.me/QuickDose_TA">Updates</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="https://t.me/QuickDose_TA">About</a></li>
+                            <li><a href="https://amrqhz.github.io/quickdose-devnote.html">Blog</a></li>
+                        </ul>
+                    </div>
+                    <!--
+                    <div class="footer-links-column">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    -->
+                </div>
+            </div>
+            <div class="footer-bottom" id="social">
+                <div class="copyright">© 2025 Quick Dose. All rights reserved.</div>
+                <div class="social-links">
+                    <a href="https://t.me/amrqhz" class="social-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </footer> 
+    </div>
+    
+
+    <div class="modal" id="download-modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h2>Download Quick Dose</h2>
+            <p>Scan the QR code below to download our app on your mobile device.</p>
+            <div class="qr-code">
+                <img src="./frame.png" alt="QR Code">
+            </div>
+            <div class="qr-code">
+                <img src="./Pasted image (2).png" alt="QR Code">
+            </div>
+            <div class="download-steps">
+                <h3>Download Instructions:</h3>
+                <ol>
+                    <li>Open your camera app and point it at the QR code</li>
+                    <li>Tap the notification that appears</li>
+                    <li>Follow the instructions to install the app</li>
+                    <li>Open the app and start calculating!</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Splash Screen Animation
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('splash-screen').classList.add('hidden');
+                document.getElementById('main-content').classList.add('visible');
+            }, 2000);
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('nav-links').classList.toggle('active');
+        });
+
+        // Download Modal
+        const downloadButtons = document.querySelectorAll('.download-btn');
+        const modal = document.getElementById('download-modal');
+        const closeModal = document.getElementById('close-modal');
+
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        closeModal.addEventListener('click', function() {
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Smooth Scrolling for Anchor Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                document.getElementById('nav-links').classList.remove('active');
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Animation on Scroll
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.feature-card, .download-card');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.2;
+                
+                if (elementPosition < screenPosition) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        }
+
+        // Set initial state for animation
+        document.querySelectorAll('.feature-card, .download-card').forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        });
+
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+    </script>
+</body>
+</html>
