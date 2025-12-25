@@ -190,10 +190,10 @@
     .help-overlay { position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:90; background: rgba(2,6,23,0.6); }
     .help-card { background:var(--card); padding:18px; border-radius:10px; width:500px; max-width:95%; color:var(--text); }
 
-    footer.small { font-size:0.78rem; color:var(--muted); text-align:center; padding:8px;}
-    .small a { color:var(--muted); text-decoration:none; transition:color 150ms ease; }
-    .small a:hover { color:var(--text); }
-    .small span { opacity:0.5; }
+    .footer { font-size:0.78rem; color:var(--muted); text-align:center; padding:8px;}
+    .footer a { color:var(--muted); text-decoration:none; transition:color 150ms ease; }
+    .footer a:hover { color:var(--text); }
+    .footer span { opacity:0.5; }
     
 
 
@@ -233,6 +233,14 @@
         <div style="height:8px;"></div>
         <div id="load-status" class="muted" style="margin: 10px 0 10px 0;">Ready</div>
       </div>
+      <div class="control" id="basic-info-control">
+        <small>Structure info</small>
+        <div id="basic-info" class="muted" style="line-height:1.6;">
+          No structure loaded.
+        </div>
+      </div>
+
+
 
       <div class="control" id="representation-control">
         <small>Main representation</small>
@@ -339,7 +347,7 @@
         <!-- <div class="muted">Tip: C = center, R = reset, S = snapshot</div> -->
       </div>
 
-      <footer class="small">
+      <div class="footer">
           <a href="https://github.com/amrqhz" title="GitHub">GitHub</a>
           <span>•</span>
           <a href="#" title="Documentation">Docs</a>
@@ -347,7 +355,7 @@
           <a href="https://telegram.me/amrqhz" title="Contact">Contact</a>
           <span>•</span>
           <span>by amrqhz</span>
-      </footer>
+      </div>
     </aside>
 
     <main class="viewer-wrap" aria-label="Viewer">
@@ -428,6 +436,75 @@
       if(s.endsWith('.sdf')) return 'sdf';
       return 'pdb';
     }
+
+async function fetchBasicPDBInfo(pdbId) {
+  const infoDiv = el('basic-info');
+  infoDiv.innerHTML = 'Fetching structure info…';
+
+  try {
+    /* --- 1. ENTRY DATA (resolution + entity IDs) --- */
+    const entryRes = await fetch(
+      `https://data.rcsb.org/rest/v1/core/entry/${pdbId}`
+    );
+    if (!entryRes.ok) throw new Error('Entry not found');
+    const entry = await entryRes.json();
+
+    /* Resolution */
+    const resolution =
+      entry.rcsb_entry_info?.resolution_combined?.[0]
+        ? `${entry.rcsb_entry_info.resolution_combined[0]} Å`
+        : 'N/A';
+
+    const entityIds = entry.rcsb_entry_container_identifiers?.polymer_entity_ids || [];
+
+    /* --- 2. POLYMER ENTITY DATA (organism + mutation) --- */
+    const organismSet = new Set();
+    let mutation = 'No';
+
+    for (const entId of entityIds) {
+      const entRes = await fetch(
+        `https://data.rcsb.org/rest/v1/core/polymer_entity/${pdbId}/${entId}`
+      );
+      if (!entRes.ok) continue;
+
+      const ent = await entRes.json();
+
+      /* Organism */
+      (ent.rcsb_entity_source_organism || []).forEach(o => {
+        if (o.ncbi_scientific_name) {
+          organismSet.add(o.ncbi_scientific_name);
+        }
+      });
+
+      /* Mutation */
+      if (
+        ent.entity_poly?.rcsb_mutation_count &&
+        ent.entity_poly.rcsb_mutation_count > 0
+      ) {
+        mutation = 'Yes';
+      }
+    }
+
+    const organism =
+      organismSet.size > 0 ? [...organismSet].join(', ') : 'N/A';
+
+    /* --- 3. UI UPDATE --- */
+    infoDiv.innerHTML = `
+      <strong>Resolution:</strong> ${resolution}<br/>
+      <strong>Organism:</strong> ${organism}<br/>
+      <strong>Mutation(s):</strong> ${mutation}
+    `;
+
+  } catch (err) {
+    console.error(err);
+    infoDiv.innerHTML = `
+      <strong>Resolution:</strong> N/A<br/>
+      <strong>Organism:</strong> N/A<br/>
+      <strong>Mutation(s):</strong> N/A
+    `;
+  }
+}
+
 
     // Utility: group ligands (hetflag true) by resn+resi+chain
     function detectLigands(model){
@@ -686,6 +763,12 @@ function applyResidueSelection() {
       currentModel = null;
       ligandGroups = [];
       populateLigandDropdown();
+      el('basic-info').innerHTML = `
+        <strong>Resolution:</strong> N/A<br/>
+        <strong>Organism:</strong> N/A<br/>
+        <strong>Mutation(s):</strong> N/A
+      `;
+
 
       try {
         currentModel = viewer.addModel(txt, fmt || 'pdb');
@@ -707,6 +790,7 @@ function applyResidueSelection() {
         applyRepresentation();
         setTimeout(setupInteractions, 300);
         setupInteractions();
+        // displayPDBInfo(currentModel, sourceLabel);
 
         hideLoading();
         el('load-status').textContent = 'Loaded — atoms: ' + currentModel.selectedAtoms({}).length;
@@ -741,7 +825,9 @@ function applyResidueSelection() {
         const resp = await fetch(`https://files.rcsb.org/download/${pid}.pdb`);
         if(resp.ok){
           const txt = await resp.text();
-          loadModelFromString(txt, 'pdb', pid + '.pdb');
+          // loadModelFromString(txt, 'pdb', pid + '.pdb');
+          loadModelFromString(txt, 'pdb', pid.toUpperCase());
+          fetchBasicPDBInfo(pid); // ✅ ADD THIS  
           return;
         }
         const resp2 = await fetch(`https://files.rcsb.org/download/${pid}.cif`);
