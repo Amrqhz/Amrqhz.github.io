@@ -5,6 +5,7 @@
   <title>ProPDB — amrqhz</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.6.3/3Dmol-min.js"></script>
+  <link rel="icon" href="Group 84.svg">
 
   <style>
     :root{
@@ -19,81 +20,82 @@
       --btn-bg: #d1d1d1;
 
     }
+    
 
     html,body{height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:var(--text); background:var(--bg);}
 
    .app { 
-      display: grid; 
-      grid-template-columns: 320px 1fr; 
-      gap: 16px; 
-      height: 100vh; 
-      padding: 16px; 
-      box-sizing: border-box; 
-    } 
+          display: grid; 
+          grid-template-columns: 320px 1fr; 
+          gap: 16px; 
+          height: 100vh; 
+          padding: 16px; 
+          box-sizing: border-box; 
+        } 
 
-    @media (max-width: 900px) { 
-      .app { 
-        grid-template-columns: 1fr; 
-        height: 100vh;
-        height: 100dvh;
-        padding: 0; 
-        gap: 0;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        overflow: hidden;
-      } 
-      
-      .hamburger-btn { 
-        display: flex; 
-      } 
-      
-      .sidebar { 
-        position: fixed; 
-        left: 0; 
-        top: 0; 
-        width: 250px; 
-        height: 100vh;
-        height: 100dvh;
-        overflow-y: auto;
-        transform: translateX(-100%); 
-        transition: transform 0.3s ease; 
-        z-index: 1000; 
-        box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
-      } 
-      
-      .sidebar.active { 
-        transform: translateX(0); 
-      } 
-      
-      .overlay { 
-        display: none; 
-        position: fixed; 
-        inset: 0; 
-        background: rgba(0,0,0,0.5); 
-        z-index: 999; 
-      } 
-      
-      .overlay.active { 
-        display: block; 
-      } 
-      
-      .viewer-wrap { 
-        width: 100%; 
-        height: 100%;
-        overflow: hidden;
-        border-radius: 0; 
-      } 
-      
-      #viewer { 
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-      }
-    }
+        @media (max-width: 900px) { 
+          .app { 
+            grid-template-columns: 1fr; 
+            height: 100vh;
+            height: 100dvh;
+            padding: 0; 
+            gap: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            overflow: hidden;
+          } 
+          
+          .hamburger-btn { 
+            display: flex; 
+          } 
+          
+          .sidebar { 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            width: 250px; 
+            height: 100vh;
+            height: 100dvh;
+            overflow-y: auto;
+            transform: translateX(-100%); 
+            transition: transform 0.3s ease; 
+            z-index: 1000; 
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5); 
+          } 
+          
+          .sidebar.active { 
+            transform: translateX(0); 
+          } 
+          
+          .overlay { 
+            display: none; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.5); 
+            z-index: 999; 
+          } 
+          
+          .overlay.active { 
+            display: block; 
+          } 
+          
+          .viewer-wrap { 
+            width: 100%; 
+            height: 100%;
+            overflow: hidden;
+            border-radius: 0; 
+          } 
+          
+          #viewer { 
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+          }
+        }
 
     /* Desktop: hide hamburger */
     @media (min-width: 901px) {
@@ -242,7 +244,6 @@
           <option value="surface">Surface</option>
           <option value="cartoon+stick">Cartoon + Ligands</option>
         </select>
-
         <div style="height:8px;"></div>
         <small>Coloring</small>
         <select id="color-select" class="small-input" style="background-color: #091428;">
@@ -254,6 +255,28 @@
           <option value="uniform">Uniform (gray)</option>
         </select>
       </div>
+      <div class="control" id="residue-control">
+          <small>Residue selection</small>
+
+          <select id="chain-select" class="small-input" style="background-color:#091428;">
+            <option value="all">All chains</option>
+          </select>
+
+          <div style="height:8px;"></div>
+
+          <div class="row">
+            <input id="resi-start" type="number" placeholder="Start" class="small-input" />
+            <input id="resi-end" type="number" placeholder="End" class="small-input" />
+          </div>
+
+          <div style="height:8px;"></div>
+
+          <div class="row" style="justify-content: center; align-items: center;">
+            <button id="apply-residue" class="btn small">Apply</button>
+            <button id="clear-residue" class="btn small">Clear</button>
+          </div>
+      </div>
+
 
       <div class="control" id="ligand-control">
         <small>Ligand selection</small>
@@ -277,21 +300,43 @@
         </select>
       </div>
 
+      <!-- if i want to show the binding site i should uncomment this section-->
+
+      <!-- <div class="control" id="binding-site-control">
+        <small>Binding site</small>
+
+        <label style="display:flex; align-items:center; gap:8px;">
+          <input id="show-pocket" type="checkbox">
+          <span class="muted">Show binding pocket</span>
+        </label>
+
+        <div style="height:8px;"></div>
+
+        <small>Distance (Å)</small>
+        <input id="pocket-distance" type="number" value="4" min="2" max="8" step="0.5" class="small-input" style="background-color:#091428;">
+      </div> -->
+
+
       <div class="control" id="render-control">
         <small>Rendering & tools</small>
         <div class="row" style="margin-top:8px;">
           <button id="center-btn" class="btn ghost small">Center</button>
           <button id="reset-btn" class="btn ghost small">Reset</button>
+          <button id="spin-btn" class="btn ghost small">Spin</button>          
         </div>
 
         <div style="height:8px;"></div>
-        <div class="row">
-          <button id="snapshot-btn" class="btn small">Snapshot</button>
-          <button id="spin-btn" class="btn ghost small">Spin</button>
-        </div>
+        <button id="snapshot-btn" class="btn small">Snapshot</button>
+        <div style="height:8px;"></div>
+
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input id="transparent-bg" type="checkbox">
+          <span class="muted" style="font-size: 14px;">Transparent background</span>
+        </label>
+
 
         <div style="height:8px;"></div>
-        <div class="muted">Tip: C = center, R = reset, S = snapshot</div>
+        <!-- <div class="muted">Tip: C = center, R = reset, S = snapshot</div> -->
       </div>
 
       <footer class="small">
@@ -331,6 +376,9 @@
     const hamburger = el('hamburger-btn');
     const sidebar = el('sidebar');
     const overlay = el('overlay');
+    const DEFAULT_BG = 0x071421;
+    let currentBgColor = DEFAULT_BG;
+
 
     hamburger.addEventListener('click', () => {
       hamburger.classList.toggle('active');
@@ -358,7 +406,7 @@
     // Viewer & state
     const viewerDiv = el('viewer');
     viewerDiv.style.height = 'calc(100dvh - 48px)';
-    const viewer = $3Dmol.createViewer(viewerDiv, { defaultcolors: $3Dmol.rasmolElementColors, backgroundColor: 0x071421, antialias:true });
+    const viewer = $3Dmol.createViewer(viewerDiv, { defaultcolors: $3Dmol.rasmolElementColors, backgroundColor: DEFAULT_BG, antialias:true });
     let currentModel = null;
     let selectedAtoms = [];
     let spinInterval = null;
@@ -410,6 +458,23 @@
       ligandGroups.forEach(g => g.id = `${g.resn} ${g.chain}:${g.resi}`);
       return ligandGroups;
     }
+    function populateChainDropdown() {
+      const sel = el('chain-select');
+      sel.innerHTML = '<option value="all">All chains</option>';
+
+      if (!currentModel) return;
+
+      const atoms = currentModel.selectedAtoms({ hetflag: false });
+      const chains = [...new Set(atoms.map(a => a.chain).filter(Boolean))];
+
+      chains.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = `Chain ${c}`;
+        sel.appendChild(opt);
+      });
+    }
+
 
     // Populate ligand dropdown
     function populateLigandDropdown(){
@@ -458,11 +523,52 @@
       } else if(rep === 'surface'){
         viewer.setStyle({hetflag:false}, {surface:{opacity:0.90, color: mainColor}});
       }
-
+      // applyBindingSite();
       applyLigandStyle();
       viewer.zoomTo();
       viewer.render();
     }
+function applyResidueSelection() {
+  if (!currentModel) return;
+
+  const chain = el('chain-select').value;
+  const start = parseInt(el('resi-start').value);
+  const end = parseInt(el('resi-end').value);
+
+  const focusSel = {};
+  if (chain !== 'all') focusSel.chain = chain;
+
+  if (!isNaN(start) && !isNaN(end) && end >= start) {
+    // create an array of residue numbers
+    focusSel.resi = [];
+    for (let i = start; i <= end; i++) focusSel.resi.push(i);
+  }
+
+  /* 1️⃣ Dim protein only */
+  viewer.setStyle({hetflag:false}, {
+    cartoon: { color: '#64748b', opacity: 0.45 }
+  });
+
+  /* 2️⃣ Highlight focused region */
+  viewer.setStyle(focusSel, {
+    cartoon: { color: '#ef4444', opacity: 1.0 },
+  });
+
+  /* 3️⃣ Keep ligands visible */
+  applyLigandStyle();
+
+  // viewer.zoomTo(focusSel);
+  viewer.render();
+}
+
+    function clearResidueSelection() {
+      el('chain-select').value = 'all';
+      el('resi-start').value = '';
+      el('resi-end').value = '';
+      applyRepresentation();
+    }
+
+
 
     function mapColor(sel){
       if(sel==='chain') return 'chain';
@@ -518,6 +624,60 @@
       viewer.render();
     }
 
+    // function applyBindingSite() {
+    //   if (!currentModel) return;
+    //   if (!el('show-pocket').checked) {
+    //     // viewer.removeAllSurfaces();
+    //     viewer.render();
+    //     return;
+    //   }
+
+    //   const dist = parseFloat(el('pocket-distance').value) || 4;
+    //   const ligSel = el('ligand-dropdown').value;
+    //   if (ligSel === 'none') return;
+
+    //   viewer.removeAllSurfaces();
+
+    //   let ligandSelection;
+    //   if (ligSel === 'all') {
+    //     ligandSelection = { hetflag: true };
+    //   } else {
+    //     try {
+    //       const o = JSON.parse(ligSel);
+    //       ligandSelection = { resn: o.resn, chain: o.chain, resi: o.resi };
+    //     } catch {
+    //       return;
+    //     }
+    //   }
+
+    //   // Pocket residues (protein only)
+    //   viewer.setStyle(
+    //     {
+    //       hetflag: false,
+    //       within: { distance: dist, sel: ligandSelection }
+    //     },
+    //     {
+    //       stick: { radius: 0.2, colorscheme: 'residue' }
+    //     }
+    //   );
+
+    //   // Optional pocket surface
+    //   viewer.addSurface(
+    //     $3Dmol.SurfaceType.MS,
+    //     {
+    //       opacity: 0.65,
+    //       color: 'white'
+    //     },
+    //     {
+    //       hetflag: false,
+    //       within: { distance: dist, sel: ligandSelection }
+    //     }
+    //   );
+
+    //   viewer.render();
+    // }
+
+
     // Load model from string (pdb or mmcif)
     function loadModelFromString(txt, fmt, sourceLabel){
       showLoading('Parsing & rendering...');
@@ -535,6 +695,8 @@
 
         ligandGroups = detectLigands(currentModel);
         populateLigandDropdown();
+        populateChainDropdown();
+
 
         if(ligandGroups.length > 0){
           el('ligand-dropdown').value = 'all';
@@ -601,22 +763,52 @@
     el('color-select').addEventListener('change', ()=> applyRepresentation());
     el('lig-style').addEventListener('change', ()=> applyLigandStyle());
     el('lig-color').addEventListener('change', ()=> applyLigandStyle());
-    el('ligand-dropdown').addEventListener('change', ()=> applyLigandStyle());
+    // el('show-pocket').addEventListener('change', applyBindingSite);
+    // el('pocket-distance').addEventListener('change', applyBindingSite);
+    el('ligand-dropdown').addEventListener('change', ()=>{ applyLigandStyle();
+    applyBindingSite();});
+    el('apply-residue').addEventListener('click', applyResidueSelection);
+    el('clear-residue').addEventListener('click', clearResidueSelection);
 
-    // Snapshot
-    el('snapshot-btn').addEventListener('click', ()=>{
+
+        // Snapshot
+    el('snapshot-btn').addEventListener('click', () => {
+      const transparent = el('transparent-bg').checked;
+
       try {
-        const data = viewer.renderToImage();
-        const a = document.createElement('a'); a.href = data; a.download = 'snapshot.png'; document.body.appendChild(a); a.click(); a.remove();
-      } catch(e){
-        try {
-          const data = viewer.pngURI();
-          const a = document.createElement('a'); a.href = data; a.download = 'snapshot.png'; document.body.appendChild(a); a.click(); a.remove();
-        } catch(e){
-          alert('Snapshot failed: ' + e.message);
+        if (transparent) {
+          // Set transparent background
+          viewer.setBackgroundColor(0x000000, 0.0);
         }
+
+        viewer.render();
+
+        // Use renderToImage when available (best quality)
+        let dataURI;
+        if (viewer.renderToImage) {
+          dataURI = viewer.renderToImage();
+        } else {
+          dataURI = viewer.pngURI();
+        }
+
+        // Restore background
+        if (transparent) {
+          viewer.setBackgroundColor(currentBgColor);
+          viewer.render();
+        }
+
+        const a = document.createElement('a');
+        a.href = dataURI;
+        a.download = transparent ? 'snapshot-transparent.png' : 'snapshot.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+      } catch (e) {
+        alert('Snapshot failed: ' + e.message);
       }
     });
+
 
     // Spin
     let fallbackSpinInterval = null;
