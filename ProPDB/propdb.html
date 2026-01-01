@@ -6,9 +6,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.6.3/3Dmol-min.js"></script>
   <link rel="icon" href="Group 84.svg">
+  <meta name="theme-color" content="e0004b">
 
   <style>
     :root{
+      --g : #e0004b;
       --radius:12px;
       --muted:#9aa6b2;
       --accent-grad: linear-gradient(90deg,#6ee7b7,#39a6ff);
@@ -195,6 +197,42 @@
     .footer a:hover { color:var(--text); }
     .footer span { opacity:0.5; }
     
+  .residue-letter {
+    font-family: monospace;
+    padding: 2px 5px;
+    border-radius: 4px;
+    cursor: default;
+    color: #fafafa;
+  }
+
+  .residue-letter:hover {
+    background: rgb(255, 255, 255);
+    color: #091428;
+  }
+  /* Residue box scrollbar */
+#residue-box {
+  scrollbar-width: thin;              /* Firefox */
+  scrollbar-color: #6ee7b7 transparent;
+}
+
+/* Chrome, Edge, Safari */
+#residue-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+#residue-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#residue-box::-webkit-scrollbar-thumb {
+  background-color: rgba(110,231,183,0.45);
+  border-radius: 6px;
+}
+
+#residue-box::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(110,231,183,0.7);
+}
+
 
 
     /* smooth */
@@ -283,6 +321,19 @@
             <button id="apply-residue" class="btn small">Apply</button>
             <button id="clear-residue" class="btn small">Clear</button>
           </div>
+          <div class="control" style="margin-top: 1rem;">
+            <small>Residues</small>
+            <div id="residue-box" style="
+              font-family: monospace;
+              font-size: 12px;
+              line-height: 1.6;
+              white-space: pre-wrap;
+              max-height: 180px;
+              overflow-y: auto;">No structure loaded.</div>
+          </div>
+
+
+
       </div>
 
 
@@ -347,7 +398,7 @@
         <!-- <div class="muted">Tip: C = center, R = reset, S = snapshot</div> -->
       </div>
 
-      <div class="footer">
+      <div class="control footer">
           <a href="https://github.com/amrqhz" title="GitHub">GitHub</a>
           <span>•</span>
           <a href="#" title="Documentation">Docs</a>
@@ -388,6 +439,24 @@
     let currentBgColor = DEFAULT_BG;
 
 
+
+    const AA_3_TO_1 = {
+  ALA:'A', ARG:'R', ASN:'N', ASP:'D',
+  CYS:'C', GLU:'E', GLN:'Q', GLY:'G',
+  HIS:'H', ILE:'I', LEU:'L', LYS:'K',
+  MET:'M', PHE:'F', PRO:'P', SER:'S',
+  THR:'T', TRP:'W', TYR:'Y', VAL:'V'
+};
+
+const AA_FULL = {
+  ALA:'Alanine', ARG:'Arginine', ASN:'Asparagine', ASP:'Aspartate',
+  CYS:'Cysteine', GLU:'Glutamate', GLN:'Glutamine', GLY:'Glycine',
+  HIS:'Histidine', ILE:'Isoleucine', LEU:'Leucine', LYS:'Lysine',
+  MET:'Methionine', PHE:'Phenylalanine', PRO:'Proline', SER:'Serine',
+  THR:'Threonine', TRP:'Tryptophan', TYR:'Tyrosine', VAL:'Valine'
+};
+
+
     hamburger.addEventListener('click', () => {
       hamburger.classList.toggle('active');
       sidebar.classList.toggle('active');
@@ -420,6 +489,8 @@
     let spinInterval = null;
     let spinUsingAPI = false;
     let ligandGroups = [];
+    let cachedResidues = null;
+
 
     // Loading helper
     function showLoading(text){
@@ -701,6 +772,146 @@ function applyResidueSelection() {
       viewer.render();
     }
 
+//     function extractResidueSequence(model) {
+//   const atoms = model.selectedAtoms({ hetflag: false });
+//   const chains = {};
+
+//   atoms.forEach(a => {
+//     if (!a.chain || !a.resi) return;
+
+//     if (!chains[a.chain]) chains[a.chain] = {};
+
+//     // one entry per residue
+//     if (!chains[a.chain][a.resi]) {
+//       chains[a.chain][a.resi] = a.resn;
+//     }
+//   });
+
+//   return chains;
+// }
+
+function extractResidues(model) {
+  const atoms = model.selectedAtoms({ hetflag:false });
+  const chains = {};
+
+  atoms.forEach(a => {
+    if (!a.chain || !a.resi) return;
+
+    if (!chains[a.chain]) chains[a.chain] = {};
+
+    if (!chains[a.chain][a.resi]) {
+      chains[a.chain][a.resi] = {
+        resn: a.resn,
+        resi: a.resi
+      };
+    }
+  });
+
+  return chains;
+}
+function renderResidueBoxForChain(chain) {
+  const box = document.getElementById('residue-box');
+
+  if (!cachedResidues) {
+    box.textContent = 'No structure loaded.';
+    return;
+  }
+
+  box.innerHTML = '';
+
+  const chainsToShow =
+    chain === 'all'
+      ? Object.keys(cachedResidues).sort()
+      : [chain];
+
+  chainsToShow.forEach(c => {
+    const residues = cachedResidues[c];
+    if (!residues) return;
+
+    const title = document.createElement('div');
+    title.innerHTML = `<strong>Chain ${c}</strong>`;
+    box.appendChild(title);
+
+    const line = document.createElement('div');
+    line.style.display = 'flex';
+    line.style.flexWrap = 'wrap';
+    line.style.gap = '6px';
+    line.style.marginBottom = '10px';
+
+    Object.values(residues)
+      .sort((a,b)=>a.resi-b.resi)
+      .forEach(r => {
+        const span = document.createElement('span');
+        span.className = 'residue-letter';
+        span.textContent = AA_3_TO_1[r.resn] || 'X';
+        span.dataset.resn = r.resn;
+        span.dataset.resi = r.resi;
+        span.dataset.chain = c;
+        line.appendChild(span);
+      });
+
+    box.appendChild(line);
+  });
+}
+
+const tooltip = document.createElement('div');
+tooltip.style.position = 'fixed';
+tooltip.style.padding = '6px 8px';
+tooltip.style.background = 'rgba(0,0,0,0.85)';
+tooltip.style.color = 'white';
+tooltip.style.fontSize = '15px';
+tooltip.style.borderRadius = '6px';
+tooltip.style.pointerEvents = 'select';
+tooltip.style.display = 'none';
+tooltip.style.zIndex = 2000;
+document.body.appendChild(tooltip);
+
+document.addEventListener('mouseover', e => {
+  const el = e.target;
+  if (!el.classList.contains('residue-letter')) return;
+
+  const resn = el.dataset.resn;
+  const resi = el.dataset.resi;
+
+  tooltip.textContent = `${AA_FULL[resn] || resn} ${resi}`;
+  tooltip.style.display = 'block';
+});
+
+document.addEventListener('mousemove', e => {
+  tooltip.style.left = e.clientX + 10 + 'px';
+  tooltip.style.top  = e.clientY + 10 + 'px';
+});
+
+document.addEventListener('mouseout', e => {
+  if (e.target.classList.contains('residue-letter')) {
+    tooltip.style.display = 'none';
+  }
+});
+
+
+// function renderResidueBox(model) {
+//   const box = document.getElementById('residue-box');
+//   if (!model) {
+//     box.textContent = 'No structure loaded.';
+//     return;
+//   }
+
+//   const chains = extractResidueSequence(model);
+//   let output = '';
+
+//   Object.keys(chains).sort().forEach(chain => {
+//     const residues = Object.keys(chains[chain])
+//       .sort((a,b) => a - b)
+//       .map(resi => chains[chain][resi])
+//       .join(' ');
+
+//     output += `Chain ${chain}:\n${residues}\n\n`;
+//   });
+
+//   box.textContent = output.trim();
+// }
+
+
     // function applyBindingSite() {
     //   if (!currentModel) return;
     //   if (!el('show-pocket').checked) {
@@ -771,10 +982,24 @@ function applyResidueSelection() {
 
 
       try {
+        // currentModel = viewer.addModel(txt, fmt || 'pdb');
+
         currentModel = viewer.addModel(txt, fmt || 'pdb');
-        viewer.setStyle({}, {cartoon:{color:'spectrum'}});
-        viewer.zoomTo();
-        viewer.render();
+        viewer.render(); // fast first frame
+
+        requestAnimationFrame(() => {
+          applyRepresentation(); // heavy work after first paint
+        });
+        setTimeout(() => {
+          cachedResidues = extractResidues(currentModel);
+          renderResidueBoxForChain('all');
+
+        }, 0);
+
+        // renderResidueBox(currentModel);
+        // viewer.setStyle({}, {cartoon:{color:'spectrum'}});
+        // viewer.zoomTo();
+        // viewer.render();
 
         ligandGroups = detectLigands(currentModel);
         populateLigandDropdown();
@@ -855,6 +1080,10 @@ function applyResidueSelection() {
     applyBindingSite();});
     el('apply-residue').addEventListener('click', applyResidueSelection);
     el('clear-residue').addEventListener('click', clearResidueSelection);
+    el('chain-select').addEventListener('change', () => {
+      const selectedChain = el('chain-select').value;
+      renderResidueBoxForChain(selectedChain);
+    });
 
 
         // Snapshot
