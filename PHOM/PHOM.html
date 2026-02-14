@@ -108,19 +108,31 @@
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-top">
                     <div class="sidebar-logo">
-                        <div class="sidebar-logo-main">PHOM</div>
-                        <div class="sidebar-logo-subtitle">Pharmacy Oriented Models</div>
+                        <div class="sidebar-logo-main"><a href="PHOM.html">PHOM</a></div>
+                        <div class="sidebar-logo-subtitle">Pharmacy Oriented Models</div> 
                     </div>
 
                     <ul class="sidebar-menu">
-                        <li><a href="#" class="sidebar-link" data-page="home">Home</a></li>
-                        <li><a href="#" class="sidebar-link active" data-page="chatbot">Chatbot</a><span class="soon">soon</span></li>
-                        <li><a href="#" class="sidebar-link" data-page="lab">Lab</a></li>
+                        <li><a href="#" class="sidebar-link active" data-page="home">Home</a></li>
+                        <!-- <li><a href="#" class="sidebar-link" data-page="lab">Lab</a></li> -->
+                        <li><a href="#" class="sidebar-header sidebar-link" data-page="lab">
+                            Lab <span class="dropdown-arrow">▼</span></a>
+                        </li>
+                        <div class="submenu-li">
+                            <li><a href="#" class="sidebar-link submenu-item" data-page="design">Design</a></li>
+                            <li><a href="#" class="sidebar-link submenu-item" data-page="structure-prediction">Structure Prediction</a></li>
+                            <li><a href="#" class="sidebar-link submenu-item" data-page="molecular-docking">Molecular Docking</a></li>
+                            <li><a href="#" class="sidebar-link submenu-item" data-page="denovo">DeNovo</a></li>    
+                        </div>
+
                         <li><a href="#" class="sidebar-link" data-page="files">Files</a></li>
+                        <li><a href="#" class="sidebar-link" data-page="chatbot">Chatbot</a><span class="soon">soon</span></li>
                         <li><a href="#" class="sidebar-link" data-page="wet-lab">Wet Lab</a><span class="soon">soon</span></li>
                         <li><a href="#" class="sidebar-link" data-page="support">Support</a><span class="soon">soon</span></li>
                         <li><a href="#" class="sidebar-link" data-page="settings">Setting</a><span class="soon">soon</span></li>
+
                     </ul>
+
 
                     <div class="sidebar-divider"></div>
 
@@ -153,7 +165,7 @@
                 <div class="sidebar-user">
                     <div class="user-avatar-large" id="userAvatarSidebar">A</div>
                     <div class="user-info">
-                        <div class="user-name" id="userNameSidebar">Amir</div>
+                        <div class="user-name" id="userNameSidebar">ARUMS</div>
                         <div class="user-email" id="userEmailSidebar">admin@gmail.com</div>
                     </div>
                 </div>
@@ -164,17 +176,18 @@
                     <div class="sidebar-section">
                         <h2 id="homeGreeting">Hello</h2>
                         <p>Computational chemistry tools</p>
-                        <h3 style="margin-top: 5rem;">THIS IS YOUR ASSISTANTE IN DRUG DISCOVERY JUORNEY</h3>
+                        <h3 style="margin-top: 5rem;">THIS IS YOUR ASSISTENT IN DRUG DISCOVERY JOURNEY</h3>
                         <p style="font-size: 0.85rem; margin-top: 1rem; color: #999;">
                             let's have some fun and learn about this amazing Platform:<br>
-                            1. you can use the lab for you PK/PD which contains docking, MD and DFT and also some other tools for visualization.
+                            1. you can use the lab for your PK/PD which contains docking, MD and DFT and also some other tools for visualization.<br>
                             2.
                             <!-- 🧪 Molecular docking<br>
                             ⚗️ Property prediction<br>
                             📊 Structure analysis -->
                         </p>
-                        <h1 style="margin-top: 3rem; color: black;">PHOM <br><span>Pharmacy Oriented Models</span></h1>
+                        
                     </div>
+                    <footer style="text-align: center; margin-top: 18rem;color: #bdbdbd;">PHOM <br><span>Pharmacy Oriented Models</span></footer>
                 </div>
 
                 <div id="chatbotContent" class="content-section ">
@@ -256,7 +269,7 @@
                                         <div class="module-icon"></div>
                                         <span class="expand-icon"></span>
                                     </div>
-                                    <div class="module-title">PK AND PD</div>
+                                    <div class="module-title">PK&PD</div>
                                     <div class="module-description">Pharmacokinetics & Pharmacodynamics</div>
                                     <div class="submodules-list">
                                         <div class="submodule-item">Docking</div>
@@ -344,6 +357,36 @@
                         </div>
                     </div>
                 </div>
+                <div id="design" class="content-section">
+                    <div class="chat-placeholder">
+                        <div class="sidebar-section">
+                            <h2>Design new molecule here together</h2>
+                        </div>
+                    </div>
+                </div>
+                <div id="structure-prediction" class="content-section">
+                    <div class="chat-placeholder">
+                        <div class="sidebar-section">
+                            <h2>Predict new structure with our webserver</h2>
+                        </div>
+                    </div>
+                </div>
+                <div id="molecular-docking" class="content-section">
+                    <div class="chat-placeholder">
+                        <div class="sidebar-section">
+                            <h2>Dock your ligand with new receptors with our webserver</h2>
+                        </div>
+                    </div>
+                </div>
+                <div id="denovo" class="content-section">
+                    <div class="chat-placeholder">
+                        <div class="sidebar-section">
+                            <h2>Design new molecule and proteins</h2>
+                        </div>
+                    </div>
+                </div>
+                
+
                 <div id="wetLabContent" class="content-section">
                     <div class="chat-placeholder">         
                         <div class="sidebar-section">
@@ -375,17 +418,59 @@
                 <div id="settingsContent" class="content-section">
                     <div class="chat-placeholder">
                         <div class="sidebar-section">
-                            <div style="width: 100%; max-width: 500px; text-align: left;">
                             <h2 style="text-align: center; margin-bottom: 2rem;">⚙️ Settings</h2>
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <input type="text" id="settingsName" value="Amir">
+                            <div style="width: 100%; max-width: 500px; text-align: left;">
+
+                                <div class="profile">
+                                    <h2>Profile</h2>
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="settingsName" value="Amir">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" id="settingsEmail" value="admin@gmail.com" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Academic Status</label>
+                                        <select id="settingsAcademicStatus" style="padding: 0.5rem;"">
+                                            <option value="Student">Student</option>
+                                            <option value="Researcher">Researcher</option>
+                                            <option value="Professor">Professor</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label>Department / Lab</label>
+                                        <input type="text" id="settingsDepartment" placeholder="e.g., Pharmacy Lab">
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label>Role in Lab / Project</label>
+                                        <input type="text" id="settingsRole" placeholder="e.g., Team Lead">
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="tel" id="settingsPhone" placeholder="e.g., +98 912 345 6789">
+                                    </div>
+                    
+                                    <div class="form-group">
+                                        <label>Bio</label>
+                                        <textarea id="settingsBio" rows="3" placeholder="Short description about yourself"></textarea>
+                                    </div>
+                    
+                                    
+                                    <button class="btn-primary" id="logoutBtn" style="width: 100%; margin-top: 1rem;">Logout</button>
+                                    <button class="btn-primary" id="saveBtn" style="width: 100%; margin-top: 1rem;">Save</button>
+                    
+        
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" id="settingsEmail" value="admin@gmail.com" readonly>
+                            <div class="setting">
+                                <button class="btn-primary" id="themechanger" style="width: 100%; margin-top: 1rem;">Theme</button>
                             </div>
-                            <button class="btn-primary" id="logoutBtn" style="width: 100%; margin-top: 1rem;">Logout</button>
                         </div>
                     </div>
                 </div>
@@ -429,6 +514,8 @@
             document.getElementById('signUpBtn').addEventListener('click', openSignUp);
             document.getElementById('getStartedBtn').addEventListener('click', openSignUp);
             document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('saveBtn').addEventListener('click', saveSettings);
+
             authForm.addEventListener('submit', handleAuth);
             hamburger.addEventListener('click', toggleMenu);
 
@@ -491,6 +578,34 @@
                 }
             });
         }
+        function saveSettings() {
+            const name = document.getElementById('settingsName').value.trim();
+            const academicStatus = document.getElementById('settingsAcademicStatus').value;
+            const department = document.getElementById('settingsDepartment').value.trim();
+            const role = document.getElementById('settingsRole').value.trim();
+            const phone = document.getElementById('settingsPhone').value.trim();
+            const bio = document.getElementById('settingsBio').value.trim();
+
+            if (!name) { alert('Name cannot be empty'); return; }
+
+            // Update state
+            state.currentUser.name = name;
+            state.currentUser.academicStatus = academicStatus;
+            state.currentUser.department = department;
+            state.currentUser.role = role;
+            state.currentUser.phone = phone;
+            state.currentUser.bio = bio;
+
+            // Update UI wherever name is shown
+            updateUserDisplay();
+
+            // Persist to localStorage
+            localStorage.setItem('currentUser', JSON.stringify(state.currentUser));
+
+            alert('Settings saved successfully ✅');
+        }
+
+
 
         function openSignIn() {
             state.isSignUp = false;
@@ -573,8 +688,39 @@
         function showDashboard() {
             landingPage.classList.remove('active');
             dashboardPage.classList.add('active');
+
+            // Load saved user if exists
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                state.currentUser = JSON.parse(savedUser);
+            }
+
             updateUserDisplay();
+            syncSettingsForm();
         }
+        function syncSettingsForm() {
+            if (!state.currentUser) return;
+            
+            document.getElementById('settingsName').value = state.currentUser.name || '';
+            document.getElementById('settingsEmail').value = state.currentUser.email || '';
+            document.getElementById('settingsAcademicStatus').value = state.currentUser.academicStatus || 'Student';
+            document.getElementById('settingsDepartment').value = state.currentUser.department || '';
+            document.getElementById('settingsRole').value = state.currentUser.role || '';
+            document.getElementById('settingsPhone').value = state.currentUser.phone || '';
+            document.getElementById('settingsBio').value = state.currentUser.bio || '';
+        }
+
+        state.currentUser = {
+            name: 'Amir',
+            email: 'admin@gmail.com',
+            academicStatus: 'Student',
+            department: '',
+            role: '',
+            phone: '',
+            bio: ''
+        };
+
+
 
         function updateUserDisplay() {
             if (state.currentUser) {
@@ -608,10 +754,20 @@
                 'wet-lab': 'wetLabContent',
                 'support': 'supportContent',
                 'settings': 'settingsContent',
+                'design' : 'design',
+                'structure-prediction': 'structure-prediction',
+                'molecular-docking':'molecular-docking',
+                'denovo':'denovo',
+
+
             };
 
             document.getElementById(contentMap[page])?.classList.add('active');
             if (page === 'files') updateFilesList();
+            if (page === 'settings') {
+                syncSettingsForm();
+            }       
+
         }
 
         function sendMessage() {
@@ -732,7 +888,7 @@
                     <div style="font-size: 0.85rem; font-weight: 500; color: var(--dark); margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</div>
                     <div style="font-size: 0.75rem; color: #999; margin-bottom: 0.8rem;">${file.size}</div>
                     <div style="display: flex; gap: 0.4rem; justify-content: center;">
-                        <button onclick="openFilePreview(${file.id})" style="background: #f5f5f5; border: none; cursor: pointer; font-size: 0.9rem; color: #666; padding: 0.4rem 0.8rem; border-radius: 4px; transition: all 0.2s; flex: 1;" onmouseover="this.style.background='${getColorTeal()}'; this.style.color='white'" onmouseout="this.style.background='#f5f5f5'; this.style.color='#666'">👁️</button>
+                        <button onclick="openFilePreview(${file.id})" style="background: #f5f5f5; border: none; cursor: pointer; font-size: 0.9rem; color: #666; padding: 0.4rem 0.8rem; border-radius: 4px; transition: all 0.2s; flex: 1;" onmouseover="this.style.background='${getColorTeal()}'; this.style.color='white'" onmouseout="this.style.background='#f5f5f5'; this.style.color='#666'"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg></button>
                         <button onclick="deleteFile(${file.id})" style="background: #f5f5f5; border: none; cursor: pointer; font-size: 0.9rem; color: #666; padding: 0.4rem 0.8rem; border-radius: 4px; transition: all 0.2s; flex: 1;" onmouseover="this.style.background='${getColorTeal()}'; this.style.color='white'" onmouseout="this.style.background='#f5f5f5'; this.style.color='#666'">X</button>
                     </div>
                 </div>
@@ -926,6 +1082,27 @@
         } else {
             init();
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('.sidebar-header');
+            const subItems = document.querySelectorAll('.submenu-item');
+            const arrow = header.querySelector('.dropdown-arrow');
+
+            // Initially hide sub-items (or show them based on your preference)
+            subItems.forEach(item => {
+                item.style.display = 'none'; // Start collapsed
+            });
+
+            header.addEventListener('click', function() {
+                const isExpanded = arrow.textContent === '▲'; // Check current state
+
+                subItems.forEach(item => {
+                    item.style.display = isExpanded ? 'none' : 'block';
+                });
+
+                // Toggle arrow direction
+                arrow.textContent = isExpanded ? '▼' : '▲';
+            });
+        });
     </script>
 </body>
 </html>
