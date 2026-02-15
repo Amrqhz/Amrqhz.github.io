@@ -30,7 +30,43 @@
             color: var(--dark);
             line-height: 1.6;
         }
-
+        .CodeMirror {
+            height: 300px; /* Adjust height as needed */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 50%;
+            margin-left: 0;
+            padding: 10px;
+        }
+        #output {
+            width: 50%;
+            height: 300px;
+            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-right: 0;
+        }
+        .codearea{
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            margin: 1rem 0 1rem 0 ;
+        }
+        .monaco{
+            margin: 2rem;
+            p{
+                text-align: center;
+                color: #b6b6b6;
+                margin-top: 1rem;
+                
+            }
+        }
+        .monaco-btn{
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
         .note {
             background-color: var(--dark-teal);
             border: 1px solid #ececec;

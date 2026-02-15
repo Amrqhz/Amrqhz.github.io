@@ -6,6 +6,19 @@
     <title>PHOM - Drug Discovery Platform</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <link rel="stylesheet" href="style.css">
+        <!-- CodeMirror CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.css" />
+        <!-- Optional Dracula theme for CodeMirror -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/theme/dracula.css"/>
+        <!-- Pyodide -->
+        <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script>
+        <!-- CodeMirror JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/codemirror.min.js"
+            integrity="sha512-XMlgZzPyVXf1I/wbGnofk1Hfdx+zAWyZjh6c21yGo/k1zNC4Ve6xcQnTDTCHrjFGsOrVicJsBURLYktVEu/8vQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.3/mode/python/python.min.js"
+            integrity="sha512-/mavDpedrvPG/0Grj2Ughxte/fsm42ZmZWWpHz1jCbzd5ECv8CB7PomGtw0NAnhHmE/lkDFkRMupjoohbKNA1Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
     <div id="landingPage" class="page active">
@@ -18,7 +31,7 @@
             <div class="logo" onclick="location.reload()">PHOM</div>
             <nav id="navMenu">
                 <a href="#features">Product</a>
-                <a href="#about">About</a>
+                <a href="monaco.html">About</a>
                 <a href="DOCS.html">Docs</a>
             </nav>
             <div class="btnheader">
@@ -126,6 +139,7 @@
                         </div>
 
                         <li><a href="#" class="sidebar-link" data-page="files">Files</a></li>
+                        <li><a href="#" class="sidebar-link" data-page="code">Code</a></li>
                         <li><a href="#" class="sidebar-link" data-page="chatbot">Chatbot</a><span class="soon">soon</span></li>
                         <li><a href="#" class="sidebar-link" data-page="wet-lab">Wet Lab</a><span class="soon">soon</span></li>
                         <li><a href="#" class="sidebar-link" data-page="support">Support</a><span class="soon">soon</span></li>
@@ -357,6 +371,28 @@
                         </div>
                     </div>
                 </div>
+                <div id="code" class="content-section">
+                    <div class="chat-placeholder">
+                        <div class="sidebar-section">
+                            <h2>Code here ...</h2>
+                        </div>
+                    </div>
+                    <div class="monaco">
+                        <div class="codearea">
+                            <textarea id="codee" name="code"></textarea>
+                            <textarea id="output" readonly></textarea>
+                        </div>
+                        <div class="monaco-btn">
+                            <button type="button" class="btn btn-primary" onclick="evaluatePython()">Run</button>
+                            <button type="button" class="btn btn-secondary " onclick="clearHistory()">Clear Output</button>
+                        </div>
+                        <p>Python Editor (Powered by CodeMirror + Pyodide)</p>
+                        
+                        <!-- <h4>Output:</h4> -->
+                        <!-- <textarea id="output" readonly></textarea> -->
+                    </div>
+                    <script src="monaco.js"></script>
+                </div>
                 <div id="design" class="content-section">
                     <div class="chat-placeholder">
                         <div class="sidebar-section">
@@ -508,7 +544,6 @@
             hamburger = document.getElementById('hamburger');
             navMenu = document.getElementById('navMenu');
         }
-
         function setupEventListeners() {
             document.getElementById('signInBtn').addEventListener('click', openSignIn);
             document.getElementById('signUpBtn').addEventListener('click', openSignUp);
@@ -711,7 +746,7 @@
         }
 
         state.currentUser = {
-            name: 'Amir',
+            name: 'Arums',
             email: 'admin@gmail.com',
             academicStatus: 'Student',
             department: '',
@@ -754,6 +789,7 @@
                 'wet-lab': 'wetLabContent',
                 'support': 'supportContent',
                 'settings': 'settingsContent',
+                'code': 'code',
                 'design' : 'design',
                 'structure-prediction': 'structure-prediction',
                 'molecular-docking':'molecular-docking',
