@@ -29,7 +29,6 @@
             <p>፨ UPDATE News | Launching in almost 90 days</p>
             <a href="https://t.me/amrqhz">Contact with us</a>
         </div>
-
         <header>
             <div class="logo" onclick="location.reload()">PHOM</div>
             <nav id="navMenu">
@@ -124,7 +123,7 @@
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-top">
                     <div class="sidebar-logo">
-                        <div class="sidebar-logo-main"><a href="PHOM.html">PHOM</a></div>
+                        <div class="sidebar-logo-main logo"><a href="PHOM.html">PHOM</a></div>
                         <div class="sidebar-logo-subtitle">Pharmacy Oriented Models</div> 
                     </div>
 
@@ -197,14 +196,13 @@
                         <p style="font-size: 0.85rem; margin-top: 1rem; color: #999;">
                             let's have some fun and learn about this amazing Platform:<br>
                             1. you can use the lab for your PK/PD which contains docking, MD and DFT and also some other tools for visualization.<br>
-                            2.
-                            <!-- 🧪 Molecular docking<br>
-                            ⚗️ Property prediction<br>
-                            📊 Structure analysis -->
+                            2.🧪 Molecular docking<br>
+                              ⚗️ Property prediction<br>
+                              📊 Structure analysis
                         </p>
                         
                     </div>
-                    <footer style="text-align: center; margin-top: 18rem;color: #bdbdbd;">PHOM <br><span>Pharmacy Oriented Models</span></footer>
+                    <footer style="text-align: center;color: #bdbdbd;">PHOM <br><span>Pharmacy Oriented Models</span></footer>
                 </div>
 
                 <div id="chatbotContent" class="content-section ">
@@ -560,10 +558,38 @@
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
+                    
+                    // Remove active class from all sidebar links and their parent li
+                    document.querySelectorAll('.sidebar-link').forEach(l => {
+                        l.classList.remove('active');
+                        l.parentElement.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked link and its parent li
+                    link.classList.add('active');
+                    link.parentElement.classList.add('active');
+                    
                     navigateTo(link.dataset.page);
                     sidebar.classList.remove('active');
                 });
             });
+            // Set active state on initial page load
+            function setActiveLink(pageName) {
+                // Remove active from all
+                document.querySelectorAll('.sidebar-link').forEach(l => {
+                    l.classList.remove('active');
+                    l.parentElement.classList.remove('active');
+                });
+                
+                // Add active to the one matching pageName
+                const activeLink = document.querySelector(`.sidebar-link[data-page="${pageName}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                    activeLink.parentElement.classList.add('active');
+                }
+            }
+            // Call this after login with the default page (e.g., 'home')
+            setActiveLink('home');
 
             document.getElementById('chatSendBtn').addEventListener('click', sendMessage);
             document.getElementById('chatInput').addEventListener('keypress', (e) => {
