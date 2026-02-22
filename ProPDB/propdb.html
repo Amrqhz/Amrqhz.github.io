@@ -249,13 +249,6 @@
     .btn:hover{ transform:translateY(-1px); }
   </style>
 </head>
-  <script>
-  fetch("https://api.countapi.xyz/hit/amrqhz-github-io-propdb/visitors")
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("visitors").textContent = data.value;
-    });
-  </script>
 <body>
   <div class="app" id="app">
     <button class="hamburger-btn" id="hamburger-btn">
@@ -459,14 +452,20 @@
     let currentBgColor = DEFAULT_BG;
 
 
+    fetch("https://api.countapi.xyz/hit/amrqhz-github-io-propdb/visitors")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("visitors").textContent = data.value;
+      });
+
 
     const AA_3_TO_1 = {
-  ALA:'A', ARG:'R', ASN:'N', ASP:'D',
-  CYS:'C', GLU:'E', GLN:'Q', GLY:'G',
-  HIS:'H', ILE:'I', LEU:'L', LYS:'K',
-  MET:'M', PHE:'F', PRO:'P', SER:'S',
-  THR:'T', TRP:'W', TYR:'Y', VAL:'V'
-};
+      ALA:'A', ARG:'R', ASN:'N', ASP:'D',
+      CYS:'C', GLU:'E', GLN:'Q', GLY:'G',
+      HIS:'H', ILE:'I', LEU:'L', LYS:'K',
+      MET:'M', PHE:'F', PRO:'P', SER:'S',
+      THR:'T', TRP:'W', TYR:'Y', VAL:'V'
+    };
 
 const AA_FULL = {
   ALA:'Alanine', ARG:'Arginine', ASN:'Asparagine', ASP:'Aspartate',
