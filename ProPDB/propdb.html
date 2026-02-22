@@ -418,7 +418,7 @@
       </div>
       <div class="control" style="margin-bottom: 2rem;">
         <small style="text-align: center;font-family: monospace;">for more info contact with me</small>
-        <p>👀 Total Visitors: <span id="visitors">Loading...</span></p>
+        <p>👀 Total Visitors: <span id="visitors"></span></p>
       </div>
     </aside>
 
@@ -441,6 +441,17 @@
   </div>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    fetch('https://api.countapi.xyz/hit/amrqhz.github.io/propdb-visits')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('visitor-count').innerText = data.value;
+      })
+      .catch(error => {
+        console.error('Error fetching visitor count:', error);
+        document.getElementById('visitors').innerText = 'N/A';
+      });
+    });
     // Helper
     const el = id => document.getElementById(id);
 
@@ -450,13 +461,6 @@
     const overlay = el('overlay');
     const DEFAULT_BG = 0x071421;
     let currentBgColor = DEFAULT_BG;
-
-
-    fetch("https://api.countapi.xyz/hit/amrqhz-github-io-propdb/visitors")
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("visitors").textContent = data.value;
-      });
 
 
     const AA_3_TO_1 = {
