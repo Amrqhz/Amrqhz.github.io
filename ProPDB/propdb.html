@@ -445,7 +445,7 @@
       fetch('https://abacus.jasoncameron.dev/hit/amrqhz.github.io/propdb-visits')
         .then(response => response.json())
         .then(data => {
-          document.getElementById('visitor-count').innerText = data.value;
+          document.getElementById('visitors').innerText = data.value;
         })
         .catch(error => {
           console.error('Error fetching visitor count:', error);
