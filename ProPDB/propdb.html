@@ -442,15 +442,15 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-    fetch('https://api.countapi.xyz/hit/amrqhz.github.io/propdb-visits')
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('visitor-count').innerText = data.value;
-      })
-      .catch(error => {
-        console.error('Error fetching visitor count:', error);
-        document.getElementById('visitors').innerText = 'N/A';
-      });
+      fetch('https://abacus.jasoncameron.dev/hit/amrqhz.github.io/propdb-visits')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('visitor-count').innerText = data.value;
+        })
+        .catch(error => {
+          console.error('Error fetching visitor count:', error);
+          document.getElementById('visitors').innerText = 'N/A';
+        });
     });
     // Helper
     const el = id => document.getElementById(id);
