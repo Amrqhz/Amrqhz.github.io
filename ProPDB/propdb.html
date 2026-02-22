@@ -7,6 +7,21 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.6.3/3Dmol-min.js"></script>
   <link rel="icon" href="Group 84.svg">
   <meta name="theme-color" content="e0004b">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4M9T82SQS9"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4M9T82SQS9');
+  </script>
+  <script>
+  fetch("https://api.countapi.xyz/hit/amrqhz.github.io/ProPDB/propdb.html/visitors")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("visitors").textContent = data.value;
+    });
+  </script>
 
   <style>
     :root{
@@ -409,6 +424,7 @@
       </div>
       <div class="control" style="margin-bottom: 2rem;">
         <small style="text-align: center;font-family: monospace;">for more info contact with me</small>
+        <p>👀 Total Visitors: <span id="visitors">Loading...</span></p>
       </div>
     </aside>
 
@@ -839,7 +855,7 @@ function renderResidueBoxForChain(chain) {
     line.style.display = 'flex';
     line.style.flexWrap = 'wrap';
     line.style.gap = '6px';
-    line.style.marginBottom = '10px';
+    line.style.marginBottom = '12px';
 
     Object.values(residues)
       .sort((a,b)=>a.resi-b.resi)
@@ -866,7 +882,8 @@ tooltip.style.fontSize = '15px';
 tooltip.style.borderRadius = '6px';
 tooltip.style.pointerEvents = 'select';
 tooltip.style.display = 'none';
-tooltip.style.zIndex = 2000;
+tooltip.style.zIndex = 100;
+tooltip.style.transition = 'opacity 1.5s ease';
 document.body.appendChild(tooltip);
 
 document.addEventListener('mouseover', e => {
@@ -881,8 +898,8 @@ document.addEventListener('mouseover', e => {
 });
 
 document.addEventListener('mousemove', e => {
-  tooltip.style.left = e.clientX + 10 + 'px';
-  tooltip.style.top  = e.clientY + 10 + 'px';
+  tooltip.style.left = e.clientX + 15 + 'px';
+  tooltip.style.top  = e.clientY + 15 + 'px';
 });
 
 document.addEventListener('mouseout', e => {
