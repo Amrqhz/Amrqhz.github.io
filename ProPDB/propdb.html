@@ -15,13 +15,7 @@
     gtag('js', new Date());
     gtag('config', 'G-4M9T82SQS9');
   </script>
-  <script>
-  fetch("https://api.countapi.xyz/hit/amrqhz.github.io/ProPDB/propdb.html/visitors")
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("visitors").textContent = data.value;
-    });
-  </script>
+
 
   <style>
     :root{
@@ -255,6 +249,13 @@
     .btn:hover{ transform:translateY(-1px); }
   </style>
 </head>
+  <script>
+  fetch("https://api.countapi.xyz/hit/amrqhz-github-io-propdb/visitors")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("visitors").textContent = data.value;
+    });
+  </script>
 <body>
   <div class="app" id="app">
     <button class="hamburger-btn" id="hamburger-btn">
