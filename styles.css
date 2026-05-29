@@ -17,12 +17,7 @@ body {
     overflow-x: hidden;
 
 }
-/* Animated gradient background */
-/* @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-} */
+
 
 .container {
     max-width: 1200px;
@@ -205,8 +200,7 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  height: calc(100vh - 150px);
+  text-align: left;
   animation: fadeIn 1.5s ease;
 }
         
@@ -224,19 +218,57 @@ nav a {
   position: relative;
   transition: color 0.3s ease;
 }
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 nav a::after {
   content: "";
   position: absolute;
   bottom: -4px;
-  left: 0;
+  left: 50%;
   width: 0%;
   height: 2px;
   background: #0f4c5c;
-  transition: width 0.6s ease;
+  transform: translateX(-50%);
+  transition: width 0.3s ease-in-out;
 }
+
 nav a:hover::after {
-  width: 100%;
-}                                                                                                                                                                                    
+  width: 70%;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: none;
+  flex-direction: column;
+  min-width: 180px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  padding: 0.5rem 0;
+  z-index: -100;
+  margin-top: 0.3rem;
+  font-size: 14px;
+}
+
+.dropdown-content a {
+  margin-left: 0;
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+}
+
+.dropdown:hover .dropdown-content {
+  display: flex;
+}
+
 
 
 
@@ -670,7 +702,6 @@ hr.solid{
 
   .note-content {
     font-size: 1rem;
-    max-width: 90%;
   }
 
   .brand-logo {
