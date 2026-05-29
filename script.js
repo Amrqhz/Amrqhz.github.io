@@ -1,3 +1,15 @@
+
+
+  const btn = document.getElementById("readMoreBtn");
+  const moreText = document.getElementById("moreText");
+  const label = btn.querySelector(".label");
+
+  btn.addEventListener("click", () => {
+    const isOpen = moreText.classList.toggle("open");
+    btn.setAttribute("aria-expanded", String(isOpen));
+    label.textContent = isOpen ? "Read less" : "Read more";
+  });
+
 // Image slideshow functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Set up image rotation for all tiles
@@ -58,3 +70,5 @@ bookCards.forEach(card => {
         alert(`You clicked on: ${title}\n\nThis would link to a detailed review page.`);
     });
 });
+
+
