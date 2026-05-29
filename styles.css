@@ -25,6 +25,8 @@ body {
     padding: 1rem 2rem;
 }
 
+
+
 /* Header styles */
 header {
   display: flex;
@@ -190,7 +192,90 @@ header {
     justify-content: center;
     text-align: center;
 }
+#papers {
+  padding: 4rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
 
+.papers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.paper-item {
+  border: 1px solid #e0e0e0;
+    align-items: center;
+    background-color: #dedede24;
+    border-radius: 15px;
+    padding: 1.2rem;
+    text-decoration: none;
+    margin: 4rem auto;
+    color: #333;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0.3, 0.5);
+    width: 100%;
+    max-width: 900px;
+}
+
+.paper-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0.3, 0.65);
+    background-color: #d4d4d4c0;
+}
+
+.paper-item h3 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+  color: #0f4c5c;
+}
+
+.paper-meta {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 0.75rem 0;
+  font-style: italic;
+}
+
+.paper-description {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.paper-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.paper-links a {
+  color: #0f4c5c;
+  text-decoration: none;
+  font-size: 0.95rem;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.paper-links a::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: #0f4c5c;
+  transform: translateX(-50%);
+  transition: width 0.3s ease-in-out;
+}
+
+.paper-links a:hover {
+  color: #0f4c5c;
+}
+
+.paper-links a:hover::after {
+  width: 70%;
+}
 
 
 
@@ -381,7 +466,7 @@ nav a:hover::after {
 .important-link {
     display: flex;
     align-items: center;
-    background-color: #cccccc59;
+    background-color: #dedede24;
     border-radius: 15px;
     padding: 1.2rem;
     text-decoration: none;
