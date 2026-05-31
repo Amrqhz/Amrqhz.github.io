@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ChemViz — Docking & MD Results</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ngl/2.0.0-dev.39/ngl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+<style>
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS
+═══════════════════════════════════════════════════════ */
+:root {
+  --bg:      #080a0f;
+  --bg2:     #0c0e16;
+  --bg3:     #10131c;
+  --panel:   #141720;
+  --panel2:  #191d28;
+  --border:  #1f2433;
+  --border2: #2a3045;
+
+  /* docking accent */
+  --d-acc:   #4af0b8;
+  --d-acc2:  #f0884a;
+  --d-acc3:  #4a8ff0;
+
+  /* md plot colors */
+  --c-rmsd:  #4af0b8;
+  --c-rmsf:  #a07af5;
+  --c-rg:    #f5c44a;
+  --c-hb:    #f57a7a;
+  --c-sasa:  #4ab4f5;
+
+  --dim:     #8896b0;
+  --dim2:    #505a72;
+  --text:    #dde3ef;
+  --mono:    'IBM Plex Mono', monospace;
+  --sans:    'IBM Plex Sans', sans-serif;
+  --r:       8px;
+  --sidebar: 280px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════════════ */
+.topbar {
+  height: 52px;
+  display: flex; align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  flex-shrink: 0; gap: 0; z-index: 10;
+}
+
+.logo { display: flex; align-items: center; gap: 10px; margin-right: 28px; }
+.logo-icon img{
+  width: 50px;
+  margin-top: 1rem;
+}
+.logo-name { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--text); }
+.logo-name em { color: var(--d-acc); font-style: normal; }
+
+
+/* tab switcher */
+.tabs { display: flex; gap: 2px; }
+.tab-btn {
+  height: 52px; padding: 0 20px;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--dim2); font-family: var(--mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+  transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+  margin-bottom: -1px; /* overlap topbar border */
+}
+.tab-btn:hover { color: var(--dim); }
+.tab-btn.active { color: var(--d-acc); border-bottom-color: var(--d-acc); }
+.tab-btn.md.active { color: var(--c-rmsf); border-bottom-color: var(--c-rmsf); }
+.tab-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor; opacity: 0.5; transition: opacity 0.2s;
+}
+.tab-btn.active .tab-dot { opacity: 1; }
+
+.topbar-right { margin-left: auto; font-family: var(--mono); font-size: 10px; color: white; letter-spacing: 1px; }
+
+/* ═══════════════════════════════════════════════════════
+   TAB PAGES
+═══════════════════════════════════════════════════════ */
+.tab-page { display: none; flex: 1; overflow: hidden; }
+.tab-page.active { display: flex; flex-direction: column; }
+
+/* ═══════════════════════════════════════════════════════
+   SHARED SIDEBAR STYLES
+═══════════════════════════════════════════════════════ */
+.main { flex: 1; display: flex; overflow: hidden; }
+
+.sidebar {
+  width: var(--sidebar); flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.sidebar-scroll {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.sidebar-scroll::-webkit-scrollbar { width: 4px; }
+.sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.sb-title {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--dim2);
+  display: flex; align-items: center; gap: 6px;
+}
+.sb-title::after { content:''; flex:1; height:1px; background: var(--border); }
+
+.sb-divider { border: none; border-top: 1px solid var(--border); }
+
+.sidebar-footer {
+  padding: 12px 16px; border-top: 1px solid var(--border); flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DOCKING — UPLOAD CARDS
+═══════════════════════════════════════════════════════ */
+.sb-section { display: flex; flex-direction: column; gap: 8px; }
+
+.upload-card {
+  border: 1px dashed var(--border2); border-radius: var(--r);
+  padding: 12px; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative; background: var(--bg3); overflow: hidden;
+}
+.upload-card input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width:100%; height:100%;
+  font-size: 11px ;
+}
+.upload-card:hover           { border-color: var(--d-acc);  background: rgba(74,240,184,0.03); }
+.upload-card.lig:hover       { border-color: var(--d-acc2); background: rgba(240,136,74,0.03); }
+.upload-card.log:hover       { border-color: var(--d-acc2); background: rgba(240,136,74,0.03); }
+.upload-card.loaded          { border-style: solid; border-color: var(--d-acc);  background: rgba(74,240,184,0.05); }
+.upload-card.lig.loaded      { border-style: solid; border-color: var(--d-acc2); background: rgba(240,136,74,0.05); }
+.upload-card.log.loaded      { border-style: solid; border-color: var(--d-acc2); background: rgba(240,136,74,0.05); }
+
+.upload-type {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--d-acc); margin-bottom: 3px;
+}
+.upload-card.lig .upload-type,
+.upload-card.log .upload-type { color: var(--d-acc2); }
+.upload-hint { font-size: 10px; color: var(--dim); line-height: 1.4; }
+.upload-exts { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+.ext-badge {
+  font-family: var(--mono); font-size: 9px;
+  padding: 2px 5px; border-radius: 3px; border: 1px solid var(--border2); color: var(--dim2);
+}
+.upload-filename {
+  font-family: var(--mono); font-size: 10px; margin-top: 5px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--dim2);
+}
+.upload-card.loaded .upload-filename      { color: var(--d-acc); }
+.upload-card.lig.loaded .upload-filename,
+.upload-card.log.loaded .upload-filename  { color: var(--d-acc2); }
+
+/* ═══════════════════════════════════════════════════════
+   DOCKING — LOAD BUTTON
+═══════════════════════════════════════════════════════ */
+.load-btn {
+  width: 100%; padding: 20px 15px; border: none; border-radius: var(--r); cursor: pointer;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: linear-gradient(90deg, var(--d-acc), #2ed4a0);
+  color: var(--bg); transition: opacity 0.2s, transform 0.15s;
+ overflow: hidden;  position:relative;
+
+}
+.load-btn::after {
+  content:''; position: absolute; inset:0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transform: translateX(-100%); transition: transform 0.5s;
+}
+.load-btn:hover::after { transform: translateX(100%); }
+.load-btn:hover:not(:disabled) { opacity:0.9; transform:translateY(-1px); }
+.load-btn:disabled { opacity:0.25; cursor:not-allowed; transform:none; }
+
+/* ═══════════════════════════════════════════════════════
+   DOCKING — CONTROLS
+═══════════════════════════════════════════════════════ */
+.ctrl-row { display: flex; flex-direction: column; gap: 4px; }
+.ctrl-label {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim2);
+}
+.ctrl-select {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 10px; border-radius: 6px;
+  font-family: var(--mono); font-size: 11px; width: 100%;
+  cursor: pointer; transition: border-color 0.2s; outline: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23505a72' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
+}
+.ctrl-select:focus { border-color: var(--d-acc); }
+
+.icon-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.icon-btn {
+  background: var(--panel); border: 1px solid var(--border);
+  color: var(--dim); font-family: var(--mono); font-size: 10px;
+  padding: 8px 4px; border-radius: 6px; cursor: pointer;
+  transition: all 0.18s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.icon-btn .ib-icon { font-size: 14px; }
+.icon-btn:hover  { border-color: var(--d-acc); color: var(--d-acc); background: rgba(74,240,184,0.06); }
+.icon-btn.active { border-color: var(--d-acc); color: var(--d-acc); background: rgba(74,240,184,0.10); }
+
+/* ═══════════════════════════════════════════════════════
+   DOCKING — STATUS
+═══════════════════════════════════════════════════════ */
+.status-row { display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px; color:var(--dim2); }
+.status-dot { width:7px; height:7px; border-radius:50%; background:var(--dim2); transition:background 0.3s; flex-shrink:0; }
+.status-dot.ready { background:var(--d-acc); box-shadow:0 0 6px var(--d-acc); }
+.status-dot.error { background:#f04a4a; }
+.status-dot.busy  { background:var(--d-acc2); animation:blink 0.8s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ═══════════════════════════════════════════════════════
+   DOCKING — VIEWPORT
+═══════════════════════════════════════════════════════ */
+.viewport { flex:1; position:relative; background:#05060b; overflow:hidden; }
+#ngl-viewport { width:100%; height:100%; position:absolute; inset:0; }
+
+.placeholder {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:16px;
+  pointer-events:none; transition:opacity 0.4s;
+}
+.placeholder.hidden { opacity:0; }
+.ph-rings { position:relative; width:90px; height:90px; }
+.ph-ring  { position:absolute; border-radius:50%; border:1px solid; }
+.ph-ring:nth-child(1) { inset:0;    border-color:rgba(74,240,184,0.12); animation:rotate 8s linear infinite; }
+.ph-ring:nth-child(2) { inset:12px; border-color:rgba(74,143,240,0.10); animation:rotate 5s linear infinite reverse; }
+.ph-ring:nth-child(3) { inset:24px; border-color:rgba(240,136,74,0.08); animation:rotate 12s linear infinite; }
+.ph-dot {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:8px; height:8px; border-radius:50%;
+  background:rgba(74,240,184,0.3); box-shadow:0 0 12px var(--d-acc);
+}
+@keyframes rotate { to { transform:rotate(360deg); } }
+.ph-text { font-family:var(--mono); font-size:11px; color:var(--dim2); text-align:center; line-height:1.8; }
+.ph-text strong { color:var(--dim); display:block; margin-bottom:2px; }
+
+.loading-overlay {
+  position:absolute; inset:0; background:rgba(8,10,15,0.88);
+  display:none; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; z-index:20; backdrop-filter:blur(4px);
+}
+.loading-overlay.active { display:flex; }
+.loader-ring {
+  width:40px; height:40px; border-radius:50%;
+  border:2px solid var(--border2); border-top-color:var(--d-acc);
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.loader-text { font-family:var(--mono); font-size:11px; color:var(--dim); letter-spacing:1px; }
+
+.legend {
+  position:absolute; top:14px; left:14px;
+  display:none; flex-direction:column; gap:6px;
+  background:rgba(12,14,22,0.85); padding:10px 14px; border-radius:8px;
+  border:1px solid var(--border); backdrop-filter:blur(4px);
+}
+.legend.visible { display:flex; }
+.legend-item { display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px; color:var(--dim); }
+.legend-dot  { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+.corner-badge {
+  position:absolute; bottom:14px; right:14px;
+  font-family:var(--mono); font-size:9px; color:var(--dim2);
+  background:rgba(12,14,22,0.8); padding:4px 10px; border-radius:4px;
+  border:1px solid var(--border); backdrop-filter:blur(4px); pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DOCKING — INFO STRIP (Step 2)
+═══════════════════════════════════════════════════════ */
+.info-strip {
+  height:0; border-top:1px solid transparent; background:var(--bg2);
+  transition:height 0.35s cubic-bezier(.4,0,.2,1), border-color 0.3s;
+  overflow:hidden; flex-shrink:0;
+}
+.info-strip.open { height:220px; border-top-color:var(--border); }
+
+.info-inner { display:flex; height:100%; overflow:hidden; }
+
+.info-stats {
+  width:240px; flex-shrink:0; border-right:1px solid var(--border);
+  padding:12px 14px; display:flex; flex-direction:column; gap:8px; overflow-y:auto;
+}
+.info-stats-title {
+  font-family:var(--mono); font-size:9px; font-weight:600;
+  letter-spacing:2px; text-transform:uppercase; color:var(--dim2);
+}
+.stat-cards { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.stat-card { background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:9px 11px; }
+.stat-val { font-family:var(--mono); font-size:16px; font-weight:700; line-height:1; margin-bottom:3px; }
+.stat-val.good  { color:var(--d-acc); }
+.stat-val.warn  { color:var(--d-acc2); }
+.stat-val.plain { color:var(--text); }
+.stat-key { font-family:var(--mono); font-size:9px; color:var(--dim2); }
+.stat-card.wide { grid-column:1/-1; }
+.stat-card.wide .stat-val { font-size:10px; font-weight:500; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+.info-poses { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+.info-poses-header {
+  padding:9px 14px 7px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+.info-poses-title {
+  font-family:var(--mono); font-size:9px; font-weight:600;
+  letter-spacing:2px; text-transform:uppercase; color:var(--dim2);
+}
+.poses-count {
+  font-family:var(--mono); font-size:9px; padding:2px 7px; border-radius:10px;
+  background:rgba(74,240,184,0.1); color:var(--d-acc); border:1px solid rgba(74,240,184,0.2);
+}
+.info-poses-body { flex:1; overflow-y:auto; }
+.info-poses-body::-webkit-scrollbar { width:4px; }
+.info-poses-body::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+.poses-table { width:100%; border-collapse:collapse; }
+.poses-table thead th {
+  font-family:var(--mono); font-size:9px; font-weight:600; letter-spacing:1px;
+  text-transform:uppercase; color:var(--dim2); text-align:left;
+  padding:7px 12px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:var(--bg2); z-index:1;
+}
+.poses-table tbody tr { cursor:pointer; transition:background 0.15s; }
+.poses-table tbody tr:hover td  { background:rgba(255,255,255,0.03); }
+.poses-table tbody tr.selected td { background:rgba(74,240,184,0.07); }
+.poses-table tbody td {
+  padding:6px 12px; font-family:var(--mono); font-size:11px; color:var(--dim);
+  border-bottom:1px solid rgba(31,36,51,0.7);
+}
+.pose-num {
+  width:26px; height:18px; border-radius:4px;
+  background:var(--panel); border:1px solid var(--border);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:10px; color:var(--dim2);
+}
+.pose-num.best { background:rgba(74,240,184,0.12); border-color:rgba(74,240,184,0.3); color:var(--d-acc); }
+.dg-val { color:var(--d-acc); }
+.dg-val.weak { color:var(--d-acc2); }
+.dg-bar-wrap { width:52px; height:4px; background:var(--border); border-radius:2px; display:inline-block; vertical-align:middle; margin-left:6px; }
+.dg-bar { height:100%; border-radius:2px; background:linear-gradient(90deg, var(--d-acc), var(--d-acc3)); transition:width 0.4s; }
+
+/* ═══════════════════════════════════════════════════════
+   MD — UPLOAD ROWS
+═══════════════════════════════════════════════════════ */
+.upload-row {
+  display:flex; align-items:center; gap:10px;
+  padding:20px 11px; border-radius:8px;
+  border:1px dashed var(--border2); background:var(--bg3);
+  cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
+}
+.upload-row input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.upload-row:hover  { border-color:var(--row-color, var(--c-rmsd)); background:rgba(255,255,255,0.015); }
+.upload-row.loaded { border-style:solid; border-color:var(--row-color, var(--c-rmsd)); background:rgba(255,255,255,0.02); }
+
+.row-dot {
+  width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  background:var(--row-color, var(--c-rmsd)); opacity:0.25; transition:opacity 0.2s, box-shadow 0.2s;
+}
+.upload-row.loaded .row-dot { opacity:1; box-shadow:0 0 6px var(--row-color, var(--c-rmsd)); }
+
+.row-info { flex:1; min-width:0; }
+.row-label { font-family:var(--mono); font-size:11px; font-weight:600; color:var(--row-color, var(--c-rmsd)); margin-bottom:2px; }
+.row-hint  { font-size:10px; color:var(--dim2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.row-status { font-family:var(--mono); font-size:9px; color:var(--dim2); flex-shrink:0; }
+.upload-row.loaded .row-status { color:var(--row-color, var(--c-rmsd)); }
+
+.clear-btn {
+  width:100%; padding:8px; border-radius:8px;
+  background:transparent; border:1px solid var(--border2);
+  color:var(--dim2); font-family:var(--mono); font-size:10px; font-weight:600;
+  letter-spacing:1px; text-transform:uppercase; cursor:pointer; transition:all 0.2s;
+}
+.clear-btn:hover { border-color:var(--c-hb); color:var(--c-hb); }
+
+.count-badge {
+  font-family:var(--mono); font-size:11px; font-weight:700;
+  color:var(--c-rmsd); background:rgba(74,240,184,0.1); padding:2px 8px; border-radius:4px;
+}
+.loaded-count { font-family:var(--mono); font-size:10px; color:var(--dim2); display:flex; align-items:center; gap:8px; }
+
+/* ═══════════════════════════════════════════════════════
+   MD — CONTENT & PLOTS
+═══════════════════════════════════════════════════════ */
+.md-content { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:16px; }
+.md-content::-webkit-scrollbar { width:6px; }
+.md-content::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+
+.stats-bar {
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--r);
+  padding:12px 18px; display:flex; gap:0; flex-shrink:0;
+}
+.stats-bar-item {
+  flex:1; display:flex; flex-direction:column; gap:3px;
+  padding:0 14px; border-right:1px solid var(--border);
+}
+.stats-bar-item:first-child { padding-left:0; }
+.stats-bar-item:last-child  { border-right:none; }
+.sbi-key { font-family:var(--mono); font-size:9px; color:var(--dim2); letter-spacing:1px; text-transform:uppercase; }
+.sbi-val { font-family:var(--mono); font-size:15px; font-weight:700; color:var(--dim); transition:color 0.3s; }
+.sbi-val.lit { color:var(--sbi-color, var(--c-rmsd)); }
+.sbi-sub { font-family:var(--mono); font-size:9px; color:var(--dim2); }
+
+.plot-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.plot-grid-full { grid-column:1/-1; }
+
+.plot-card {
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--r);
+  overflow:hidden; display:flex; flex-direction:column;
+  transition:border-color 0.3s;
+}
+.plot-card.has-data { border-color:var(--card-color, var(--border)); }
+
+.card-head {
+  padding:10px 14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:8px; flex-shrink:0;
+}
+.card-indicator {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--card-color, var(--dim2)); opacity:0.25; flex-shrink:0;
+  transition:opacity 0.3s, box-shadow 0.3s;
+}
+.plot-card.has-data .card-indicator { opacity:1; box-shadow:0 0 8px var(--card-color); }
+.card-title { font-family:var(--mono); font-size:11px; font-weight:700; color:var(--card-color, var(--dim)); }
+.card-meta { display:flex; gap:10px; margin-left:auto; }
+.card-stat { font-family:var(--mono); font-size:9px; color:var(--dim2); display:flex; flex-direction:column; align-items:flex-end; gap:1px; }
+.card-stat-val { font-size:11px; color:var(--card-color, var(--dim)); font-weight:600; }
+
+.card-body { flex:1; min-height:200px; position:relative; }
+
+.card-placeholder {
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px; transition:opacity 0.3s;
+}
+.plot-card.has-data .card-placeholder { opacity:0; pointer-events:none; }
+.ph-icon-wrap {
+  width:40px; height:40px; border-radius:10px;
+  border:1px dashed var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; opacity:0.3;
+}
+.ph-label { font-family:var(--mono); font-size:10px; color:var(--dim2); text-align:center; line-height:1.6; }
+.ph-ext   { font-size:9px; color:var(--border2); }
+.plot-div { width:100%; height:100%; min-height:200px; }
+
+/* ═══════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════ */
+.toast {
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(10px);
+  background:var(--panel2); border:1px solid var(--border2);
+  border-radius:20px; padding:9px 18px;
+  font-family:var(--mono); font-size:11px; color:var(--dim);
+  display:flex; align-items:center; gap:8px;
+  opacity:0; transition:opacity 0.25s, transform 0.25s;
+  pointer-events:none; z-index:999; white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast-dot  { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+/* ═══════════════════════════════════════════════════════
+   MD — TRAJECTORY VIEWER (Step 4)
+═══════════════════════════════════════════════════════ */
+.traj-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.traj-section-head {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.traj-section-title {
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: var(--c-rmsf); letter-spacing: 0.3px;
+}
+.traj-badge {
+  font-family: var(--mono); font-size: 9px;
+  padding: 2px 8px; border-radius: 10px;
+  background: rgba(160,122,245,0.1); color: var(--c-rmsf);
+  border: 1px solid rgba(160,122,245,0.2);
+}
+.traj-frame-info {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 10px; color: var(--dim2);
+}
+.traj-frame-info span { color: var(--c-rmsf); }
+
+.traj-viewport {
+  height: 340px;
+  position: relative;
+  background: #05060b;
+}
+#md-ngl-viewport {
+  width: 100%; height: 100%;
+  position: absolute; inset: 0;
+}
+
+/* traj placeholder */
+.traj-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; pointer-events: none; transition: opacity 0.4s;
+}
+.traj-placeholder.hidden { opacity: 0; }
+.traj-ph-rings { position: relative; width: 80px; height: 80px; }
+.traj-ph-ring  { position: absolute; border-radius: 50%; border: 1px solid; }
+.traj-ph-ring:nth-child(1) { inset:0;    border-color:rgba(160,122,245,0.15); animation:rotate 6s linear infinite; }
+.traj-ph-ring:nth-child(2) { inset:12px; border-color:rgba(74,240,184,0.10);  animation:rotate 9s linear infinite reverse; }
+.traj-ph-ring:nth-child(3) { inset:24px; border-color:rgba(245,196,74,0.08);  animation:rotate 12s linear infinite; }
+.traj-ph-dot {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:7px; height:7px; border-radius:50%;
+  background:rgba(160,122,245,0.4); box-shadow:0 0 10px var(--c-rmsf);
+}
+.traj-ph-text {
+  font-family: var(--mono); font-size: 11px; color: var(--dim2);
+  text-align: center; line-height: 1.8;
+}
+.traj-ph-text strong { color: var(--dim); display: block; margin-bottom: 2px; }
+
+/* traj loading overlay */
+.traj-loading {
+  position: absolute; inset: 0; background: rgba(8,10,15,0.88);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px; z-index: 10; backdrop-filter: blur(4px);
+}
+.traj-loading.active { display: flex; }
+.traj-loader-ring {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 2px solid var(--border2); border-top-color: var(--c-rmsf);
+  animation: spin 0.7s linear infinite;
+}
+.traj-loader-text { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+/* traj controls bar */
+.traj-controls {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.traj-btn {
+  background: var(--panel2); border: 1px solid var(--border2);
+  color: var(--dim2); font-family: var(--mono); font-size: 10px; font-weight: 600;
+  padding: 6px 12px; border-radius: 6px; cursor: pointer;
+  transition: all 0.18s; letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 5px;
+}
+.traj-btn:hover  { border-color: var(--c-rmsf); color: var(--c-rmsf); }
+.traj-btn.active { background: rgba(160,122,245,0.12); border-color: var(--c-rmsf); color: var(--c-rmsf); }
+.traj-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.frame-slider-wrap { flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 3px; }
+.frame-slider {
+  -webkit-appearance: none; height: 3px;
+  background: var(--border2); border-radius: 2px; outline: none; cursor: pointer; width: 100%;
+}
+.frame-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--c-rmsf); cursor: pointer; box-shadow: 0 0 6px var(--c-rmsf);
+}
+.frame-slider-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 9px; color: var(--dim2);
+}
+
+.traj-speed-wrap { display: flex; flex-direction: column; gap: 2px; }
+.traj-speed-label { font-family: var(--mono); font-size: 9px; color: var(--dim2); }
+.traj-speed {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); padding: 5px 8px; border-radius: 5px;
+  font-family: var(--mono); font-size: 10px; width: 80px;
+  cursor: pointer; outline: none; appearance: none;
+}
+
+/* md traj upload rows — violet theme */
+.upload-row.traj:hover  { border-color: var(--c-rmsf); }
+.upload-row.traj.loaded { border-color: var(--c-rmsf); border-style: solid; }
+.upload-row.traj .row-label { color: var(--c-rmsf); }
+.upload-row.traj .row-dot   { background: var(--c-rmsf); }
+
+.traj-load-btn {
+  width: 100%; padding:25px 15px; border: none; border-radius: var(--r);
+  cursor: pointer; font-family: var(--mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  background: linear-gradient(90deg, var(--c-rmsf), #7c4dff);
+  color: #fff; transition: opacity 0.2s, transform 0.15s;
+  position: relative; overflow: hidden;
+}
+.traj-load-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.traj-load-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+
+@media (max-width:900px) {
+  .plot-grid { grid-template-columns:1fr; }
+  .plot-grid-full { grid-column:1; }
+  .stats-bar { flex-wrap:wrap; }
+  .traj-viewport { height: 260px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     TOPBAR
+════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-icon"><img src="Group 84.svg" alt=""></div>
+    <span class="logo-name">Chem<em>Viz</em></span>
+    <small style="font-size: 12px;">based on <a href="https://amrqhz.github.io/ProPDB/propdb.html" style="color: white;">ProPDB</a></small>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" id="tab-dock" onclick="switchTab('dock')">
+      <span class="tab-dot"></span>Docking
+    </button>
+    <button class="tab-btn md" id="tab-md" onclick="switchTab('md')">
+      <span class="tab-dot"></span>MD Simulation
+    </button>
+  </nav>
+
+  <div class="topbar-right">by amrqhz</div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════
+     TAB: DOCKING
+════════════════════════════════════════════════════ -->
+<div class="tab-page active" id="page-dock">
+<div class="main">
+
+  <!-- sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-scroll">
+
+      <div class="sb-section">
+        <div class="sb-title">Receptor</div>
+        <div class="upload-card rec" id="zone-rec" onclick="triggerInput('inp-rec')">
+          <input type="file" id="inp-rec" accept=".pdb,.pdbqt,.ent" onchange="onFileSelect(this,'rec')"/>
+          <div class="upload-type">Receptor</div>
+          <div class="upload-hint">Protein structure file</div>
+          <div class="upload-exts">
+            <span class="ext-badge">.pdb</span>
+            <span class="ext-badge">.pdbqt</span>
+            <span class="ext-badge">.ent</span>
+          </div>
+          <div class="upload-filename" id="fname-rec">Click or drag to upload</div>
+        </div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-title">Ligand / Docked Pose</div>
+        <div class="upload-card lig" id="zone-lig" onclick="triggerInput('inp-lig')">
+          <input type="file" id="inp-lig" accept=".pdb,.pdbqt,.sdf,.mol2,.mol" onchange="onFileSelect(this,'lig')"/>
+          <div class="upload-type">Ligand</div>
+          <div class="upload-hint">Docked pose or small molecule</div>
+          <div class="upload-exts">
+            <span class="ext-badge">.pdbqt</span>
+            <span class="ext-badge">.sdf</span>
+            <span class="ext-badge">.mol2</span>
+            <span class="ext-badge">.pdb</span>
+          </div>
+          <div class="upload-filename" id="fname-lig">Click or drag to upload</div>
+        </div>
+      </div>
+
+      <button class="load-btn" id="load-btn" onclick="loadComplex()" disabled>▶ &nbsp;Visualize Complex</button>
+
+      <div class="sb-section">
+        <div class="sb-title">Score Log <span style="color:var(--dim2);font-weight:400;letter-spacing:0;">(optional)</span></div>
+        <div class="upload-card log" id="zone-log" onclick="triggerInput('inp-log')">
+          <input type="file" id="inp-log" accept=".txt,.log,.csv,.out" onchange="onFileSelect(this,'log')"/>
+          <div class="upload-type">Score Log</div>
+          <div class="upload-hint">AutoDock Vina output or CSV</div>
+          <div class="upload-exts">
+            <span class="ext-badge">.txt</span>
+            <span class="ext-badge">.log</span>
+            <span class="ext-badge">.csv</span>
+          </div>
+          <div class="upload-filename" id="fname-log">Click or drag to upload</div>
+        </div>
+      </div>
+
+      <hr class="sb-divider"/>
+
+      <div class="sb-section">
+        <div class="sb-title">Receptor Style</div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Representation</label>
+          <select class="ctrl-select" id="rec-rep" onchange="applyRep()">
+            <option value="cartoon">Cartoon / Ribbon</option>
+            <option value="surface">Molecular Surface</option>
+            <option value="licorice">Licorice</option>
+            <option value="ribbon">Ribbon</option>
+            <option value="backbone">Backbone</option>
+            <option value="spacefill">Spacefill (CPK)</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Color Scheme</label>
+          <select class="ctrl-select" id="rec-color" onchange="applyRep()">
+            <option value="chainname">By Chain</option>
+            <option value="residueindex">Spectrum</option>
+            <option value="sstruc">Secondary Structure</option>
+            <option value="element">By Element</option>
+            <option value="uniform">Uniform</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-title">Ligand Style</div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Representation</label>
+          <select class="ctrl-select" id="lig-rep" onchange="applyRep()">
+            <option value="ball+stick">Ball + Stick</option>
+            <option value="licorice">Licorice</option>
+            <option value="spacefill">Spacefill</option>
+            <option value="surface">Surface</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label class="ctrl-label">Highlight Color</label>
+          <select class="ctrl-select" id="lig-color" onchange="applyRep()">
+            <option value="#4af0b8">Teal (default)</option>
+            <option value="#f0884a">Amber</option>
+            <option value="#f04a7a">Rose</option>
+            <option value="#f0e44a">Yellow</option>
+            <option value="#4a8ff0">Blue</option>
+            <option value="element">By Element</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="sb-divider"/>
+
+      <div class="sb-section">
+        <div class="sb-title">Viewer Tools</div>
+        <div class="icon-btns">
+          <button class="icon-btn" onclick="centerView()"><span class="ib-icon">⊙</span>Center</button>
+          <button class="icon-btn" id="btn-spin" onclick="toggleSpin()"><span class="ib-icon">↻</span>Spin</button>
+          <button class="icon-btn" onclick="takeSnapshot()"><span class="ib-icon">📷</span>Snap</button>
+          <button class="icon-btn" id="btn-reconly" onclick="toggleRecOnly()"><span class="ib-icon">🔬</span>Rec only</button>
+          <button class="icon-btn" id="btn-ligonly" onclick="toggleLigOnly()"><span class="ib-icon">💊</span>Lig only</button>
+          <button class="icon-btn" onclick="resetView()"><span class="ib-icon">⟳</span>Reset</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="sidebar-footer">
+      <div class="status-row">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">No structure loaded</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- viewport column -->
+  <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+    <div class="viewport">
+      <div id="ngl-viewport"></div>
+      <div class="placeholder" id="placeholder">
+        <div class="ph-rings">
+          <div class="ph-ring"></div><div class="ph-ring"></div><div class="ph-ring"></div>
+          <div class="ph-dot"></div>
+        </div>
+        <div class="ph-text"><strong>No complex loaded</strong>Upload receptor + ligand<br/>then click Visualize Complex</div>
+      </div>
+      <div class="loading-overlay" id="loading-overlay">
+        <div class="loader-ring"></div>
+        <div class="loader-text" id="loader-text">Loading…</div>
+      </div>
+      <div class="legend" id="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#6699cc"></div><span id="legend-rec">Receptor</span></div>
+        <div class="legend-item"><div class="legend-dot" id="legend-lig-dot" style="background:#4af0b8"></div><span id="legend-lig">Ligand</span></div>
+      </div>
+      <div class="corner-badge">ChemViz · amrqhz</div>
+    </div>
+
+    <!-- Score panel -->
+    <div class="info-strip" id="info-strip">
+      <div class="info-inner">
+        <div class="info-stats">
+          <div class="info-stats-title">Binding Summary</div>
+          <div class="stat-cards">
+            <div class="stat-card"><div class="stat-val good" id="stat-best-dg">—</div><div class="stat-key">Best ΔG (kcal/mol)</div></div>
+            <div class="stat-card"><div class="stat-val plain" id="stat-poses">—</div><div class="stat-key">Poses</div></div>
+            <div class="stat-card"><div class="stat-val plain" id="stat-rmsd-lb">—</div><div class="stat-key">RMSD l.b. (Å)</div></div>
+            <div class="stat-card"><div class="stat-val plain" id="stat-rmsd-ub">—</div><div class="stat-key">RMSD u.b. (Å)</div></div>
+            <div class="stat-card wide"><div class="stat-val" id="stat-receptor">—</div><div class="stat-key">Receptor · Ligand</div></div>
+          </div>
+        </div>
+        <div class="info-poses">
+          <div class="info-poses-header">
+            <span class="info-poses-title">All Poses</span>
+            <span class="poses-count" id="poses-count">0</span>
+          </div>
+          <div class="info-poses-body">
+            <table class="poses-table">
+              <thead><tr><th>#</th><th>ΔG (kcal/mol)</th><th>RMSD l.b.</th><th>RMSD u.b.</th><th>Note</th></tr></thead>
+              <tbody id="poses-tbody">
+                <tr><td colspan="5" style="color:var(--dim2);text-align:center;padding:18px;font-size:11px;">Upload a score log to see poses</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /page-dock -->
+
+<!-- ═══════════════════════════════════════════════════
+     TAB: MD SIMULATION
+════════════════════════════════════════════════════ -->
+<div class="tab-page" id="page-md">
+<div class="main">
+
+  <!-- sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-scroll">
+
+      <div class="sb-title">Trajectory (3D Viewer)</div>
+
+      <div class="upload-row traj" id="row-topo" style="--row-color:var(--c-rmsf)" onclick="triggerInput('inp-topo')">
+        <input type="file" id="inp-topo" accept=".pdb,.gro,.mmcif,.cif" onchange="onTrajFile(this,'topo')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">Topology</div><div class="row-hint" id="hint-topo">.pdb / .gro — reference structure</div></div>
+        <div class="row-status" id="tstatus-topo">—</div>
+      </div>
+
+      <div class="upload-row traj" id="row-traj" style="--row-color:var(--c-rmsf)" onclick="triggerInput('inp-traj')">
+        <input type="file" id="inp-traj" accept=".xtc,.dcd,.trr,.nc,.netcdf" onchange="onTrajFile(this,'traj')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">Trajectory</div><div class="row-hint" id="hint-traj">.xtc / .dcd / .trr</div></div>
+        <div class="row-status" id="tstatus-traj">—</div>
+      </div>
+
+      <button class="traj-load-btn" id="traj-load-btn" onclick="loadTrajectory()" disabled>▶ &nbsp;Load Trajectory</button>
+
+      <hr class="sb-divider"/>
+      <div class="sb-title">Analysis Files</div>
+
+      <div class="upload-row" id="row-rmsd" style="--row-color:var(--c-rmsd)" onclick="triggerInput('inp-rmsd')">
+        <input type="file" id="inp-rmsd" accept=".xvg,.csv,.txt,.dat" onchange="onMDUpload(this,'rmsd')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">RMSD</div><div class="row-hint" id="hint-rmsd">.xvg / .csv</div></div>
+        <div class="row-status" id="mstatus-rmsd">—</div>
+      </div>
+
+      <div class="upload-row" id="row-rmsf" style="--row-color:var(--c-rmsf)" onclick="triggerInput('inp-rmsf')">
+        <input type="file" id="inp-rmsf" accept=".xvg,.csv,.txt,.dat" onchange="onMDUpload(this,'rmsf')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">RMSF</div><div class="row-hint" id="hint-rmsf">.xvg / .csv</div></div>
+        <div class="row-status" id="mstatus-rmsf">—</div>
+      </div>
+
+      <div class="upload-row" id="row-rg" style="--row-color:var(--c-rg)" onclick="triggerInput('inp-rg')">
+        <input type="file" id="inp-rg" accept=".xvg,.csv,.txt,.dat" onchange="onMDUpload(this,'rg')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">Radius of Gyration</div><div class="row-hint" id="hint-rg">.xvg / .csv</div></div>
+        <div class="row-status" id="mstatus-rg">—</div>
+      </div>
+
+      <div class="upload-row" id="row-hbond" style="--row-color:var(--c-hb)" onclick="triggerInput('inp-hbond')">
+        <input type="file" id="inp-hbond" accept=".xvg,.csv,.txt,.dat" onchange="onMDUpload(this,'hbond')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">Hydrogen Bonds</div><div class="row-hint" id="hint-hbond">.xvg / .csv</div></div>
+        <div class="row-status" id="mstatus-hbond">—</div>
+      </div>
+
+      <div class="upload-row" id="row-sasa" style="--row-color:var(--c-sasa)" onclick="triggerInput('inp-sasa')">
+        <input type="file" id="inp-sasa" accept=".xvg,.csv,.txt,.dat" onchange="onMDUpload(this,'sasa')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">SASA</div><div class="row-hint" id="hint-sasa">.xvg / .csv</div></div>
+        <div class="row-status" id="mstatus-sasa">—</div>
+      </div>
+
+      <hr class="sb-divider"/>
+      <div class="sb-title">Optional</div>
+
+      <div class="upload-row" id="row-energy" style="--row-color:#7af5c4" onclick="triggerInput('inp-energy')">
+        <input type="file" id="inp-energy" accept=".xvg,.csv,.txt,.dat" onchange="onMDUpload(this,'energy')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">Potential Energy</div><div class="row-hint" id="hint-energy">.xvg / .csv</div></div>
+        <div class="row-status" id="mstatus-energy">—</div>
+      </div>
+
+      <div class="upload-row" id="row-temp" style="--row-color:#f5a04a" onclick="triggerInput('inp-temp')">
+        <input type="file" id="inp-temp" accept=".xvg,.csv,.txt,.dat" onchange="onMDUpload(this,'temp')"/>
+        <div class="row-dot"></div>
+        <div class="row-info"><div class="row-label">Temperature</div><div class="row-hint" id="hint-temp">.xvg / .csv</div></div>
+        <div class="row-status" id="mstatus-temp">—</div>
+      </div>
+
+      <hr class="sb-divider"/>
+      <button class="clear-btn" onclick="clearMD()">✕ &nbsp;Clear All</button>
+
+    </div>
+    <div class="sidebar-footer">
+      <div class="loaded-count">
+        <span class="count-badge" id="md-loaded-count">0</span>
+        datasets loaded
+      </div>
+    </div>
+  </aside>
+
+  <!-- md content -->
+  <div class="md-content">
+
+    <!-- ── TRAJECTORY VIEWER (Step 4) ── -->
+    <div class="traj-section" id="traj-section">
+      <div class="traj-section-head">
+        <div class="traj-section-title">3D Trajectory Viewer</div>
+        <span class="traj-badge">NGL</span>
+        <div class="traj-frame-info" id="traj-frame-info">No trajectory loaded</div>
+      </div>
+
+      <div class="traj-viewport">
+        <div id="md-ngl-viewport"></div>
+
+        <!-- placeholder -->
+        <div class="traj-placeholder" id="traj-placeholder">
+          <div class="traj-ph-rings">
+            <div class="traj-ph-ring"></div>
+            <div class="traj-ph-ring"></div>
+            <div class="traj-ph-ring"></div>
+            <div class="traj-ph-dot"></div>
+          </div>
+          <div class="traj-ph-text">
+            <strong>No trajectory loaded</strong>
+            Upload topology + trajectory<br/>then click Load Trajectory
+          </div>
+        </div>
+
+        <!-- loading overlay -->
+        <div class="traj-loading" id="traj-loading">
+          <div class="traj-loader-ring"></div>
+          <div class="traj-loader-text" id="traj-loader-text">Loading…</div>
+        </div>
+      </div>
+
+      <!-- controls bar -->
+      <div class="traj-controls">
+        <button class="traj-btn" id="traj-btn-play" onclick="trajPlay()" disabled>▶ Play</button>
+        <button class="traj-btn" id="traj-btn-pause" onclick="trajPause()" disabled style="display:none">⏸ Pause</button>
+        <button class="traj-btn" id="traj-btn-stop" onclick="trajStop()" disabled>⏹ Stop</button>
+        <button class="traj-btn" id="traj-btn-center" onclick="trajCenter()" disabled>⊙ Center</button>
+        <button class="traj-btn" id="traj-btn-spin" onclick="trajToggleSpin()" disabled>↻ Spin</button>
+        <button class="traj-btn" id="traj-btn-snap" onclick="trajSnap()" disabled>📷 Snap</button>
+
+        <div class="frame-slider-wrap">
+          <input type="range" class="frame-slider" id="frame-slider"
+                 min="0" max="0" value="0" disabled
+                 oninput="trajSeek(this.value)"/>
+          <div class="frame-slider-labels">
+            <span>0</span>
+            <span id="frame-slider-max">0</span>
+          </div>
+        </div>
+
+        <div class="traj-speed-wrap">
+          <div class="traj-speed-label">Speed</div>
+          <select class="traj-speed" id="traj-speed" onchange="trajSetSpeed()">
+            <option value="200">0.5×</option>
+            <option value="100" selected>1×</option>
+            <option value="50">2×</option>
+            <option value="25">4×</option>
+            <option value="10">10×</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stats-bar-item"><div class="sbi-key">RMSD avg</div><div class="sbi-val" id="sbi-rmsd" style="--sbi-color:var(--c-rmsd)">—</div><div class="sbi-sub">nm</div></div>
+      <div class="stats-bar-item"><div class="sbi-key">RMSF max</div><div class="sbi-val" id="sbi-rmsf" style="--sbi-color:var(--c-rmsf)">—</div><div class="sbi-sub">nm</div></div>
+      <div class="stats-bar-item"><div class="sbi-key">Rg avg</div><div class="sbi-val" id="sbi-rg" style="--sbi-color:var(--c-rg)">—</div><div class="sbi-sub">nm</div></div>
+      <div class="stats-bar-item"><div class="sbi-key">H-bonds avg</div><div class="sbi-val" id="sbi-hb" style="--sbi-color:var(--c-hb)">—</div><div class="sbi-sub">count</div></div>
+      <div class="stats-bar-item"><div class="sbi-key">SASA avg</div><div class="sbi-val" id="sbi-sasa" style="--sbi-color:var(--c-sasa)">—</div><div class="sbi-sub">nm²</div></div>
+    </div>
+
+    <div class="plot-grid">
+
+      <div class="plot-card" id="card-rmsd" style="--card-color:var(--c-rmsd)">
+        <div class="card-head">
+          <div class="card-indicator"></div><div class="card-title">RMSD</div>
+          <div class="card-meta">
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-rmsd-pts">—</span><span>points</span></div>
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-rmsd-max">—</span><span>max nm</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-placeholder"><div class="ph-icon-wrap">📉</div><div class="ph-label">Root Mean Square Deviation<br/><span class="ph-ext">.xvg or .csv</span></div></div>
+          <div id="plot-rmsd" class="plot-div"></div>
+        </div>
+      </div>
+
+      <div class="plot-card" id="card-rmsf" style="--card-color:var(--c-rmsf)">
+        <div class="card-head">
+          <div class="card-indicator"></div><div class="card-title">RMSF</div>
+          <div class="card-meta">
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-rmsf-pts">—</span><span>residues</span></div>
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-rmsf-max">—</span><span>max nm</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-placeholder"><div class="ph-icon-wrap">📊</div><div class="ph-label">Root Mean Square Fluctuation<br/><span class="ph-ext">.xvg or .csv</span></div></div>
+          <div id="plot-rmsf" class="plot-div"></div>
+        </div>
+      </div>
+
+      <div class="plot-card" id="card-rg" style="--card-color:var(--c-rg)">
+        <div class="card-head">
+          <div class="card-indicator"></div><div class="card-title">Radius of Gyration</div>
+          <div class="card-meta">
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-rg-pts">—</span><span>points</span></div>
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-rg-avg">—</span><span>avg nm</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-placeholder"><div class="ph-icon-wrap">⭕</div><div class="ph-label">Radius of Gyration<br/><span class="ph-ext">.xvg or .csv</span></div></div>
+          <div id="plot-rg" class="plot-div"></div>
+        </div>
+      </div>
+
+      <div class="plot-card" id="card-hbond" style="--card-color:var(--c-hb)">
+        <div class="card-head">
+          <div class="card-indicator"></div><div class="card-title">Hydrogen Bonds</div>
+          <div class="card-meta">
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-hb-pts">—</span><span>points</span></div>
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-hb-avg">—</span><span>avg</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-placeholder"><div class="ph-icon-wrap">🔗</div><div class="ph-label">Hydrogen Bond Count<br/><span class="ph-ext">.xvg or .csv</span></div></div>
+          <div id="plot-hbond" class="plot-div"></div>
+        </div>
+      </div>
+
+      <div class="plot-card plot-grid-full" id="card-sasa" style="--card-color:var(--c-sasa)">
+        <div class="card-head">
+          <div class="card-indicator"></div><div class="card-title">SASA — Solvent Accessible Surface Area</div>
+          <div class="card-meta">
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-sasa-pts">—</span><span>points</span></div>
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-sasa-avg">—</span><span>avg nm²</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-placeholder"><div class="ph-icon-wrap">🌊</div><div class="ph-label">Solvent Accessible Surface Area<br/><span class="ph-ext">.xvg or .csv</span></div></div>
+          <div id="plot-sasa" class="plot-div"></div>
+        </div>
+      </div>
+
+      <div class="plot-card" id="card-energy" style="--card-color:#7af5c4;display:none">
+        <div class="card-head">
+          <div class="card-indicator"></div><div class="card-title">Potential Energy</div>
+          <div class="card-meta">
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-energy-pts">—</span><span>points</span></div>
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-energy-avg">—</span><span>avg kJ/mol</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-placeholder"><div class="ph-icon-wrap">⚡</div><div class="ph-label">Potential Energy</div></div>
+          <div id="plot-energy" class="plot-div"></div>
+        </div>
+      </div>
+
+      <div class="plot-card" id="card-temp" style="--card-color:#f5a04a;display:none">
+        <div class="card-head">
+          <div class="card-indicator"></div><div class="card-title">Temperature</div>
+          <div class="card-meta">
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-temp-pts">—</span><span>points</span></div>
+            <div class="card-stat"><span class="card-stat-val" id="cmeta-temp-avg">—</span><span>avg K</span></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-placeholder"><div class="ph-icon-wrap">🌡</div><div class="ph-label">Temperature</div></div>
+          <div id="plot-temp" class="plot-div"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /page-md -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════════ -->
+<script>
+// ── TAB SWITCHING ─────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'dock' && D.stage) setTimeout(() => D.stage.handleResize(), 50);
+}
+
+// ═══════════════════════════════════════════════════════
+// DOCKING MODULE
+// ═══════════════════════════════════════════════════════
+const D = {
+  recFile: null, ligFile: null, logFile: null,
+  stage: null, recComp: null, ligComp: null,
+  spinning: false, viewMode: 'both', loaded: false, poses: [],
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  D.stage = new NGL.Stage('ngl-viewport', {
+    backgroundColor: '#05060b', tooltip: true,
+    clipNear: 0, clipFar: 100, fogNear: 50, fogFar: 100,
+  });
+  window.addEventListener('resize', () => D.stage.handleResize());
+  setStatus('idle');
+});
+
+function triggerInput(id) { document.getElementById(id).click(); }
+
+function onFileSelect(input, role) {
+  const file = input.files[0];
+  if (!file) return;
+  if (role === 'rec') {
+    D.recFile = file;
+    document.getElementById('zone-rec').classList.add('loaded');
+    document.getElementById('fname-rec').textContent = '✓  ' + file.name;
+  } else if (role === 'lig') {
+    D.ligFile = file;
+    document.getElementById('zone-lig').classList.add('loaded');
+    document.getElementById('fname-lig').textContent = '✓  ' + file.name;
+  } else if (role === 'log') {
+    D.logFile = file;
+    document.getElementById('zone-log').classList.add('loaded');
+    document.getElementById('fname-log').textContent = '✓  ' + file.name;
+    parseScoreLog().then(() => { if (D.loaded) openInfoPanel(); });
+  }
+  document.getElementById('load-btn').disabled = !(D.recFile && D.ligFile);
+  toast(file.name + ' ready', 'ok');
+}
+
+// drag & drop
+['zone-rec','zone-lig','zone-log'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('dragover', e => { e.preventDefault(); el.style.borderColor = 'var(--d-acc)'; });
+  el.addEventListener('dragleave', () => { el.style.borderColor = ''; });
+  el.addEventListener('drop', e => {
+    e.preventDefault(); el.style.borderColor = '';
+    const file = e.dataTransfer.files[0]; if (!file) return;
+    const roleMap = { 'zone-rec':'rec', 'zone-lig':'lig', 'zone-log':'log' };
+    const inp = document.getElementById('inp-' + roleMap[id]);
+    const dt = new DataTransfer(); dt.items.add(file); inp.files = dt.files;
+    onFileSelect(inp, roleMap[id]);
+  });
+});
+
+async function loadComplex() {
+  if (!D.recFile || !D.ligFile) return;
+  document.getElementById('placeholder').classList.remove('hidden');
+  document.getElementById('loading-overlay').classList.add('active');
+  setStatus('busy');
+  try {
+    D.stage.removeAllComponents(); D.recComp = null; D.ligComp = null;
+    setLoaderText('Loading receptor…');
+    const recBlob = new Blob([await D.recFile.arrayBuffer()], { type:'text/plain' });
+    D.recComp = await D.stage.loadFile(recBlob, { ext: dExt(D.recFile.name), defaultRepresentation: false });
+    setLoaderText('Loading ligand…');
+    const ligBlob = new Blob([await D.ligFile.arrayBuffer()], { type:'text/plain' });
+    D.ligComp = await D.stage.loadFile(ligBlob, { ext: dExt(D.ligFile.name), defaultRepresentation: false });
+    setLoaderText('Rendering…');
+    await new Promise(r => setTimeout(r, 80));
+    applyRep();
+    D.stage.autoView(600);
+    D.loaded = true; D.viewMode = 'both';
+    document.getElementById('placeholder').classList.add('hidden');
+    document.getElementById('legend').classList.add('visible');
+    updateLegend();
+    if (D.logFile) openInfoPanel();
+    document.getElementById('loading-overlay').classList.remove('active');
+    setStatus('ready');
+    toast('Complex loaded ✓', 'ok');
+  } catch(err) {
+    document.getElementById('loading-overlay').classList.remove('active');
+    setStatus('error');
+    toast('Error: ' + err.message, 'err');
+  }
+}
+
+function applyRep() {
+  if (!D.recComp || !D.ligComp) return;
+  const recRep = document.getElementById('rec-rep').value;
+  const recColor = document.getElementById('rec-color').value;
+  const ligRep = document.getElementById('lig-rep').value;
+  const ligColor = document.getElementById('lig-color').value;
+  D.recComp.removeAllRepresentations();
+  D.ligComp.removeAllRepresentations();
+  D.recComp.addRepresentation(recRep, {
+    colorScheme: recColor === 'uniform' ? 'uniform' : recColor,
+    color: recColor === 'uniform' ? '#aabbcc' : undefined,
+    sele: 'protein or nucleic',
+    opacity: recRep === 'surface' ? 0.65 : 1.0,
+  });
+  if (['cartoon','ribbon','backbone'].includes(recRep)) {
+    D.recComp.addRepresentation('ball+stick', { sele:'hetero and not water and not ion', colorScheme:'element', radiusScale:0.8 });
+  }
+  const isHex = ligColor.startsWith('#');
+  D.ligComp.addRepresentation(ligRep, {
+    colorScheme: isHex ? 'uniform' : 'element',
+    color: isHex ? ligColor : undefined,
+    radiusScale: ligRep === 'ball+stick' ? 1.3 : 1.0,
+    bondScale: 0.4,
+  });
+  updateLegend();
+}
+
+function updateLegend() {
+  if (D.recFile) document.getElementById('legend-rec').textContent = D.recFile.name.replace(/\.\w+$/,'');
+  if (D.ligFile) {
+    document.getElementById('legend-lig').textContent = D.ligFile.name.replace(/\.\w+$/,'');
+    const c = document.getElementById('lig-color').value;
+    if (c.startsWith('#')) document.getElementById('legend-lig-dot').style.background = c;
+  }
+}
+
+function centerView() { if (D.stage) D.stage.autoView(400); }
+
+function toggleSpin() {
+  D.spinning = !D.spinning;
+  document.getElementById('btn-spin').classList.toggle('active', D.spinning);
+  D.stage.setSpin(D.spinning ? [0,1,0] : null);
+}
+
+async function takeSnapshot() {
+  if (!D.stage) return;
+  try {
+    const blob = await D.stage.makeImage({ trim:false, factor:2, antialias:true });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'docking_complex.png'; a.click();
+    toast('Snapshot saved ✓', 'ok');
+  } catch(e) { toast('Snapshot failed', 'err'); }
+}
+
+function toggleRecOnly() {
+  if (!D.loaded) return;
+  const btn = document.getElementById('btn-reconly');
+  if (D.viewMode === 'rec') {
+    D.viewMode = 'both'; D.recComp.setVisibility(true); D.ligComp.setVisibility(true);
+    btn.classList.remove('active'); document.getElementById('btn-ligonly').classList.remove('active');
+  } else {
+    D.viewMode = 'rec'; D.recComp.setVisibility(true); D.ligComp.setVisibility(false);
+    btn.classList.add('active'); document.getElementById('btn-ligonly').classList.remove('active');
+  }
+  D.stage.autoView(300);
+}
+
+function toggleLigOnly() {
+  if (!D.loaded) return;
+  const btn = document.getElementById('btn-ligonly');
+  if (D.viewMode === 'lig') {
+    D.viewMode = 'both'; D.recComp.setVisibility(true); D.ligComp.setVisibility(true);
+    btn.classList.remove('active'); document.getElementById('btn-reconly').classList.remove('active');
+  } else {
+    D.viewMode = 'lig'; D.recComp.setVisibility(false); D.ligComp.setVisibility(true);
+    btn.classList.add('active'); document.getElementById('btn-reconly').classList.remove('active');
+  }
+  D.stage.autoView(300);
+}
+
+function resetView() {
+  if (!D.stage) return;
+  D.stage.removeAllComponents();
+  D.recComp = null; D.ligComp = null; D.loaded = false; D.viewMode = 'both'; D.spinning = false;
+  ['btn-spin','btn-reconly','btn-ligonly'].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('legend').classList.remove('visible');
+  document.getElementById('placeholder').classList.remove('hidden');
+  ['zone-rec','zone-lig','zone-log'].forEach(id => document.getElementById(id).classList.remove('loaded'));
+  document.getElementById('fname-rec').textContent = 'Click or drag to upload';
+  document.getElementById('fname-lig').textContent = 'Click or drag to upload';
+  document.getElementById('fname-log').textContent = 'Click or drag to upload';
+  D.recFile = null; D.ligFile = null; D.logFile = null; D.poses = [];
+  document.getElementById('load-btn').disabled = true;
+  closeInfoPanel(); setStatus('idle');
+  toast('Reset ✓', 'ok');
+}
+
+function dExt(name) { return name.split('.').pop().toLowerCase(); }
+function setLoaderText(t) { document.getElementById('loader-text').textContent = t; }
+function setStatus(s) {
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  dot.className = 'status-dot';
+  if (s === 'idle')  { txt.textContent = 'No structure loaded'; }
+  if (s === 'busy')  { dot.classList.add('busy');  txt.textContent = 'Loading…'; }
+  if (s === 'ready') { dot.classList.add('ready'); txt.textContent = D.recFile.name.replace(/\.\w+$/,'') + ' + ' + D.ligFile.name.replace(/\.\w+$/,''); }
+  if (s === 'error') { dot.classList.add('error'); txt.textContent = 'Load error'; }
+}
+
+// ── Score log ────────────────────────────────────────────
+async function parseScoreLog() {
+  if (!D.logFile) return;
+  const text = await D.logFile.text();
+  D.poses = [];
+  const vinaRe = /^\s*(\d+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*$/gm;
+  let m;
+  while ((m = vinaRe.exec(text)) !== null) {
+    D.poses.push({ num:parseInt(m[1]), dg:parseFloat(m[2]), rmsd_lb:parseFloat(m[3]), rmsd_ub:parseFloat(m[4]) });
+  }
+  if (D.poses.length === 0 && text.includes(',')) {
+    const lines = text.trim().split('\n');
+    const start = isNaN(parseFloat(lines[0].split(',')[0])) ? 1 : 0;
+    for (let i = start; i < lines.length; i++) {
+      const c = lines[i].split(',').map(x => x.trim());
+      if (c.length < 2) continue;
+      const dg = parseFloat(c[1]);
+      if (!isNaN(dg)) D.poses.push({ num:parseInt(c[0])||i, dg, rmsd_lb:parseFloat(c[2])||0, rmsd_ub:parseFloat(c[3])||0 });
+    }
+  }
+}
+
+function openInfoPanel() {
+  document.getElementById('info-strip').classList.add('open');
+  renderPanel();
+  setTimeout(() => D.stage && D.stage.handleResize(), 360);
+}
+function closeInfoPanel() {
+  document.getElementById('info-strip').classList.remove('open');
+  setTimeout(() => D.stage && D.stage.handleResize(), 360);
+}
+
+function renderPanel() {
+  if (D.poses.length === 0) {
+    document.getElementById('stat-receptor').textContent = (D.recFile?D.recFile.name:'—') + ' · ' + (D.ligFile?D.ligFile.name:'—');
+    document.getElementById('stat-best-dg').textContent = '—';
+    document.getElementById('stat-poses').textContent = '0';
+    document.getElementById('stat-rmsd-lb').textContent = '—';
+    document.getElementById('stat-rmsd-ub').textContent = '—';
+    document.getElementById('poses-count').textContent = '0';
+    document.getElementById('poses-tbody').innerHTML = '<tr><td colspan="5" style="color:var(--dim2);text-align:center;padding:18px;font-size:11px;">Could not parse poses</td></tr>';
+    return;
+  }
+  const sorted = [...D.poses].sort((a,b) => a.dg - b.dg);
+  const best = sorted[0], worst = sorted[sorted.length-1];
+  const range = Math.abs(worst.dg - best.dg) || 1;
+  const dgCol = best.dg <= -8 ? 'good' : best.dg <= -5 ? 'warn' : 'plain';
+  document.getElementById('stat-best-dg').textContent = best.dg.toFixed(2);
+  document.getElementById('stat-best-dg').className = 'stat-val ' + dgCol;
+  document.getElementById('stat-poses').textContent = sorted.length;
+  document.getElementById('stat-rmsd-lb').textContent = best.rmsd_lb.toFixed(3);
+  document.getElementById('stat-rmsd-ub').textContent = best.rmsd_ub.toFixed(3);
+  document.getElementById('stat-receptor').textContent = (D.recFile?D.recFile.name.replace(/\.\w+$/,''):'—') + ' · ' + (D.ligFile?D.ligFile.name.replace(/\.\w+$/,''):'—');
+  document.getElementById('poses-count').textContent = sorted.length;
+  document.getElementById('poses-tbody').innerHTML = sorted.map((p,i) => {
+    const bw = Math.round(Math.abs(p.dg - worst.dg) / range * 100);
+    return `<tr onclick="selectPose(this,${p.num})">
+      <td><span class="pose-num ${i===0?'best':''}">${p.num}</span></td>
+      <td><span class="dg-val${p.dg>-5?' weak':''}">${p.dg.toFixed(2)}</span><span class="dg-bar-wrap"><span class="dg-bar" style="width:${bw}%"></span></span></td>
+      <td>${p.rmsd_lb.toFixed(3)}</td><td>${p.rmsd_ub.toFixed(3)}</td>
+      <td style="color:var(--dim2);font-size:10px;">${i===0?'⭐ best':''}</td>
+    </tr>`;
+  }).join('');
+  const first = document.querySelector('#poses-tbody tr');
+  if (first) first.classList.add('selected');
+}
+function selectPose(row, n) {
+  document.querySelectorAll('#poses-tbody tr').forEach(r => r.classList.remove('selected'));
+  row.classList.add('selected');
+  toast('Pose ' + n + ' selected', 'info');
+}
+
+// ═══════════════════════════════════════════════════════
+// MD MODULE
+// ═══════════════════════════════════════════════════════
+const MD_PLOTS = {
+  rmsd:   { color:'#4af0b8', xlabel:'Time (ps)',   ylabel:'RMSD (nm)',        type:'line', sbi:'sbi-rmsd',  mp:['cmeta-rmsd-pts','cmeta-rmsd-max'],  stat:'avg' },
+  rmsf:   { color:'#a07af5', xlabel:'Residue',     ylabel:'RMSF (nm)',        type:'bar',  sbi:'sbi-rmsf',  mp:['cmeta-rmsf-pts','cmeta-rmsf-max'],  stat:'max' },
+  rg:     { color:'#f5c44a', xlabel:'Time (ps)',   ylabel:'Rg (nm)',          type:'line', sbi:'sbi-rg',    mp:['cmeta-rg-pts','cmeta-rg-avg'],      stat:'avg' },
+  hbond:  { color:'#f57a7a', xlabel:'Time (ps)',   ylabel:'# Hydrogen Bonds', type:'line', sbi:'sbi-hb',    mp:['cmeta-hb-pts','cmeta-hb-avg'],      stat:'avg' },
+  sasa:   { color:'#4ab4f5', xlabel:'Time (ps)',   ylabel:'SASA (nm²)',       type:'line', sbi:'sbi-sasa',  mp:['cmeta-sasa-pts','cmeta-sasa-avg'],  stat:'avg' },
+  energy: { color:'#7af5c4', xlabel:'Time (ps)',   ylabel:'Energy (kJ/mol)',  type:'line', sbi:null,        mp:['cmeta-energy-pts','cmeta-energy-avg'], stat:'avg' },
+  temp:   { color:'#f5a04a', xlabel:'Time (ps)',   ylabel:'Temperature (K)',  type:'line', sbi:null,        mp:['cmeta-temp-pts','cmeta-temp-avg'],   stat:'avg' },
+};
+
+const MD_LAYOUT = {
+  paper_bgcolor:'transparent', plot_bgcolor:'transparent',
+  margin:{ t:8, r:14, b:42, l:54 },
+  font:{ family:"'IBM Plex Mono', monospace", size:9, color:'#8896b0' },
+  xaxis:{ gridcolor:'#181d2b', linecolor:'#1f2433', tickfont:{size:9}, zeroline:false },
+  yaxis:{ gridcolor:'#181d2b', linecolor:'#1f2433', tickfont:{size:9}, zeroline:false },
+  hovermode:'x unified',
+  hoverlabel:{ bgcolor:'#141720', bordercolor:'#2a3045', font:{size:10, color:'#dde3ef'} },
+  showlegend:false,
+};
+const MD_CONFIG = {
+  displaylogo:false, responsive:true,
+  modeBarButtonsToRemove:['select2d','lasso2d','autoScale2d','toggleSpikelines'],
+  toImageButtonOptions:{ format:'png', scale:2 },
+};
+
+let mdLoadedCount = 0;
+
+async function onMDUpload(input, key) {
+  const file = input.files[0]; if (!file) return;
+  if (key === 'energy') document.getElementById('card-energy').style.display = '';
+  if (key === 'temp')   document.getElementById('card-temp').style.display = '';
+  toast('Parsing ' + file.name + '…', 'info');
+  const text = await file.text();
+  const { x, y, xLabel, yLabel } = parseMDFile(text, key);
+  if (!x || x.length < 2) { toast('Could not parse: ' + file.name, 'err'); return; }
+  document.getElementById('row-' + key).classList.add('loaded');
+  document.getElementById('hint-' + key).textContent = '✓ ' + file.name;
+  document.getElementById('mstatus-' + key).textContent = x.length + ' pts';
+  renderMDPlot(key, x, y, xLabel, yLabel);
+  updateMDMeta(key, x, y);
+  mdLoadedCount++;
+  document.getElementById('md-loaded-count').textContent = mdLoadedCount;
+  toast(key.toUpperCase() + ' plotted — ' + x.length + ' points ✓', 'ok');
+}
+
+function parseMDFile(text, key) {
+  const cfg = MD_PLOTS[key];
+  let xLabel = cfg.xlabel, yLabel = cfg.ylabel;
+  const xlm = text.match(/^@\s+xaxis\s+label\s+"(.+)"/m);
+  const ylm = text.match(/^@\s+yaxis\s+label\s+"(.+)"/m);
+  if (xlm) xLabel = xlm[1];
+  if (ylm) yLabel = ylm[1];
+  const lines = text.split('\n').filter(l => { const t=l.trim(); return t && !t.startsWith('#') && !t.startsWith('@'); });
+  const x=[], y=[];
+  for (const line of lines) {
+    const p = line.trim().split(/\s+/);
+    if (p.length >= 2) { const xi=parseFloat(p[0]), yi=parseFloat(p[1]); if (!isNaN(xi)&&!isNaN(yi)){x.push(xi);y.push(yi);} }
+  }
+  if (x.length < 2) {
+    x.length=0; y.length=0;
+    const csv = text.trim().split('\n');
+    const start = isNaN(parseFloat((csv[0]||'').split(',')[0])) ? 1 : 0;
+    for (let i=start; i<csv.length; i++) {
+      const c = csv[i].split(',');
+      const xi=parseFloat(c[0]), yi=parseFloat(c[1]);
+      if (!isNaN(xi)&&!isNaN(yi)){x.push(xi);y.push(yi);}
+    }
+  }
+  return { x, y, xLabel, yLabel };
+}
+
+function renderMDPlot(key, x, y, xLabel, yLabel) {
+  const cfg = MD_PLOTS[key];
+  const div = document.getElementById('plot-' + key);
+  document.getElementById('card-' + key).classList.add('has-data');
+  const isBar = cfg.type === 'bar';
+  const trace = isBar ? {
+    x, y, type:'bar',
+    marker:{ color: cfg.color + 'cc', line:{ color:cfg.color, width:0.5 } },
+    hovertemplate:`<b>${xLabel}:</b> %{x}<br><b>${yLabel}:</b> %{y:.4f}<extra></extra>`,
+  } : {
+    x, y, type:'scatter', mode:'lines',
+    line:{ color:cfg.color, width:1.5 },
+    fill:'tozeroy', fillcolor: cfg.color + '18',
+    hovertemplate:`<b>${xLabel}:</b> %{x:.1f}<br><b>${yLabel}:</b> %{y:.4f}<extra></extra>`,
+  };
+  const layout = {
+    ...MD_LAYOUT,
+    xaxis:{ ...MD_LAYOUT.xaxis, title:{ text:xLabel, font:{size:9,color:'#505a72'}, standoff:5 } },
+    yaxis:{ ...MD_LAYOUT.yaxis, title:{ text:yLabel, font:{size:9,color:'#505a72'}, standoff:4 } },
+  };
+  Plotly.react(div, [trace], layout, MD_CONFIG);
+}
+
+function updateMDMeta(key, x, y) {
+  const cfg = MD_PLOTS[key];
+  const avg = y.reduce((a,b)=>a+b,0)/y.length;
+  const max = Math.max(...y);
+  const [p0, p1] = cfg.mp;
+  const el0 = document.getElementById(p0); if (el0) el0.textContent = x.length;
+  const el1 = document.getElementById(p1); if (el1) el1.textContent = (p1.endsWith('max') ? max : avg).toFixed(3);
+  if (cfg.sbi) {
+    const sbi = document.getElementById(cfg.sbi);
+    if (sbi) { sbi.textContent = (cfg.stat==='max' ? max : avg).toFixed(3); sbi.classList.add('lit'); }
+  }
+}
+
+function clearMD() {
+  Object.keys(MD_PLOTS).forEach(key => {
+    document.getElementById('row-' + key).classList.remove('loaded');
+    document.getElementById('hint-' + key).textContent = MD_PLOTS[key].xlabel + ' / .xvg .csv';
+    document.getElementById('mstatus-' + key).textContent = '—';
+    const card = document.getElementById('card-' + key);
+    card.classList.remove('has-data');
+    Plotly.purge(document.getElementById('plot-' + key));
+    const inp = document.getElementById('inp-' + key); if (inp) inp.value = '';
+    [card.querySelectorAll('.card-stat-val')].flat().forEach(el => el.textContent = '—');
+  });
+  ['sbi-rmsd','sbi-rmsf','sbi-rg','sbi-hb','sbi-sasa'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = '—'; el.classList.remove('lit'); }
+  });
+  document.getElementById('card-energy').style.display = 'none';
+  document.getElementById('card-temp').style.display = 'none';
+  mdLoadedCount = 0;
+  document.getElementById('md-loaded-count').textContent = '0';
+  toast('All MD data cleared', 'ok');
+}
+
+// ═══════════════════════════════════════════════════════
+// TRAJECTORY MODULE (Step 4)
+// ═══════════════════════════════════════════════════════
+const T = {
+  topoFile:  null,
+  trajFile:  null,
+  stage:     null,
+  topoComp:  null,
+  trajObj:   null,      // NGL trajectory object
+  totalFrames: 0,
+  currentFrame: 0,
+  playing:   false,
+  spinning:  false,
+  interval:  null,
+  speed:     100,       // ms per frame
+};
+
+// init MD NGL stage lazily (when MD tab first shown)
+function ensureMDStage() {
+  if (T.stage) return;
+  T.stage = new NGL.Stage('md-ngl-viewport', {
+    backgroundColor: '#05060b', tooltip: true,
+    clipNear: 0, clipFar: 100, fogNear: 50, fogFar: 100,
+  });
+  window.addEventListener('resize', () => { if (T.stage) T.stage.handleResize(); });
+}
+
+// patch switchTab to init stage
+const _switchTab = switchTab;
+window.switchTab = function(tab) {
+  _switchTab(tab);
+  if (tab === 'md') { ensureMDStage(); setTimeout(() => T.stage && T.stage.handleResize(), 60); }
+};
+
+// ── UPLOAD ────────────────────────────────────────────────
+function onTrajFile(input, role) {
+  const file = input.files[0]; if (!file) return;
+  if (role === 'topo') {
+    T.topoFile = file;
+    document.getElementById('row-topo').classList.add('loaded');
+    document.getElementById('hint-topo').textContent = '✓ ' + file.name;
+    document.getElementById('tstatus-topo').textContent = '✓';
+  } else {
+    T.trajFile = file;
+    document.getElementById('row-traj').classList.add('loaded');
+    document.getElementById('hint-traj').textContent = '✓ ' + file.name;
+    document.getElementById('tstatus-traj').textContent = '✓';
+  }
+  document.getElementById('traj-load-btn').disabled = !(T.topoFile && T.trajFile);
+  toast(file.name + ' ready', 'ok');
+}
+
+// ── LOAD ──────────────────────────────────────────────────
+async function loadTrajectory() {
+  if (!T.topoFile || !T.trajFile) return;
+  ensureMDStage();
+
+  trajStop();
+  T.stage.removeAllComponents();
+  T.topoComp = null; T.trajObj = null; T.totalFrames = 0; T.currentFrame = 0;
+
+  document.getElementById('traj-placeholder').classList.add('hidden');
+  document.getElementById('traj-loading').classList.add('active');
+  setTrajLoaderText('Loading topology…');
+  setTrajControls(false);
+
+  try {
+    // ── load topology ─────────────────────────────────
+    const topoBuf  = await T.topoFile.arrayBuffer();
+    const topoExt  = mExt(T.topoFile.name);
+    const topoBlob = new Blob([topoBuf], { type: 'text/plain' });
+    T.topoComp = await T.stage.loadFile(topoBlob, {
+      ext: topoExt,
+      defaultRepresentation: false,
+      name: T.topoFile.name,
+    });
+
+    // default rep
+    T.topoComp.addRepresentation('cartoon', {
+      colorScheme: 'residueindex', sele: 'protein or nucleic', opacity: 1.0,
+    });
+    T.topoComp.addRepresentation('ball+stick', {
+      sele: 'hetero and not water and not ion', colorScheme: 'element', radiusScale: 0.8,
+    });
+
+    // ── load trajectory ───────────────────────────────
+    setTrajLoaderText('Loading trajectory…');
+    const trajBuf  = await T.trajFile.arrayBuffer();
+    const trajExt  = mExt(T.trajFile.name);
+    const trajBlob = new Blob([trajBuf]);
+
+    // NGL addTrajectory accepts a Blob
+    const trajComp = await T.topoComp.addTrajectory(trajBlob, { ext: trajExt });
+    T.trajObj = trajComp.trajectory;
+    T.totalFrames = T.trajObj.frameCount || 0;
+
+    setTrajLoaderText('Rendering…');
+    await new Promise(r => setTimeout(r, 100));
+
+    T.stage.autoView(600);
+
+    // update slider
+    const slider = document.getElementById('frame-slider');
+    slider.max   = Math.max(0, T.totalFrames - 1);
+    slider.value = 0;
+    document.getElementById('frame-slider-max').textContent = Math.max(0, T.totalFrames - 1);
+    updateFrameInfo(0);
+
+    document.getElementById('traj-loading').classList.remove('active');
+    setTrajControls(true);
+    toast('Trajectory loaded — ' + T.totalFrames + ' frames ✓', 'ok');
+
+  } catch(err) {
+    document.getElementById('traj-loading').classList.remove('active');
+    document.getElementById('traj-placeholder').classList.remove('hidden');
+    toast('Trajectory error: ' + err.message, 'err');
+    console.error(err);
+  }
+}
+
+// ── PLAYBACK ──────────────────────────────────────────────
+function trajPlay() {
+  if (!T.trajObj || T.playing) return;
+  T.playing = true;
+  document.getElementById('traj-btn-play').style.display  = 'none';
+  document.getElementById('traj-btn-pause').style.display = '';
+  T.interval = setInterval(() => {
+    let next = T.currentFrame + 1;
+    if (next >= T.totalFrames) next = 0;
+    gotoFrame(next);
+  }, T.speed);
+}
+
+function trajPause() {
+  T.playing = false;
+  clearInterval(T.interval);
+  document.getElementById('traj-btn-play').style.display  = '';
+  document.getElementById('traj-btn-pause').style.display = 'none';
+}
+
+function trajStop() {
+  trajPause();
+  if (T.trajObj && T.totalFrames > 0) gotoFrame(0);
+}
+
+function gotoFrame(n) {
+  T.currentFrame = n;
+  if (T.trajObj) T.trajObj.setFrame(n);
+  const slider = document.getElementById('frame-slider');
+  slider.value = n;
+  updateFrameInfo(n);
+}
+
+function trajSeek(val) {
+  const n = parseInt(val);
+  if (T.playing) trajPause();
+  gotoFrame(n);
+}
+
+function trajSetSpeed() {
+  T.speed = parseInt(document.getElementById('traj-speed').value);
+  if (T.playing) { trajPause(); trajPlay(); }
+}
+
+function trajCenter()  { if (T.stage) T.stage.autoView(400); }
+async function trajSnap() {
+  if (!T.stage) return;
+  try {
+    const blob = await T.stage.makeImage({ trim:false, factor:2, antialias:true });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'trajectory_frame_' + T.currentFrame + '.png'; a.click();
+    toast('Snapshot saved ✓', 'ok');
+  } catch(e) { toast('Snapshot failed', 'err'); }
+}
+
+function trajToggleSpin() {
+  T.spinning = !T.spinning;
+  document.getElementById('traj-btn-spin').classList.toggle('active', T.spinning);
+  T.stage.setSpin(T.spinning ? [0, 1, 0] : null);
+}
+
+// ── HELPERS ───────────────────────────────────────────────
+function updateFrameInfo(n) {
+  const total = T.totalFrames;
+  document.getElementById('traj-frame-info').innerHTML =
+    'Frame <span>' + n + '</span> / <span>' + Math.max(0, total - 1) + '</span>' +
+    (total > 0 ? ' &nbsp;·&nbsp; ' + total + ' total' : '');
+}
+
+function setTrajLoaderText(t) {
+  document.getElementById('traj-loader-text').textContent = t;
+}
+
+function setTrajControls(enabled) {
+  ['traj-btn-play','traj-btn-pause','traj-btn-stop',
+   'traj-btn-center','traj-btn-spin','traj-btn-snap','frame-slider'
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = !enabled;
+  });
+}
+
+function mExt(name) { return name.split('.').pop().toLowerCase(); }
+
+let toastTimer;
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  const dot = document.getElementById('toast-dot');
+  const col = { ok:'#4af0b8', err:'#f57a7a', info:'#f5c44a' };
+  dot.style.background = col[type] || col.ok;
+  document.getElementById('toast-msg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  if (type !== 'info') toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
