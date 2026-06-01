@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amir Hossein Gholizadeh - Portfolio
-    </title>
+    <title>Amir Hossein Gholizadeh - Portfolio</title>
     <link rel="icon" href="l.png" sizes="any">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet">   
+    <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1 style="font-size: 18px;"">AMIR H. GHOLIZADEH</h1>
-            <nav>
-                <!-- <a href="#dev-notes" class="nav">Devnotes</a> -->
-                <a href="#papers" class="nav">Papers</a>                    
-                
+    <div class="site-wrapper">
+
+        <!-- HEADER -->
+        <header class="site-header">
+            <a href="#" class="logo-mark">amrqhz</a>
+            <nav class="site-nav">
+                <a href="#papers" class="nav-link">papers</a>
                 <div class="dropdown">
-                    <a href="#Featured" class="nav">Projects</a>
+                    <a href="#Featured" class="nav">projects</a>
                     <div class="dropdown-content">
                     <a href="#chemviz">ChemViz</a>
                     <a href="#SF">Smiles finder</a>
@@ -31,371 +30,253 @@
                     <a href="#">quickdose</a>
                     </div>
                 </div>
-                <a href="#library" class="nav">Library</a>
-                <a href="#resume" class="nav">Resume</a>                
-                <a href="#social" class="nav">Contact</a>
-
-                <!-- <a  class="theme-toggle" href="">☀</a> -->
+                <a href="#Featured" class="nav-link">projects</a>
+                <a href="#library" class="nav-link">library</a>
+                <a href="#resume" class="nav-link">resume</a>
+                <a href="#social" class="nav-link">contact</a>
             </nav>
         </header>
-        <div class="notes-container">
-            <img class="brand-logo" src="l.png">
-            <div class="note-entry">
-            <div class="note-content">
-            <p>
-                Hi,<br>
-                I’m Amir Hossein Gholizadeh,
-                a PharmD graduate with a deep passion for computational biology, computational chemistry, and drug discovery.
-                My work sits at the intersection of pharmacy, chemistry, and data-driven science, where I use in silico methods to explore new therapeutic strategies.
-            </p>
-            
-            <p>
-                My work sits at the intersection of pharmacy and tech — I love designing and developing digital tools that make medication use safer and smarter.
-                At my core, I’m driven by one thing — building technology that genuinely improves healthcare outcomes.
-                Whether it’s through coding, design, or innovation, I aim to create tools that make a meaningful difference for patients and professionals alike.
-            </p>
 
-            <div id="moreText" class="more-text">
-                <p>
-                For my PharmD thesis, I focused on drug repurposing—specifically investigating anthelmintic drugs for chronic myeloid leukemia (CML).
-                I combined molecular docking, molecular dynamics (MD) simulations, and density functional theory (DFT) to evaluate binding mechanisms, stability, and electronic properties of candidate compounds.
-                This project strengthened my skills in computational modeling, bioinformatics, and rational drug design.
-                </p>
+        <main class="site-main">
 
-                <p>
-                My <a href="https://github.com/amrqhz" target="_blank">Github</a> and
-                <a href="https://amrqhz.github.io" target="_blank">portfolio</a> showcase projects in computational chemistry, drug design simulations, and related data analysis workflows.
-                These repositories reflect my growing expertise in computational approaches to medicinal chemistry problems.
-                </p>
+            <!-- HERO / ABOUT -->
+            <section class="hero-section">
+                <div class="hero-text">
+                    <p class="terminal-label">$ whoami</p>
+                    <h1 class="hero-name">Amir H. Gholizadeh</h1>
+                    <div class="tag-row">
+                        <span class="tag-pill">computational biology</span>
+                        <span class="tag-pill">drug discovery</span>
+                        <span class="tag-pill">medicinal chemistry</span>
+                    </div>
+                    <div class="hero-bio">
+                        <p>
+                            PharmD graduate with a deep passion for computational biology, 
+                            computational chemistry, and drug discovery. My work sits at the 
+                            intersection of pharmacy, chemistry, and data-driven science, 
+                            where I use in silico methods to explore new therapeutic strategies.
+                        </p>
+                        <p>
+                            I love designing and developing digital tools that make medication 
+                            use safer and smarter — building technology that genuinely improves 
+                            healthcare outcomes.
+                        </p>
 
-                <p>
-                I’m now preparing to apply for a PhD program in Medicinal Chemistry, where I aim to further develop computational and experimental strategies for drug discovery, particularly in targeting cancer and neglected diseases.
-                My long-term goal is to contribute to translational research that bridges computational insights with real-world therapeutics.
-                </p>
+                        <div id="moreText" class="more-text">
+                            <p>
+                                For my PharmD thesis, I focused on drug repurposing — specifically 
+                                investigating anthelmintic drugs for chronic myeloid leukemia (CML). 
+                                I combined molecular docking, molecular dynamics (MD) simulations, 
+                                and density functional theory (DFT) to evaluate binding mechanisms, 
+                                stability, and electronic properties of candidate compounds.
+                            </p>
+                            <p>
+                                My <a href="https://github.com/amrqhz" target="_blank">Github</a> and 
+                                <a href="https://amrqhz.github.io" target="_blank">portfolio</a> showcase 
+                                projects in computational chemistry, drug design simulations, and related 
+                                data analysis workflows.
+                            </p>
+                            <p>
+                                I'm now preparing to apply for a PhD program in Medicinal Chemistry, 
+                                aiming to further develop computational and experimental strategies for 
+                                drug discovery, particularly in targeting cancer and neglected diseases.
+                            </p>
+                        </div>
 
-            </div>
+                        <button id="readMoreBtn" class="read-more-btn" aria-expanded="false" aria-controls="moreText">
+                            <span class="label">read more</span>
+                            <span class="icon">↓</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-photo">
+                    <img src="l.png" alt="Amir Hossein Gholizadeh" class="profile-img">
+                    <p class="photo-caption">amrqhz · tehran, iran</p>
+                </div>
+            </section>
 
-            <button id="readMoreBtn" class="read-more-btn" aria-expanded="false" aria-controls="moreText">
-                <span class="label">Read more</span>
-                <span class="icon">⌄</span>
-            </button>
-            </div>
-        </div>
-        </div>
+            <!-- INFO TABLE -->
+            <section class="info-section">
+                <p class="section-label">INFO</p>
+                <div class="info-table">
+                    <div class="info-row">
+                        <span class="info-key">degree</span>
+                        <span class="info-val">PharmD graduate</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">focus</span>
+                        <span class="info-val">molecular docking · MD simulations · DFT · drug repurposing</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">thesis</span>
+                        <span class="info-val">anthelmintic drug repurposing for CML</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">github</span>
+                        <span class="info-val"><a href="https://github.com/amrqhz" target="_blank">github.com/amrqhz</a></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">twitter / x</span>
+                        <span class="info-val"><a href="https://twitter.com/amrqhz" target="_blank">@amrqhz</a></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">linkedin</span>
+                        <span class="info-val"><a href="https://linkedin.com/in/amirhossein-gholizadeh" target="_blank">amirhossein-gholizadeh</a></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-key">email</span>
+                        <span class="info-val"><a href="mailto:gholizadeh.amir.h@gmail.com">gholizadeh.amir.h@gmail.com</a></span>
+                    </div>
+                </div>
+            </section>
 
-        <main>
+            <!-- RESEARCH INTERESTS -->
+            <section class="interests-section">
+                <p class="section-label">RESEARCH INTERESTS</p>
+                <div class="interest-tags">
+                    <span class="tag-pill mono">molecular docking</span>
+                    <span class="tag-pill mono">MD simulations</span>
+                    <span class="tag-pill mono">DFT calculations</span>
+                    <span class="tag-pill mono">drug repurposing</span>
+                    <span class="tag-pill mono">cancer therapeutics</span>
+                    <span class="tag-pill mono">bioinformatics</span>
+                    <span class="tag-pill mono">computational modeling</span>
+                    <span class="tag-pill mono">rational drug design</span>
+                    <span class="tag-pill mono">neglected diseases</span>
+                </div>
+            </section>
 
-            <section id="papers">
-                <div class="library-label" style="text-align: center;">Papers</div>
-                <h1 class="section-title">Reaserch papers</h1>
-                <p class="subtitle" style="text-align: center;">Research papers, preprints, and computational studies in medicinal chemistry, drug repurposing, and computational biology.</p>
+            <!-- PAPERS -->
+            <section id="papers" class="papers-section">
+                <p class="section-label">PAPERS</p>
+                <h2 class="section-title">Research papers</h2>
+                <p class="section-subtitle">Research papers, preprints, and computational studies in medicinal chemistry, drug repurposing, and computational biology.</p>
 
                 <div class="papers-list">
-                    <!-- Paper 1 -->
                     <article class="paper-item">
-                        <div class="tag">
-                            <img src="molecular.png" class="icon" alt="">
+                        <div class="paper-tag">
                             <span>Biology</span>
                         </div>
                         <h3>Drug Repurposing of Anthelmintic Drugs for Chronic Myeloid Leukemia (CML)</h3>
-                        <p class="paper-meta">PharmD Thesis | Molecular Docking • MD Simulations • DFT</p>
+                        <p class="paper-meta">PharmD Thesis · Molecular Docking · MD Simulations · DFT</p>
                         <p class="paper-description">
-                            Investigating the potential of anthelmintic drugs as alternative therapies for CML using in silico approaches, including molecular docking, molecular dynamics simulations, and density functional theory to evaluate binding mechanisms and stability.
+                            Investigating the potential of anthelmintic drugs as alternative therapies for CML using in silico 
+                            approaches, including molecular docking, molecular dynamics simulations, and density functional theory 
+                            to evaluate binding mechanisms and stability.
                         </p>
                         <div class="paper-links">
-                            <a href="path/to/thesis.pdf" target="_blank">PDF</a>
-                            <a href="./work/papers">Abstract</a>
+                            <a href="path/to/thesis.pdf" target="_blank">PDF →</a>
+                            <a href="./work/papers">Abstract →</a>
                         </div>
                     </article>
-
-                    <!-- Paper 2 -->
-                    <!-- <article class="paper-item">
-                    <h3>Title of Your Next Paper</h3>
-                    <p class="paper-meta">Journal/Conference Name | Year | Techniques Used</p>
-                    <p class="paper-description">
-                        Brief description of the research question, methods, and key findings. Keep it concise but informative.
-                    </p>
-                    <div class="paper-links">
-                        <a href="#" target="_blank">PDF</a>
-                        <a href="#" target="_blank">DOI</a>
-                        <a href="#">Code</a>
-                    </div>
-                    </article> -->
-
-                    <!-- Add more papers as needed -->
                 </div>
-                </section>
-            <!-- New Important Links Section -->
-            <section class="important-links-section" id="Featured">
-                <div class="library-label" style="text-align: center;">Project</div>
-                <h1 class="section-title">Featured Projects</h1>
-                <p class="subtitle" style="text-align: center;">Projects I've coded, with repo and notes.</p>
-
-
-                <div class="important-link" id="chemviz">
-                    <div class="link-icon">
-                        <img src="" alt="Chemviz">
-                    </div>
-                    <div class="link-details">
-                        <h3>ChemVIZ</h3>
-                        <h5>The fastest way to see the Autodock and MD results.</h5>
-                        <p></p>
-                        <p>Check it out!</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="./VisualMdDock/chemviz.html">
-                                <span class="action-button">let's explore</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="important-link" id="SF">
-                    <div class="link-icon">
-                        <img src="" alt="SF">
-                    </div>
-                    <div class="link-details">
-                        <h3>SmilesFinder</h3>
-                        <h5>The fastest way to explore the smiles.</h5>
-                        <p></p>
-                        <p>Check it out!</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="https://github.com/Amrqhz/SmilesFinder">
-                                <span class="action-button">let's begin</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="PHOM/assets/image.png" alt="PHOMIcon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Pharmacy Oriented models</h3>
-                        <h5>Any tools for Durg Discovery</h5>
-                        <p></p>
-                        <p>Check it out!</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="./PHOM/PHOM.html">
-                                <span class="action-button">let's begin</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="important-link" id="ProPDB">
-                    <div class="link-icon">
-                        <img src="Group 84.svg" alt="ProPDB">
-                    </div>
-                    <div class="link-details">
-                        <h3>Pro PDB</h3>
-                        <h5>The fastest way to visualize the PDB files</h5>
-                        <p>Check the latest version</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="ProPDB/propdb.html">
-                                <span class="action-button">Check it here!</span>
-                            </a>
-                            <!-- <a href="http://130.185.73.72">
-                                <img src="assets/app-store.png" alt="App Store" class="store-button">
-                            </a> -->
-                        </div>
-                    </div>
-                </div>
-                
-                
-                
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="#" alt="APSS Slides">
-                    </div>
-                    <div class="link-details">
-                        <h3>APSS SLIDES</h3>
-                        <h5>Made with FIGMA SLIDES</h5>
-                        <p></p>
-                        <p>Download the latest version</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="https://www.figma.com/deck/wW9FjXZdlObmHjK7t2ohPO/Untitled?node-id=1-303&t=IQpBxbVaFE7jUyWz-1">
-                                <span class="action-button">Download</span>
-                            </a>
-                            <!-- <a href="https://fertilityaid.my.canva.site/">
-                                <img src="./fertility_website/fertility_aid_site/2335.png" alt="App Store" class="store-button">
-                            </a> -->
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="daroojoo/logo1.png" alt="daroojooIcon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Daroojoo</h3>
-                        <h5>Drug location</h5>
-                        <p>FIND YOU PRESCRIPTION DRUGS FASTER THAN BEFORE</p>
-                        <p>Download the latest version</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="./daroojoo/in.html">
-                                <span class="action-button">Know about us</span>
-                            </a>
-                            <!-- <a href="https://fertilityaid.my.canva.site/">
-                                <img src="./fertility_website/fertility_aid_site/2335.png" alt="App Store" class="store-button">
-                            </a> -->
-                        </div>
-                    </div>
-                </div>
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="image.png" alt="daroojooIcon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Thesis-result</h3>
-                        <h5>Docking, MD, and DFT</h5>
-                        <p>The best way to show you results</p>
-                        <p>Check it out!</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="./thesisresultshow/thesis-v.html">
-                                <span class="action-button">let's start</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-               
-                
-                
-                
-                
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="fertility_website/fertility_aid_site/2335.png" alt="Fertility Icon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Fertility AId</h3>
-                        <h5>Ovulation time</h5>
-                        <p>BE ACCURATE AND PRECISE</p>
-                        <p>Download the latest version</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="./fertility_website/fertility_aid_site/index.html">
-                                <span class="action-button">Download</span>
-                            </a>
-                            <a href="https://fertilityaid.my.canva.site/">
-                                <img src="./fertility_website/fertility_aid_site/2335.png" alt="App Store" class="store-button">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="assets/g48.png" alt="Quick Dose Icon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Quick Dose</h3>
-                        <h5>Dose calculator for pharmacist</h5>
-                        <p>Download the latest version</p>
-                        <p>now, only as a webapp</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="./quickdose/index.html">
-                                <span class="action-button">Download</span>
-                            </a>
-                            <a href="./quickdose/index.html">
-                                <img src="assets/app-store.png" alt="App Store" class="store-button">
-                            </a>
-                            <a href="./quickdose/index.html">
-                                <img src="assets/play-store.png" alt="Google Play" class="store-button">
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="important-link">
-                    <div class="link-icon">
-                        <img src="assets/app.png" alt="Nerds Icon">
-                    </div>
-                    <div class="link-details">
-                        <h3>Nerds</h3>
-                        <h5>Book shop</h5>
-                        <p>sell&buy second-hand books</p>
-                        <p>Download the latest version</p>
-                    </div>
-                    <div class="link-action">
-                        <div class="download-group">
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <span class="action-button">Download</span>
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <img src="assets/app-store.png" alt="App Store" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <img src="assets/play-store.png" alt="Google Play" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">
-                                <img src="assets/linux.png" alt="App Store" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">    
-                                <img src="assets/windows-store.png" alt="Google Play" class="store-button">
-                            </a>
-                            <a href="https://github.com/amrqhz/Nerds">    
-                                <img src="assets/apple.png" alt="Google Play" class="store-button"> 
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-
-                
             </section>
-            
-            <section class="library" id="library">
-                <div class="library-label">LIBRARY</div>
-                <h1 class="section-title">Bookshelf</h1>
-                <p class="subtitle">Books I've read, with reviews and notes. Each cover links to a longer take.</p>
+
+            <section id="Featured" class="projects-section">
+                <p class="section-label">TOOLS &amp; PLATFORMS</p>
+                <h2 class="section-title">Featured projects</h2>
+                <p class="section-subtitle">Projects I've coded, with repo and notes.</p>
+ 
+                <div class="projects-grid">
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">ChemVIZ</h3><div class="project-icon"><img src="" alt="VIZ"></div></div>
+                        <p class="project-desc">The fastest way to see the Autodock and MD results. Visualize docking and molecular dynamics output interactively.</p>
+                        <div class="project-links">
+                            <a href="./VisualMdDock/chemviz.html">view project →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">SmilesFinder</h3><div class="project-icon"><img src="" alt="SF"></div></div>
+                        <p class="project-desc">The fastest way to explore SMILES. Search, retrieve, and analyze molecular SMILES strings.</p>
+                        <div class="project-links">
+                            <a href="https://github.com/Amrqhz/SmilesFinder" target="_blank">github →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">Pro PDB</h3><div class="project-icon"><img src="Group 84.svg" alt="Pro PDB"></div></div>
+                        <p class="project-desc">The fastest way to visualize PDB files. Interactive 3D protein structure viewer directly in the browser.</p>
+                        <div class="project-links">
+                            <a href="ProPDB/propdb.html">launch app →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">PHOM</h3><div class="project-icon"><img src="PHOM/assets/image.png" alt="PHOM"></div></div>
+                        <p class="project-desc">Pharmacy Oriented Models — a collection of tools for drug discovery and computational pharmacy workflows.</p>
+                        <div class="project-links">
+                            <a href="./PHOM/PHOM.html">explore →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">Quick Dose</h3><div class="project-icon"><img src="assets/g48.png" alt="Quick Dose"></div></div>
+                        <p class="project-desc">Dose calculator for pharmacists. Accurate and fast dosage calculations available as a web app.</p>
+                        <div class="project-links">
+                            <a href="./quickdose/index.html">launch app →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">Daroojoo</h3><div class="project-icon"><img src="daroojoo/logo1.png" alt="Daroojoo"></div></div>
+                        <p class="project-desc">Drug location finder — find your prescription drugs faster than ever before.</p>
+                        <div class="project-links">
+                            <a href="./daroojoo/in.html">learn more →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">Thesis results</h3><div class="project-icon"><img src="image.png" alt="Thesis results"></div></div>
+                        <p class="project-desc">Interactive presentation of docking, MD, and DFT results from my PharmD thesis on CML drug repurposing.</p>
+                        <div class="project-links">
+                            <a href="./thesisresultshow/thesis-v.html">view results →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">Fertility Aid</h3><div class="project-icon"><img src="fertility_website/fertility_aid_site/2335.png" alt="Fertility Aid"></div></div>
+                        <p class="project-desc">Ovulation cycle tracker — be accurate and precise. Available as a web application.</p>
+                        <div class="project-links">
+                            <a href="./fertility_website/fertility_aid_site/index.html">launch →</a>
+                        </div>
+                    </div>
+ 
+                    <div class="project-card">
+                        <div class="project-header"><h3 class="project-title">Nerds</h3><div class="project-icon"><img src="assets/app.png" alt="Nerds"></div></div>
+                        <p class="project-desc">Second-hand book marketplace — sell &amp; buy used books in your community.</p>
+                        <div class="project-links">
+                            <a href="https://github.com/amrqhz/Nerds" target="_blank">github →</a>
+                        </div>
+                    </div>
+ 
+                </div>
+            </section>
+            <!-- LIBRARY -->
+            <section class="library-section" id="library">
+                <p class="section-label">LIBRARY</p>
+                <h2 class="section-title">Bookshelf</h2>
+                <p class="section-subtitle">Books I've read, with reviews and notes.</p>
 
                 <div class="tabs">
-                    <div class="tab" data-tab="want">WANT TO READ</div>
-                    <div class="tab" data-tab="reading">READING</div>
-                    <div class="tab active" data-tab="read">READ</div>
+                    <button class="tab" data-tab="want">want to read</button>
+                    <button class="tab" data-tab="reading">reading</button>
+                    <button class="tab active" data-tab="read">read</button>
                 </div>
 
                 <div id="want" class="tab-content">
                     <div class="books-grid">
-                        <!-- Want to Read books will be added here -->
                         <div class="book-card">
-                            <div class="book-cover" style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);">
-                                <svg width="100%" height="100%" viewBox="0 0 200 300">
-                                    <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="60" font-family="serif" font-style="italic">V.</text>
-                                </svg>
+                            <div class="book-cover" style="background: #1a1a1a;">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300"><text x="50%" y="50%" text-anchor="middle" fill="white" font-size="60" font-family="serif" font-style="italic">V.</text></svg>
                             </div>
                             <div class="book-title">Gravity's Rainbow</div>
                             <div class="book-author">Thomas Pynchon</div>
                         </div>
-
                         <div class="book-card">
-                            <div class="book-cover" style="background: linear-gradient(180deg, #c41e3a 0%, #8b0000 100%);">
-                                <svg width="100%" height="100%" viewBox="0 0 200 300">
-                                    <text x="50%" y="35%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ISAAC</text>
-                                    <text x="50%" y="45%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ASIMOV</text>
-                                    <rect x="70" y="140" width="60" height="80" fill="#1a1a1a" stroke="white" stroke-width="2"/>
-                                    <text x="50%" y="85%" text-anchor="middle" fill="white" font-size="20" font-weight="bold" font-family="sans-serif">I, ROBOT</text>
-                                </svg>
+                            <div class="book-cover" style="background: #c41e3a;">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300"><text x="50%" y="35%" text-anchor="middle" fill="white" font-size="22" font-weight="bold" font-family="sans-serif">ISAAC</text><text x="50%" y="45%" text-anchor="middle" fill="white" font-size="22" font-weight="bold" font-family="sans-serif">ASIMOV</text><text x="50%" y="85%" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="sans-serif">I, ROBOT</text></svg>
                             </div>
                             <div class="book-title">I, Robot</div>
                             <div class="book-author">Isaac Asimov</div>
@@ -404,61 +285,37 @@
                 </div>
 
                 <div id="reading" class="tab-content">
-                    <div class="books-grid">
-                        <!-- Currently Reading books will be added here -->
-                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; padding: 2rem 0;">Nothing currently in progress.</p>
                 </div>
 
                 <div id="read" class="tab-content active">
                     <div class="books-grid">
                         <div class="book-card">
-                            <div class="book-cover" style="background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);">
-                                <svg width="100%" height="100%" viewBox="0 0 200 300">
-                                    <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="60" font-family="serif" font-style="italic">V.</text>
-                                </svg>
+                            <div class="book-cover" style="background: #1a1a1a;">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300"><text x="50%" y="50%" text-anchor="middle" fill="white" font-size="60" font-family="serif" font-style="italic">V.</text></svg>
                             </div>
                             <div class="book-title">Gravity's Rainbow</div>
                             <div class="book-author">Thomas Pynchon</div>
                         </div>
-
                         <div class="book-card">
-                            <div class="book-cover" style="background: linear-gradient(180deg, #c41e3a 0%, #8b0000 100%);">
-                                <svg width="100%" height="100%" viewBox="0 0 200 300">
-                                    <text x="50%" y="35%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ISAAC</text>
-                                    <text x="50%" y="45%" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">ASIMOV</text>
-                                    <rect x="70" y="140" width="60" height="80" fill="#1a1a1a" stroke="white" stroke-width="2"/>
-                                    <text x="50%" y="85%" text-anchor="middle" fill="white" font-size="20" font-weight="bold" font-family="sans-serif">I, ROBOT</text>
-                                </svg>
+                            <div class="book-cover" style="background: #c41e3a;">
+                                <svg width="100%" height="100%" viewBox="0 0 200 300"><text x="50%" y="35%" text-anchor="middle" fill="white" font-size="22" font-weight="bold" font-family="sans-serif">ISAAC</text><text x="50%" y="45%" text-anchor="middle" fill="white" font-size="22" font-weight="bold" font-family="sans-serif">ASIMOV</text><text x="50%" y="85%" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="sans-serif">I, ROBOT</text></svg>
                             </div>
                             <div class="book-title">I, Robot</div>
                             <div class="book-author">Isaac Asimov</div>
                         </div>
-
                         <div class="book-card">
-                            <div class="book-cover" style="background: #1a1a1a;">
-                                <div class="finished-badge">Finished 2025</div>
-                                <svg width="100%" height="100%" viewBox="0 0 200 300">
-                                    <text x="50%" y="40%" text-anchor="middle" fill="white" font-size="32" font-family="serif">A</text>
-                                    <text x="50%" y="50%" text-anchor="middle" fill="white" font-size="22" font-family="serif">MAN</text>
-                                    <text x="50%" y="57%" text-anchor="middle" fill="white" font-size="18" font-family="serif">&</text>
-                                    <text x="50%" y="64%" text-anchor="middle" fill="white" font-size="22" font-family="serif">HIS</text>
-                                    <text x="50%" y="74%" text-anchor="middle" fill="white" font-size="32" font-family="serif">WATCH</text>
-                                </svg>
+                            <div class="book-cover" style="background: #2b2b2b;">
+                                <div class="finished-badge">2025</div>
+                                <svg width="100%" height="100%" viewBox="0 0 200 300"><text x="50%" y="40%" text-anchor="middle" fill="white" font-size="28" font-family="serif">A MAN</text><text x="50%" y="55%" text-anchor="middle" fill="white" font-size="20" font-family="serif">&amp; HIS</text><text x="50%" y="70%" text-anchor="middle" fill="white" font-size="28" font-family="serif">WATCH</text></svg>
                             </div>
-                            <div class="book-title">A Man & His Watch: Iconic Watches and Stories from the Men Who Wore Them</div>
+                            <div class="book-title">A Man &amp; His Watch</div>
                             <div class="book-author">Matt Hranek</div>
                         </div>
-
                         <div class="book-card">
-                            <div class="book-cover" style="background: linear-gradient(135deg, #d4521a 0%, #c44916 100%);">
-                                <div class="finished-badge">Finished 2025</div>
-                                <svg width="100%" height="100%" viewBox="0 0 200 300">
-                                    <circle cx="100" cy="100" r="30" fill="#f4a460"/>
-                                    <circle cx="100" cy="100" r="25" fill="#d4521a"/>
-                                    <text x="50%" y="60%" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="sans-serif">THE</text>
-                                    <text x="50%" y="70%" text-anchor="middle" fill="white" font-size="28" font-weight="bold" font-family="sans-serif">MARTIAN</text>
-                                    <text x="50%" y="85%" text-anchor="middle" fill="white" font-size="16" font-family="sans-serif">ANDY WEIR</text>
-                                </svg>
+                            <div class="book-cover" style="background: #d4521a;">
+                                <div class="finished-badge">2025</div>
+                                <svg width="100%" height="100%" viewBox="0 0 200 300"><text x="50%" y="60%" text-anchor="middle" fill="white" font-size="26" font-weight="bold" font-family="sans-serif">THE</text><text x="50%" y="72%" text-anchor="middle" fill="white" font-size="26" font-weight="bold" font-family="sans-serif">MARTIAN</text><text x="50%" y="87%" text-anchor="middle" fill="white" font-size="14" font-family="sans-serif">ANDY WEIR</text></svg>
                             </div>
                             <div class="book-title">The Martian</div>
                             <div class="book-author">Andy Weir</div>
@@ -467,61 +324,27 @@
                 </div>
             </section>
 
-            <!-- <section class="dev-notes-section" id="dev-notes">
-                <h2 class="section-title">Dev Notes</h2>
-                <p class="subtitle">Some notes, if you want to come along with my work-path for each project.</p>
-
-                <div class="dev-notes-card">
-                    <div class="notes-preview">
-                        <img src="assets/g48.png" alt="Dev Notes" class="notes-icon">
-                        <p>My development journey, thoughts, and code snippets</p>
-                    </div>
-                    <a href="quickdose-devnote.html" class="notes-link">View Notes</a>
-                    <hr class="solid">
-                </div>
-            </section> -->
+            <!-- RESUME -->
             <section class="resume-section" id="resume">
-                <a href="assets/cv.pdf" class="resume-button">Resume</a>
+                <a href="assets/cv.pdf" class="resume-button">resume →</a>
             </section>
 
-
-            <section class="social-links" id="social">
-                <a href="https://github.com/amrqhz" class="social-icon github">
-                    <img src="assets/github.png" alt="GitHub">
-                    <span>GitHub</span>
-                </a>
-                <a href="https://t.me/amrqhz" class="social-icon telegram">
-                    <img src="assets/telegram.png" alt="Telegram">
-                    <span>Telegram</span>
-                </a>
-                <a href="https://twitter.com/amrqhz" class="social-icon twitter">
-                    <img src="assets/twitter.png" alt="Twitter">
-                    <span>Twitter</span>
-                </a>
-                <a href="https://linkedin.com/in/amirhossein-gholizadeh" class="social-icon linkedin">
-                    <img src="assets/linkedin.png" alt="LinkedIn">
-                    <span>LinkedIn</span>
-                </a>
-
+            <!-- SOCIAL -->
+            <section class="social-section" id="social">
+                <a href="https://github.com/amrqhz" class="social-link">github</a>
+                <a href="https://t.me/amrqhz" class="social-link">telegram</a>
+                <a href="https://twitter.com/amrqhz" class="social-link">twitter / x</a>
+                <a href="https://linkedin.com/in/amirhossein-gholizadeh" class="social-link">linkedin</a>
             </section>
-                <div class="email">
-                    <span>
-                        gholizadeh.amir.h@gmail.com
-                    </span>
-                </div>
+
         </main>
 
-        <footer>
-            <div class="footer-dots">•••</div>
-            <div class="footer-credit">
-                <h4>Thanks for visiting.</h4>
-                <p>Be kind, stay creative, drink water.</p>
-                <h6>AmirHossein Gholizadeh</h6>
-            </div>
+        <footer class="site-footer">
+            <p>amrqhz.github.io · amir hossein gholizadeh · tehran</p>
+            <h6>AmirHossein Gholizadeh</h6>
         </footer>
-    </div>
 
-    
+    </div>
 
     <script src="script.js"></script>
 </body>
