@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SynthLab — Reaction Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #ffffff;
+  --bg2: #f5f5f5;
+  --bg3: #ececec;
+  --surface: #ffffff;
+  --border: #e0e0e0;
+  --border2: #c8c8c8;
+  --text: #111111;
+  --text2: #555555;
+  --text3: #888888;
+  --accent: #111111;
+  --accent-light: #f0f0f0;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --green: #1a7a4a;
+  --green-bg: #eaf6f0;
+  --red: #c0392b;
+  --red-bg: #fdf0ee;
+  --amber: #a06000;
+  --amber-bg: #fdf5e0;
+  --blue: #1a5fa0;
+  --blue-bg: #e8f1fb;
+}
+[data-theme="dark"] {
+  --bg: #0e0e0e;
+  --bg2: #181818;
+  --bg3: #222222;
+  --surface: #141414;
+  --border: #2a2a2a;
+  --border2: #3a3a3a;
+  --text: #f0f0f0;
+  --text2: #a0a0a0;
+  --text3: #666666;
+  --accent: #f0f0f0;
+  --accent-light: #222222;
+  --green: #4ac989;
+  --green-bg: #0d2a1c;
+  --red: #e06050;
+  --red-bg: #2a1010;
+  --amber: #e0a840;
+  --amber-bg: #2a1e08;
+  --blue: #70aaee;
+  --blue-bg: #0d1e30;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* ── LAYOUT ── */
+.app { display: grid; grid-template-rows: 52px 1fr; height: 100vh; overflow: hidden; }
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  z-index: 10;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 600; letter-spacing: -0.3px;
+}
+.logo-dot {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--text);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-dot svg { fill: var(--bg); width: 16px; height: 16px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+.btn-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  transition: background 0.15s, color 0.15s;
+}
+.btn-icon:hover { background: var(--bg2); color: var(--text); }
+.btn-small {
+  padding: 0 12px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--text2);
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-small:hover { background: var(--bg2); color: var(--text); }
+.btn-primary {
+  padding: 0 16px; height: 32px; border-radius: 8px;
+  border: none;
+  background: var(--text); color: var(--bg);
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.btn-primary:hover { opacity: 0.82; }
+
+.main { display: grid; grid-template-columns: 260px 1fr 300px; overflow: hidden; }
+
+/* ── LEFT PANEL: MOLECULE LIBRARY ── */
+.panel-left {
+  border-right: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.panel-head {
+  padding: 14px 16px 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  color: var(--text3); text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.search-wrap {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.search-input {
+  width: 100%; padding: 7px 10px;
+  border: 1px solid var(--border2); border-radius: 8px;
+  background: var(--surface); color: var(--text);
+  font-family: var(--sans); font-size: 13px;
+  outline: none;
+}
+.search-input:focus { border-color: var(--text); }
+.search-input::placeholder { color: var(--text3); }
+
+.mol-list { overflow-y: auto; flex: 1; padding: 8px; }
+.mol-group-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  color: var(--text3); text-transform: uppercase;
+  padding: 8px 8px 4px; margin-top: 4px;
+}
+.mol-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px;
+  cursor: pointer; margin-bottom: 2px;
+  border: 1px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+  user-select: none;
+}
+.mol-card:hover { background: var(--surface); border-color: var(--border); }
+.mol-card.selected { background: var(--surface); border-color: var(--border2); }
+.mol-symbol {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--bg3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--text); flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.mol-info { min-width: 0; }
+.mol-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mol-formula { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+/* ── CENTER: CANVAS ── */
+.canvas-area {
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+.canvas-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+.canvas-toolbar-left { display: flex; align-items: center; gap: 8px; }
+.step-badge {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+  background: var(--bg2); color: var(--text2);
+  border: 1px solid var(--border);
+}
+.step-badge.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+.canvas { flex: 1; position: relative; overflow: hidden; }
+.rxn-stage {
+  display: flex; align-items: center; justify-content: center;
+  height: 100%; gap: 0; position: relative;
+}
+
+/* molecules in stage */
+.rxn-molecule {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  position: relative;
+}
+.rxn-mol-box {
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  background: var(--surface);
+  text-align: center;
+  cursor: default;
+  min-width: 110px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.rxn-mol-box.starter-box { border-color: var(--text); }
+.rxn-mol-box.product-box {
+  border-color: var(--green);
+  background: var(--green-bg);
+}
+.rxn-mol-box.empty-box {
+  border-style: dashed;
+  border-color: var(--border);
+  cursor: pointer;
+  opacity: 0.6;
+}
+.rxn-mol-box.empty-box:hover { opacity: 1; border-color: var(--text); }
+.rxn-mol-formula {
+  font-family: var(--mono);
+  font-size: 22px; font-weight: 500;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.rxn-mol-box.product-box .rxn-mol-formula { color: var(--green); }
+.rxn-mol-name {
+  font-size: 11px; color: var(--text3);
+  margin-top: 4px; font-weight: 500;
+}
+.rxn-mol-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+}
+.rxn-mol-label.product-label { color: var(--green); }
+
+/* arrow */
+.rxn-arrow-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; padding: 0 8px; flex-shrink: 0;
+}
+.rxn-arrow {
+  display: flex; align-items: center; gap: 6px;
+  position: relative;
+}
+.arrow-line {
+  width: 80px; height: 2px;
+  background: var(--border2);
+  border-radius: 2px;
+  position: relative;
+}
+.arrow-line::after {
+  content: '';
+  position: absolute; right: -1px; top: -5px;
+  width: 0; height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid var(--border2);
+}
+.arrow-reagent {
+  position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px; color: var(--text2);
+  font-family: var(--mono); font-weight: 500;
+}
+.arrow-conditions {
+  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px; color: var(--text3);
+}
+.arrow-container { position: relative; padding: 28px 0 20px; }
+
+/* plus sign */
+.rxn-plus {
+  font-size: 24px; color: var(--text3); padding: 0 4px;
+  align-self: center; margin-bottom: 24px;
+}
+
+/* reagent selector */
+.reagent-selector {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+}
+.reagent-chip {
+  flex-shrink: 0;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 500; font-family: var(--mono);
+  border: 1px solid var(--border);
+  background: var(--bg2); color: var(--text2);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.reagent-chip:hover { border-color: var(--text); color: var(--text); }
+.reagent-chip.chip-active { background: var(--text); color: var(--bg); border-color: var(--text); }
+.reagent-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+  padding: 12px 16px 4px; flex-shrink: 0;
+}
+
+.add-reagent-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 16px 10px; border-bottom: 1px solid var(--border);
+}
+
+/* ── RIGHT PANEL: MECHANISM ── */
+.panel-right {
+  border-left: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.mech-content { flex: 1; overflow-y: auto; padding: 12px; }
+.mech-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  height: 100%; gap: 10px;
+  color: var(--text3); font-size: 13px; text-align: center;
+  padding: 24px;
+}
+.mech-empty-icon {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+
+.result-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.result-card-head {
+  padding: 10px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.result-card-body { padding: 12px 14px; font-size: 13px; line-height: 1.6; }
+
+.product-highlight {
+  font-family: var(--mono); font-size: 20px; font-weight: 500;
+  color: var(--green); text-align: center;
+  padding: 12px 0 4px;
+}
+.product-iupac {
+  text-align: center; font-size: 11px; color: var(--text3);
+  padding-bottom: 8px;
+}
+
+.mech-step {
+  display: flex; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.mech-step:last-child { border-bottom: none; }
+.mech-step-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--text2);
+  margin-top: 1px;
+}
+.mech-step-text { font-size: 12px; color: var(--text2); line-height: 1.55; }
+.mech-step-text strong { color: var(--text); font-weight: 600; }
+
+.tag {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+}
+.tag-green { background: var(--green-bg); color: var(--green); }
+.tag-amber { background: var(--amber-bg); color: var(--amber); }
+.tag-red { background: var(--red-bg); color: var(--red); }
+.tag-blue { background: var(--blue-bg); color: var(--blue); }
+.tag-gray { background: var(--bg3); color: var(--text2); }
+
+.energy-bar-wrap {
+  margin: 10px 0;
+}
+.energy-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; display: flex; justify-content: space-between; }
+.energy-bar-bg {
+  height: 6px; border-radius: 3px; background: var(--bg3);
+  overflow: hidden;
+}
+.energy-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: var(--green);
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+}
+.energy-bar-fill.endothermic { background: var(--red); }
+
+.orbital-svg { display: block; margin: 10px auto; }
+
+/* ── HOVER MECHANISM OVERLAY ── */
+.mech-tooltip {
+  position: fixed; z-index: 999;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  width: 220px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.15s;
+  font-size: 12px; line-height: 1.5;
+}
+.mech-tooltip.visible { opacity: 1; }
+
+/* ── ARROW HOVER MECHANISM POPUP ── */
+.arrow-hover-zone {
+  position: relative; cursor: pointer;
+  padding: 28px 16px 20px;
+}
+.arrow-hover-zone:hover .arrow-line { background: var(--text); }
+.arrow-hover-zone:hover .arrow-line::after { border-left-color: var(--text); }
+.arrow-hover-zone .mech-hint {
+  position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; color: var(--text3); white-space: nowrap; letter-spacing: 0.04em;
+  opacity: 0; transition: opacity 0.15s;
+}
+.arrow-hover-zone:hover .mech-hint { opacity: 1; }
+
+.mech-popup {
+  position: fixed; z-index: 9999;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 16px;
+  width: 340px;
+  pointer-events: none;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.18s, transform 0.18s;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+}
+.mech-popup.visible { opacity: 1; transform: translateY(0); }
+.mech-popup-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text3);
+  margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.mech-popup-steps { display: flex; flex-direction: column; gap: 0; }
+.mech-popup-step {
+  display: flex; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.mech-popup-step:last-child { border-bottom: none; }
+.mech-popup-num {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--bg3); border: 1px solid var(--border);
+  flex-shrink: 0; font-size: 9px; font-weight: 700; color: var(--text2);
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+.mech-popup-text { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.mech-popup-text strong { color: var(--text); }
+.mech-popup-svg-row {
+  display: flex; gap: 6px; align-items: center; justify-content: center;
+  padding: 10px 0 4px; flex-wrap: wrap;
+}
+.mech-popup-footer {
+  margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);
+  font-size: 10px; color: var(--text3); text-align: center;
+}
+
+/* structure SVG */
+.struct-svg { display: block; margin: 0 auto 4px; }
+.rxn-mol-box.pulse {
+  animation: pulse-anim 0.4s ease;
+}
+@keyframes pulse-anim {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* no-reaction state */
+.no-rxn-banner {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--amber-bg); border: 1px solid var(--amber);
+  font-size: 12px; color: var(--amber);
+  margin-bottom: 10px;
+}
+
+/* history bar */
+.history-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  overflow-x: auto; flex-shrink: 0;
+}
+.hist-item {
+  flex-shrink: 0;
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 11px; font-family: var(--mono);
+  border: 1px solid var(--border);
+  background: var(--bg2); color: var(--text2);
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.12s;
+}
+.hist-item:hover { background: var(--bg3); }
+.hist-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-dot">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/>
+          <circle cx="12" cy="17" r="3"/>
+          <line x1="7" y1="7" x2="17" y2="7" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <line x1="7" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <line x1="17" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      SynthLab
+      <span style="font-size:11px;font-weight:400;color:var(--text3);padding:2px 8px;border-radius:4px;background:var(--bg2);border:1px solid var(--border)">beta</span>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-small" onclick="clearAll()">↺ Reset</button>
+      <button class="btn-small" onclick="toggleTheme()" id="theme-btn">◑ Dark</button>
+      <button class="btn-primary" onclick="runReaction()">React →</button>
+    </div>
+  </header>
+
+  <div class="main">
+
+    <!-- LEFT PANEL -->
+    <aside class="panel-left">
+      <div class="panel-head">Molecule Library</div>
+      <div class="search-wrap">
+        <input class="search-input" id="mol-search" placeholder="Search molecules…" oninput="filterMols(this.value)" />
+      </div>
+      <div class="mol-list" id="mol-list"></div>
+    </aside>
+
+    <!-- CENTER -->
+    <section class="canvas-area">
+      <div class="canvas-toolbar">
+        <div class="canvas-toolbar-left">
+          <span class="step-badge active" id="badge-starter">1. Starter</span>
+          <span class="step-badge" id="badge-reagent">2. Add Reagent</span>
+          <span class="step-badge" id="badge-react">3. React</span>
+        </div>
+        <div style="font-size:11px;color:var(--text3)" id="rxn-type-label"></div>
+      </div>
+
+      <div class="canvas" id="main-canvas">
+        <div class="rxn-stage" id="rxn-stage">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- REAGENT SELECTOR -->
+      <div style="border-top:1px solid var(--border)">
+        <div class="add-reagent-row" id="reagent-selector-wrap">
+          <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;flex-shrink:0">Reagent</div>
+          <div id="reagent-chips" style="display:flex;gap:6px;overflow-x:auto;flex:1;padding:4px 0"></div>
+        </div>
+      </div>
+
+      <!-- HISTORY -->
+      <div class="history-bar">
+        <span class="hist-label">History</span>
+        <div id="history-items" style="display:flex;gap:6px;overflow-x:auto"></div>
+        <span id="history-empty" style="font-size:11px;color:var(--text3)">No reactions run yet</span>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: MECHANISM -->
+    <aside class="panel-right">
+      <div class="panel-head" style="display:flex;align-items:center;justify-content:space-between">
+        Mechanism
+        <span id="rxn-tag"></span>
+      </div>
+      <div class="mech-content" id="mech-content">
+        <div class="mech-empty">
+          <div class="mech-empty-icon">⚗</div>
+          <div>Select a molecule, add a reagent, then click <strong>React →</strong></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- MECHANISM HOVER POPUP -->
+<div class="mech-popup" id="mech-popup">
+  <div class="mech-popup-title">
+    <span id="popup-rxn-name">Mechanism</span>
+    <span id="popup-rxn-tag"></span>
+  </div>
+  <div class="mech-popup-svg-row" id="popup-svg-row"></div>
+  <div class="mech-popup-steps" id="popup-steps"></div>
+  <div class="mech-popup-footer">hover to keep reading · click Mechanism panel for full detail</div>
+</div>
+
+<!-- TOOLTIP -->
+<div class="mech-tooltip" id="tooltip"></div>
+
+<script>
+// ══════════════════════════════
+// DATA
+// ══════════════════════════════
+const MOLECULES = [
+  // Alkenes
+  { id:'ethene',   name:'Ethene',          formula:'CH₂=CH₂', group:'Alkenes',   struct:'alkene_simple', mw:28.05 },
+  { id:'propene',  name:'Propene',          formula:'CH₃CH=CH₂',group:'Alkenes',  struct:'alkene_sub', mw:42.08 },
+  { id:'1-butene', name:'1-Butene',         formula:'CH₃CH₂CH=CH₂',group:'Alkenes', struct:'alkene_sub', mw:56.11 },
+  { id:'2-butene', name:'2-Butene',         formula:'CH₃CH=CHCH₃',group:'Alkenes',  struct:'alkene_sym', mw:56.11 },
+  { id:'isobutylene',name:'Isobutylene',    formula:'(CH₃)₂C=CH₂',group:'Alkenes', struct:'alkene_sub', mw:56.11 },
+  // Alkynes
+  { id:'ethyne',   name:'Ethyne',          formula:'HC≡CH',  group:'Alkynes',    struct:'alkyne_simple', mw:26.04 },
+  { id:'propyne',  name:'Propyne',          formula:'CH₃C≡CH',group:'Alkynes',    struct:'alkyne_simple', mw:40.06 },
+  // Alcohols
+  { id:'ethanol',  name:'Ethanol',          formula:'CH₃CH₂OH', group:'Alcohols', struct:'alcohol', mw:46.07 },
+  { id:'propanol', name:'1-Propanol',       formula:'CH₃CH₂CH₂OH',group:'Alcohols',struct:'alcohol', mw:60.10 },
+  { id:'2-propanol',name:'2-Propanol',      formula:'(CH₃)₂CHOH',group:'Alcohols', struct:'alcohol', mw:60.10 },
+  // Aromatics
+  { id:'benzene',  name:'Benzene',          formula:'C₆H₆',   group:'Aromatics',  struct:'benzene', mw:78.11 },
+  { id:'toluene',  name:'Toluene',          formula:'C₆H₅CH₃',group:'Aromatics',  struct:'toluene', mw:92.14 },
+  // Carbonyl
+  { id:'acetaldehyde',name:'Acetaldehyde',  formula:'CH₃CHO', group:'Carbonyl',   struct:'aldehyde', mw:44.05 },
+  { id:'acetone',  name:'Acetone',          formula:'(CH₃)₂CO',group:'Carbonyl',   struct:'ketone', mw:58.08 },
+  { id:'acetic-acid',name:'Acetic Acid',    formula:'CH₃COOH',group:'Carbonyl',   struct:'carboxylic', mw:60.05 },
+];
+
+const REAGENTS = {
+  'H₂': { label:'H₂', name:'Hydrogen', type:'reduction' },
+  'Br₂': { label:'Br₂', name:'Bromine', type:'halogenation' },
+  'HBr': { label:'HBr', name:'HBr', type:'hydrohalogenation' },
+  'HCl': { label:'HCl', name:'HCl', type:'hydrohalogenation' },
+  'H₂O': { label:'H₂O', name:'Water (acid cat.)', type:'hydration' },
+  'KMnO₄': { label:'KMnO₄', name:'Potassium Permanganate', type:'oxidation' },
+  'O₃': { label:'O₃', name:'Ozone (ozonolysis)', type:'ozonolysis' },
+  'NaOH': { label:'NaOH', name:'Sodium Hydroxide', type:'base' },
+  'HNO₃/H₂SO₄': { label:'HNO₃/H₂SO₄', name:'Nitrating mixture', type:'nitration' },
+  'Cl₂/AlCl₃': { label:'Cl₂/AlCl₃', name:'Friedel-Crafts halogenation', type:'fc_halogenation' },
+};
+
+// REACTIONS DATABASE
+// Each reaction: {starter_group, reagent, product_fn, type, mechanism_fn, conditions, energy}
+const REACTIONS = [
+  // Alkene + H₂ → alkane (hydrogenation)
+  {
+    id:'hydrogenation',
+    test: (mol,rg) => mol.group==='Alkenes' && rg==='H₂',
+    productName: mol => mol.name.replace('ene','ane').replace('Ethene','Ethane').replace('Propene','Propane').replace('Butene','Butane').replace('Isobutylene','Isobutane'),
+    productFormula: mol => ({
+      'ethene':'CH₃CH₃','propene':'CH₃CH₂CH₃','1-butene':'CH₃CH₂CH₂CH₃',
+      '2-butene':'CH₃CH₂CH₂CH₃','isobutylene':'(CH₃)₃CH'
+    }[mol.id] || mol.formula.replace('=','–')),
+    type:'Hydrogenation',
+    typeTag:'tag-blue',
+    conditions:'Pd/C or Ni, 25°C, 1 atm',
+    energy:'exothermic',
+    deltaH:-136,
+    mechanism: () => [
+      { n:1, text:`<strong>Adsorption</strong> — Both H₂ and the alkene adsorb onto the metal catalyst surface (Pd, Pt, or Ni), weakening the H–H bond.` },
+      { n:2, text:`<strong>Surface dissociation</strong> — H₂ dissociates into two H atoms (H•) held on the metal surface.` },
+      { n:3, text:`<strong>Syn addition (first H)</strong> — One surface H atom adds to one face of the π bond, forming a half-hydrogenated intermediate (σ-complex).` },
+      { n:4, text:`<strong>Syn addition (second H)</strong> — The second H atom adds to the <em>same face</em> of the molecule (syn selectivity), giving the alkane product.` },
+      { n:5, text:`<strong>Desorption</strong> — The saturated alkane desorbs from the catalyst surface and diffuses into solution.` },
+    ],
+    notes:'Syn selectivity means both H atoms add to the same face. The reaction is exothermic by ~−125 to −150 kJ/mol.',
+  },
+  // Alkene + Br₂ → dibromide
+  {
+    id:'bromination',
+    test: (mol,rg) => mol.group==='Alkenes' && rg==='Br₂',
+    productName: mol => 'Dibromoalkane',
+    productFormula: mol => ({
+      'ethene':'BrCH₂CH₂Br','propene':'CH₃CHBrCH₂Br','1-butene':'CH₃CH₂CHBrCH₂Br',
+      '2-butene':'CH₃CHBrCHBrCH₃','isobutylene':'(CH₃)₂CBrCH₂Br'
+    }[mol.id] || mol.formula+'Br₂'),
+    type:'Electrophilic Addition',
+    typeTag:'tag-amber',
+    conditions:'CCl₄ solvent, 25°C, dark',
+    energy:'exothermic',
+    deltaH:-115,
+    mechanism: () => [
+      { n:1, text:`<strong>π bond polarises Br₂</strong> — The alkene π electrons distort the Br–Br bond, inducing a dipole (Brδ⁺–Brδ⁻).` },
+      { n:2, text:`<strong>Bromonium ion formation</strong> — The π electrons attack the electrophilic Brδ⁺, forming a cyclic <em>bromonium ion</em> (3-membered ring) and releasing Br⁻.` },
+      { n:3, text:`<strong>Anti attack by Br⁻</strong> — The Br⁻ nucleophile attacks the bromonium ion from the <em>opposite face</em> (backside attack, anti addition).` },
+      { n:4, text:`<strong>Anti dibromide product</strong> — The result is a <em>vicinal dibromide</em> with anti (trans) stereochemistry. The bromine test (decolouration of orange Br₂) is diagnostic.` },
+    ],
+    notes:'Anti addition is the key stereochemical outcome. The bromonium ion intermediate explains why no carbocation rearrangement occurs.',
+  },
+  // Alkene + HBr → bromoalkane (Markovnikov)
+  {
+    id:'hydrobromin',
+    test: (mol,rg) => mol.group==='Alkenes' && rg==='HBr',
+    productName: mol => 'Bromoalkane (Markovnikov)',
+    productFormula: mol => ({
+      'ethene':'CH₃CH₂Br','propene':'CH₃CHBrCH₃','1-butene':'CH₃CH₂CHBrCH₃',
+      '2-butene':'CH₃CHBrCH₂CH₃','isobutylene':'(CH₃)₃CBr'
+    }[mol.id] || mol.formula.replace('=CH₂','CH₂Br')),
+    type:'Electrophilic Addition',
+    typeTag:'tag-amber',
+    conditions:'25°C, no peroxides',
+    energy:'exothermic',
+    deltaH:-72,
+    mechanism: () => [
+      { n:1, text:`<strong>Proton transfer (rate-limiting)</strong> — HBr donates H⁺ to the alkene π bond. The proton adds to the carbon bearing <em>more hydrogens</em> (Markovnikov's rule).` },
+      { n:2, text:`<strong>Carbocation formation</strong> — A secondary (or tertiary) carbocation intermediate forms. More substituted carbocations are stabilised by hyperconjugation and induction.` },
+      { n:3, text:`<strong>Nucleophilic capture</strong> — Br⁻ attacks the carbocation from either face (no stereoselectivity for non-cyclic systems), giving the bromoalkane.` },
+    ],
+    notes:'Markovnikov selectivity: H adds to the carbon with more H atoms, Br to the carbon with fewer. In the presence of peroxides (ROOR), radical mechanism gives anti-Markovnikov product.',
+  },
+  // Alkene + HCl → chloroalkane
+  {
+    id:'hydrochlorin',
+    test: (mol,rg) => mol.group==='Alkenes' && rg==='HCl',
+    productName: mol => 'Chloroalkane (Markovnikov)',
+    productFormula: mol => ({
+      'ethene':'CH₃CH₂Cl','propene':'CH₃CHClCH₃','1-butene':'CH₃CH₂CHClCH₃',
+      '2-butene':'CH₃CHClCH₂CH₃','isobutylene':'(CH₃)₃CCl'
+    }[mol.id] || mol.formula.replace('=','Cl')),
+    type:'Electrophilic Addition',
+    typeTag:'tag-amber',
+    conditions:'25°C, anhydrous',
+    energy:'exothermic',
+    deltaH:-60,
+    mechanism: () => [
+      { n:1, text:`<strong>Proton transfer</strong> — HCl donates H⁺ to the less substituted carbon of the double bond (Markovnikov's rule).` },
+      { n:2, text:`<strong>Carbocation</strong> — A more substituted carbocation forms (more stable by hyperconjugation).` },
+      { n:3, text:`<strong>Cl⁻ attack</strong> — Chloride ion attacks the carbocation center to give the chloroalkane product.` },
+    ],
+    notes:'Cl is less nucleophilic than Br, making HCl slightly less reactive toward alkenes. The Markovnikov rule still applies.',
+  },
+  // Alkene + H₂O → alcohol (hydration)
+  {
+    id:'hydration',
+    test: (mol,rg) => mol.group==='Alkenes' && rg==='H₂O',
+    productName: mol => 'Alcohol (Markovnikov)',
+    productFormula: mol => ({
+      'ethene':'CH₃CH₂OH','propene':'(CH₃)₂CHOH','1-butene':'CH₃CH₂CH(OH)CH₃',
+      '2-butene':'CH₃CH(OH)CH₂CH₃','isobutylene':'(CH₃)₃COH'
+    }[mol.id] || mol.formula+'.H₂O'),
+    type:'Acid-catalysed Hydration',
+    typeTag:'tag-blue',
+    conditions:'H₂SO₄ or H₃PO₄ cat., 300°C / 70 atm',
+    energy:'exothermic',
+    deltaH:-44,
+    mechanism: () => [
+      { n:1, text:`<strong>Protonation by H₃O⁺</strong> — The Brønsted acid (H₂SO₄) protonates the alkene at the carbon with more H atoms (Markovnikov), generating a carbocation.` },
+      { n:2, text:`<strong>Nucleophilic addition of water</strong> — A water molecule attacks the electrophilic carbocation center via a lone pair on oxygen.` },
+      { n:3, text:`<strong>Deprotonation</strong> — The oxonium ion (R–OH₂⁺) loses a proton to regenerate H⁺ (catalyst), giving the alcohol product.` },
+    ],
+    notes:'Reverse of dehydration. Le Chatelier: excess water favours alcohol; heating and low water favours the alkene (dehydration).',
+  },
+  // Alkene + KMnO₄ → diol (cold, dilute)
+  {
+    id:'dihydroxylation',
+    test: (mol,rg) => mol.group==='Alkenes' && rg==='KMnO₄',
+    productName: mol => 'Diol (syn)',
+    productFormula: mol => ({
+      'ethene':'HOCH₂CH₂OH (ethylene glycol)','propene':'CH₃CH(OH)CH₂OH',
+      '1-butene':'CH₃CH₂CH(OH)CH₂OH','2-butene':'CH₃CH(OH)CH(OH)CH₃',
+      'isobutylene':'(CH₃)₂C(OH)CH₂OH'
+    }[mol.id] || mol.formula+' diol'),
+    type:'Syn Dihydroxylation',
+    typeTag:'tag-green',
+    conditions:'cold, dilute KMnO₄, pH 7-10',
+    energy:'exothermic',
+    deltaH:-220,
+    mechanism: () => [
+      { n:1, text:`<strong>Cyclic manganate ester</strong> — MnO₄⁻ forms a cyclic 5-membered manganate(V) ester with the alkene in a <em>concerted</em> [3+2] cycloaddition. Both oxygens come from the same face.` },
+      { n:2, text:`<strong>Syn addition locked in</strong> — Because both oxygens add simultaneously from the same face, the product diol has <em>syn</em> (cis) stereochemistry.` },
+      { n:3, text:`<strong>Hydrolysis</strong> — The manganate ester is hydrolysed in base to release the syn-diol and MnO₂ (brown precipitate). The purple → brown colour change is diagnostic.` },
+    ],
+    notes:'Baeyer test: decolouration of purple KMnO₄ and brown MnO₂ precipitate confirms unsaturation. Hot concentrated KMnO₄ cleaves the double bond.',
+  },
+  // Benzene + HNO₃/H₂SO₄ → nitrobenzene
+  {
+    id:'nitration',
+    test: (mol,rg) => mol.group==='Aromatics' && rg==='HNO₃/H₂SO₄',
+    productName: mol => 'Nitro' + mol.name,
+    productFormula: mol => ({ 'benzene':'C₆H₅NO₂', 'toluene':'CH₃C₆H₄NO₂ (ortho/para)' }[mol.id] || mol.formula+'NO₂'),
+    type:'Electrophilic Aromatic Substitution',
+    typeTag:'tag-red',
+    conditions:'Mixed acid, 50°C (mono), 100°C (di)',
+    energy:'exothermic',
+    deltaH:-117,
+    mechanism: () => [
+      { n:1, text:`<strong>Nitronium ion formation</strong> — H₂SO₄ protonates HNO₃, which loses water to generate the electrophile NO₂⁺ (nitronium ion).` },
+      { n:2, text:`<strong>σ-complex (Wheland intermediate)</strong> — NO₂⁺ attacks the π system, forming a non-aromatic arenium ion (σ-complex) that breaks aromaticity.` },
+      { n:3, text:`<strong>Deprotonation</strong> — Loss of H⁺ from the sp³ carbon restores aromaticity. HSO₄⁻ acts as the base. The overall transformation is substitution (not addition), retaining the stable aromatic ring.` },
+    ],
+    notes:'The ring activation/deactivation by substituents is critical: –CH₃ (toluene) activates ortho/para positions; –NO₂ deactivates.',
+  },
+  // Benzene + Cl₂/AlCl₃ → chlorobenzene
+  {
+    id:'fc_chlorination',
+    test: (mol,rg) => mol.group==='Aromatics' && rg==='Cl₂/AlCl₃',
+    productName: mol => 'Chloro' + mol.name,
+    productFormula: mol => ({ 'benzene':'C₆H₅Cl', 'toluene':'CH₃C₆H₄Cl (ortho/para)' }[mol.id] || mol.formula+'Cl'),
+    type:'Friedel–Crafts Halogenation',
+    typeTag:'tag-amber',
+    conditions:'AlCl₃ cat., anhydrous, RT',
+    energy:'exothermic',
+    deltaH:-105,
+    mechanism: () => [
+      { n:1, text:`<strong>Electrophile activation</strong> — Lewis acid AlCl₃ coordinates to Cl₂, polarising the Cl–Cl bond: Clδ⁺–Clδ⁻–AlCl₃.` },
+      { n:2, text:`<strong>Electrophilic attack</strong> — The aromatic π electrons attack Clδ⁺, forming the σ-complex (Wheland intermediate) and releasing AlCl₄⁻.` },
+      { n:3, text:`<strong>Rearomatisation</strong> — AlCl₄⁻ abstracts the proton from the sp³ carbon, regenerating AlCl₃ catalyst and giving chlorobenzene.` },
+    ],
+    notes:'Friedel–Crafts reactions require anhydrous conditions — water destroys the Lewis acid catalyst. EAS overall: the ring remains aromatic.',
+  },
+  // Alcohol + KMnO₄ → oxidation
+  {
+    id:'alcohol_oxidation',
+    test: (mol,rg) => mol.group==='Alcohols' && rg==='KMnO₄',
+    productName: mol => mol.id==='2-propanol' ? 'Acetone (ketone)' : 'Carboxylic Acid',
+    productFormula: mol => ({
+      'ethanol':'CH₃COOH', 'propanol':'CH₃CH₂COOH', '2-propanol':'(CH₃)₂C=O'
+    }[mol.id] || mol.formula.replace('OH','OOH')),
+    type:'Oxidation',
+    typeTag:'tag-green',
+    conditions:'KMnO₄, H⁺ or OH⁻, heat',
+    energy:'exothermic',
+    deltaH:-160,
+    mechanism: () => [
+      { n:1, text:`<strong>Classification</strong> — Primary alcohols (R–CH₂OH) oxidise via aldehyde to carboxylic acid. Secondary alcohols (R₂CHOH) stop at ketone.` },
+      { n:2, text:`<strong>Chromate/permanganate ester</strong> — MnO₄⁻ forms an ester with the O–H of the alcohol. The α C–H bond is broken in the rate-limiting step (kinetic isotope effect observed with deuterium labelling).` },
+      { n:3, text:`<strong>β-elimination</strong> — The Mn–O ester undergoes concerted elimination (syn), transferring the α-hydrogen to an oxo oxygen of Mn and reducing Mn(VII) → Mn(V) → MnO₂.` },
+    ],
+    notes:'Tertiary alcohols (no α-H) are resistant to oxidation with KMnO₄ under mild conditions. Jones\' reagent (CrO₃/H₂SO₄) stops primary alcohols at the aldehyde stage.',
+  },
+  // Alkyne + H₂ → alkene or alkane
+  {
+    id:'alkyne_hydrog',
+    test: (mol,rg) => mol.group==='Alkynes' && rg==='H₂',
+    productName: mol => 'Alkane (over-reduction)',
+    productFormula: mol => ({ 'ethyne':'CH₃CH₃', 'propyne':'CH₃CH₂CH₃' }[mol.id] || mol.formula),
+    type:'Hydrogenation (Alkyne)',
+    typeTag:'tag-blue',
+    conditions:'Pd/C, excess H₂ (Lindlar→alkene)',
+    energy:'exothermic',
+    deltaH:-274,
+    mechanism: () => [
+      { n:1, text:`<strong>Two-stage addition</strong> — Alkynes can accept two equivalents of H₂: triple bond → cis-alkene (with Lindlar's catalyst) → alkane.` },
+      { n:2, text:`<strong>Lindlar catalyst (partial hydrogenation)</strong> — Pd/CaCO₃ poisoned with Pb(OAc)₂ stops reduction at the cis-alkene stage.` },
+      { n:3, text:`<strong>Birch conditions (Na/NH₃)</strong> — Dissolving metal reduction gives the trans-alkene (via vinyl radical → vinyl anion protonation from anti face).` },
+    ],
+    notes:'Selectivity between alkene and alkane is controlled by catalyst choice. Lindlar → cis-alkene. Na/NH₃ → trans-alkene. Pd/C + excess H₂ → alkane.',
+  },
+];
+
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+let state = {
+  starterMol: null,
+  reagent: null,
+  product: null,
+  reaction: null,
+  history: [],
+  step: 1, // 1=pick starter, 2=pick reagent, 3=reacted
+};
+let dark = false;
+
+// ══════════════════════════════
+// MOLECULE LIST
+// ══════════════════════════════
+function renderMolList(filter='') {
+  const list = document.getElementById('mol-list');
+  const groups = {};
+  MOLECULES.forEach(m => {
+    const n = m.name.toLowerCase(), f = m.formula.toLowerCase();
+    if (filter && !n.includes(filter.toLowerCase()) && !f.includes(filter.toLowerCase())) return;
+    if (!groups[m.group]) groups[m.group] = [];
+    groups[m.group].push(m);
+  });
+  list.innerHTML = '';
+  Object.entries(groups).forEach(([gname, mols]) => {
+    const glabel = document.createElement('div');
+    glabel.className = 'mol-group-label'; glabel.textContent = gname;
+    list.appendChild(glabel);
+    mols.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'mol-card' + (state.starterMol?.id === m.id ? ' selected' : '');
+      card.innerHTML = `<div class="mol-symbol">${abbreviate(m.formula)}</div>
+        <div class="mol-info"><div class="mol-name">${m.name}</div><div class="mol-formula">${m.formula}</div></div>`;
+      card.onclick = () => selectMol(m);
+      list.appendChild(card);
+    });
+  });
+  if (list.innerHTML === '') list.innerHTML = '<div style="padding:16px 12px;font-size:12px;color:var(--text3)">No molecules found.</div>';
+}
+
+function abbreviate(formula) {
+  // Return a short symbol for the symbol box
+  const clean = formula.replace(/[₀-₉=≡()]/g,'').trim();
+  if (clean.startsWith('C₆H₆') || formula==='C₆H₆') return 'Ph';
+  if (formula.includes('=')) return '▶';
+  if (formula.includes('≡')) return '▶▶';
+  if (formula.includes('OH')) return 'OH';
+  if (formula.includes('CHO')) return 'CHO';
+  if (formula.includes('COOH')) return 'COOH';
+  if (formula.includes('CO')) return 'C=O';
+  return clean.slice(0,3);
+}
+
+function filterMols(v) { renderMolList(v); }
+
+function selectMol(mol) {
+  state.starterMol = mol;
+  state.reagent = null;
+  state.product = null;
+  state.reaction = null;
+  state.step = 2;
+  updateStage();
+  updateBadges();
+  renderReagentChips();
+  renderMolList(document.getElementById('mol-search').value);
+  clearMechanism();
+}
+
+// ══════════════════════════════
+// STAGE
+// ══════════════════════════════
+function updateStage() {
+  const stage = document.getElementById('rxn-stage');
+  const mol = state.starterMol;
+  const product = state.product;
+
+  if (!mol) {
+    stage.innerHTML = `<div style="text-align:center;color:var(--text3)">
+      <div style="font-size:36px;margin-bottom:12px">⚗️</div>
+      <div style="font-size:14px;font-weight:500">Pick a molecule from the library</div>
+      <div style="font-size:12px;margin-top:6px;color:var(--text3)">to start your synthesis</div>
+    </div>`;
+    return;
+  }
+
+  let html = `
+    <div class="rxn-molecule">
+      <div class="rxn-mol-label">Starter</div>
+      ${drawStructureSVG(mol)}
+      <div class="rxn-mol-box starter-box">
+        <div class="rxn-mol-formula">${mol.formula}</div>
+        <div class="rxn-mol-name">${mol.name}</div>
+      </div>
+    </div>`;
+
+  html += `<div class="rxn-arrow-wrap">
+    <div class="arrow-hover-zone" id="arrow-hover-zone" onmouseenter="showMechPopup(event)" onmousemove="moveMechPopup(event)" onmouseleave="hideMechPopup()">
+      <span class="mech-hint">hover for mechanism</span>
+      <div class="arrow-line">
+        ${state.reagent ? `<span class="arrow-reagent">${state.reagent}</span>` : ''}
+        ${state.reaction ? `<span class="arrow-conditions">${state.reaction.conditions}</span>` : ''}
+      </div>
+    </div>
+  </div>`;
+
+  if (product) {
+    html += `
+      <div class="rxn-molecule">
+        <div class="rxn-mol-label product-label">Product</div>
+        ${drawProductSVG(product)}
+        <div class="rxn-mol-box product-box pulse" id="product-box">
+          <div class="rxn-mol-formula">${product.formula}</div>
+          <div class="rxn-mol-name">${product.name}</div>
+        </div>
+      </div>`;
+  } else {
+    html += `
+      <div class="rxn-molecule">
+        <div class="rxn-mol-label">Product</div>
+        <div style="width:80px;height:60px"></div>
+        <div class="rxn-mol-box empty-box" onclick="runReaction()">
+          <div style="font-size:22px;color:var(--text3)">?</div>
+          <div class="rxn-mol-name">React →</div>
+        </div>
+      </div>`;
+  }
+
+  stage.innerHTML = html;
+}
+
+function drawStructureSVG(mol) {
+  // Simple structural diagrams
+  const w = 100, h = 60;
+  let path = '';
+  if (mol.group === 'Alkenes') {
+    path = `<line x1="20" y1="30" x2="45" y2="30" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="45" y1="28" x2="65" y2="28" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="45" y1="32" x2="65" y2="32" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="65" y1="30" x2="88" y2="30" stroke="var(--text)" stroke-width="1.5"/>
+      <text x="50" y="22" font-size="9" fill="var(--text3)" text-anchor="middle">C=C</text>`;
+  } else if (mol.group === 'Alkynes') {
+    path = `<line x1="20" y1="28" x2="45" y2="28" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="45" y1="26" x2="65" y2="26" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="45" y1="30" x2="65" y2="30" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="45" y1="34" x2="65" y2="34" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="65" y1="30" x2="88" y2="30" stroke="var(--text)" stroke-width="1.5"/>
+      <text x="50" y="20" font-size="9" fill="var(--text3)" text-anchor="middle">C≡C</text>`;
+  } else if (mol.group === 'Aromatics') {
+    // Benzene ring
+    const cx=50,cy=32,r=20;
+    const pts = Array.from({length:6},(_,i)=>{
+      const a=(Math.PI/3)*i - Math.PI/6;
+      return [cx+r*Math.cos(a), cy+r*Math.sin(a)];
+    });
+    path = `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+      <circle cx="${cx}" cy="${cy}" r="${r*0.55}" fill="none" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>`;
+  } else if (mol.group === 'Alcohols') {
+    path = `<line x1="10" y1="30" x2="50" y2="30" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="50" y1="30" x2="78" y2="14" stroke="var(--text)" stroke-width="1.5"/>
+      <text x="80" y="12" font-size="9" fill="var(--blue)" font-weight="500">OH</text>`;
+  } else if (mol.group === 'Carbonyl') {
+    path = `<line x1="10" y1="32" x2="48" y2="32" stroke="var(--text)" stroke-width="1.5"/>
+      <line x1="48" y1="30" x2="68" y2="14" stroke="var(--text)" stroke-width="2"/>
+      <line x1="50" y1="32" x2="70" y2="14" stroke="var(--text)" stroke-width="2"/>
+      <text x="72" y="12" font-size="9" fill="var(--red)" font-weight="500">O</text>`;
+  }
+  return `<svg class="struct-svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${path}</svg>`;
+}
+
+function drawProductSVG(product) {
+  const w=120, h=70;
+  let path='';
+  const t = product.type || '';
+  const f = product.formula || '';
+  if (t==='Hydrogenation' || t==='Hydrogenation (Alkyne)') {
+    path=`<line x1="10" y1="38" x2="30" y2="26" stroke="var(--green)" stroke-width="2"/>
+      <line x1="30" y1="26" x2="55" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="55" y1="38" x2="75" y2="26" stroke="var(--green)" stroke-width="2"/>
+      <line x1="75" y1="26" x2="100" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <text x="55" y="58" font-size="9" fill="var(--green)" text-anchor="middle">alkane</text>`;
+  } else if (t==='Electrophilic Addition' && (f.includes('Br')&&f.indexOf('Br')!==f.lastIndexOf('Br'))) {
+    path=`<line x1="14" y1="38" x2="45" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="45" y1="38" x2="75" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="75" y1="38" x2="104" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="45" y1="38" x2="45" y2="16" stroke="var(--green)" stroke-width="2"/>
+      <line x1="75" y1="38" x2="75" y2="16" stroke="var(--green)" stroke-width="2"/>
+      <text x="36" y="14" font-size="10" fill="var(--amber)" font-weight="600">Br</text>
+      <text x="68" y="14" font-size="10" fill="var(--amber)" font-weight="600">Br</text>
+      <text x="59" y="58" font-size="9" fill="var(--green)" text-anchor="middle">anti addition</text>`;
+  } else if (t==='Electrophilic Addition' && f.includes('Cl')) {
+    path=`<line x1="12" y1="38" x2="50" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="50" y1="38" x2="90" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="50" y1="38" x2="50" y2="16" stroke="var(--green)" stroke-width="2"/>
+      <text x="44" y="13" font-size="10" fill="var(--amber)" font-weight="600">Cl</text>
+      <text x="55" y="58" font-size="9" fill="var(--green)" text-anchor="middle">Markovnikov</text>`;
+  } else if (t==='Electrophilic Addition' && f.includes('Br')) {
+    path=`<line x1="12" y1="38" x2="50" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="50" y1="38" x2="90" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="50" y1="38" x2="50" y2="16" stroke="var(--green)" stroke-width="2"/>
+      <text x="44" y="13" font-size="10" fill="var(--amber)" font-weight="600">Br</text>
+      <text x="55" y="58" font-size="9" fill="var(--green)" text-anchor="middle">Markovnikov</text>`;
+  } else if (t==='Acid-catalysed Hydration') {
+    path=`<line x1="12" y1="38" x2="50" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="50" y1="38" x2="90" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="50" y1="38" x2="50" y2="16" stroke="var(--green)" stroke-width="2"/>
+      <text x="40" y="13" font-size="10" fill="var(--blue)" font-weight="600">OH</text>
+      <text x="55" y="58" font-size="9" fill="var(--green)" text-anchor="middle">Markovnikov</text>`;
+  } else if (t==='Syn Dihydroxylation') {
+    path=`<line x1="12" y1="38" x2="50" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="50" y1="38" x2="90" y2="38" stroke="var(--green)" stroke-width="2"/>
+      <line x1="30" y1="38" x2="30" y2="16" stroke="var(--green)" stroke-width="2"/>
+      <line x1="70" y1="38" x2="70" y2="16" stroke="var(--green)" stroke-width="2"/>
+      <text x="20" y="13" font-size="10" fill="var(--blue)" font-weight="600">OH</text>
+      <text x="60" y="13" font-size="10" fill="var(--blue)" font-weight="600">OH</text>
+      <text x="55" y="58" font-size="9" fill="var(--green)" text-anchor="middle">syn diol</text>`;
+  } else if (t==='Electrophilic Aromatic Substitution' || t==='Friedel\u2013Crafts Halogenation') {
+    const cx=52,cy=33,r=19;
+    const pts=Array.from({length:6},(_,i)=>{const a=(Math.PI/3)*i-Math.PI/6;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];});
+    const sub=f.includes('NO')&&f.includes('\u2082')?'NO\u2082':f.includes('Cl')?'Cl':'X';
+    const subCol=sub==='NO\u2082'?'var(--red)':'var(--amber)';
+    path=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--green)" stroke-width="2"/>
+      <circle cx="${cx}" cy="${cy}" r="${r*0.55}" fill="none" stroke="var(--green)" stroke-width="1" stroke-dasharray="3,2"/>
+      <line x1="${pts[0][0].toFixed(1)}" y1="${pts[0][1].toFixed(1)}" x2="${(pts[0][0]+16).toFixed(1)}" y2="${(pts[0][1]-10).toFixed(1)}" stroke="${subCol}" stroke-width="2"/>
+      <text x="${(pts[0][0]+18).toFixed(1)}" y="${(pts[0][1]-6).toFixed(1)}" font-size="10" fill="${subCol}" font-weight="600">${sub}</text>
+      <text x="${cx}" y="63" font-size="9" fill="var(--green)" text-anchor="middle">EAS product</text>`;
+  } else if (t==='Oxidation') {
+    if (f.includes('=O')||f.startsWith('(CH\u2083)\u2082C=O')) {
+      path=`<line x1="10" y1="40" x2="45" y2="40" stroke="var(--green)" stroke-width="2"/>
+        <line x1="45" y1="40" x2="85" y2="40" stroke="var(--green)" stroke-width="2"/>
+        <line x1="43" y1="38" x2="43" y2="16" stroke="var(--green)" stroke-width="2"/>
+        <line x1="47" y1="38" x2="47" y2="16" stroke="var(--green)" stroke-width="2"/>
+        <text x="40" y="13" font-size="10" fill="var(--red)" font-weight="600">O</text>
+        <text x="55" y="60" font-size="9" fill="var(--green)" text-anchor="middle">ketone</text>`;
+    } else {
+      path=`<line x1="10" y1="38" x2="50" y2="38" stroke="var(--green)" stroke-width="2"/>
+        <line x1="50" y1="38" x2="82" y2="26" stroke="var(--green)" stroke-width="2"/>
+        <line x1="48" y1="36" x2="80" y2="26" stroke="var(--red)" stroke-width="2" stroke-dasharray="2,1"/>
+        <line x1="50" y1="38" x2="82" y2="50" stroke="var(--green)" stroke-width="2"/>
+        <text x="84" y="24" font-size="10" fill="var(--red)" font-weight="600">=O</text>
+        <text x="82" y="54" font-size="10" fill="var(--blue)" font-weight="600">OH</text>
+        <text x="45" y="63" font-size="9" fill="var(--green)" text-anchor="middle">carboxylic acid</text>`;
+    }
+  } else {
+    path=`<text x="60" y="38" font-size="11" fill="var(--green)" text-anchor="middle" font-weight="500">${f.slice(0,14)}</text>`;
+  }
+  return `<svg class="struct-svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${path}</svg>`;
+}
+
+// ══════════════════════════════
+// REAGENT CHIPS
+// ══════════════════════════════
+function renderReagentChips() {
+  const container = document.getElementById('reagent-chips');
+  container.innerHTML = '';
+  if (!state.starterMol) {
+    container.innerHTML = '<span style="font-size:12px;color:var(--text3)">Pick a starter first</span>';
+    return;
+  }
+  // Show only reagents that have at least one matching reaction
+  const valid = Object.keys(REAGENTS).filter(rg =>
+    REACTIONS.some(rxn => rxn.test(state.starterMol, rg))
+  );
+  if (valid.length === 0) {
+    container.innerHTML = '<span style="font-size:12px;color:var(--text3)">No reagents defined for this molecule yet.</span>';
+    return;
+  }
+  valid.forEach(rg => {
+    const chip = document.createElement('div');
+    chip.className = 'reagent-chip' + (state.reagent === rg ? ' chip-active' : '');
+    chip.textContent = rg;
+    chip.title = REAGENTS[rg].name;
+    chip.onclick = () => selectReagent(rg);
+    container.appendChild(chip);
+  });
+}
+
+function selectReagent(rg) {
+  state.reagent = rg;
+  state.product = null;
+  state.reaction = null;
+  state.step = 2;
+  updateStage();
+  updateBadges();
+  renderReagentChips();
+  clearMechanism();
+  document.getElementById('rxn-type-label').textContent = '';
+}
+
+// ══════════════════════════════
+// RUN REACTION
+// ══════════════════════════════
+function runReaction() {
+  if (!state.starterMol || !state.reagent) {
+    showMechEmpty('Select a molecule and a reagent first.');
+    return;
+  }
+  const rxn = REACTIONS.find(r => r.test(state.starterMol, state.reagent));
+  if (!rxn) {
+    state.product = null;
+    state.reaction = null;
+    showNoReaction();
+    return;
+  }
+  state.reaction = rxn;
+  state.product = {
+    name: rxn.productName(state.starterMol),
+    formula: rxn.productFormula(state.starterMol),
+    type: rxn.type,
+  };
+  state.step = 3;
+  updateStage();
+  updateBadges();
+  showMechanism(rxn);
+  addHistory(state.starterMol, state.reagent, state.product);
+  document.getElementById('rxn-type-label').textContent = rxn.type;
+}
+
+// ══════════════════════════════
+// MECHANISM PANEL
+// ══════════════════════════════
+function showMechanism(rxn) {
+  const panel = document.getElementById('mech-content');
+  const tag = document.getElementById('rxn-tag');
+  tag.innerHTML = `<span class="tag ${rxn.typeTag}">${rxn.type}</span>`;
+
+  const energyDir = rxn.energy === 'exothermic' ? 'exothermic' : 'endothermic';
+  const absH = Math.abs(rxn.deltaH);
+  const barPct = Math.min(100, Math.round(absH / 3));
+
+  const stepsHTML = rxn.mechanism().map(s => `
+    <div class="mech-step">
+      <div class="mech-step-num">${s.n}</div>
+      <div class="mech-step-text">${s.text}</div>
+    </div>`).join('');
+
+  panel.innerHTML = `
+    <div class="result-card">
+      <div class="result-card-head">
+        Product
+        <span class="tag tag-green">✓ Reaction found</span>
+      </div>
+      <div class="result-card-body">
+        <div class="product-highlight">${state.product.formula}</div>
+        <div class="product-iupac">${state.product.name}</div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-card-head">Thermodynamics</div>
+      <div class="result-card-body">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <span class="tag ${rxn.energy==='exothermic'?'tag-green':'tag-red'}">${rxn.energy}</span>
+          <span class="tag tag-gray">ΔH ≈ ${rxn.deltaH > 0 ? '+' : ''}${rxn.deltaH} kJ/mol</span>
+        </div>
+        <div class="energy-bar-wrap">
+          <div class="energy-label"><span>Activation energy</span><span>${absH} kJ/mol</span></div>
+          <div class="energy-bar-bg"><div class="energy-bar-fill ${energyDir==='endothermic'?'endothermic':''}" style="width:${barPct}%"></div></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">
+          ${rxn.conditions}
+        </div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-card-head">Mechanism — ${rxn.mechanism().length} steps
+        <span style="font-size:10px;color:var(--text3);font-weight:400">hover for detail</span>
+      </div>
+      <div class="result-card-body" style="padding-top:6px">
+        ${stepsHTML}
+      </div>
+    </div>
+
+    ${rxn.notes ? `<div class="result-card">
+      <div class="result-card-head">Notes</div>
+      <div class="result-card-body" style="font-size:12px;color:var(--text2)">${rxn.notes}</div>
+    </div>` : ''}
+  `;
+}
+
+function clearMechanism() {
+  document.getElementById('mech-content').innerHTML = `
+    <div class="mech-empty">
+      <div class="mech-empty-icon">⚗</div>
+      <div>Add a reagent and click <strong>React →</strong></div>
+    </div>`;
+  document.getElementById('rxn-tag').innerHTML = '';
+}
+
+function showMechEmpty(msg) {
+  document.getElementById('mech-content').innerHTML = `
+    <div class="mech-empty"><div class="mech-empty-icon">⚠️</div><div>${msg}</div></div>`;
+}
+
+function showNoReaction() {
+  updateStage();
+  document.getElementById('mech-content').innerHTML = `
+    <div class="no-rxn-banner">⚠ No reaction found for this combination.</div>
+    <div style="font-size:12px;color:var(--text2);padding:4px 2px">
+      This combination may not react under standard conditions, or may require conditions not yet in the database.
+      Try a different reagent or starter molecule.
+    </div>`;
+}
+
+// ══════════════════════════════
+// MECHANISM POPUP (arrow hover)
+// ══════════════════════════════
+function getMechStepSVG(rxnId, stepN) {
+  // Returns an inline SVG illustration for each mechanism step
+  const svgs = {
+    hydrogenation: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <rect x="5" y="20" width="70" height="22" rx="4" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1"/>
+        <text x="40" y="35" font-size="9" fill="var(--text2)" text-anchor="middle">Pd/C surface</text>
+        <circle cx="20" cy="14" r="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="20" y="18" font-size="7" fill="var(--blue)" text-anchor="middle">H</text>
+        <circle cx="36" cy="14" r="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="36" y="18" font-size="7" fill="var(--blue)" text-anchor="middle">H</text>
+        <line x1="28" y1="14" x2="28" y2="20" stroke="var(--text3)" stroke-width="1" stroke-dasharray="2,1"/>
+        <text x="55" y="10" font-size="8" fill="var(--text3)">H₂ adsorbs</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <rect x="5" y="30" width="70" height="20" rx="4" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1"/>
+        <line x1="20" y1="22" x2="40" y2="22" stroke="var(--text)" stroke-width="2"/>
+        <line x1="22" y1="20" x2="38" y2="20" stroke="var(--text)" stroke-width="1.5"/>
+        <circle cx="12" cy="18" r="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="12" y="22" font-size="7" fill="var(--blue)" text-anchor="middle">H</text>
+        <text x="30" y="14" font-size="8" fill="var(--text3)" text-anchor="middle">π bond</text>
+        <line x1="12" y1="23" x2="16" y2="28" stroke="var(--text3)" stroke-width="1" stroke-dasharray="2,1"/>
+        <text x="55" y="18" font-size="8" fill="var(--green)">syn add</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="32" x2="22" y2="24" stroke="var(--green)" stroke-width="2"/>
+        <line x1="22" y1="24" x2="40" y2="32" stroke="var(--green)" stroke-width="2"/>
+        <line x1="40" y1="32" x2="58" y2="24" stroke="var(--green)" stroke-width="2"/>
+        <circle cx="22" cy="14" r="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="22" y="18" font-size="7" fill="var(--blue)" text-anchor="middle">H</text>
+        <circle cx="40" cy="14" r="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="40" y="18" font-size="7" fill="var(--blue)" text-anchor="middle">H</text>
+        <text x="38" y="50" font-size="8" fill="var(--green)" text-anchor="middle">alkane ✓</text>
+      </svg>`,
+    ],
+    bromination: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="34" x2="34" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="34" y1="32" x2="50" y2="32" stroke="var(--text)" stroke-width="2"/>
+        <line x1="34" y1="36" x2="50" y2="36" stroke="var(--text)" stroke-width="2"/>
+        <line x1="50" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="28" cy="18" r="6" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1.5"/>
+        <text x="28" y="22" font-size="7" fill="var(--amber)" text-anchor="middle">Br</text>
+        <line x1="34" y1="22" x2="36" y2="22" stroke="var(--amber)" stroke-width="1.5"/>
+        <circle cx="40" cy="18" r="6" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1.5"/>
+        <text x="40" y="22" font-size="7" fill="var(--amber)" text-anchor="middle">Br</text>
+        <text x="40" y="54" font-size="8" fill="var(--text3)" text-anchor="middle">π polarises Br₂</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="34" x2="34" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="34" y1="34" x2="50" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="50" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <path d="M34,34 Q42,20 50,34" fill="none" stroke="var(--amber)" stroke-width="2"/>
+        <circle cx="42" cy="19" r="6" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1.5"/>
+        <text x="42" y="23" font-size="7" fill="var(--amber)" text-anchor="middle">Br</text>
+        <circle cx="64" cy="46" r="5" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="64" y="50" font-size="7" fill="var(--red)" text-anchor="middle">Br⁻</text>
+        <text x="40" y="56" font-size="8" fill="var(--amber)" text-anchor="middle">bromonium ion</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="34" x2="34" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="34" y1="34" x2="50" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="50" y1="34" x2="68" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="34" y1="34" x2="34" y2="16" stroke="var(--amber)" stroke-width="2"/>
+        <line x1="50" y1="34" x2="50" y2="50" stroke="var(--amber)" stroke-width="2"/>
+        <text x="30" y="13" font-size="9" fill="var(--amber)" font-weight="600">Br</text>
+        <text x="46" y="58" font-size="9" fill="var(--amber)" font-weight="600">Br</text>
+        <text x="40" y="8" font-size="8" fill="var(--text3)" text-anchor="middle">anti ✓</text>
+      </svg>`,
+    ],
+    hydrobromin: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="34" x2="34" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="34" y1="32" x2="50" y2="32" stroke="var(--text)" stroke-width="2"/>
+        <line x1="34" y1="36" x2="50" y2="36" stroke="var(--text)" stroke-width="2"/>
+        <line x1="50" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="42" cy="16" r="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="42" y="20" font-size="7" fill="var(--blue)" text-anchor="middle">H⁺</text>
+        <text x="40" y="54" font-size="8" fill="var(--text3)" text-anchor="middle">H⁺ protonates π</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="34" x2="34" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="34" y1="34" x2="54" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="54" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="54" cy="34" r="8" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="54" y="38" font-size="8" fill="var(--blue)" text-anchor="middle">C⁺</text>
+        <circle cx="34" cy="22" r="6" fill="var(--blue-bg)" stroke="var(--text2)" stroke-width="1.5"/>
+        <text x="34" y="26" font-size="7" fill="var(--text2)" text-anchor="middle">H</text>
+        <text x="40" y="54" font-size="8" fill="var(--blue)" text-anchor="middle">2° carbocation</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="34" x2="34" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="34" y1="34" x2="54" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="54" y1="34" x2="68" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="34" y1="22" x2="34" y2="34" stroke="var(--text2)" stroke-width="2"/>
+        <text x="30" y="18" font-size="9" fill="var(--text2)" font-weight="600">H</text>
+        <line x1="54" y1="20" x2="54" y2="34" stroke="var(--amber)" stroke-width="2"/>
+        <text x="50" y="16" font-size="9" fill="var(--amber)" font-weight="600">Br</text>
+        <text x="40" y="54" font-size="8" fill="var(--green)" text-anchor="middle">Markovnikov ✓</text>
+      </svg>`,
+    ],
+    nitration: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <text x="10" y="22" font-size="9" fill="var(--text2)">HNO₃</text>
+        <text x="10" y="36" font-size="9" fill="var(--red)">+ H₂SO₄</text>
+        <text x="10" y="50" font-size="8" fill="var(--text3)">→  NO₂⁺</text>
+        <circle cx="62" cy="32" r="12" fill="var(--red-bg)" stroke="var(--red)" stroke-width="2"/>
+        <text x="62" y="36" font-size="9" fill="var(--red)" text-anchor="middle" font-weight="700">NO₂⁺</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <polygon points="40,14 55,24 55,44 40,54 25,44 25,24" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+        <circle cx="40" cy="34" r="10" fill="none" stroke="var(--text2)" stroke-width="1" stroke-dasharray="2,2"/>
+        <circle cx="58" cy="20" r="8" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="58" y="24" font-size="7" fill="var(--red)" text-anchor="middle">NO₂⁺</text>
+        <line x1="52" y1="24" x2="48" y2="28" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="2,1"/>
+        <text x="40" y="57" font-size="8" fill="var(--text3)" text-anchor="middle">σ-complex</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <polygon points="40,12 55,22 55,42 40,52 25,42 25,22" fill="none" stroke="var(--green)" stroke-width="2"/>
+        <circle cx="40" cy="32" r="10" fill="none" stroke="var(--green)" stroke-width="1" stroke-dasharray="2,2"/>
+        <line x1="55" y1="22" x2="68" y2="14" stroke="var(--red)" stroke-width="2"/>
+        <text x="70" y="12" font-size="9" fill="var(--red)" font-weight="700">NO₂</text>
+        <text x="40" y="58" font-size="8" fill="var(--green)" text-anchor="middle">aromatic restored ✓</text>
+      </svg>`,
+    ],
+    hydration: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="34" x2="32" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="32" x2="48" y2="32" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="36" x2="48" y2="36" stroke="var(--text)" stroke-width="2"/>
+        <line x1="48" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="40" cy="16" r="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="40" y="20" font-size="7" fill="var(--blue)" text-anchor="middle">H⁺</text>
+        <text x="40" y="54" font-size="8" fill="var(--text3)" text-anchor="middle">H₃O⁺ protonates</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="34" x2="32" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="34" x2="52" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="52" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="52" cy="34" r="8" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="52" y="38" font-size="8" fill="var(--blue)" text-anchor="middle">C⁺</text>
+        <circle cx="32" cy="20" r="6" fill="var(--blue-bg)" stroke="var(--text2)" stroke-width="1.5"/>
+        <text x="32" y="24" font-size="7" fill="var(--text2)" text-anchor="middle">H</text>
+        <text x="40" y="54" font-size="8" fill="var(--blue)" text-anchor="middle">carbocation</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="34" x2="32" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="32" y1="34" x2="52" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="52" y1="34" x2="68" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="32" y1="20" x2="32" y2="34" stroke="var(--text2)" stroke-width="2"/>
+        <text x="28" y="16" font-size="9" fill="var(--text2)" font-weight="600">H</text>
+        <line x1="52" y1="18" x2="52" y2="34" stroke="var(--blue)" stroke-width="2"/>
+        <text x="46" y="14" font-size="9" fill="var(--blue)" font-weight="600">OH</text>
+        <text x="40" y="54" font-size="8" fill="var(--green)" text-anchor="middle">alcohol ✓</text>
+      </svg>`,
+    ],
+    dihydroxylation: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="34" x2="32" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="32" x2="48" y2="32" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="36" x2="48" y2="36" stroke="var(--text)" stroke-width="2"/>
+        <line x1="48" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="40" cy="14" r="8" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="40" y="18" font-size="7" fill="var(--green)" text-anchor="middle">MnO₄⁻</text>
+        <text x="40" y="54" font-size="8" fill="var(--text3)" text-anchor="middle">approaches π</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="38" x2="32" y2="38" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="38" x2="52" y2="38" stroke="var(--text)" stroke-width="2"/>
+        <line x1="52" y1="38" x2="68" y2="38" stroke="var(--text)" stroke-width="2"/>
+        <path d="M32,38 L32,22 L52,22 L52,38" fill="none" stroke="var(--green)" stroke-width="2"/>
+        <circle cx="32" cy="20" r="6" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1.5"/>
+        <circle cx="52" cy="20" r="6" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="32" y="24" font-size="7" fill="var(--green)" text-anchor="middle">O</text>
+        <text x="52" y="24" font-size="7" fill="var(--green)" text-anchor="middle">O</text>
+        <text x="40" y="54" font-size="7" fill="var(--green)" text-anchor="middle">cyclic ester (syn!)</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="38" x2="32" y2="38" stroke="var(--green)" stroke-width="2"/>
+        <line x1="32" y1="38" x2="52" y2="38" stroke="var(--green)" stroke-width="2"/>
+        <line x1="52" y1="38" x2="68" y2="38" stroke="var(--green)" stroke-width="2"/>
+        <line x1="32" y1="38" x2="32" y2="16" stroke="var(--blue)" stroke-width="2"/>
+        <line x1="52" y1="38" x2="52" y2="16" stroke="var(--blue)" stroke-width="2"/>
+        <text x="26" y="12" font-size="9" fill="var(--blue)" font-weight="600">OH</text>
+        <text x="46" y="12" font-size="9" fill="var(--blue)" font-weight="600">OH</text>
+        <text x="40" y="54" font-size="7" fill="var(--green)" text-anchor="middle">syn-diol ✓ (same face)</text>
+      </svg>`,
+    ],
+    fc_chlorination: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <circle cx="22" cy="30" r="8" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1.5"/>
+        <text x="22" y="34" font-size="7" fill="var(--amber)" text-anchor="middle">Cl₂</text>
+        <circle cx="50" cy="30" r="8" fill="var(--bg3)" stroke="var(--border2)" stroke-width="1.5"/>
+        <text x="50" y="34" font-size="7" fill="var(--text2)" text-anchor="middle">AlCl₃</text>
+        <line x1="30" y1="30" x2="42" y2="30" stroke="var(--red)" stroke-width="1.5"/>
+        <circle cx="68" cy="30" r="8" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="68" y="34" font-size="7" fill="var(--red)" text-anchor="middle">Cl⁺</text>
+        <text x="40" y="54" font-size="8" fill="var(--text3)" text-anchor="middle">Lewis acid activates</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <polygon points="40,12 55,22 55,42 40,52 25,42 25,22" fill="none" stroke="var(--text)" stroke-width="1.5"/>
+        <circle cx="40" cy="32" r="10" fill="none" stroke="var(--text2)" stroke-width="1" stroke-dasharray="2,2"/>
+        <circle cx="58" cy="18" r="7" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="58" y="22" font-size="7" fill="var(--red)" text-anchor="middle">Cl⁺</text>
+        <text x="40" y="58" font-size="8" fill="var(--text3)" text-anchor="middle">σ-complex</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <polygon points="40,12 55,22 55,42 40,52 25,42 25,22" fill="none" stroke="var(--green)" stroke-width="2"/>
+        <circle cx="40" cy="32" r="10" fill="none" stroke="var(--green)" stroke-width="1" stroke-dasharray="2,2"/>
+        <line x1="55" y1="22" x2="68" y2="14" stroke="var(--amber)" stroke-width="2"/>
+        <text x="70" y="12" font-size="9" fill="var(--amber)" font-weight="700">Cl</text>
+        <text x="40" y="58" font-size="8" fill="var(--green)" text-anchor="middle">aromatic restored ✓</text>
+      </svg>`,
+    ],
+    alcohol_oxidation: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="36" x2="40" y2="36" stroke="var(--text)" stroke-width="2"/>
+        <line x1="40" y1="36" x2="62" y2="22" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="66" cy="20" r="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="66" y="24" font-size="7" fill="var(--blue)" text-anchor="middle">OH</text>
+        <circle cx="40" cy="50" r="7" fill="var(--green-bg)" stroke="var(--green)" stroke-width="1.5"/>
+        <text x="40" y="54" font-size="6" fill="var(--green)" text-anchor="middle">MnO₄⁻</text>
+        <text x="40" y="10" font-size="8" fill="var(--text3)" text-anchor="middle">R–CH₂–OH</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="36" x2="40" y2="36" stroke="var(--text)" stroke-width="2"/>
+        <line x1="38" y1="34" x2="60" y2="22" stroke="var(--text)" stroke-width="2"/>
+        <line x1="42" y1="34" x2="62" y2="24" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="64" cy="20" r="6" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="64" y="24" font-size="7" fill="var(--red)" text-anchor="middle">O</text>
+        <text x="40" y="54" font-size="8" fill="var(--text3)" text-anchor="middle">C=O forms</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="36" x2="36" y2="36" stroke="var(--green)" stroke-width="2"/>
+        <line x1="34" y1="34" x2="54" y2="22" stroke="var(--green)" stroke-width="2"/>
+        <line x1="38" y1="34" x2="56" y2="24" stroke="var(--green)" stroke-width="2"/>
+        <line x1="36" y1="36" x2="56" y2="48" stroke="var(--green)" stroke-width="2"/>
+        <circle cx="58" cy="20" r="6" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+        <text x="58" y="24" font-size="7" fill="var(--red)" text-anchor="middle">=O</text>
+        <circle cx="58" cy="50" r="7" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="58" y="54" font-size="7" fill="var(--blue)" text-anchor="middle">OH</text>
+        <text x="32" y="10" font-size="7" fill="var(--green)">COOH ✓</text>
+      </svg>`,
+    ],
+    alkyne_hydrog: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="30" x2="28" y2="30" stroke="var(--text)" stroke-width="2"/>
+        <line x1="28" y1="27" x2="52" y2="27" stroke="var(--text)" stroke-width="2"/>
+        <line x1="28" y1="30" x2="52" y2="30" stroke="var(--text)" stroke-width="2"/>
+        <line x1="28" y1="33" x2="52" y2="33" stroke="var(--text)" stroke-width="2"/>
+        <line x1="52" y1="30" x2="68" y2="30" stroke="var(--text)" stroke-width="2"/>
+        <text x="40" y="46" font-size="8" fill="var(--text3)" text-anchor="middle">C≡C triple bond</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="10" y1="30" x2="28" y2="30" stroke="var(--text)" stroke-width="2"/>
+        <line x1="28" y1="28" x2="52" y2="28" stroke="var(--text)" stroke-width="2"/>
+        <line x1="28" y1="32" x2="52" y2="32" stroke="var(--text)" stroke-width="2"/>
+        <line x1="52" y1="30" x2="68" y2="30" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="36" cy="16" r="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="36" y="20" font-size="7" fill="var(--blue)" text-anchor="middle">H</text>
+        <circle cx="50" cy="16" r="5" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="50" y="20" font-size="7" fill="var(--blue)" text-anchor="middle">H</text>
+        <text x="40" y="50" font-size="7" fill="var(--text3)" text-anchor="middle">→ cis-alkene (Lindlar)</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="32" x2="28" y2="22" stroke="var(--green)" stroke-width="2"/>
+        <line x1="28" y1="22" x2="52" y2="32" stroke="var(--green)" stroke-width="2"/>
+        <line x1="52" y1="32" x2="70" y2="22" stroke="var(--green)" stroke-width="2"/>
+        <text x="40" y="50" font-size="8" fill="var(--green)" text-anchor="middle">alkane ✓</text>
+      </svg>`,
+    ],
+    hydrochlorin: [
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="34" x2="32" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="32" x2="48" y2="32" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="36" x2="48" y2="36" stroke="var(--text)" stroke-width="2"/>
+        <line x1="48" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="40" cy="16" r="6" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="40" y="20" font-size="7" fill="var(--blue)" text-anchor="middle">H⁺</text>
+        <text x="40" y="54" font-size="8" fill="var(--text3)" text-anchor="middle">HCl protonates π</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="34" x2="32" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="32" y1="34" x2="52" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <line x1="52" y1="34" x2="68" y2="34" stroke="var(--text)" stroke-width="2"/>
+        <circle cx="52" cy="34" r="8" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/>
+        <text x="52" y="38" font-size="8" fill="var(--blue)" text-anchor="middle">C⁺</text>
+        <text x="40" y="54" font-size="8" fill="var(--blue)" text-anchor="middle">carbocation</text>
+      </svg>`,
+      `<svg width="80" height="60" viewBox="0 0 80 60">
+        <line x1="8" y1="34" x2="32" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="32" y1="34" x2="52" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="52" y1="34" x2="68" y2="34" stroke="var(--green)" stroke-width="2"/>
+        <line x1="52" y1="18" x2="52" y2="34" stroke="var(--amber)" stroke-width="2"/>
+        <text x="47" y="14" font-size="9" fill="var(--amber)" font-weight="600">Cl</text>
+        <text x="40" y="54" font-size="8" fill="var(--green)" text-anchor="middle">chloroalkane ✓</text>
+      </svg>`,
+    ],
+  };
+  const stepSvgs = svgs[rxnId];
+  if (!stepSvgs) return null;
+  return stepSvgs[stepN - 1] || null;
+}
+
+function showMechPopup(e) {
+  if (!state.reaction) return;
+  const popup = document.getElementById('mech-popup');
+  const rxn = state.reaction;
+  const steps = rxn.mechanism();
+
+  document.getElementById('popup-rxn-name').textContent = rxn.type;
+  document.getElementById('popup-rxn-tag').innerHTML = `<span class="tag ${rxn.typeTag}">${steps.length} steps</span>`;
+
+  // SVG row - show small step SVGs
+  const svgRow = document.getElementById('popup-svg-row');
+  svgRow.innerHTML = '';
+  steps.forEach((s, i) => {
+    const svg = getMechStepSVG(rxn.id, s.n);
+    if (svg) {
+      const wrap = document.createElement('div');
+      wrap.style.cssText='text-align:center;';
+      const label = document.createElement('div');
+      label.style.cssText='font-size:9px;color:var(--text3);margin-bottom:2px';
+      label.textContent='Step '+s.n;
+      wrap.appendChild(label);
+      const div = document.createElement('div');
+      div.style.cssText='border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg2);';
+      div.innerHTML = svg;
+      wrap.appendChild(div);
+      svgRow.appendChild(wrap);
+    }
+  });
+
+  // Steps
+  const stepsEl = document.getElementById('popup-steps');
+  stepsEl.innerHTML = steps.map(s => `
+    <div class="mech-popup-step">
+      <div class="mech-popup-num">${s.n}</div>
+      <div class="mech-popup-text">${s.text}</div>
+    </div>`).join('');
+
+  positionPopup(e);
+  popup.classList.add('visible');
+}
+
+function moveMechPopup(e) {
+  positionPopup(e);
+}
+
+function hideMechPopup() {
+  document.getElementById('mech-popup').classList.remove('visible');
+}
+
+function positionPopup(e) {
+  const popup = document.getElementById('mech-popup');
+  const pw = 340, ph = popup.offsetHeight || 350;
+  let x = e.clientX + 16;
+  let y = e.clientY - 20;
+  if (x + pw > window.innerWidth - 8) x = e.clientX - pw - 16;
+  if (y + ph > window.innerHeight - 8) y = window.innerHeight - ph - 8;
+  if (y < 8) y = 8;
+  popup.style.left = x + 'px';
+  popup.style.top = y + 'px';
+}
+
+// ══════════════════════════════
+function updateBadges() {
+  const b1 = document.getElementById('badge-starter');
+  const b2 = document.getElementById('badge-reagent');
+  const b3 = document.getElementById('badge-react');
+  b1.className = 'step-badge' + (state.step >= 1 ? ' active' : '');
+  b2.className = 'step-badge' + (state.step >= 2 ? ' active' : '');
+  b3.className = 'step-badge' + (state.step >= 3 ? ' active' : '');
+}
+
+// ══════════════════════════════
+// HISTORY
+// ══════════════════════════════
+function addHistory(mol, reagent, product) {
+  state.history.unshift({ mol, reagent, product, ts: Date.now() });
+  if (state.history.length > 8) state.history.pop();
+  renderHistory();
+}
+
+function renderHistory() {
+  const container = document.getElementById('history-items');
+  const empty = document.getElementById('history-empty');
+  if (state.history.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+  container.innerHTML = state.history.map((h,i) =>
+    `<div class="hist-item" onclick="restoreHistory(${i})" title="${h.mol.name} + ${h.reagent} → ${h.product.name}">
+      ${h.mol.formula} + ${h.reagent}
+    </div>`
+  ).join('');
+}
+
+function restoreHistory(i) {
+  const h = state.history[i];
+  state.starterMol = h.mol;
+  state.reagent = h.reagent;
+  state.product = h.product;
+  const rxn = REACTIONS.find(r => r.test(h.mol, h.reagent));
+  state.reaction = rxn || null;
+  state.step = 3;
+  updateStage();
+  updateBadges();
+  renderReagentChips();
+  renderMolList(document.getElementById('mol-search').value);
+  if (rxn) showMechanism(rxn);
+  else clearMechanism();
+}
+
+// ══════════════════════════════
+// UTIL
+// ══════════════════════════════
+function clearAll() {
+  state.starterMol = null;
+  state.reagent = null;
+  state.product = null;
+  state.reaction = null;
+  state.step = 1;
+  updateStage();
+  updateBadges();
+  renderReagentChips();
+  renderMolList('');
+  clearMechanism();
+  document.getElementById('rxn-type-label').textContent = '';
+  document.getElementById('mol-search').value = '';
+}
+
+function toggleTheme() {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+  document.getElementById('theme-btn').textContent = dark ? '○ Light' : '◑ Dark';
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+renderMolList();
+renderReagentChips();
+updateStage();
+renderHistory();
+</script>
+</body>
+</html>
