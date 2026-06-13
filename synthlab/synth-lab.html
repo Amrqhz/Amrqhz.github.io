@@ -32,6 +32,8 @@
   --amber-bg: #fdf5e0;
   --blue: #1a5fa0;
   --blue-bg: #e8f1fb;
+  --h: 18px;
+  --p: 11px
 }
 [data-theme="dark"] {
   --bg: #0e0e0e;
@@ -62,6 +64,150 @@ body {
   min-height: 100vh;
   transition: background 0.2s, color 0.2s;
 }
+
+
+
+
+
+/* ?=== */
+.panel-content{
+  background: var(--surface);
+
+  width: min(92vw, 940px);
+  min-height: 500px;
+
+  padding: 32px 40px;
+
+  border-radius: 24px;
+
+  border: 1px solid rgba(0,0,0,.08);
+
+  box-shadow:
+    0 32px 64px rgba(0,0,0,.12),
+    0 8px 16px rgba(0,0,0,.06);
+
+  position: relative;
+
+  transform: translateY(16px) scale(.98);
+  transition: .22s cubic-bezier(.22,1,.36,1);
+
+  overflow: hidden;
+}
+.infopannel{
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(15,23,42,.55);
+  backdrop-filter: blur(10px);
+
+  z-index: 9999;
+}
+
+.infopannel.show{
+  display:flex;
+}
+
+.infopannel.show .panel-content{
+  transform: translateY(0) scale(1);
+}
+.panel-content h1{
+  margin: 0 0 12px;
+
+font-size: 16px; font-weight: 600;
+  line-height: 1.05;
+
+  letter-spacing: -0.06em;
+
+  color: var(--text);
+}
+.panel-content > p:first-of-type{
+  max-width: 800px;
+
+  font-size: 12px;
+  line-height: 1.9;
+
+  color: var(--text2);
+
+  margin-bottom: 48px;
+}
+.panel-content h2{
+  margin: 0 0 12px;
+
+  font-size: 16px; font-weight: 600;
+  line-height: 1.05;
+
+  letter-spacing: -0.06em;
+
+  color: var(--text);
+}
+.panel-content p{
+  max-width: 800px;
+
+  font-size: 12px;
+  line-height: 1.9;
+
+  color: var(--text2);
+
+  margin-bottom: 48px;
+}
+.footer-info {
+  text-align: center;
+  margin: 0 auto 0 auto;
+  h4{
+  max-width: 800px;
+  text-align: center;
+
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--text3);
+  font-weight: bold;
+
+  }
+  p{
+  max-width: 800px;
+  text-align: center;
+
+  font-size: 10px;
+  line-height: 1.9;
+  color: var(--text3);
+ 
+  }
+
+}
+.close-btn{
+  position:absolute;
+  top:24px;
+  right:24px;
+
+  width:40px;
+  height:40px;
+
+  border-radius:12px;
+
+  border:1px solid var(--border);
+
+  background: var(--surface);
+  color: var(--text2);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+
+  transition:all .15s ease;
+}
+
+.close-btn:hover{
+  background: var(--bg3); color: var(--text); 
+
+  transform:rotate(90deg);
+}
+
 
 /* ── LAYOUT ── */
 .app { display: grid; grid-template-rows: 52px 1fr; height: 100vh; overflow: hidden; }
@@ -208,12 +354,7 @@ body {
   gap: 6px;
 }
 
-/* Arrow column: absolutely no top/bottom offset — it must sit 
-   at the same vertical centre as the mol-boxes.
-   We achieve this by making .rxn-molecule use a fixed-height spacer
-   above the box (label + svg = ~96px total) so all three flex children
-   in the stage row share the same box midpoint. The arrow column has
-   no label/svg so we add a matching top padding. */
+
 .rxn-arrow-wrap {
   display: flex !important;
   flex-direction: column !important;
@@ -223,7 +364,7 @@ body {
   padding-top: 96px;  /* matches label(20px) + gap(6px) + svg(70px) = 96px */
 }
 
-/* Fixed height spacer area above the box in each molecule column */
+
 .rxn-mol-above {
   display: flex;
   flex-direction: column;
@@ -575,13 +716,14 @@ body {
 }
 .mech-overlay-title { font-size: 15px; font-weight: 600; }
 .mech-overlay-close {
-  width: 30px; height: 30px; border-radius: 8px;
+  width: 40px; height: 40px; border-radius: 12px;
   border: 1px solid var(--border); background: var(--surface);
   color: var(--text2); cursor: pointer; font-size: 18px;
   display: flex; align-items: center; justify-content: center;
-  transition: background 0.12s; line-height: 1;
+    transition:all .15s ease;; line-height: 1;
+  
 }
-.mech-overlay-close:hover { background: var(--bg3); color: var(--text); }
+.mech-overlay-close:hover { background: var(--bg3); color: var(--text);  transform:rotate(90deg); }
 .mech-overlay-body { overflow-y: auto; flex: 1; padding: 0; }
 
 /* overview bar */
@@ -708,8 +850,13 @@ body {
       </div>
       SynthLab
       <span style="font-size:11px;font-weight:400;color:var(--text3);padding:2px 8px;border-radius:4px;background:var(--bg2);border:1px solid var(--border)">beta</span>
+      <a href="https://github.com/Amrqhz" style="text-decoration: none;"><span style="font-size:11px;font-weight:400;color:var(--text3);padding:2px 8px;border-radius:4px;background:var(--bg);border:1px solid var(--border); ">github</span></a>
+      <a href="learn.html" style="text-decoration: none;"><span style="font-size:11px;font-weight:400;color:var(--text3);padding:2px 8px;border-radius:4px;background:var(--bg);border:1px solid var(--border); ">Docs</span></a>
+      <!-- <button class="btn-small">Learn</button> -->
+
     </div>
     <div class="topbar-right">
+      <button class="btn-small" onclick="infopannel()">About Us</button>
       <button class="btn-small" onclick="clearAll()">↺ Reset</button>
       <button class="btn-small" onclick="toggleTheme()" id="theme-btn">◑ Dark</button>
       <button class="btn-primary" onclick="runReaction()">React →</button>
@@ -800,6 +947,33 @@ body {
       <button class="mech-nav-btn" id="overlay-prev" onclick="overlayNav(-1)">← Previous</button>
       <span class="mech-nav-counter" id="overlay-counter"></span>
       <button class="mech-nav-btn primary" id="overlay-next" onclick="overlayNav(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- About Panel -->
+<div class="infopannel" id="infopannel">
+  <div class="panel-content">
+    <button class="close-btn" onclick="closeInfoPanel()">✕</button>
+
+    <h1>About SynthLab</h1>
+
+    <p>
+      SynthLab is an interactive chemistry and reaction simulation platform
+      designed to help students, researchers, and enthusiasts explore chemical
+      processes in a simple and intuitive environment.
+    </p>
+
+    <h2>Developer</h2>
+    <p>
+      Developed by AmirHossein.<br>
+      Pharmacy Student & Full-Stack Developer.<br>
+      Interested in chemistry, web development, and mobile applications.
+    </p>
+
+    <div class="footer-info">
+      <h4>Version</h4>
+      <p>Beta 1.0</p>
     </div>
   </div>
 </div>
@@ -1147,7 +1321,7 @@ function updateStage() {
 
   if (!mol) {
     stage.innerHTML = `<div style="text-align:center;color:var(--text3)">
-      <div style="font-size:36px;margin-bottom:12px">⚗️</div>
+      <div style="font-size:36px;margin-bottom:12px"><svg xmlns="http://www.w3.org/2000/svg" width="75px" height="75px" viewBox="0 0 24 24"><title xmlns="">microscope-line</title><g fill="none" fill-rule="evenodd"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M15.682 3.282a2 2 0 0 1 2.701-.116l.128.116l.707.708a2 2 0 0 1 .116 2.7l-.116.128l-.707.707a2 2 0 0 1-.195.17a2 2 0 0 1-.397 1.826l-.116.125l-.99.99A6.5 6.5 0 0 1 19 15.5c0 1.644-.61 3.145-1.616 4.29l-.194.21H20a1 1 0 0 1 .117 1.993L20 22H4a1 1 0 0 1-.117-1.993L4 20h8.5a4.5 4.5 0 0 0 3.075-7.786l-.18-.16l-3.248 3.25a2 2 0 0 1-2.702.116l-.127-.117l-2.121-2.121a2 2 0 0 1-.117-2.701l.117-.127l5.657-5.657a2 2 0 0 1 1.95-.513l.082-.1l.089-.094zM6.49 13.89l2.12 2.12a1 1 0 1 1-1.414 1.415l-2.122-2.122A1 1 0 0 1 6.49 13.89m7.778-7.778L8.61 11.768l2.121 2.121l5.657-5.657l-2.121-2.121Zm2.828-1.414l-.707.707l.707.707l.707-.707z"/></g></svg></div>
       <div style="font-size:14px;font-weight:500">Pick a molecule from the library</div>
       <div style="font-size:12px;margin-top:6px;color:var(--text3)">to start your synthesis</div>
     </div>`;
@@ -1532,7 +1706,22 @@ function showMechanism(rxn) {
       </div>
     </div>
 
-    <div class="result-card">
+
+
+    <div class="result-card" style="cursor:pointer;" onclick="openMechOverlay()">
+      <div class="result-card-head">Mechanism — ${rxn.mechanism().length} steps
+        <span style="font-size:10px;color:var(--text3);font-weight:400">click to expand</span>
+      </div>
+      <div class="result-card-body" style="padding-top:6px">
+        ${stepsHTML}
+      </div>
+      <div class="mech-card-open-btn">
+
+      <svg xmlns="http://www.w3.org/2000/svg" width="75px" height="75px" viewBox="0 0 24 24"><title xmlns="">selector-vertical-fill</title><g fill="none" fill-rule="evenodd"><path d="M24 0v24H0V0zM12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M11.293 7.293a1 1 0 0 1 1.414 0l2 2A1 1 0 0 1 14 11h-4a1 1 0 0 1-.707-1.707zm-2.217 6.324A1 1 0 0 1 10 13h4a1 1 0 0 1 .707 1.707l-2 2a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1-.217-1.09"/></g></svg>
+        View full mechanism with electron flow diagrams
+      </div>
+    </div>
+        <div class="result-card">
       <div class="result-card-head">Thermodynamics</div>
       <div class="result-card-body">
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
@@ -1546,19 +1735,6 @@ function showMechanism(rxn) {
         <div style="font-size:11px;color:var(--text3);margin-top:6px">
           ${rxn.conditions}
         </div>
-      </div>
-    </div>
-
-    <div class="result-card" style="cursor:pointer;" onclick="openMechOverlay()">
-      <div class="result-card-head">Mechanism — ${rxn.mechanism().length} steps
-        <span style="font-size:10px;color:var(--text3);font-weight:400">click to expand</span>
-      </div>
-      <div class="result-card-body" style="padding-top:6px">
-        ${stepsHTML}
-      </div>
-      <div class="mech-card-open-btn">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg>
-        View full mechanism with electron flow diagrams
       </div>
     </div>
 
@@ -2510,6 +2686,14 @@ function toggleTheme() {
   dark = !dark;
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
   document.getElementById('theme-btn').textContent = dark ? '○ Light' : '◑ Dark';
+}
+
+function infopannel() {
+  document.getElementById("infopannel").classList.add("show");
+}
+
+function closeInfoPanel() {
+  document.getElementById("infopannel").classList.remove("show");
 }
 
 // ══════════════════════════════
