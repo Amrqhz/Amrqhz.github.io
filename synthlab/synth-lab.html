@@ -191,15 +191,46 @@ body {
 .step-badge.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 
 .canvas { flex: 1; position: relative; overflow: hidden; }
+
+/* ── REACTION STAGE LAYOUT ── */
 .rxn-stage {
-  display: flex; align-items: center; justify-content: center;
-  height: 100%; gap: 0; position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 0;
 }
 
-/* molecules in stage */
 .rxn-molecule {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Arrow column: absolutely no top/bottom offset — it must sit 
+   at the same vertical centre as the mol-boxes.
+   We achieve this by making .rxn-molecule use a fixed-height spacer
+   above the box (label + svg = ~96px total) so all three flex children
+   in the stage row share the same box midpoint. The arrow column has
+   no label/svg so we add a matching top padding. */
+.rxn-arrow-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-shrink: 0;
+  padding-top: 96px;  /* matches label(20px) + gap(6px) + svg(70px) = 96px */
+}
+
+/* Fixed height spacer area above the box in each molecule column */
+.rxn-mol-above {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  height: 96px;      /* label + gap + svg: always same height */
+  justify-content: flex-end;
 }
 .rxn-mol-box {
   border: 1.5px solid var(--border2);
@@ -208,7 +239,7 @@ body {
   background: var(--surface);
   text-align: center;
   cursor: default;
-  min-width: 110px;
+  min-width: 130px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .rxn-mol-box.starter-box { border-color: var(--text); }
@@ -241,16 +272,12 @@ body {
 .rxn-mol-label.product-label { color: var(--green); }
 
 /* arrow */
-.rxn-arrow-wrap {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 6px; padding: 0 8px; flex-shrink: 0;
-}
 .rxn-arrow {
   display: flex; align-items: center; gap: 6px;
   position: relative;
 }
 .arrow-line {
-  width: 80px; height: 2px;
+  width: 90px; height: 2px;
   background: var(--border2);
   border-radius: 2px;
   position: relative;
@@ -264,15 +291,15 @@ body {
   border-left: 10px solid var(--border2);
 }
 .arrow-reagent {
-  position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
+  position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
   white-space: nowrap;
   font-size: 11px; color: var(--text2);
   font-family: var(--mono); font-weight: 500;
 }
 .arrow-conditions {
-  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
   white-space: nowrap;
-  font-size: 10px; color: var(--text3);
+  font-size: 10px; color: var(--text3)
 }
 .arrow-container { position: relative; padding: 28px 0 20px; }
 
@@ -418,12 +445,15 @@ body {
 /* ── ARROW HOVER MECHANISM POPUP ── */
 .arrow-hover-zone {
   position: relative; cursor: pointer;
-  padding: 28px 16px 20px;
+  padding: 16px 12px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center;
+  margin: 0 2.5rem;
+
 }
 .arrow-hover-zone:hover .arrow-line { background: var(--text); }
 .arrow-hover-zone:hover .arrow-line::after { border-left-color: var(--text); }
 .arrow-hover-zone .mech-hint {
-  position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
   font-size: 9px; color: var(--text3); white-space: nowrap; letter-spacing: 0.04em;
   opacity: 0; transition: opacity 0.15s;
 }
@@ -472,7 +502,7 @@ body {
 }
 
 /* structure SVG */
-.struct-svg { display: block; margin: 0 auto 4px; }
+.struct-svg { display: block; margin: 0 auto; }
 .rxn-mol-box.pulse {
   animation: pulse-anim 0.4s ease;
 }
@@ -514,6 +544,151 @@ body {
 }
 .hist-item:hover { background: var(--bg3); }
 .hist-label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; }
+
+/* ── FULL MECHANISM OVERLAY ── */
+.mech-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.72);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.mech-overlay.open { opacity: 1; pointer-events: all; }
+.mech-overlay-panel {
+  background: var(--surface);
+  border-radius: 18px;
+  border: 1px solid var(--border2);
+  width: min(96vw, 980px);
+  max-height: 90vh;
+  height: 90vh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.96) translateY(12px);
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1);
+}
+.mech-overlay.open .mech-overlay-panel { transform: scale(1) translateY(0); }
+.mech-overlay-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; background: var(--bg2);
+}
+.mech-overlay-title { font-size: 15px; font-weight: 600; }
+.mech-overlay-close {
+  width: 30px; height: 30px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text2); cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s; line-height: 1;
+}
+.mech-overlay-close:hover { background: var(--bg3); color: var(--text); }
+.mech-overlay-body { overflow-y: auto; flex: 1; padding: 0; }
+
+/* overview bar */
+.mech-overview {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 22px; background: var(--bg2);
+  flex-wrap: wrap; border-bottom: 1px solid var(--border);
+}
+.mech-overview-mol { font-family: var(--mono); font-size: 14px; font-weight: 500; }
+.mech-overview-arrow { font-size: 18px; color: var(--text3); }
+.mech-overview-reagent {
+  font-family: var(--mono); font-size: 12px;
+  background: var(--bg3); padding: 3px 10px; border-radius: 20px;
+  color: var(--text2); border: 1px solid var(--border);
+}
+
+/* step stepper */
+.mech-stepper {
+  display: flex; align-items: center; gap: 0;
+  padding: 14px 22px; border-bottom: 1px solid var(--border);
+  overflow-x: auto; flex-shrink: 0; background: var(--surface);
+}
+.mech-step-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 6px 14px; cursor: pointer; border-radius: 8px;
+  flex-shrink: 0;
+  transition: background 0.12s;
+  border: 1px solid transparent;
+}
+.mech-step-btn:hover { background: var(--bg2); }
+.mech-step-btn.active { background: var(--bg2); border-color: var(--border2); }
+.mech-step-btn-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--bg3); border: 1.5px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: var(--text2);
+}
+.mech-step-btn.active .mech-step-btn-num {
+  background: var(--text); color: var(--bg); border-color: var(--text);
+}
+.mech-step-btn-label { font-size: 10px; color: var(--text3); white-space: nowrap; max-width: 80px; overflow: hidden; text-overflow: ellipsis; }
+.mech-stepper-line {
+  width: 24px; height: 1px; background: var(--border2);
+  flex-shrink: 0; margin: 0 -4px; margin-bottom: 14px;
+}
+
+/* main step view */
+.mech-step-view {
+  display: grid; grid-template-columns: 52% 48%;
+  gap: 0; flex: 1; overflow: hidden;
+}
+.mech-step-diagram {
+  padding: 28px; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--bg);
+  overflow: hidden;
+}
+.mech-step-detail {
+  padding: 24px 28px;
+  display: flex; flex-direction: column; gap: 14px;
+  overflow-y: auto;
+}
+.mech-step-detail-num {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+}
+.mech-step-detail-title { font-size: 18px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.mech-step-detail-desc { font-size: 14px; color: var(--text2); line-height: 1.75; }
+.mech-step-detail-desc strong { color: var(--text); font-weight: 600; }
+.mech-step-detail-note {
+  padding: 10px 14px; border-radius: 8px;
+  background: var(--blue-bg); border: 1px solid var(--border);
+  font-size: 12px; color: var(--text2); line-height: 1.6;
+}
+.mech-step-detail-note.note-green { background: var(--green-bg); }
+.mech-step-detail-note.note-amber { background: var(--amber-bg); }
+.mech-step-detail-note.note-red { background: var(--red-bg); }
+
+.mech-step-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* nav buttons */
+.mech-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 22px; border-top: 1px solid var(--border);
+  background: var(--bg2); flex-shrink: 0;
+}
+.mech-nav-btn {
+  padding: 7px 18px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface);
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  color: var(--text2); cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.mech-nav-btn:hover:not(:disabled) { background: var(--bg3); color: var(--text); }
+.mech-nav-btn:disabled { opacity: 0.35; cursor: default; }
+.mech-nav-btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+.mech-nav-btn.primary:hover { opacity: 0.85; }
+.mech-nav-counter { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+
+.mech-card-open-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 14px; border-top: 1px solid var(--border);
+  cursor: pointer; transition: background 0.12s;
+  font-size: 12px; color: var(--blue); font-weight: 500;
+  background: var(--blue-bg);
+}
+.mech-card-open-btn:hover { filter: brightness(0.95); }
 </style>
 </head>
 <body>
@@ -598,6 +773,34 @@ body {
         </div>
       </div>
     </aside>
+  </div>
+</div>
+
+<!-- FULL MECHANISM OVERLAY -->
+<div class="mech-overlay" id="mech-overlay" onclick="closeMechOverlay(event)">
+  <div class="mech-overlay-panel" onclick="event.stopPropagation()">
+    <div class="mech-overlay-head">
+      <div>
+        <div class="mech-overlay-title" id="overlay-title">Reaction Mechanism</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px" id="overlay-subtitle"></div>
+      </div>
+      <button class="mech-overlay-close" onclick="closeMechOverlay(null)">✕</button>
+    </div>
+    <!-- overview bar -->
+    <div class="mech-overview" id="overlay-overview"></div>
+    <!-- step stepper tabs -->
+    <div class="mech-stepper" id="overlay-stepper"></div>
+    <!-- main view: diagram + detail -->
+    <div class="mech-step-view" id="overlay-step-view">
+      <div class="mech-step-diagram" id="overlay-diagram"></div>
+      <div class="mech-step-detail" id="overlay-detail"></div>
+    </div>
+    <!-- nav -->
+    <div class="mech-nav">
+      <button class="mech-nav-btn" id="overlay-prev" onclick="overlayNav(-1)">← Previous</button>
+      <span class="mech-nav-counter" id="overlay-counter"></span>
+      <button class="mech-nav-btn primary" id="overlay-next" onclick="overlayNav(1)">Next →</button>
+    </div>
   </div>
 </div>
 
@@ -953,8 +1156,10 @@ function updateStage() {
 
   let html = `
     <div class="rxn-molecule">
-      <div class="rxn-mol-label">Starter</div>
-      ${drawStructureSVG(mol)}
+      <div class="rxn-mol-above">
+        <div class="rxn-mol-label">Starter</div>
+        ${drawStructureSVG(mol)}
+      </div>
       <div class="rxn-mol-box starter-box">
         <div class="rxn-mol-formula">${mol.formula}</div>
         <div class="rxn-mol-name">${mol.name}</div>
@@ -963,19 +1168,21 @@ function updateStage() {
 
   html += `<div class="rxn-arrow-wrap">
     <div class="arrow-hover-zone" id="arrow-hover-zone" onmouseenter="showMechPopup(event)" onmousemove="moveMechPopup(event)" onmouseleave="hideMechPopup()">
-      <span class="mech-hint">hover for mechanism</span>
-      <div class="arrow-line">
+      <div class="arrow-line" style="position:relative;">
         ${state.reagent ? `<span class="arrow-reagent">${state.reagent}</span>` : ''}
         ${state.reaction ? `<span class="arrow-conditions">${state.reaction.conditions}</span>` : ''}
       </div>
+
     </div>
   </div>`;
 
   if (product) {
     html += `
       <div class="rxn-molecule">
-        <div class="rxn-mol-label product-label">Product</div>
-        ${drawProductSVG(product)}
+        <div class="rxn-mol-above">
+          <div class="rxn-mol-label product-label">Product</div>
+          ${drawProductSVG(product)}
+        </div>
         <div class="rxn-mol-box product-box pulse" id="product-box">
           <div class="rxn-mol-formula">${product.formula}</div>
           <div class="rxn-mol-name">${product.name}</div>
@@ -984,8 +1191,12 @@ function updateStage() {
   } else {
     html += `
       <div class="rxn-molecule">
-        <div class="rxn-mol-label">Product</div>
-        <div style="width:80px;height:60px"></div>
+        <div class="rxn-mol-above">
+          <div class="rxn-mol-label">Product</div>
+          <div style="height:70px;display:flex;align-items:center;justify-content:center;">
+            <div style="width:60px;height:2px;background:var(--border);border-radius:2px;"></div>
+          </div>
+        </div>
         <div class="rxn-mol-box empty-box" onclick="runReaction()">
           <div style="font-size:22px;color:var(--text3)">?</div>
           <div class="rxn-mol-name">React →</div>
@@ -997,41 +1208,149 @@ function updateStage() {
 }
 
 function drawStructureSVG(mol) {
-  // Simple structural diagrams
-  const w = 100, h = 60;
-  let path = '';
-  if (mol.group === 'Alkenes') {
-    path = `<line x1="20" y1="30" x2="45" y2="30" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="45" y1="28" x2="65" y2="28" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="45" y1="32" x2="65" y2="32" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="65" y1="30" x2="88" y2="30" stroke="var(--text)" stroke-width="1.5"/>
-      <text x="50" y="22" font-size="9" fill="var(--text3)" text-anchor="middle">C=C</text>`;
-  } else if (mol.group === 'Alkynes') {
-    path = `<line x1="20" y1="28" x2="45" y2="28" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="45" y1="26" x2="65" y2="26" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="45" y1="30" x2="65" y2="30" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="45" y1="34" x2="65" y2="34" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="65" y1="30" x2="88" y2="30" stroke="var(--text)" stroke-width="1.5"/>
-      <text x="50" y="20" font-size="9" fill="var(--text3)" text-anchor="middle">C≡C</text>`;
-  } else if (mol.group === 'Aromatics') {
-    // Benzene ring
-    const cx=50,cy=32,r=20;
-    const pts = Array.from({length:6},(_,i)=>{
-      const a=(Math.PI/3)*i - Math.PI/6;
-      return [cx+r*Math.cos(a), cy+r*Math.sin(a)];
-    });
-    path = `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--text)" stroke-width="1.5"/>
-      <circle cx="${cx}" cy="${cy}" r="${r*0.55}" fill="none" stroke="var(--text2)" stroke-width="1" stroke-dasharray="3,2"/>`;
-  } else if (mol.group === 'Alcohols') {
-    path = `<line x1="10" y1="30" x2="50" y2="30" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="50" y1="30" x2="78" y2="14" stroke="var(--text)" stroke-width="1.5"/>
-      <text x="80" y="12" font-size="9" fill="var(--blue)" font-weight="500">OH</text>`;
-  } else if (mol.group === 'Carbonyl') {
-    path = `<line x1="10" y1="32" x2="48" y2="32" stroke="var(--text)" stroke-width="1.5"/>
-      <line x1="48" y1="30" x2="68" y2="14" stroke="var(--text)" stroke-width="2"/>
-      <line x1="50" y1="32" x2="70" y2="14" stroke="var(--text)" stroke-width="2"/>
-      <text x="72" y="12" font-size="9" fill="var(--red)" font-weight="500">O</text>`;
-  }
+  const w = 120, h = 70;
+  const S = 'var(--text)'; const SW = 1.8;
+  const dbl = (x1,y1,x2,y2,gap=2.5) => {
+    const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy)||1;
+    const ox=-dy/len*gap, oy=dx/len*gap;
+    return `<line x1="${(x1+ox).toFixed(1)}" y1="${(y1+oy).toFixed(1)}" x2="${(x2+ox).toFixed(1)}" y2="${(y2+oy).toFixed(1)}" stroke="${S}" stroke-width="${SW}"/>
+            <line x1="${(x1-ox).toFixed(1)}" y1="${(y1-oy).toFixed(1)}" x2="${(x2-ox).toFixed(1)}" y2="${(y2-oy).toFixed(1)}" stroke="${S}" stroke-width="${SW}"/>`;
+  };
+  const trpl = (x1,y1,x2,y2,gap=2.8) => {
+    const dx=x2-x1, dy=y2-y1, len=Math.sqrt(dx*dx+dy*dy)||1;
+    const ox=-dy/len*gap, oy=dx/len*gap;
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${S}" stroke-width="${SW}"/>
+            <line x1="${(x1+ox).toFixed(1)}" y1="${(y1+oy).toFixed(1)}" x2="${(x2+ox).toFixed(1)}" y2="${(y2+oy).toFixed(1)}" stroke="${S}" stroke-width="${SW}"/>
+            <line x1="${(x1-ox).toFixed(1)}" y1="${(y1-oy).toFixed(1)}" x2="${(x2-ox).toFixed(1)}" y2="${(y2-oy).toFixed(1)}" stroke="${S}" stroke-width="${SW}"/>`;
+  };
+  const sng = (x1,y1,x2,y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${S}" stroke-width="${SW}"/>`;
+  const lbl = (x,y,t,col='var(--text)',fs=9,fw=500) => `<text x="${x}" y="${y}" font-size="${fs}" fill="${col}" text-anchor="middle" dominant-baseline="auto" font-weight="${fw}" font-family="'JetBrains Mono',monospace">${t}</text>`;
+  // benzene ring helper
+  const benzene = (cx,cy,r) => {
+    const pts = Array.from({length:6},(_,i)=>{ const a=(Math.PI/3)*i-Math.PI/6; return [cx+r*Math.cos(a),cy+r*Math.sin(a)]; });
+    return `<polygon points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${S}" stroke-width="${SW}"/>
+            <circle cx="${cx}" cy="${cy}" r="${(r*0.55).toFixed(1)}" fill="none" stroke="var(--text2)" stroke-width="1.2" stroke-dasharray="3,2"/>`;
+  };
+
+  const structs = {
+    // ── ALKENES ──
+    // ethene: H₂C=CH₂  — symmetric, just a double bond with H labels
+    'ethene': () =>
+      dbl(38,35,82,35) +
+      lbl(28,35,'H₂C','var(--text)',10,500) +
+      lbl(92,35,'CH₂','var(--text)',10,500),
+
+    // propene: CH₃–CH=CH₂ — zig left tail, double bond right
+    'propene': () =>
+      sng(10,48,38,28) +          // CH₃ tail going up-right
+      dbl(38,28,74,28) +          // C=C double bond
+      lbl(5,52,'CH₃','var(--text)',9,400) +
+      lbl(86,25,'CH₂','var(--text)',9,400),
+
+    // 1-butene: CH₃CH₂–CH=CH₂
+    '1-butene': () =>
+      sng(8,48,30,30) +           // C1
+      sng(30,30,52,48) +          // C2
+      dbl(52,48,78,48) +          // C=C
+      lbl(4,52,'CH₃','var(--text)',8,400) +
+      lbl(92,45,'CH₂','var(--text)',8,400),
+
+    // 2-butene: CH₃–CH=CH–CH₃  — internal double bond
+    '2-butene': () =>
+      sng(10,44,34,28) +          // CH₃ left
+      dbl(34,28,70,28) +          // C=C
+      sng(70,28,94,44) +          // CH₃ right
+      lbl(5,50,'CH₃','var(--text)',8,400) +
+      lbl(104,50,'CH₃','var(--text)',8,400),
+
+    // isobutylene: (CH₃)₂C=CH₂  — gem-disubstituted alkene
+    'isobutylene': () =>
+      sng(32,52,52,35) +          // lower CH₃
+      sng(32,20,52,35) +          // upper CH₃
+      dbl(52,35,84,35) +          // C=C
+      lbl(20,55,'CH₃','var(--text)',8,400) +
+      lbl(20,18,'CH₃','var(--text)',8,400) +
+      lbl(96,32,'CH₂','var(--text)',8,400),
+
+    // ── ALKYNES ──
+    // ethyne: HC≡CH
+    'ethyne': () =>
+      trpl(34,35,86,35) +
+      lbl(22,35,'HC','var(--text)',10,500) +
+      lbl(98,35,'CH','var(--text)',10,500),
+
+    // propyne: CH₃–C≡CH
+    'propyne': () =>
+      sng(12,45,36,35) +
+      trpl(36,35,80,35) +
+      lbl(6,50,'CH₃','var(--text)',8,400) +
+      lbl(94,35,'CH','var(--text)',9,400),
+
+    // ── ALCOHOLS ──
+    // ethanol: CH₃–CH₂–OH  (2 carbons)
+    'ethanol': () =>
+      sng(14,42,44,28) +
+      sng(44,28,74,42) +
+      lbl(8,48,'CH₃','var(--text)',8,400) +
+      lbl(86,46,'OH','var(--blue)',10,600),
+
+    // 1-propanol: CH₃CH₂CH₂OH  (3 carbons)
+    'propanol': () =>
+      sng(8,44,30,28) +
+      sng(30,28,54,44) +
+      sng(54,44,78,28) +
+      lbl(4,50,'CH₃','var(--text)',8,400) +
+      lbl(88,26,'OH','var(--blue)',10,600),
+
+    // 2-propanol: CH₃CH(OH)CH₃  — OH on middle carbon
+    '2-propanol': () =>
+      sng(14,44,44,28) +          // left CH₃
+      sng(44,28,74,44) +          // right CH₃
+      sng(44,28,44,10) +          // OH up
+      lbl(8,50,'CH₃','var(--text)',8,400) +
+      lbl(78,50,'CH₃','var(--text)',8,400) +
+      lbl(44,8,'OH','var(--blue)',10,600),
+
+    // ── AROMATICS ──
+    'benzene': () => benzene(60,37,24),
+
+    // toluene: benzene + CH₃ substituent
+    'toluene': () =>
+      benzene(52,38,20) +
+      sng(72,38,96,38) +
+      lbl(106,38,'CH₃','var(--text)',8,400),
+
+    // ── CARBONYL ──
+    // acetaldehyde: CH₃–CHO
+    'acetaldehyde': () =>
+      sng(14,44,46,32) +
+      dbl(46,32,76,32) +
+      sng(76,32,76,14) +          // aldehyde C–H (pointing down, O up)
+      lbl(8,50,'CH₃','var(--text)',8,400) +
+      lbl(76,10,'O','var(--red)',11,700) +
+      lbl(86,36,'H','var(--text)',8,400),
+
+    // acetone: CH₃–C(=O)–CH₃
+    'acetone': () =>
+      sng(12,46,42,32) +          // left CH₃
+      sng(42,32,72,46) +          // right CH₃
+      dbl(42,32,42,12,2.5) +      // C=O up
+      lbl(6,52,'CH₃','var(--text)',8,400) +
+      lbl(76,52,'CH₃','var(--text)',8,400) +
+      lbl(42,8,'O','var(--red)',11,700),
+
+    // acetic acid: CH₃–COOH
+    'acetic-acid': () =>
+      sng(12,44,40,32) +
+      dbl(40,32,68,20) +          // C=O
+      sng(40,32,40,52) +          // C–OH (single)
+      lbl(6,50,'CH₃','var(--text)',8,400) +
+      lbl(74,16,'O','var(--red)',11,700) +
+      lbl(42,62,'OH','var(--blue)',9,600),
+  };
+
+  const fn = structs[mol.id];
+  const path = fn ? fn() : `<text x="60" y="38" font-size="9" fill="var(--text3)" text-anchor="middle">${mol.formula}</text>`;
   return `<svg class="struct-svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${path}</svg>`;
 }
 
@@ -1230,12 +1549,16 @@ function showMechanism(rxn) {
       </div>
     </div>
 
-    <div class="result-card">
+    <div class="result-card" style="cursor:pointer;" onclick="openMechOverlay()">
       <div class="result-card-head">Mechanism — ${rxn.mechanism().length} steps
-        <span style="font-size:10px;color:var(--text3);font-weight:400">hover for detail</span>
+        <span style="font-size:10px;color:var(--text3);font-weight:400">click to expand</span>
       </div>
       <div class="result-card-body" style="padding-top:6px">
         ${stepsHTML}
+      </div>
+      <div class="mech-card-open-btn">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg>
+        View full mechanism with electron flow diagrams
       </div>
     </div>
 
@@ -1639,6 +1962,482 @@ function positionPopup(e) {
 }
 
 // ══════════════════════════════
+// FULL MECHANISM OVERLAY
+// ══════════════════════════════
+
+// Curly arrow helper — draws an SVG curved arrow representing electron flow
+// Returns an SVG <path> string with a filled arrowhead
+function curlyArrow(x1,y1,cx,cy,x2,y2,color='#c0392b',sw=1.8) {
+  // quadratic bezier path
+  const d=`M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
+  // arrowhead: small triangle at end tangent
+  const dx=x2-cx, dy=y2-cy, len=Math.sqrt(dx*dx+dy*dy)||1;
+  const ux=dx/len, uy=dy/len;
+  const px=-uy, py=ux;
+  const hs=5;
+  const ax=x2-ux*hs, ay=y2-uy*hs;
+  const head=`M${x2},${y2} L${ax+px*3},${ay+py*3} L${ax-px*3},${ay-py*3} Z`;
+  return `<path d="${d}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-dasharray="none"/>
+    <path d="${head}" fill="${color}" stroke="none"/>`;
+}
+
+// lone pair dots
+function lonePair(x,y,angle=0,color='#555') {
+  const r=6, a=angle*Math.PI/180;
+  const dx=r*Math.cos(a), dy=r*Math.sin(a);
+  return `<circle cx="${x-dy}" cy="${y+dx}" r="1.5" fill="${color}"/>
+    <circle cx="${x+dy}" cy="${y-dx}" r="1.5" fill="${color}"/>`;
+}
+
+// bond line
+function bond(x1,y1,x2,y2,color='#111',dashed=false,sw=2) {
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${sw}" ${dashed?'stroke-dasharray="4,2"':''}/>`;
+}
+function doubleBond(x1,y1,x2,y2,color='#111',sw=2) {
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1;
+  const ox=-dy/len*2.5,oy=dx/len*2.5;
+  return `${bond(x1+ox,y1+oy,x2+ox,y2+oy,color,false,sw)}${bond(x1-ox,y1-oy,x2-ox,y2-oy,color,false,sw)}`;
+}
+function atom(x,y,label,color='#111',bg='transparent',fs=13,fw=600) {
+  return `<text x="${x}" y="${y}" font-size="${fs}" fill="${color}" text-anchor="middle" dominant-baseline="central" font-weight="${fw}" font-family="'JetBrains Mono',monospace">${label}</text>`;
+}
+function atomBg(x,y,w=22,h=18,color='#fff') {
+  return `<rect x="${x-w/2}" y="${y-h/2}" width="${w}" height="${h}" rx="4" fill="${color}"/>`;
+}
+
+// Full detailed mechanism SVGs per reaction per step
+// Each returns an SVG string (no outer <svg> tag — we wrap it)
+function getFullMechSVG(rxnId, stepN) {
+  const R='#c0392b'; const B='#1a5fa0'; const G='#1a7a4a'; const Am='#a06000'; const Gry='#888';
+  const W='var(--surface)'; const Rbg='#fdf0ee'; const Bbg='#e8f1fb'; const Gbg='#eaf6f0'; const Ambg='#fdf5e0';
+
+  const svgs = {
+    // ── BROMINATION ─────────────────────────────────────
+    bromination: {
+      1: ()=>`
+        ${bond(40,95,100,95,'#111')}
+        ${bond(100,93,130,93,'#111')} ${bond(100,97,130,97,'#111')}
+        ${bond(130,95,170,95,'#111')}
+        ${atom(38,95,'C',Gry,'transparent',11,400)}
+        ${atom(172,95,'C',Gry,'transparent',11,400)}
+        ${atom(115,95,'',Gry,'transparent',11,400)}
+        <text x="115" y="70" font-size="10" fill="${Gry}" text-anchor="middle" font-family="monospace">π cloud</text>
+        ${bond(200,95,235,95,Am)} ${lonePair(200,95,90,Am)} ${lonePair(235,95,90,Am)}
+        ${atom(200,95,'Br',Am,'transparent',12,700)} ${atom(235,95,'Br',Am,'transparent',12,700)}
+        <text x="217" y="75" font-size="10" fill="${Am}" text-anchor="middle">δ+  δ−</text>
+        ${curlyArrow(115,88,165,60,200,88,R)}
+        <text x="50" y="140" font-size="11" fill="${Gry}" text-anchor="middle">alkene</text>
+        <text x="217" y="140" font-size="11" fill="${Am}" text-anchor="middle">Br₂ polarised by π</text>`,
+      2: ()=>`
+        ${bond(30,90,70,90,'#111')} ${bond(70,90,110,90,'#111')} ${bond(110,90,150,90,'#111')}
+        <path d="M70,90 Q90,62 110,90" fill="none" stroke="${Am}" stroke-width="2"/>
+        ${atomBg(90,65,22,16,Ambg)}
+        ${atom(90,65,'Br',Am,'transparent',12,700)}
+        <text x="90" y="52" font-size="9" fill="${Am}" text-anchor="middle">bridging</text>
+        <text x="90" y="42" font-size="9" fill="${Am}" text-anchor="middle">bromonium ion</text>
+        ${atom(65,90,'+','#c0392b','transparent',10,700)}
+        ${bond(185,90,185,90,R)}
+        <rect x="162" y="76" width="30" height="20" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(177,86,'Br⁻',R,'transparent',12,700)}
+        ${curlyArrow(168,86,155,70,115,90,R)}
+        <text x="90" y="130" font-size="10" fill="${Am}" text-anchor="middle">3-membered bromonium ion</text>
+        <text x="90" y="145" font-size="10" fill="${Gry}" text-anchor="middle">Br⁻ waits to attack</text>`,
+      3: ()=>`
+        ${bond(30,85,75,85,'#111')} ${bond(75,85,120,85,'#111')} ${bond(120,85,160,85,'#111')}
+        ${bond(75,85,75,50,Am)} ${atom(75,44,'Br',Am,'transparent',12,700)}
+        ${bond(120,85,120,118,Am,true)}
+        <rect x="97" y="118" width="30" height="20" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(112,128,'Br⁻',R,'transparent',12,700)}
+        ${curlyArrow(110,128,112,110,118,108,R)}
+        <text x="16" y="85" font-size="9" fill="${Gry}">R</text>
+        <text x="168" y="85" font-size="9" fill="${Gry}">R</text>
+        <text x="90" y="155" font-size="10" fill="${Gry}" text-anchor="middle">Br⁻ attacks from</text>
+        <text x="90" y="168" font-size="10" fill="${R}" text-anchor="middle">OPPOSITE face (anti) ✓</text>
+        <text x="90" y="30" font-size="10" fill="${Am}" text-anchor="middle">Br already on top face →</text>`,
+    },
+    // ── HYDROGENATION ────────────────────────────────────
+    hydrogenation: {
+      1: ()=>`
+        <rect x="10" y="105" width="270" height="30" rx="6" fill="${Gbg}" stroke="${G}" stroke-width="1.5"/>
+        <text x="145" y="124" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">Pd / Ni / Pt  catalyst surface</text>
+        ${bond(50,85,120,85,'#111')} ${bond(120,83,160,83,'#111')} ${bond(120,87,160,87,'#111')} ${bond(160,85,220,85,'#111')}
+        <text x="140" y="68" font-size="10" fill="${Gry}" text-anchor="middle">alkene π bond</text>
+        <circle cx="55" cy="100" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(55,100,'H',B,'transparent',10,600)}
+        <circle cx="90" cy="100" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(90,100,'H',B,'transparent',10,600)}
+        <text x="72" y="148" font-size="10" fill="${B}" text-anchor="middle">H₂ adsorbed + dissociated</text>
+        <text x="72" y="162" font-size="10" fill="${Gry}" text-anchor="middle">on metal surface</text>`,
+      2: ()=>`
+        <rect x="10" y="118" width="270" height="28" rx="6" fill="${Gbg}" stroke="${G}" stroke-width="1.5"/>
+        <text x="145" y="136" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">metal surface</text>
+        ${bond(50,85,120,85,'#111')} ${bond(120,83,160,83,'#111')} ${bond(120,87,160,87,'#111')} ${bond(160,85,220,85,'#111')}
+        <circle cx="120" cy="100" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(120,100,'H',B,'transparent',10,600)}
+        ${curlyArrow(120,93,120,86,128,85,B)}
+        <text x="145" y="68" font-size="10" fill="${B}" text-anchor="middle">first H adds to one face (syn)</text>
+        <text x="145" y="165" font-size="10" fill="${Gry}" text-anchor="middle">σ-complex intermediate</text>`,
+      3: ()=>`
+        ${bond(40,90,90,90,'#111')} ${bond(90,90,140,90,'#111')} ${bond(140,90,190,90,'#111')}
+        <circle cx="90" cy="68" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(90,68,'H',B,'transparent',10,600)}
+        ${bond(90,75,90,90,B)}
+        <circle cx="140" cy="68" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(140,68,'H',B,'transparent',10,600)}
+        ${bond(140,75,140,90,B)}
+        <text x="115" y="50" font-size="10" fill="${B}" text-anchor="middle">both H on SAME face</text>
+        <text x="115" y="38" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">syn addition ✓</text>
+        <text x="115" y="140" font-size="10" fill="${G}" text-anchor="middle">alkane — fully saturated</text>`,
+    },
+    // ── HYDROBROMIN ──────────────────────────────────────
+    hydrobromin: {
+      1: ()=>`
+        ${bond(30,95,80,95,'#111')} ${bond(80,93,120,93,'#111')} ${bond(80,97,120,97,'#111')} ${bond(120,95,165,95,'#111')}
+        <text x="100" y="78" font-size="10" fill="${Gry}" text-anchor="middle">π electrons</text>
+        <rect x="172" y="80" width="44" height="22" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(194,91,'H—Br',R,'transparent',11,600)}
+        ${curlyArrow(100,88,145,55,175,82,R)}
+        <text x="100" y="148" font-size="10" fill="${Gry}" text-anchor="middle">π electrons attack H of HBr</text>
+        <text x="100" y="162" font-size="10" fill="${R}" text-anchor="middle">rate-limiting step</text>`,
+      2: ()=>`
+        ${bond(25,90,75,90,'#111')} ${bond(75,90,125,90,'#111')} ${bond(125,90,175,90,'#111')}
+        ${bond(75,90,75,58,'#666')} ${atom(75,52,'H',Gry,'transparent',11,400)}
+        <circle cx="125" cy="90" r="14" fill="${Bbg}" stroke="${B}" stroke-width="2"/>
+        ${atom(125,90,'C⁺',B,'transparent',13,700)}
+        <text x="100" y="145" font-size="10" fill="${B}" text-anchor="middle">2° carbocation</text>
+        <text x="100" y="159" font-size="10" fill="${Gry}" text-anchor="middle">(more substituted = more stable)</text>
+        <rect x="215" y="76" width="32" height="22" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(231,87,'Br⁻',R,'transparent',12,700)}
+        ${lonePair(218,87,90,R)}`,
+      3: ()=>`
+        ${bond(25,90,75,90,'#111')} ${bond(75,90,125,90,G)} ${bond(125,90,175,90,'#111')}
+        ${bond(75,90,75,58,'#666')} ${atom(75,52,'H',Gry,'transparent',11,400)}
+        ${bond(125,60,125,90,Am)} ${atom(125,54,'Br',Am,'transparent',12,700)}
+        ${curlyArrow(218,87,170,75,128,70,R)}
+        <rect x="210" y="76" width="32" height="22" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(226,87,'Br⁻',R,'transparent',12,700)}
+        <text x="100" y="145" font-size="10" fill="${G}" text-anchor="middle">Br adds to more substituted C</text>
+        <text x="100" y="159" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">Markovnikov product ✓</text>`,
+    },
+    // ── HYDROCHLORIN ─────────────────────────────────────
+    hydrochlorin: {
+      1: ()=>`
+        ${bond(30,95,80,95,'#111')} ${bond(80,93,120,93,'#111')} ${bond(80,97,120,97,'#111')} ${bond(120,95,165,95,'#111')}
+        <rect x="172" y="80" width="44" height="22" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(194,91,'H—Cl',R,'transparent',11,600)}
+        ${curlyArrow(100,88,145,55,175,82,R)}
+        <text x="100" y="148" font-size="10" fill="${Gry}" text-anchor="middle">π electrons attack H of HCl</text>`,
+      2: ()=>`
+        ${bond(25,90,75,90,'#111')} ${bond(75,90,125,90,'#111')} ${bond(125,90,175,90,'#111')}
+        ${bond(75,90,75,58,'#666')} ${atom(75,52,'H',Gry,'transparent',11,400)}
+        <circle cx="125" cy="90" r="14" fill="${Bbg}" stroke="${B}" stroke-width="2"/>
+        ${atom(125,90,'C⁺',B,'transparent',13,700)}
+        <text x="100" y="145" font-size="10" fill="${B}" text-anchor="middle">carbocation intermediate</text>
+        <rect x="215" y="76" width="28" height="22" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(229,87,'Cl⁻',R,'transparent',12,700)}`,
+      3: ()=>`
+        ${bond(25,90,75,90,'#111')} ${bond(75,90,125,90,G)} ${bond(125,90,175,90,'#111')}
+        ${bond(75,90,75,58,'#666')} ${atom(75,52,'H',Gry,'transparent',11,400)}
+        ${bond(125,62,125,90,Am)} ${atom(125,56,'Cl',Am,'transparent',12,700)}
+        <text x="100" y="145" font-size="10" fill="${G}" text-anchor="middle">Cl adds to more substituted C</text>
+        <text x="100" y="159" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">Markovnikov product ✓</text>`,
+    },
+    // ── HYDRATION ────────────────────────────────────────
+    hydration: {
+      1: ()=>`
+        ${bond(30,95,80,95,'#111')} ${bond(80,93,120,93,'#111')} ${bond(80,97,120,97,'#111')} ${bond(120,95,165,95,'#111')}
+        <rect x="168" y="78" width="50" height="24" rx="10" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(193,90,'H₃O⁺',B,'transparent',11,600)}
+        ${curlyArrow(100,88,140,55,172,82,R)}
+        <text x="100" y="148" font-size="10" fill="${Gry}" text-anchor="middle">H₂SO₄/H₃PO₄ provides H⁺</text>`,
+      2: ()=>`
+        ${bond(25,90,75,90,'#111')} ${bond(75,90,125,90,'#111')} ${bond(125,90,175,90,'#111')}
+        ${bond(75,90,75,60,'#666')} ${atom(75,54,'H',Gry,'transparent',11,400)}
+        <circle cx="125" cy="90" r="14" fill="${Bbg}" stroke="${B}" stroke-width="2"/>
+        ${atom(125,90,'C⁺',B,'transparent',13,700)}
+        <rect x="190" y="76" width="50" height="22" rx="10" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(215,87,'H₂O',B,'transparent',11,600)}
+        ${lonePair(192,87,90,B)}
+        ${curlyArrow(195,87,162,75,137,84,B)}
+        <text x="115" y="148" font-size="10" fill="${B}" text-anchor="middle">H₂O lone pair attacks C⁺</text>`,
+      3: ()=>`
+        ${bond(25,88,75,88,'#111')} ${bond(75,88,125,88,G)} ${bond(125,88,175,88,'#111')}
+        ${bond(75,88,75,60,'#666')} ${atom(75,54,'H',Gry,'transparent',11,400)}
+        ${bond(125,60,125,88,B)}
+        <rect x="107" y="40" width="36" height="20" rx="8" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(125,50,'OH₂⁺',B,'transparent',10,600)}
+        ${curlyArrow(125,42,125,28,140,20,R)}
+        <text x="155" y="18" font-size="10" fill="${R}">−H⁺</text>
+        <text x="100" y="145" font-size="10" fill="${G}" text-anchor="middle">deprotonation → alcohol</text>
+        <text x="100" y="159" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">Markovnikov alcohol ✓</text>`,
+    },
+    // ── DIHYDROXYLATION ──────────────────────────────────
+    dihydroxylation: {
+      1: ()=>`
+        ${bond(30,100,80,100,'#111')} ${bond(80,98,120,98,'#111')} ${bond(80,102,120,102,'#111')} ${bond(120,100,170,100,'#111')}
+        <text x="100" y="83" font-size="10" fill="${Gry}" text-anchor="middle">alkene</text>
+        <rect x="185" y="72" width="55" height="25" rx="10" fill="${Gbg}" stroke="${G}" stroke-width="1.5"/>
+        ${atom(212,84,'MnO₄⁻',G,'transparent',11,600)}
+        ${curlyArrow(100,93,142,60,186,80,R)}
+        <text x="100" y="148" font-size="10" fill="${G}" text-anchor="middle">MnO₄⁻ approaches π bond</text>
+        <text x="100" y="162" font-size="10" fill="${Gry}" text-anchor="middle">concerted [3+2] cycloaddition</text>`,
+      2: ()=>`
+        ${bond(30,105,75,105,'#111')} ${bond(75,105,125,105,'#111')} ${bond(125,105,170,105,'#111')}
+        ${bond(75,105,55,72,G)} ${bond(125,105,145,72,G)}
+        ${bond(55,72,145,72,G,true)}
+        ${atom(55,72,'O',G,'transparent',12,700)} ${atom(145,72,'O',G,'transparent',12,700)}
+        <text x="100" y="58" font-size="10" fill="${G}" text-anchor="middle" font-weight="600">cyclic manganate ester</text>
+        <text x="100" y="45" font-size="10" fill="${G}" text-anchor="middle">5-membered ring → SYN!</text>
+        <text x="100" y="148" font-size="10" fill="${Gry}" text-anchor="middle">both O from SAME face</text>`,
+      3: ()=>`
+        ${bond(30,88,80,88,'#111')} ${bond(80,88,130,88,'#111')} ${bond(130,88,180,88,'#111')}
+        ${bond(80,88,80,56,B)} ${bond(130,88,130,56,B)}
+        ${atom(80,50,'OH',B,'transparent',12,700)} ${atom(130,50,'OH',B,'transparent',12,700)}
+        <text x="105" y="38" font-size="10" fill="${B}" text-anchor="middle">both OH same face</text>
+        <text x="105" y="26" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">syn-diol ✓</text>
+        <text x="105" y="148" font-size="10" fill="${Gry}" text-anchor="middle">hydrolysis of manganate ester</text>
+        <text x="105" y="162" font-size="10" fill="${G}" text-anchor="middle">purple → brown MnO₂ (Baeyer test)</text>`,
+    },
+    // ── NITRATION ────────────────────────────────────────
+    nitration: {
+      1: ()=>`
+        <text x="30" y="72" font-size="12" fill="${Gry}" font-weight="500" font-family="monospace">HNO₃ + H₂SO₄</text>
+        ${curlyArrow(160,68,180,55,200,68,R)}
+        <rect x="200" y="56" width="70" height="24" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(235,68,'NO₂⁺',R,'transparent',13,700)}
+        <text x="235" y="100" font-size="10" fill="${R}" text-anchor="middle">nitronium ion</text>
+        <text x="235" y="115" font-size="10" fill="${R}" text-anchor="middle">(electrophile)</text>
+        ${atom(120,68,'+H₂O',Gry,'transparent',10,400)}
+        <text x="145" y="148" font-size="10" fill="${Gry}" text-anchor="middle">H₂SO₄ protonates HNO₃ → NO₂⁺ + H₂O</text>`,
+      2: ()=>`
+        ${(()=>{const cx=90,cy=92,r=26;const pts=Array.from({length:6},(_,i)=>{const a=(Math.PI/3)*i-Math.PI/6;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];});return `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#111" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${r*0.55}" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>`;})()}
+        <rect x="170" y="62" width="56" height="24" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(198,74,'NO₂⁺',R,'transparent',12,700)}
+        ${curlyArrow(115,78,148,50,171,68,R)}
+        <text x="90" y="148" font-size="10" fill="${Gry}" text-anchor="middle">π electrons attack NO₂⁺</text>
+        <text x="90" y="162" font-size="10" fill="${Am}" text-anchor="middle">aromaticity broken → σ-complex</text>`,
+      3: ()=>`
+        ${(()=>{const cx=90,cy=90,r=26;const pts=Array.from({length:6},(_,i)=>{const a=(Math.PI/3)*i-Math.PI/6;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];});return `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${G}" stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="${r*0.55}" fill="none" stroke="${G}" stroke-width="1.5" stroke-dasharray="3,2"/>`;})()}
+        ${bond(115,72,140,55,R)} ${atom(143,52,'NO₂',R,'transparent',12,700)}
+        ${curlyArrow(92,62,92,45,105,38,B)}
+        ${atom(120,35,'H',Gry,'transparent',11,400)} ${atom(140,28,'→ +H⁺',Gry,'transparent',10,400)}
+        <text x="90" y="145" font-size="10" fill="${G}" text-anchor="middle">rearomatisation</text>
+        <text x="90" y="159" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">nitrobenzene ✓</text>`,
+    },
+    // ── FC CHLORINATION ──────────────────────────────────
+    fc_chlorination: {
+      1: ()=>`
+        <rect x="20" y="62" width="56" height="24" rx="10" fill="${Ambg}" stroke="${Am}" stroke-width="1.5"/>
+        ${atom(48,74,'Cl—Cl',Am,'transparent',11,600)}
+        ${bond(76,74,100,74,Am)}
+        <rect x="100" y="62" width="56" height="24" rx="10" fill="${Gbg}" stroke="${G}" stroke-width="1.5"/>
+        ${atom(128,74,'AlCl₃',G,'transparent',11,600)}
+        ${curlyArrow(155,74,170,55,185,66,R)}
+        <rect x="185" y="56" width="55" height="24" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(212,68,'Cl—δ+',R,'transparent',11,600)}
+        <text x="145" y="125" font-size="10" fill="${Gry}" text-anchor="middle">AlCl₃ polarises Cl₂</text>
+        <text x="145" y="139" font-size="10" fill="${Am}" text-anchor="middle">Lewis acid activates electrophile</text>`,
+      2: ()=>`
+        ${(()=>{const cx=90,cy=92,r=26;const pts=Array.from({length:6},(_,i)=>{const a=(Math.PI/3)*i-Math.PI/6;return [(cx+r*Math.cos(a)).toFixed(1),(cy+r*Math.sin(a)).toFixed(1)];});return `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#111" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${(r*0.55).toFixed(1)}" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3,2"/>`;})()}
+        <rect x="168" y="60" width="52" height="22" rx="10" fill="${Rbg}" stroke="${R}" stroke-width="1.5"/>
+        ${atom(194,71,'Cl—δ+',R,'transparent',11,600)}
+        ${curlyArrow(115,78,148,50,170,66,R)}
+        <text x="90" y="148" font-size="10" fill="${Gry}" text-anchor="middle">π electrons attack Cl⁺</text>
+        <text x="90" y="162" font-size="10" fill="${Am}" text-anchor="middle">σ-complex (Wheland intermediate)</text>`,
+      3: ()=>`
+        ${(()=>{const cx=90,cy=90,r=26;const pts=Array.from({length:6},(_,i)=>{const a=(Math.PI/3)*i-Math.PI/6;return [(cx+r*Math.cos(a)).toFixed(1),(cy+r*Math.sin(a)).toFixed(1)];});return `<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${G}" stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="${(r*0.55).toFixed(1)}" fill="none" stroke="${G}" stroke-width="1.5" stroke-dasharray="3,2"/>`;})()}
+        ${bond(115,72,142,55,Am)} ${atom(145,52,'Cl',Am,'transparent',13,700)}
+        ${curlyArrow(90,64,90,46,104,38,B)}
+        ${atom(120,34,'H',Gry,'transparent',11,400)} ${atom(142,27,'+H⁺',Gry,'transparent',10,400)}
+        <text x="90" y="145" font-size="10" fill="${G}" text-anchor="middle">deprotonation restores aromaticity</text>
+        <text x="90" y="159" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">chlorobenzene ✓</text>`,
+    },
+    // ── ALCOHOL OXIDATION ────────────────────────────────
+    alcohol_oxidation: {
+      1: ()=>`
+        ${bond(25,95,70,95,'#111')} ${bond(70,95,110,70,'#111')}
+        ${atom(70,95,'',Gry,'transparent',10,400)}
+        ${bond(108,68,125,50,B)} ${atom(128,47,'OH',B,'transparent',12,700)}
+        ${lonePair(128,47,180,B)}
+        ${atom(30,95,'R',Gry,'transparent',11,400)} ${atom(68,95,'CH₂',Gry,'transparent',10,400)}
+        <rect x="170" y="62" width="55" height="24" rx="10" fill="${Gbg}" stroke="${G}" stroke-width="1.5"/>
+        ${atom(197,74,'MnO₄⁻',G,'transparent',11,600)}
+        ${curlyArrow(128,50,155,45,172,68,R)}
+        <text x="120" y="145" font-size="10" fill="${Gry}" text-anchor="middle">lone pair of O attacks Mn</text>
+        <text x="120" y="159" font-size="10" fill="${G}" text-anchor="middle">forming manganate ester</text>`,
+      2: ()=>`
+        ${bond(25,90,65,90,'#111')}
+        ${atom(30,90,'R',Gry,'transparent',11,400)}
+        ${bond(65,90,90,68,'#111')} ${bond(90,68,110,50,G,true)} ${atom(113,47,'O—Mn',G,'transparent',11,500)}
+        <text x="70" y="90" font-size="9" fill="${Gry}">C</text>
+        <text x="75" y="68" font-size="9" fill="${Gry}">H</text>
+        ${curlyArrow(80,72,80,60,90,52,R)}
+        <text x="120" y="145" font-size="10" fill="${Gry}" text-anchor="middle">α C—H bond breaks</text>
+        <text x="120" y="159" font-size="10" fill="${R}" text-anchor="middle">rate-limiting step (KIE observed)</text>`,
+      3: ()=>`
+        ${bond(25,90,65,90,'#111')} ${atom(30,90,'R',Gry,'transparent',11,400)}
+        ${bond(63,88,90,72,'#111')} ${bond(67,88,90,76,'#111')}
+        ${atom(93,72,'O',R,'transparent',12,700)}
+        ${bond(65,90,65,110,R)} ${atom(65,114,'R',Gry,'transparent',10,400)}
+        <text x="60" y="68" font-size="9" fill="${Gry}">C=O</text>
+        <text x="120" y="145" font-size="10" fill="${G}" text-anchor="middle">carboxylic acid formed (1°)</text>
+        <text x="120" y="159" font-size="10" fill="${Gry}" text-anchor="middle">ketone if secondary alcohol</text>`,
+    },
+    // ── ALKYNE HYDROGENATION ─────────────────────────────
+    alkyne_hydrog: {
+      1: ()=>`
+        ${bond(30,95,70,95,'#111')}
+        ${bond(70,92,110,92,'#111')} ${bond(70,95,110,95,'#111')} ${bond(70,98,110,98,'#111')}
+        ${bond(110,95,150,95,'#111')}
+        <text x="90" y="75" font-size="10" fill="${Gry}" text-anchor="middle">C≡C  triple bond</text>
+        <rect x="10" y="115" width="270" height="24" rx="6" fill="${Gbg}" stroke="${G}" stroke-width="1.5"/>
+        <text x="145" y="131" font-size="10" fill="${G}" text-anchor="middle" font-weight="600">Pd/C, Ni, or Lindlar catalyst</text>`,
+      2: ()=>`
+        ${bond(30,90,70,90,'#111')}
+        ${bond(70,88,110,88,'#111')} ${bond(70,92,110,92,'#111')}
+        ${bond(110,90,150,90,'#111')}
+        <circle cx="80" cy="68" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(80,68,'H',B,'transparent',10,600)}
+        <circle cx="102" cy="68" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(102,68,'H',B,'transparent',10,600)}
+        ${bond(80,75,82,88,B)} ${bond(102,75,100,88,B)}
+        <text x="90" y="145" font-size="10" fill="${B}" text-anchor="middle">Lindlar: both H same face</text>
+        <text x="90" y="159" font-size="11" fill="${G}" text-anchor="middle" font-weight="600">cis-alkene ✓</text>`,
+      3: ()=>`
+        ${bond(30,88,60,72,'#111')} ${bond(60,72,90,88,'#111')} ${bond(90,88,120,72,'#111')} ${bond(120,72,150,88,'#111')}
+        <circle cx="60" cy="55" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(60,55,'H',B,'transparent',10,600)}
+        ${bond(60,62,62,72,B)}
+        <circle cx="120" cy="55" r="7" fill="${Bbg}" stroke="${B}" stroke-width="1.5"/>
+        ${atom(120,55,'H',B,'transparent',10,600)}
+        ${bond(120,62,118,72,B)}
+        <text x="90" y="148" font-size="10" fill="${G}" text-anchor="middle">fully saturated → alkane</text>`,
+    },
+  };
+
+  const rxnSteps = svgs[rxnId];
+  if (!rxnSteps || !rxnSteps[stepN]) return null;
+  return rxnSteps[stepN]();
+}
+
+// Extra explanatory details for each step
+function getMechStepExtras(rxnId, stepN) {
+  const extras = {
+    bromination: ['Bromine is polarised by the alkene π electrons approaching. The more electron-dense end (Brδ⁻) is repelled, making Brδ⁺ the electrophile.','The cyclic bromonium ion prevents rotation and locks the geometry, ensuring anti selectivity.','Backside (SN2-like) attack of Br⁻ from opposite face guarantees anti (trans) vicinal dibromide.'],
+    hydrogenation: ['Both H₂ and alkene adsorb to the catalyst surface. H–H bond weakens via electron donation to metal d-orbitals.','First hydrogen migrates to one carbon — creating a chiral σ-complex still bound to the surface.','Second H delivers from same face. Syn selectivity is a direct consequence of surface-bound mechanism.'],
+    hydrobromin: ['The π electrons attack H (not Br) because H is the less electronegative end. Bond breaking is heterolytic.','Tertiary > secondary > primary carbocation stability: hyperconjugation from neighbouring C–H bonds.','Br⁻ is a good nucleophile in polar solvents. Attack is fast and not stereospecific for open-chain systems.'],
+    hydrochlorin: ['Similar to HBr addition but Cl⁻ is a slightly weaker nucleophile. Same Markovnikov selectivity applies.','2° or 3° carbocation forms on the more substituted carbon (Markovnikov).','Chloride attacks carbocation; no stereoselectivity for open chains.'],
+    hydration: ['Concentrated H₂SO₄ at 70°C provides H₃O⁺. The proton adds to the less substituted carbon (Markovnikov).','The more substituted carbocation is stabilised by hyperconjugation and inductive electron donation.','Water is a nucleophile via lone pairs on O. Deprotonation by HSO₄⁻ regenerates catalyst.'],
+    dihydroxylation: ['MnO₄⁻ reacts in a concerted pericyclic [3+2] mechanism — no intermediate, so no chance for isomerisation.','The 5-membered cyclic ester constrains both oxygens to the same face — syn addition is geometrically locked in.','Hydrolysis releases the syn diol and Mn(V) species, which disproportionates to MnO₂ (brown ppt) and MnO₄⁻.'],
+    nitration: ['The nitronium ion NO₂⁺ is generated in situ. It is linear, electron-poor, and a powerful electrophile.','The arenium (Wheland) σ-complex is sp³ at one carbon. Aromaticity is temporarily lost.','Deprotonation is thermodynamically driven by recovery of aromatic stabilisation energy (~150 kJ/mol).'],
+    fc_chlorination: ['AlCl₃ acts as a Lewis acid: empty orbital on Al coordinates with Cl lone pair, weakening Cl–Cl.','The arenium ion forms analogously to nitration. EAS mechanism is general.','AlCl₄⁻ (formed in step 1) acts as base to remove H⁺. AlCl₃ is regenerated — catalytic.'],
+    alcohol_oxidation: ['Permanganate ester forms via O–H lone pair donation to Mn. This is rapid and reversible.','The C–H bond α to oxygen breaks in the rate-limiting step. Deuterium labelling confirms this (kH/kD ≈ 6).','Primary alcohols proceed through an aldehyde intermediate to carboxylic acid. Secondary alcohols stop at ketone (no α-H).'],
+    alkyne_hydrog: ['The triple bond is more reactive than a double bond toward hydrogenation because of the cylindrical π system.','Lindlar catalyst (Pd/CaCO₃, Pb(OAc)₂ poison) stops reduction at cis-alkene. Quinoline also used as modifier.','Na in liquid NH₃ (Birch) gives trans-alkene via vinyl radical then vinyl anion; protonation from anti face.'],
+  };
+  const arr = extras[rxnId];
+  return arr && arr[stepN-1] ? arr[stepN-1] : '';
+}
+
+let overlayStep = 0; // current step index in overlay
+
+function openMechOverlay() {
+  if (!state.reaction) return;
+  overlayStep = 0;
+  renderOverlay();
+  document.getElementById('mech-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderOverlay() {
+  const rxn = state.reaction;
+  const steps = rxn.mechanism();
+
+  document.getElementById('overlay-title').textContent = rxn.type + ' — Full Mechanism';
+  document.getElementById('overlay-subtitle').textContent = state.starterMol.name + ' + ' + state.reagent + ' → ' + state.product.name;
+
+  // Overview bar
+  document.getElementById('overlay-overview').innerHTML = `
+    <span class="mech-overview-mol">${state.starterMol.formula}</span>
+    <span class="mech-overview-arrow">+</span>
+    <span class="mech-overview-reagent">${state.reagent}</span>
+    <span class="mech-overview-arrow">⟶</span>
+    <span class="mech-overview-mol" style="color:var(--green)">${state.product.formula}</span>
+    <span class="tag ${rxn.typeTag}" style="margin-left:8px">${rxn.type}</span>
+    <span style="margin-left:auto;font-size:11px;color:var(--text3)">${rxn.conditions}</span>`;
+
+  // Stepper tabs
+  const stepper = document.getElementById('overlay-stepper');
+  stepper.innerHTML = steps.map((s, i) => {
+    const titleMatch = s.text.match(/<strong>(.*?)<\/strong>/);
+    const title = titleMatch ? titleMatch[1] : 'Step ' + s.n;
+    return `<div class="mech-step-btn ${i===overlayStep?'active':''}" onclick="jumpOverlay(${i})">
+      <div class="mech-step-btn-num">${s.n}</div>
+      <div class="mech-step-btn-label" title="${title}">${title}</div>
+    </div>${i<steps.length-1?'<div class="mech-stepper-line"></div>':''}`;
+  }).join('');
+
+  // Current step
+  renderOverlayStep(rxn, steps, overlayStep);
+
+  // Nav
+  const prev = document.getElementById('overlay-prev');
+  const next = document.getElementById('overlay-next');
+  const counter = document.getElementById('overlay-counter');
+  prev.disabled = overlayStep === 0;
+  next.disabled = overlayStep === steps.length - 1;
+  next.textContent = overlayStep === steps.length - 1 ? '✓ Done' : 'Next →';
+  counter.textContent = `${overlayStep + 1} / ${steps.length}`;
+}
+
+function renderOverlayStep(rxn, steps, idx) {
+  const s = steps[idx];
+  const svgContent = getFullMechSVG(rxn.id, s.n);
+  const extra = getMechStepExtras(rxn.id, s.n);
+  const titleMatch = s.text.match(/<strong>(.*?)<\/strong>/);
+  const title = titleMatch ? titleMatch[1] : 'Step ' + s.n;
+  const desc = s.text.replace(/<strong>.*?<\/strong>\s*—\s*/, '').replace(/<strong>.*?<\/strong>/, '');
+
+  // Note color based on content
+  let noteClass = 'note-blue';
+  if (desc.toLowerCase().includes('anti') || desc.toLowerCase().includes('leaving')) noteClass = 'note-amber';
+  if (title.toLowerCase().includes('product') || desc.toLowerCase().includes('restores') || desc.toLowerCase().includes('✓')) noteClass = 'note-green';
+  if (desc.toLowerCase().includes('carbocation') || desc.toLowerCase().includes('rate-limit')) noteClass = 'note-red';
+
+  document.getElementById('overlay-diagram').innerHTML = svgContent
+    ? `<svg width="320" height="210" viewBox="0 0 290 190" style="display:block;max-width:100%">${svgContent}</svg>`
+    : `<div style="font-size:13px;color:var(--text3);text-align:center;padding:40px">No diagram for this step</div>`;
+
+  document.getElementById('overlay-detail').innerHTML = `
+    <div class="mech-step-detail-num">Step ${s.n} of ${steps.length}</div>
+    <div class="mech-step-detail-title">${title}</div>
+    <div class="mech-step-detail-desc">${desc}</div>
+    ${extra ? `<div class="mech-step-detail-note ${noteClass}">${extra}</div>` : ''}
+    <div class="mech-step-tags">
+      <span class="tag ${rxn.typeTag}">${rxn.type}</span>
+      <span class="tag tag-gray">ΔH ${rxn.deltaH > 0 ? '+' : ''}${rxn.deltaH} kJ/mol</span>
+      <span class="tag ${rxn.energy==='exothermic'?'tag-green':'tag-red'}">${rxn.energy}</span>
+    </div>`;
+}
+
+function overlayNav(dir) {
+  if (!state.reaction) return;
+  const steps = state.reaction.mechanism();
+  overlayStep = Math.max(0, Math.min(steps.length - 1, overlayStep + dir));
+  renderOverlay();
+}
+
+function jumpOverlay(idx) {
+  overlayStep = idx;
+  renderOverlay();
+}
+
+function closeMechOverlay(e) {
+  if (e && e.target !== document.getElementById('mech-overlay')) return;
+  document.getElementById('mech-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ══════════════════════════════
 function updateBadges() {
   const b1 = document.getElementById('badge-starter');
   const b2 = document.getElementById('badge-reagent');
@@ -1720,6 +2519,7 @@ renderMolList();
 renderReagentChips();
 updateStage();
 renderHistory();
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeMechOverlay(null); });
 </script>
 </body>
 </html>
