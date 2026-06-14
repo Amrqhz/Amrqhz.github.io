@@ -1,0 +1,2130 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SynthLab Academy — Organic Chemistry Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #f8f7f4;
+  --bg2:       #f0ede8;
+  --bg3:       #e4e0d8;
+  --surface:   #ffffff;
+  --border:    #ddd9d0;
+  --border2:   #c8c3b8;
+  --text:      #18160f;
+  --text2:     #5a5549;
+  --text3:     #9a9488;
+  --accent:    #2a5c45;
+  --accent2:   #e8f2ed;
+  --accent3:   #c5dfd0;
+  --red:       #b83030;
+  --red-bg:    #fdf0ee;
+  --amber:     #8a5a00;
+  --amber-bg:  #fdf5e0;
+  --blue:      #1a4f8a;
+  --blue-bg:   #e8f1fb;
+  --purple:    #5a2a8a;
+  --purple-bg: #f3edfb;
+  --mono:      'JetBrains Mono', monospace;
+  --sans:      'Inter', sans-serif;
+  --serif:     'Fraunces', serif;
+  --r:         8px;
+  --r-lg:      14px;
+  --sidebar-w: 260px;
+  --topbar-h:  52px;
+}
+[data-theme="dark"] {
+  --bg:        #0f0e0c;
+  --bg2:       #181610;
+  --bg3:       #222018;
+  --surface:   #141210;
+  --border:    #2a2820;
+  --border2:   #3a3828;
+  --text:      #f0ece4;
+  --text2:     #a09a8e;
+  --text3:     #605a50;
+  --accent:    #5aaa82;
+  --accent2:   #0d2a1c;
+  --accent3:   #1a4030;
+  --red:       #e07060;
+  --red-bg:    #2a1010;
+  --amber:     #e0a840;
+  --amber-bg:  #2a1e08;
+  --blue:      #70aaee;
+  --blue-bg:   #0d1e30;
+  --purple:    #b090e0;
+  --purple-bg: #1e1030;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s}
+
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--topbar-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px 0 16px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  z-index:200;
+}
+.logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 600; letter-spacing: -0.3px;
+}
+.logo-dot {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--text);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-dot svg { fill: var(--bg); width: 16px; height: 16px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+.logo-sub{font-size:11px;font-weight:400;color:var(--text3);padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:var(--bg2)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.search-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;
+  border:1px solid var(--border);border-radius:20px;
+  background:var(--bg2);
+  width:240px;cursor:text;
+}
+.search-bar input{
+  border:none;background:none;outline:none;
+  font-family:var(--sans);font-size:13px;color:var(--text);width:100%;
+}
+.search-bar input::placeholder{color:var(--text3)}
+.search-icon{color:var(--text3);font-size:13px;flex-shrink:0}
+.kbd{
+  font-family:var(--mono);font-size:10px;
+  padding:1px 5px;border-radius:3px;
+  border:1px solid var(--border2);
+  background:var(--bg3);color:var(--text3);
+}
+.btn-icon{
+  width:32px;height:32px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:background .12s;
+}
+.btn-icon:hover{background:var(--bg2);color:var(--text)}
+.progress-badge{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;color:var(--text3);
+  padding:4px 10px;border-radius:20px;
+  border:1px solid var(--border);background:var(--bg2);
+}
+.progress-fill{
+  width:60px;height:4px;border-radius:2px;background:var(--bg3);overflow:hidden;
+}
+.progress-fill-inner{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.layout{display:flex;padding-top:var(--topbar-h);min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  position:fixed;top:var(--topbar-h);left:0;bottom:0;
+  overflow-y:auto;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  padding:12px 0 40px;
+}
+.sidebar-section{margin-bottom:2px}
+.sidebar-section-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text3);
+  padding:10px 16px 4px;
+}
+.sidebar-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 16px;font-size:13px;font-weight:400;
+  color:var(--text2);cursor:pointer;
+  border-left:2px solid transparent;
+  transition:background .1s,color .1s,border-color .1s;
+  text-decoration:none;
+}
+.sidebar-item:hover{background:var(--bg2);color:var(--text)}
+.sidebar-item.active{
+  background:var(--accent2);color:var(--accent);
+  border-left-color:var(--accent);font-weight:500;
+}
+.sidebar-item .item-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sidebar-item .item-badge{
+  margin-left:auto;font-size:9px;font-weight:700;
+  padding:1px 6px;border-radius:10px;
+  background:var(--accent3);color:var(--accent);
+}
+.sidebar-sub{padding-left:8px}
+.sidebar-sub .sidebar-item{font-size:12px;padding:5px 16px 5px 24px}
+.sidebar-item .check{
+  width:14px;height:14px;border-radius:50%;
+  border:1.5px solid var(--border2);margin-left:auto;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;transition:background .2s;flex-shrink:0;
+}
+.sidebar-item.done .check{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── CONTENT ── */
+.content{
+  margin-left:var(--sidebar-w);
+  flex:1;min-width:0;
+  padding:0 0 80px;
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT SECTIONS
+═══════════════════════════════════════════ */
+.section{
+  padding:52px 56px;
+  border-bottom:1px solid var(--border);
+  max-width:900px;
+}
+.section:last-child{border-bottom:none}
+
+/* section header */
+.section-eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:10px;display:flex;align-items:center;gap:8px;
+}
+.section-eyebrow::after{content:'';flex:1;height:1px;background:var(--accent3)}
+.section-title{
+  font-family:var(--serif);font-size:34px;font-weight:600;
+  line-height:1.2;letter-spacing:-.5px;
+  color:var(--text);margin-bottom:14px;
+}
+.section-lead{font-size:16px;color:var(--text2);line-height:1.8;max-width:680px}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY IN CONTENT
+═══════════════════════════════════════════ */
+.prose{font-size:14px;color:var(--text2);line-height:1.85;max-width:680px}
+.prose p{margin-bottom:14px}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--text);font-weight:600}
+.prose em{font-style:italic;color:var(--text)}
+.prose code{
+  font-family:var(--mono);font-size:12px;
+  padding:1px 6px;border-radius:4px;
+  background:var(--bg3);color:var(--text);
+}
+h3.subsection{
+  font-size:16px;font-weight:600;color:var(--text);
+  margin:32px 0 10px;padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+h4.subhead{font-size:13px;font-weight:600;color:var(--text);margin:20px 0 8px}
+
+/* ═══════════════════════════════════════════
+   TAGS & BADGES
+═══════════════════════════════════════════ */
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.04em}
+.tag-green{background:var(--accent2);color:var(--accent)}
+.tag-red{background:var(--red-bg);color:var(--red)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-gray{background:var(--bg3);color:var(--text2)}
+
+/* ═══════════════════════════════════════════
+   CARDS GRID
+═══════════════════════════════════════════ */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:24px}
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:20px;
+  cursor:pointer;transition:border-color .15s,box-shadow .15s;
+  text-decoration:none;color:inherit;
+}
+.card:hover{border-color:var(--accent3);box-shadow:0 4px 18px rgba(42,92,69,.08)}
+.card-icon{font-size:26px;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px}
+.card-desc{font-size:12px;color:var(--text3);line-height:1.6}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+
+/* ═══════════════════════════════════════════
+   REACTION MECHANISM CARDS
+═══════════════════════════════════════════ */
+.rxn-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);margin-bottom:24px;
+  overflow:hidden;
+}
+.rxn-card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:var(--bg2);
+  border-bottom:1px solid var(--border);
+}
+.rxn-card-title{font-size:14px;font-weight:600;color:var(--text)}
+.rxn-card-tags{display:flex;gap:6px;align-items:center}
+.rxn-card-body{padding:20px}
+.rxn-card-equation{
+  font-family:var(--mono);font-size:13px;
+  padding:12px 16px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.rxn-reagent{color:var(--amber);font-weight:600}
+.rxn-product{color:var(--accent);font-weight:600}
+.rxn-arrow-txt{color:var(--text3);font-size:16px}
+
+/* mechanism steps */
+.mech-steps{display:flex;flex-direction:column;gap:0;margin:16px 0}
+.mech-step-row{
+  display:grid;grid-template-columns:28px 1fr 180px;
+  gap:14px;padding:14px 0;
+  border-bottom:1px solid var(--border);align-items:start;
+}
+.mech-step-row:last-child{border-bottom:none}
+.mech-num{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--bg3);border:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--text2);flex-shrink:0;
+}
+.mech-text{font-size:13px;color:var(--text2);line-height:1.65}
+.mech-text strong{color:var(--text);font-weight:600}
+.mech-diagram{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  min-height:90px;padding:8px;
+}
+
+/* thermodynamics bar */
+.thermo-row{
+  display:flex;align-items:center;gap:16px;
+  padding:12px 16px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  font-size:12px;color:var(--text2);flex-wrap:wrap;
+  margin-top:14px;
+}
+.thermo-bar{
+  flex:1;min-width:100px;height:5px;border-radius:3px;
+  background:var(--bg3);overflow:hidden;
+}
+.thermo-fill{height:100%;border-radius:3px;background:var(--accent)}
+.thermo-fill.endo{background:var(--red)}
+
+/* ═══════════════════════════════════════════
+   SVG MOLECULE DIAGRAMS
+═══════════════════════════════════════════ */
+.mol-svg-wrap{
+  display:flex;align-items:center;justify-content:center;
+  padding:16px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-lg);margin:16px 0;
+}
+.mol-legend{
+  display:flex;gap:14px;flex-wrap:wrap;
+  font-size:11px;color:var(--text3);margin-top:8px;
+  padding:8px 14px;border-radius:6px;background:var(--bg2);
+}
+.mol-legend span{display:flex;align-items:center;gap:4px}
+.mol-legend .dot{width:8px;height:8px;border-radius:50%}
+
+/* ═══════════════════════════════════════════
+   FUNCTIONAL GROUP TABLE
+═══════════════════════════════════════════ */
+.fg-table{
+  width:100%;border-collapse:collapse;font-size:13px;
+  margin:16px 0;border-radius:var(--r);overflow:hidden;
+}
+.fg-table th{
+  text-align:left;padding:10px 14px;
+  background:var(--bg2);color:var(--text2);
+  font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  border-bottom:2px solid var(--border);
+}
+.fg-table td{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  vertical-align:top;color:var(--text2);line-height:1.5;
+}
+.fg-table tr:last-child td{border-bottom:none}
+.fg-table tr:hover td{background:var(--bg2)}
+.fg-table .mono{font-family:var(--mono);font-size:12px;color:var(--text)}
+
+/* ═══════════════════════════════════════════
+   CALLOUT BOXES
+═══════════════════════════════════════════ */
+.callout{
+  padding:14px 18px;border-radius:var(--r);
+  border-left:3px solid;margin:16px 0;
+  font-size:13px;line-height:1.7;color:var(--text2);
+}
+.callout strong{color:var(--text);font-weight:600}
+.callout.info{border-color:var(--blue);background:var(--blue-bg)}
+.callout.tip{border-color:var(--accent);background:var(--accent2)}
+.callout.warn{border-color:var(--amber);background:var(--amber-bg)}
+.callout.rule{border-color:var(--purple);background:var(--purple-bg)}
+
+/* ═══════════════════════════════════════════
+   QUIZ
+═══════════════════════════════════════════ */
+.quiz-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:22px;margin:20px 0;
+}
+.quiz-q{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.5}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-opt{
+  padding:10px 14px;border-radius:8px;
+  border:1.5px solid var(--border);background:var(--bg);
+  font-size:13px;color:var(--text2);cursor:pointer;
+  transition:border-color .12s,background .12s;
+  display:flex;align-items:center;gap:10px;
+  text-align:left;width:100%;
+}
+.quiz-opt:hover{border-color:var(--accent3);background:var(--accent2)}
+.quiz-opt.correct{border-color:var(--accent);background:var(--accent2);color:var(--accent)}
+.quiz-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.quiz-opt-letter{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--text3);flex-shrink:0;
+}
+.quiz-explain{
+  margin-top:14px;padding:12px 14px;border-radius:8px;
+  background:var(--accent2);border:1px solid var(--accent3);
+  font-size:13px;color:var(--text2);line-height:1.6;
+  display:none;
+}
+.quiz-explain.show{display:block}
+.quiz-result{
+  display:flex;align-items:center;gap:8px;
+  margin-top:14px;font-size:13px;font-weight:600;
+}
+
+/* ═══════════════════════════════════════════
+   HERO / INTRO
+═══════════════════════════════════════════ */
+.hero{
+  padding:60px 56px 52px;
+  background:linear-gradient(135deg, var(--accent2) 0%, var(--surface) 60%);
+  border-bottom:1px solid var(--border);
+}
+.hero-eyebrow{
+  font-size:11px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:16px;
+}
+.hero-title{
+  font-family:var(--serif);font-size:48px;font-weight:600;
+  line-height:1.1;letter-spacing:-1px;color:var(--text);
+  max-width:640px;margin-bottom:20px;
+}
+.hero-sub{font-size:16px;color:var(--text2);line-height:1.75;max-width:580px;margin-bottom:28px}
+.hero-stats{display:flex;gap:32px;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;gap:3px}
+.stat-n{
+  font-family:var(--mono);font-size:28px;font-weight:600;
+  color:var(--accent);letter-spacing:-1px;
+}
+.stat-l{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+
+/* ═══════════════════════════════════════════
+   SEARCH MODAL
+═══════════════════════════════════════════ */
+.search-modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:15vh;opacity:0;pointer-events:none;transition:opacity .15s;
+}
+.search-modal-bg.open{opacity:1;pointer-events:all}
+.search-modal{
+  width:min(92vw,580px);background:var(--surface);
+  border-radius:16px;border:1px solid var(--border2);
+  box-shadow:0 24px 64px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+.search-modal-input-row{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+}
+.search-modal-input-row input{
+  flex:1;font-family:var(--sans);font-size:15px;
+  color:var(--text);background:none;border:none;outline:none;
+}
+.search-results{max-height:360px;overflow-y:auto}
+.search-result-item{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 18px;cursor:pointer;
+  border-bottom:1px solid var(--border);
+  transition:background .1s;
+}
+.search-result-item:hover{background:var(--bg2)}
+.search-result-item:last-child{border-bottom:none}
+.search-result-type{
+  font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:4px;flex-shrink:0;
+}
+.search-result-name{font-size:13px;font-weight:500;color:var(--text)}
+.search-result-path{font-size:11px;color:var(--text3)}
+
+/* ═══════════════════════════════════════════
+   MARK AS DONE BUTTON
+═══════════════════════════════════════════ */
+.done-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:8px;
+  border:1.5px solid var(--border2);
+  background:var(--surface);color:var(--text2);
+  font-family:var(--sans);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s;margin-top:28px;
+}
+.done-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent2)}
+.done-btn.done{border-color:var(--accent);background:var(--accent);color:#fff}
+
+/* ═══════════════════════════════════════════
+   BREADCRUMB
+═══════════════════════════════════════════ */
+.breadcrumb{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--text3);
+  padding:12px 56px;border-bottom:1px solid var(--border);
+  position:sticky;top:var(--topbar-h);background:var(--surface);z-index:10;
+}
+.breadcrumb a{color:var(--text3);text-decoration:none}
+.breadcrumb a:hover{color:var(--accent)}
+.breadcrumb .sep{color:var(--border2)}
+
+/* ═══════════════════════════════════════════
+   STEP-BY-STEP MECHANISM VIEWER
+═══════════════════════════════════════════ */
+.mech-viewer{
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;margin:20px 0;
+}
+.mech-viewer-tabs{
+  display:flex;overflow-x:auto;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+}
+.mech-tab{
+  padding:10px 18px;font-size:12px;font-weight:500;
+  color:var(--text3);cursor:pointer;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:all .12s;
+}
+.mech-tab:hover{color:var(--text);background:var(--bg3)}
+.mech-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--surface)}
+.mech-viewer-body{
+  display:grid;grid-template-columns:1fr 1fr;
+  min-height:260px;
+}
+@media(max-width:700px){.mech-viewer-body{grid-template-columns:1fr}}
+.mech-viewer-diagram{
+  background:var(--bg);border-right:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+.mech-viewer-text{
+  padding:24px;display:flex;flex-direction:column;gap:10px;
+}
+.mech-viewer-stepnum{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.mech-viewer-steptitle{font-size:16px;font-weight:600;color:var(--text)}
+.mech-viewer-stepdesc{font-size:13px;color:var(--text2);line-height:1.7}
+.mech-viewer-stepdesc strong{color:var(--text)}
+.mech-viewer-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 20px;border-top:1px solid var(--border);background:var(--bg2);
+}
+.mech-btn{
+  padding:6px 14px;border-radius:6px;
+  border:1px solid var(--border);background:var(--surface);
+  font-family:var(--sans);font-size:12px;font-weight:500;
+  color:var(--text2);cursor:pointer;transition:all .12s;
+}
+.mech-btn:hover:not(:disabled){background:var(--bg3);color:var(--text)}
+.mech-btn:disabled{opacity:.3;cursor:default}
+.mech-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.mech-btn.primary:hover{opacity:.88}
+
+/* ═══════════════════════════════════════════
+   REACTION OVERVIEW STRIP
+═══════════════════════════════════════════ */
+.rxn-strip{
+  display:flex;align-items:center;justify-content:center;
+  gap:16px;padding:20px;flex-wrap:wrap;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r-lg);margin:16px 0;
+}
+.rxn-strip-mol{
+  text-align:center;
+}
+.rxn-strip-mol .formula{
+  font-family:var(--mono);font-size:15px;font-weight:600;color:var(--text);
+}
+.rxn-strip-mol .name{font-size:10px;color:var(--text3);margin-top:2px}
+.rxn-strip-arrow{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  min-width:80px;
+}
+.rxn-strip-arrow .reagent-lbl{
+  font-family:var(--mono);font-size:11px;color:var(--amber);font-weight:600;
+}
+.rxn-strip-arrow .cond-lbl{font-size:9px;color:var(--text3)}
+.rxn-strip-line{
+  width:70px;height:2px;background:var(--border2);border-radius:2px;
+  position:relative;
+}
+.rxn-strip-line::after{
+  content:'';position:absolute;right:-1px;top:-4px;
+  border-top:5px solid transparent;border-bottom:5px solid transparent;
+  border-left:8px solid var(--border2);
+}
+.rxn-strip-mol.product .formula{color:var(--accent)}
+
+/* ═══════════════════════════════════════════
+   NAMED REACTION ENTRY
+═══════════════════════════════════════════ */
+.named-rxn{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:22px;margin-bottom:18px;
+}
+.named-rxn-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:12px;gap:12px;
+}
+.named-rxn-title{font-size:16px;font-weight:600;color:var(--text)}
+.named-rxn-year{font-size:11px;color:var(--text3);font-family:var(--mono);padding:2px 8px;border-radius:4px;background:var(--bg3);flex-shrink:0}
+.named-rxn-desc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px}
+.named-rxn-example{
+  font-family:var(--mono);font-size:12px;
+  padding:10px 14px;border-radius:6px;
+  background:var(--bg2);border:1px solid var(--border);
+  color:var(--text2);
+}
+
+/* ═══════════════════════════════════════════
+   ELECTRON FLOW ARROWS (custom SVG)
+═══════════════════════════════════════════ */
+.ef-demo{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:24px;margin:16px 0;
+  display:flex;align-items:center;justify-content:center;
+  min-height:140px;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:860px){
+  :root{--sidebar-w:0px}
+  .sidebar{display:none}
+  .section{padding:36px 24px}
+  .hero{padding:40px 24px}
+  .breadcrumb{padding:10px 24px}
+}
+
+/* ═══════════════════════════════════════════
+   MISC
+═══════════════════════════════════════════ */
+.divider{height:1px;background:var(--border);margin:24px 0}
+.spacer{height:20px}
+.anchor-link{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;color:var(--blue);text-decoration:none;
+  padding:3px 0;border-bottom:1px solid transparent;
+  transition:border-color .1s;
+}
+.anchor-link:hover{border-bottom-color:var(--blue)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+.mono-formula{font-family:var(--mono);font-weight:500;color:var(--text)}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     TOPBAR
+═══════════════════════════════════════ -->
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="logo">
+      <div class="logo-dot">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/>
+          <circle cx="12" cy="17" r="3"/>
+          <line x1="7" y1="7" x2="17" y2="7" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <line x1="7" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <line x1="17" y1="7" x2="12" y2="17" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        </svg>
+      </div>
+      SynthLab
+    </div>
+    <a href="./synth-lab.html" style="text-decoration: none;"><span class="logo-sub">back to the home </span></a>    
+  </div>
+  <div class="topbar-right">
+    <div class="search-bar" onclick="openSearch()">
+      <span class="search-icon">⌕</span>
+      <input id="topbar-search" placeholder="Search reactions, mechanisms…" readonly onclick="openSearch()" style="cursor:pointer"/>
+      <kbd class="kbd">⌘K</kbd>
+    </div>
+    <div class="progress-badge">
+      <span id="progress-label">0%</span>
+      <div class="progress-fill"><div class="progress-fill-inner" id="progress-inner" style="width:0%"></div></div>
+      <span id="progress-count" style="font-size:10px">0/24</span>
+    </div>
+    <button class="btn-icon" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">◑</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════
+     SEARCH MODAL
+═══════════════════════════════════════ -->
+<div class="search-modal-bg" id="search-modal" onclick="closeSearch(event)">
+  <div class="search-modal" onclick="event.stopPropagation()">
+    <div class="search-modal-input-row">
+      <span style="color:var(--text3);font-size:16px">⌕</span>
+      <input id="search-input" placeholder="Search reactions, functional groups, mechanisms…" oninput="doSearch(this.value)" autofocus/>
+      <button onclick="closeSearch(null)" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px">✕</button>
+    </div>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     LAYOUT
+═══════════════════════════════════════ -->
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Getting Started</div>
+    <a class="sidebar-item active" href="#intro" onclick="nav(this,'intro')">
+      <span class="item-icon">🏠</span> Introduction
+    </a>
+    <a class="sidebar-item" href="#electron-flow" onclick="nav(this,'electron-flow')">
+      <span class="item-icon">⚡</span> Electron Flow
+      <span class="check" id="chk-electron-flow"></span>
+    </a>
+    <a class="sidebar-item" href="#acids-bases" onclick="nav(this,'acids-bases')">
+      <span class="item-icon">⚖️</span> Acids &amp; Bases
+      <span class="check" id="chk-acids-bases"></span>
+    </a>
+    <a class="sidebar-item" href="#resonance" onclick="nav(this,'resonance')">
+      <span class="item-icon">🔄</span> Resonance
+      <span class="check" id="chk-resonance"></span>
+    </a>
+    <a class="sidebar-item" href="#stability" onclick="nav(this,'stability')">
+      <span class="item-icon">📊</span> Stability &amp; Energy
+      <span class="check" id="chk-stability"></span>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Functional Groups</div>
+    <a class="sidebar-item" href="#alkanes" onclick="nav(this,'alkanes')">
+      <span class="item-icon">〰️</span> Alkanes
+      <span class="check" id="chk-alkanes"></span>
+    </a>
+    <a class="sidebar-item" href="#alkenes" onclick="nav(this,'alkenes')">
+      <span class="item-icon">〽️</span> Alkenes
+      <span class="check" id="chk-alkenes"></span>
+    </a>
+    <a class="sidebar-item" href="#alkynes" onclick="nav(this,'alkynes')">
+      <span class="item-icon">≡</span> Alkynes
+      <span class="check" id="chk-alkynes"></span>
+    </a>
+    <a class="sidebar-item" href="#alcohols" onclick="nav(this,'alcohols')">
+      <span class="item-icon">💧</span> Alcohols
+      <span class="check" id="chk-alcohols"></span>
+    </a>
+    <a class="sidebar-item" href="#ethers" onclick="nav(this,'ethers')">
+      <span class="item-icon">🔗</span> Ethers
+      <span class="check" id="chk-ethers"></span>
+    </a>
+    <a class="sidebar-item" href="#aldehydes" onclick="nav(this,'aldehydes')">
+      <span class="item-icon">⚗️</span> Aldehydes
+      <span class="check" id="chk-aldehydes"></span>
+    </a>
+    <a class="sidebar-item" href="#ketones" onclick="nav(this,'ketones')">
+      <span class="item-icon">🧪</span> Ketones
+      <span class="check" id="chk-ketones"></span>
+    </a>
+    <a class="sidebar-item" href="#carboxylic" onclick="nav(this,'carboxylic')">
+      <span class="item-icon">🔬</span> Carboxylic Acids
+      <span class="check" id="chk-carboxylic"></span>
+    </a>
+    <a class="sidebar-item" href="#esters" onclick="nav(this,'esters')">
+      <span class="item-icon">🫧</span> Esters
+      <span class="check" id="chk-esters"></span>
+    </a>
+    <a class="sidebar-item" href="#amines" onclick="nav(this,'amines')">
+      <span class="item-icon">💠</span> Amines
+      <span class="check" id="chk-amines"></span>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Mechanism Library</div>
+    <a class="sidebar-item" href="#ea" onclick="nav(this,'ea')">
+      <span class="item-icon">➕</span> Electrophilic Addition
+      <span class="check" id="chk-ea"></span>
+    </a>
+    <a class="sidebar-item" href="#sn1" onclick="nav(this,'sn1')">
+      <span class="item-icon">①</span> SN1
+      <span class="check" id="chk-sn1"></span>
+    </a>
+    <a class="sidebar-item" href="#sn2" onclick="nav(this,'sn2')">
+      <span class="item-icon">②</span> SN2
+      <span class="check" id="chk-sn2"></span>
+    </a>
+    <a class="sidebar-item" href="#e1" onclick="nav(this,'e1')">
+      <span class="item-icon">E1</span> E1 Elimination
+      <span class="check" id="chk-e1"></span>
+    </a>
+    <a class="sidebar-item" href="#e2" onclick="nav(this,'e2')">
+      <span class="item-icon">E2</span> E2 Elimination
+      <span class="check" id="chk-e2"></span>
+    </a>
+    <a class="sidebar-item" href="#eas" onclick="nav(this,'eas')">
+      <span class="item-icon">🔴</span> Electrophilic Aromatic Sub.
+      <span class="check" id="chk-eas"></span>
+    </a>
+    <a class="sidebar-item" href="#radical" onclick="nav(this,'radical')">
+      <span class="item-icon">☢️</span> Radical Reactions
+      <span class="check" id="chk-radical"></span>
+    </a>
+    <a class="sidebar-item" href="#nucleophilic-add" onclick="nav(this,'nucleophilic-add')">
+      <span class="item-icon">🧲</span> Nucleophilic Addition
+      <span class="check" id="chk-nucleophilic-add"></span>
+    </a>
+    <a class="sidebar-item" href="#acyl-sub" onclick="nav(this,'acyl-sub')">
+      <span class="item-icon">🔀</span> Acyl Substitution
+      <span class="check" id="chk-acyl-sub"></span>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Named Reactions</div>
+    <a class="sidebar-item" href="#named" onclick="nav(this,'named')">
+      <span class="item-icon">📖</span> All Named Reactions
+      <span class="item-badge">20+</span>
+    </a>
+    <a class="sidebar-item" href="#quiz" onclick="nav(this,'quiz')">
+      <span class="item-icon">📝</span> Quiz Yourself
+    </a>
+  </div>
+</nav>
+
+<!-- ── CONTENT ── -->
+<main class="content">
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero" id="intro">
+  <div class="hero-eyebrow">SynthLab Academy · Organic Chemistry</div>
+  <h1 class="hero-title">Master Reactions &amp; Mechanisms</h1>
+  <p class="hero-sub">A complete reference for organic chemistry — functional groups, reaction types, electron flow, and step-by-step mechanisms with interactive diagrams. Built for students and researchers.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n">9</div><div class="stat-l">Mechanism Types</div></div>
+    <div class="stat"><div class="stat-n">50+</div><div class="stat-l">Reactions Covered</div></div>
+    <div class="stat"><div class="stat-n">20+</div><div class="stat-l">Named Reactions</div></div>
+    <div class="stat"><div class="stat-n">10</div><div class="stat-l">Quiz Sections</div></div>
+  </div>
+</div>
+
+<!-- ═══════ ELECTRON FLOW ═══════ -->
+<div id="electron-flow">
+  <div class="breadcrumb">
+    <a href="#intro">Home</a><span class="sep">/</span>
+    <span>Fundamentals</span><span class="sep">/</span>
+    <span>Electron Flow</span>
+  </div>
+  <div class="section">
+    <div class="section-eyebrow">Fundamentals</div>
+    <h2 class="section-title">Electron Flow &amp; Curved Arrows</h2>
+    <p class="section-lead">All organic reactions are the movement of electrons. Curved arrows are the language used to show where electrons come from and where they go.</p>
+
+    <div class="callout info">
+      <strong>Core principle:</strong> A curved arrow always points <em>from</em> electrons (nucleophile / lone pair / π bond) <em>to</em> where they are going (electrophile / new bond).
+    </div>
+
+    <h3 class="subsection">Full-headed vs. Half-headed Arrows</h3>
+    <div class="two-col">
+      <div class="ef-demo" style="flex-direction:column;gap:8px">
+        <svg width="220" height="110" viewBox="0 0 220 110">
+          <!-- Lone pair -->
+          <circle cx="40" cy="55" r="3" fill="var(--blue)"/>
+          <circle cx="52" cy="55" r="3" fill="var(--blue)"/>
+          <!-- N atom -->
+          <text x="40" y="78" font-size="13" fill="var(--text)" font-weight="600" font-family="'JetBrains Mono',monospace">N</text>
+          <!-- curved arrow -->
+          <path d="M52,55 Q120,20 160,55" fill="none" stroke="var(--red)" stroke-width="2.5" marker-end="url(#arr-full)"/>
+          <!-- electrophile -->
+          <text x="155" y="78" font-size="13" fill="var(--text)" font-weight="600" font-family="'JetBrains Mono',monospace">C⁺</text>
+          <defs>
+            <marker id="arr-full" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L8,3 z" fill="var(--red)"/>
+            </marker>
+          </defs>
+          <text x="110" y="105" font-size="10" fill="var(--text3)" text-anchor="middle" font-family="'Inter',sans-serif">Full arrow = 2 electrons (heterolytic)</text>
+        </svg>
+      </div>
+      <div class="ef-demo" style="flex-direction:column;gap:8px">
+        <svg width="220" height="110" viewBox="0 0 220 110">
+          <!-- radical electron -->
+          <circle cx="48" cy="50" r="3.5" fill="var(--amber)"/>
+          <text x="38" y="75" font-size="13" fill="var(--text)" font-weight="600" font-family="'JetBrains Mono',monospace">C•</text>
+          <!-- half-headed arrow -->
+          <path d="M52,50 Q120,15 160,50" fill="none" stroke="var(--amber)" stroke-width="2.5" marker-end="url(#arr-half)"/>
+          <text x="155" y="75" font-size="13" fill="var(--text)" font-weight="600" font-family="'JetBrains Mono',monospace">Br•</text>
+          <defs>
+            <marker id="arr-half" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,5 z" fill="var(--amber)" stroke="var(--amber)"/>
+            </marker>
+          </defs>
+          <text x="110" y="105" font-size="10" fill="var(--text3)" text-anchor="middle" font-family="'Inter',sans-serif">Fish-hook arrow = 1 electron (homolytic)</text>
+        </svg>
+      </div>
+    </div>
+
+    <h3 class="subsection">Nucleophile → Electrophile Pattern</h3>
+    <div class="prose">
+      <p>Every ionic reaction follows the same logic: an electron-rich species (<strong>nucleophile</strong>) donates electrons to an electron-poor species (<strong>electrophile</strong>). Identify these two partners and you can predict the product.</p>
+      <p><strong>Common nucleophiles:</strong> H₂O, NH₃, OH⁻, CN⁻, Br⁻, I⁻, alkenes (π electrons), carbonyl enolates.</p>
+      <p><strong>Common electrophiles:</strong> H⁺, carbocations (R₃C⁺), Lewis acids (AlCl₃, BF₃), polarised halogens (Br–Br near π bonds), carbonyl carbons (C=O).</p>
+    </div>
+
+    <div class="ef-demo" style="min-height:160px">
+      <svg width="400" height="140" viewBox="0 0 400 140">
+        <defs>
+          <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--red)"/>
+          </marker>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--blue)"/>
+          </marker>
+        </defs>
+        <!-- water molecule acting as nucleophile on a carbonyl -->
+        <!-- C=O -->
+        <line x1="150" y1="75" x2="200" y2="75" stroke="var(--text)" stroke-width="2"/>
+        <line x1="148" y1="71" x2="198" y2="71" stroke="var(--text)" stroke-width="2"/>
+        <text x="137" y="80" font-size="14" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-weight="600">C</text>
+        <text x="202" y="80" font-size="14" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-weight="700">O</text>
+        <text x="220" y="65" font-size="10" fill="var(--red)" font-family="'Inter',sans-serif">δ⁻</text>
+        <text x="133" y="65" font-size="10" fill="var(--blue)" font-family="'Inter',sans-serif">δ⁺</text>
+        <!-- H₂O nucleophile arrow -->
+        <text x="80" y="100" font-size="14" fill="var(--blue)" font-family="'JetBrains Mono',monospace" font-weight="600">:OH₂</text>
+        <path d="M102,85 Q120,60 140,73" fill="none" stroke="var(--red)" stroke-width="2.5" marker-end="url(#arr1)"/>
+        <text x="100" y="120" font-size="10" fill="var(--text3)" font-family="'Inter',sans-serif">nucleophile attacks electrophilic C</text>
+        <!-- leaving from O -->
+        <text x="270" y="80" font-size="14" fill="var(--blue)" font-family="'JetBrains Mono',monospace" font-weight="600">⁻OH</text>
+        <path d="M200,70 Q230,30 265,68" fill="none" stroke="var(--blue)" stroke-width="2.5" marker-end="url(#arr2)"/>
+        <text x="260" y="120" font-size="10" fill="var(--text3)" font-family="'Inter',sans-serif">electrons shift to O (better base)</text>
+      </svg>
+    </div>
+
+    <button class="done-btn" onclick="markDone('electron-flow',this)">
+      <span>✓</span> Mark as complete
+    </button>
+  </div>
+</div>
+
+<!-- ═══════ ACIDS & BASES ═══════ -->
+<div id="acids-bases">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Fundamentals</span><span class="sep">/</span><span>Acids &amp; Bases</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Fundamentals</div>
+    <h2 class="section-title">Brønsted–Lowry &amp; Lewis Acids</h2>
+    <p class="section-lead">Acid–base concepts underpin nearly every organic mechanism. pKₐ values let you predict the direction of every proton transfer.</p>
+
+    <div class="two-col">
+      <div class="callout info">
+        <strong>Brønsted–Lowry:</strong> An acid is a proton donor; a base is a proton acceptor. The stronger acid/base side is always favoured (equilibrium towards weaker).
+      </div>
+      <div class="callout tip">
+        <strong>Lewis:</strong> An acid accepts an electron pair; a base donates an electron pair. This covers reactions with no proton transfer (e.g. AlCl₃ + alkyl halides).
+      </div>
+    </div>
+
+    <h3 class="subsection">Key pKₐ Values to Memorise</h3>
+    <table class="fg-table">
+      <thead><tr><th>Compound / Bond</th><th>pKₐ</th><th>Conjugate Base</th><th>Strength</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">HI</td><td class="mono">−10</td><td>I⁻</td><td><span class="tag tag-red">Very Strong Acid</span></td></tr>
+        <tr><td class="mono">H₂SO₄</td><td class="mono">−3</td><td>HSO₄⁻</td><td><span class="tag tag-red">Strong</span></td></tr>
+        <tr><td class="mono">H₃O⁺</td><td class="mono">−1.7</td><td>H₂O</td><td><span class="tag tag-red">Strong</span></td></tr>
+        <tr><td class="mono">CH₃COOH</td><td class="mono">4.7</td><td>CH₃COO⁻</td><td><span class="tag tag-amber">Weak</span></td></tr>
+        <tr><td class="mono">H₂O</td><td class="mono">15.7</td><td>OH⁻</td><td><span class="tag tag-gray">Very Weak</span></td></tr>
+        <tr><td class="mono">EtOH</td><td class="mono">16</td><td>EtO⁻</td><td><span class="tag tag-gray">Very Weak</span></td></tr>
+        <tr><td class="mono">R–C≡C–H</td><td class="mono">25</td><td>R–C≡C⁻</td><td><span class="tag tag-blue">Extremely Weak</span></td></tr>
+        <tr><td class="mono">NH₃</td><td class="mono">38</td><td>NH₂⁻</td><td><span class="tag tag-blue">Barely Acidic</span></td></tr>
+        <tr><td class="mono">R–H (alkane)</td><td class="mono">50</td><td>R⁻</td><td><span class="tag tag-purple">Not Acidic</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout rule">
+      <strong>Golden Rule:</strong> A reaction goes from the stronger acid to the weaker acid. If pKₐ(product acid) &gt; pKₐ(starting acid), equilibrium lies on the <em>left</em> (reactant side).
+    </div>
+
+    <button class="done-btn" onclick="markDone('acids-bases',this)">
+      <span>✓</span> Mark as complete
+    </button>
+  </div>
+</div>
+
+<!-- ═══════ RESONANCE ═══════ -->
+<div id="resonance">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Fundamentals</span><span class="sep">/</span><span>Resonance</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Fundamentals</div>
+    <h2 class="section-title">Resonance</h2>
+    <p class="section-lead">When electrons can be delocalized over multiple atoms, the molecule is more stable than any single Lewis structure suggests. Resonance structures are a tool — the real molecule is the weighted average.</p>
+
+    <h3 class="subsection">Rules for Drawing Resonance Structures</h3>
+    <div class="prose">
+      <p>1. <strong>Move electrons, not atoms.</strong> Only electrons (lone pairs or π bonds) move; the atomic framework stays fixed.</p>
+      <p>2. <strong>Arrows flow toward positive charge</strong> or adjacent π systems.</p>
+      <p>3. <strong>Never exceed octets</strong> for second-row elements (C, N, O, F). Octet-expanding structures with N or O bearing positive charge while lacking full valence are <em>minor contributors</em>.</p>
+      <p>4. <strong>Equivalent structures contribute equally;</strong> structures with more covalent bonds and less charge separation are <em>major</em> contributors.</p>
+    </div>
+
+    <div class="ef-demo" style="min-height:120px">
+      <svg width="380" height="110" viewBox="0 0 380 110">
+        <defs><marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--red)"/></marker></defs>
+        <!-- carboxylate resonance -->
+        <!-- structure 1 -->
+        <line x1="30" y1="60" x2="75" y2="60" stroke="var(--text)" stroke-width="2"/>
+        <line x1="75" y1="58" x2="100" y2="40" stroke="var(--text)" stroke-width="2"/>
+        <line x1="77" y1="62" x2="102" y2="44" stroke="var(--text)" stroke-width="2"/>
+        <line x1="75" y1="60" x2="100" y2="78" stroke="var(--text)" stroke-width="2"/>
+        <text x="18" y="65" font-size="12" fill="var(--text)" font-family="'JetBrains Mono',monospace">R</text>
+        <text x="102" y="38" font-size="12" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-weight="700">O</text>
+        <text x="103" y="82" font-size="12" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-weight="700">O⁻</text>
+        <!-- dots on O⁻ -->
+        <circle cx="115" cy="74" r="2" fill="var(--red)"/>
+        <circle cx="119" cy="74" r="2" fill="var(--red)"/>
+        <!-- double-headed arrow -->
+        <text x="130" y="60" font-size="18" fill="var(--text3)" font-family="'Inter',sans-serif">⇌</text>
+        <!-- structure 2 -->
+        <line x1="160" y1="60" x2="205" y2="60" stroke="var(--text)" stroke-width="2"/>
+        <line x1="205" y1="60" x2="230" y2="40" stroke="var(--text)" stroke-width="2"/>
+        <line x1="205" y1="58" x2="228" y2="78" stroke="var(--text)" stroke-width="2"/>
+        <line x1="207" y1="62" x2="230" y2="80" stroke="var(--text)" stroke-width="2"/>
+        <text x="148" y="65" font-size="12" fill="var(--text)" font-family="'JetBrains Mono',monospace">R</text>
+        <text x="232" y="38" font-size="12" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-weight="700">O⁻</text>
+        <text x="233" y="84" font-size="12" fill="var(--red)" font-family="'JetBrains Mono',monospace" font-weight="700">O</text>
+        <!-- curved arrow on structure 1 showing movement -->
+        <path d="M116,72 Q130,50 116,40" fill="none" stroke="var(--red)" stroke-width="2" marker-end="url(#arr3)" opacity=".7"/>
+        <text x="185" y="105" font-size="10" fill="var(--text3)" text-anchor="middle" font-family="'Inter',sans-serif">Carboxylate anion — two equivalent resonance structures</text>
+      </svg>
+    </div>
+
+    <button class="done-btn" onclick="markDone('resonance',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ STABILITY ═══════ -->
+<div id="stability">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Fundamentals</span><span class="sep">/</span><span>Stability &amp; Energy</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Fundamentals</div>
+    <h2 class="section-title">Stability &amp; Reaction Energy</h2>
+    <p class="section-lead">Thermodynamics tells you whether a reaction will happen; kinetics tells you how fast. Understanding both lets you predict and control outcomes.</p>
+
+    <h3 class="subsection">Carbocation Stability</h3>
+    <div class="callout rule"><strong>Order:</strong> 3° &gt; 2° &gt; 1° &gt; methyl (&gt; vinyl / phenyl in some contexts). More substituents stabilise via hyperconjugation and inductive donation.</div>
+
+    <h3 class="subsection">Carbanion Stability</h3>
+    <div class="callout rule"><strong>Order:</strong> Opposite of carbocations — methyl &gt; 1° &gt; 2° &gt; 3°. Stabilised by EWG (CN, C=O), resonance, and sp hybridisation.</div>
+
+    <h3 class="subsection">Radical Stability</h3>
+    <div class="callout info">Radicals follow the same order as carbocations: 3° &gt; 2° &gt; 1° (hyperconjugation), but allylic and benzylic radicals are exceptionally stable due to resonance delocalization.</div>
+
+    <h3 class="subsection">Alkene Stability (Degree of Substitution)</h3>
+    <table class="fg-table">
+      <thead><tr><th>Alkene</th><th>Example</th><th>Relative Stability</th></tr></thead>
+      <tbody>
+        <tr><td>Tetrasubstituted</td><td class="mono">(CH₃)₂C=C(CH₃)₂</td><td><span class="tag tag-green">Most stable</span></td></tr>
+        <tr><td>Trisubstituted</td><td class="mono">(CH₃)₂C=CHCH₃</td><td><span class="tag tag-green">Very stable</span></td></tr>
+        <tr><td>Disubstituted (trans)</td><td class="mono">CH₃CH=CHCH₃</td><td><span class="tag tag-amber">Stable</span></td></tr>
+        <tr><td>Monosubstituted</td><td class="mono">CH₂=CHCH₃</td><td><span class="tag tag-gray">Less stable</span></td></tr>
+        <tr><td>Ethene</td><td class="mono">CH₂=CH₂</td><td><span class="tag tag-red">Least stable</span></td></tr>
+      </tbody>
+    </table>
+
+    <button class="done-btn" onclick="markDone('stability',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ALKANES ═══════ -->
+<div id="alkanes">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Alkanes</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Alkanes</h2>
+    <p class="section-lead">Saturated hydrocarbons — all C–C and C–H single bonds. Generally unreactive toward ionic reagents; react via radical halogenation and combustion.</p>
+
+    <table class="fg-table">
+      <thead><tr><th>Name</th><th>Formula</th><th>BP (°C)</th><th>Key Property</th></tr></thead>
+      <tbody>
+        <tr><td>Methane</td><td class="mono">CH₄</td><td>−161</td><td>Gas; major component of natural gas</td></tr>
+        <tr><td>Ethane</td><td class="mono">CH₃CH₃</td><td>−89</td><td>Gas; free rotation around C–C bond</td></tr>
+        <tr><td>Propane</td><td class="mono">CH₃CH₂CH₃</td><td>−42</td><td>LPG fuel</td></tr>
+        <tr><td>Butane</td><td class="mono">CH₃(CH₂)₂CH₃</td><td>−1</td><td>Lighter fuel; gauche/anti conformations</td></tr>
+        <tr><td>Cyclohexane</td><td class="mono">C₆H₁₂</td><td>81</td><td>Chair/boat conformations; axial/equatorial</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rxn-card">
+      <div class="rxn-card-head">
+        <div class="rxn-card-title">Free Radical Halogenation</div>
+        <div class="rxn-card-tags"><span class="tag tag-amber">Radical</span><span class="tag tag-gray">3 stages</span></div>
+      </div>
+      <div class="rxn-card-body">
+        <div class="rxn-card-equation">
+          <span class="mono-formula">CH₄</span> <span class="rxn-arrow-txt">+</span>
+          <span class="rxn-reagent">Cl₂</span>
+          <span class="rxn-arrow-txt">—hν/Δ→</span>
+          <span class="rxn-product">CH₃Cl</span>
+          <span class="rxn-arrow-txt">+</span>
+          <span>HCl</span>
+        </div>
+        <div class="mech-steps">
+          <div class="mech-step-row">
+            <div class="mech-num">I</div>
+            <div class="mech-text">
+              <strong>Initiation:</strong> Light or heat homolytically cleaves Cl₂ → 2 Cl• radicals. Energy input: ~242 kJ/mol.
+            </div>
+            <div class="mech-diagram">
+              <svg width="160" height="80" viewBox="0 0 160 80">
+                <defs><marker id="hh1" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,4z" fill="var(--amber)"/></marker></defs>
+                <text x="30" y="42" font-size="13" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-weight="600">Cl</text>
+                <line x1="50" y1="40" x2="75" y2="40" stroke="var(--text)" stroke-width="2"/>
+                <text x="77" y="42" font-size="13" fill="var(--text)" font-family="'JetBrains Mono',monospace" font-weight="600">Cl</text>
+                <text x="55" y="20" font-size="10" fill="var(--amber)" text-anchor="middle" font-family="'Inter',sans-serif">hν</text>
+                <path d="M50,36 Q55,20 48,10" fill="none" stroke="var(--amber)" stroke-width="1.8" marker-end="url(#hh1)"/>
+                <path d="M74,36 Q69,20 76,10" fill="none" stroke="var(--amber)" stroke-width="1.8" marker-end="url(#hh1)"/>
+                <text x="30" y="65" font-size="10" fill="var(--red)" font-family="'JetBrains Mono',monospace">Cl•</text>
+                <text x="80" y="65" font-size="10" fill="var(--red)" font-family="'JetBrains Mono',monospace">Cl•</text>
+              </svg>
+            </div>
+          </div>
+          <div class="mech-step-row">
+            <div class="mech-num">II</div>
+            <div class="mech-text">
+              <strong>Propagation (×n):</strong> Cl• abstracts H from CH₄ → HCl + CH₃•. Then CH₃• + Cl₂ → CH₃Cl + Cl•. The radical is regenerated — chain continues.
+            </div>
+            <div class="mech-diagram">
+              <svg width="160" height="90" viewBox="0 0 160 90">
+                <defs><marker id="hh2" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,4z" fill="var(--amber)"/></marker></defs>
+                <text x="8" y="35" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">CH₄ + Cl•</text>
+                <path d="M70,30 L90,30" fill="none" stroke="var(--text3)" stroke-width="1.5" marker-end="url(#hh2)"/>
+                <text x="95" y="35" font-size="11" fill="var(--accent)" font-family="'JetBrains Mono',monospace">CH₃•</text>
+                <text x="95" y="52" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">+ HCl</text>
+                <text x="8" y="75" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">CH₃•+Cl₂</text>
+                <path d="M70,70 L90,70" fill="none" stroke="var(--text3)" stroke-width="1.5" marker-end="url(#hh2)"/>
+                <text x="95" y="75" font-size="11" fill="var(--accent)" font-family="'JetBrains Mono',monospace">CH₃Cl</text>
+              </svg>
+            </div>
+          </div>
+          <div class="mech-step-row">
+            <div class="mech-num">III</div>
+            <div class="mech-text">
+              <strong>Termination:</strong> Two radicals combine: Cl•+Cl• → Cl₂, CH₃•+Cl• → CH₃Cl, CH₃•+CH₃• → C₂H₆. Chain ends.
+            </div>
+            <div class="mech-diagram">
+              <svg width="160" height="70" viewBox="0 0 160 70">
+                <text x="10" y="30" font-size="11" fill="var(--red)" font-family="'JetBrains Mono',monospace">2 Cl•</text>
+                <text x="50" y="30" font-size="14" fill="var(--text3)">→</text>
+                <text x="65" y="30" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">Cl₂</text>
+                <text x="10" y="58" font-size="9" fill="var(--text3)" font-family="'Inter',sans-serif">no more radicals → chain stops</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="thermo-row">
+          <span class="tag tag-amber">Exothermic</span>
+          <span>ΔH ≈ −105 kJ/mol</span>
+          <div class="thermo-bar"><div class="thermo-fill" style="width:42%"></div></div>
+          <span>Conditions: hν or 300°C</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="done-btn" onclick="markDone('alkanes',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ALKENES ═══════ -->
+<div id="alkenes">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Alkenes</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Alkenes</h2>
+    <p class="section-lead">Contain a C=C π bond — the most reactive unit in most synthesis plans. π electrons are high-energy and readily attacked by electrophiles.</p>
+
+    <div class="callout info"><strong>The π bond</strong> (HOMO) donates electrons into the LUMO of an electrophile. This defines <em>electrophilic addition</em> — the defining reaction of alkenes.</div>
+
+    <table class="fg-table">
+      <thead><tr><th>Reagent</th><th>Product</th><th>Selectivity</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>H₂ / Pd,Pt</td><td>Alkane</td><td>Syn addition</td><td class="mono">Heterogeneous cat.</td></tr>
+        <tr><td>HX (HBr, HCl)</td><td>Haloalkane</td><td>Markovnikov</td><td class="mono">Via carbocation</td></tr>
+        <tr><td>Br₂ / CCl₄</td><td>1,2-Dibromide</td><td>Anti addition</td><td class="mono">Via bromonium ion</td></tr>
+        <tr><td>H₂O / H⁺</td><td>Alcohol</td><td>Markovnikov</td><td class="mono">Via carbocation</td></tr>
+        <tr><td>cold KMnO₄</td><td>Diol (syn)</td><td>Syn dihydroxylation</td><td class="mono">Cyclic MnO ester</td></tr>
+        <tr><td>O₃ then Zn/H₂O</td><td>2 Carbonyls</td><td>Cleaves C=C</td><td class="mono">Ozonolysis</td></tr>
+        <tr><td>mCPBA</td><td>Epoxide</td><td>Syn (retention)</td><td class="mono">Peracid epoxidation</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Interactive mechanism viewer: HBr addition -->
+    <h3 class="subsection">Mechanism: HBr Addition (Markovnikov)</h3>
+    <div class="mech-viewer" id="mv-hbr">
+      <div class="mech-viewer-tabs">
+        <div class="mech-tab active" onclick="mvTab('mv-hbr',0,this)">Step 1: Protonation</div>
+        <div class="mech-tab" onclick="mvTab('mv-hbr',1,this)">Step 2: Carbocation</div>
+        <div class="mech-tab" onclick="mvTab('mv-hbr',2,this)">Step 3: Br⁻ Attack</div>
+      </div>
+      <div class="mech-viewer-body">
+        <div class="mech-viewer-diagram" id="mv-hbr-diag">
+          <!-- Step 1 diagram -->
+          <svg width="280" height="160" viewBox="0 0 280 160">
+            <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--red)"/></marker></defs>
+            <!-- alkene C=C -->
+            <line x1="50" y1="88" x2="100" y2="88" stroke="var(--text)" stroke-width="2.5"/>
+            <line x1="100" y1="84" x2="150" y2="84" stroke="var(--text)" stroke-width="2.5"/>
+            <line x1="100" y1="92" x2="150" y2="92" stroke="var(--text)" stroke-width="2.5"/>
+            <line x1="150" y1="88" x2="200" y2="88" stroke="var(--text)" stroke-width="2.5"/>
+            <text x="85" y="78" font-size="11" fill="var(--text2)" text-anchor="middle" font-family="'JetBrains Mono',monospace">C</text>
+            <text x="155" y="78" font-size="11" fill="var(--text2)" text-anchor="middle" font-family="'JetBrains Mono',monospace">C</text>
+            <!-- HBr approaching -->
+            <text x="125" y="45" font-size="14" fill="var(--amber)" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">H⁺</text>
+            <!-- curved arrow from π to H -->
+            <path d="M125,82 Q125,62 122,50" fill="none" stroke="var(--red)" stroke-width="2.5" marker-end="url(#a1)"/>
+            <text x="140" y="150" font-size="10" fill="var(--text3)" text-anchor="middle" font-family="'Inter',sans-serif">π electrons attack electrophilic H⁺</text>
+          </svg>
+        </div>
+        <div class="mech-viewer-text" id="mv-hbr-text">
+          <div class="mech-viewer-stepnum">Step 1 of 3</div>
+          <div class="mech-viewer-steptitle">Protonation of the π bond</div>
+          <div class="mech-viewer-stepdesc">The alkene π bond (HOMO) donates electrons to the electrophilic proton (H⁺) from HBr. <strong>The proton adds to the less-substituted carbon</strong> (Markovnikov's rule), generating the more stable, more-substituted carbocation.</div>
+          <div class="callout tip" style="margin-top:8px;font-size:12px"><strong>Markovnikov's Rule:</strong> The electrophile (H⁺) adds to the carbon bearing more hydrogens, because this places positive charge on the more substituted, more stable carbon.</div>
+        </div>
+      </div>
+      <div class="mech-viewer-nav">
+        <button class="mech-btn" disabled id="mv-hbr-prev" onclick="mvNav('mv-hbr',-1)">← Prev</button>
+        <span style="font-size:12px;color:var(--text3);font-family:var(--mono)" id="mv-hbr-counter">1 / 3</span>
+        <button class="mech-btn primary" id="mv-hbr-next" onclick="mvNav('mv-hbr',1)">Next →</button>
+      </div>
+    </div>
+
+    <button class="done-btn" onclick="markDone('alkenes',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ALKYNES ═══════ -->
+<div id="alkynes">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Alkynes</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Alkynes</h2>
+    <p class="section-lead">Triple bond (C≡C) — contains one σ and two π bonds. The terminal alkyne C–H is surprisingly acidic (pKₐ ≈ 25) due to the high s-character of the sp carbon.</p>
+
+    <table class="fg-table">
+      <thead><tr><th>Reagent</th><th>Product</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>H₂ / Lindlar's cat.</td><td>cis-Alkene</td><td>Syn addition; Pd/CaCO₃ + Pb(OAc)₂</td></tr>
+        <tr><td>H₂ / Pd, excess</td><td>Alkane</td><td>Over-reduction</td></tr>
+        <tr><td>Na / NH₃ (liq.)</td><td>trans-Alkene</td><td>Birch / dissolving metal; anti addition</td></tr>
+        <tr><td>HX (1 equiv.)</td><td>Vinyl halide</td><td>Markovnikov</td></tr>
+        <tr><td>HX (2 equiv.)</td><td>Gem-dihalide</td><td>Double Markovnikov</td></tr>
+        <tr><td>H₂O / H⁺ / Hg²⁺</td><td>Ketone</td><td>Markovnikov; vinyl alcohol → ketone tautomerism</td></tr>
+        <tr><td>BH₃ / H₂O₂,OH⁻</td><td>Aldehyde</td><td>Anti-Markovnikov; hydroboration-oxidation</td></tr>
+        <tr><td>NaNH₂ / R–X</td><td>Internal alkyne</td><td>Terminal alkyne alkylation (SN2)</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout rule"><strong>Acidity of terminal alkynes:</strong> The sp C–H bond (pKₐ 25) is much more acidic than sp² C–H (pKₐ 44) or sp³ C–H (pKₐ 50), making terminal alkynes deprotonatable with NaNH₂ or n-BuLi to form acetylide anions — powerful C-nucleophiles for alkylation.</div>
+
+    <button class="done-btn" onclick="markDone('alkynes',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ALCOHOLS ═══════ -->
+<div id="alcohols">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Alcohols</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Alcohols</h2>
+    <p class="section-lead">The –OH group makes alcohols amphoteric (both acid and base), nucleophilic, and oxidizable. They are the most versatile functional group in synthesis.</p>
+
+    <h3 class="subsection">Reactions Overview</h3>
+    <table class="fg-table">
+      <thead><tr><th>Reaction</th><th>Conditions</th><th>Product</th></tr></thead>
+      <tbody>
+        <tr><td>Dehydration</td><td>H₂SO₄, 170°C</td><td>Alkene (Zaitsev product)</td></tr>
+        <tr><td>Oxidation (1°)</td><td>KMnO₄ or CrO₃</td><td>Aldehyde → Carboxylic acid</td></tr>
+        <tr><td>Oxidation (2°)</td><td>PCC or Jones</td><td>Ketone</td></tr>
+        <tr><td>Oxidation (3°)</td><td>Not oxidizable</td><td>No reaction</td></tr>
+        <tr><td>Esterification</td><td>RCOOH / H⁺ cat.</td><td>Ester + H₂O (Fischer)</td></tr>
+        <tr><td>HX substitution</td><td>HBr or SOCl₂</td><td>Alkyl halide</td></tr>
+        <tr><td>Tosylation</td><td>TsCl / pyridine</td><td>Tosylate (good LG)</td></tr>
+        <tr><td>Mitsunobu</td><td>PPh₃, DIAD</td><td>Inversion of configuration</td></tr>
+      </tbody>
+    </table>
+
+    <button class="done-btn" onclick="markDone('alcohols',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ETHERS ═══════ -->
+<div id="ethers">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Ethers</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Ethers (R–O–R′)</h2>
+    <p class="section-lead">Generally inert solvents, but can be cleaved by strong acids (HI or HBr at high temperatures). Epoxides are cyclic ethers with exceptional reactivity.</p>
+    <div class="callout warn"><strong>Peroxide hazard:</strong> Diethyl ether forms explosive peroxides on prolonged storage. Always check for peroxides before distilling.</div>
+    <table class="fg-table">
+      <thead><tr><th>Reaction</th><th>Reagent</th><th>Product</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Synthesis (Williamson)</td><td>R–O⁻ + R′–X</td><td>R–O–R′</td><td>SN2; requires 1° alkyl halide</td></tr>
+        <tr><td>Acid cleavage</td><td>HI (excess, Δ)</td><td>2 Alkyl iodides</td><td>More substituted side cleaved first</td></tr>
+        <tr><td>Epoxide + Nu⁻</td><td>OH⁻, CN⁻, RMgX</td><td>β-Hydroxy product</td><td>Attack at less hindered C (SN2)</td></tr>
+        <tr><td>Epoxide + H₃O⁺</td><td>H⁺, H₂O</td><td>Trans-diol</td><td>Attack at more substituted C (SN1-like)</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('ethers',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ALDEHYDES ═══════ -->
+<div id="aldehydes">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Aldehydes</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Aldehydes (RCHO)</h2>
+    <p class="section-lead">The most electrophilic carbonyl — the terminal H provides no steric protection. Highly reactive toward nucleophilic addition.</p>
+    <table class="fg-table">
+      <thead><tr><th>Reaction</th><th>Reagent</th><th>Product</th></tr></thead>
+      <tbody>
+        <tr><td>Nucleophilic addition</td><td>RMgX, RLi</td><td>2° Alcohol</td></tr>
+        <tr><td>Reduction</td><td>NaBH₄ or LiAlH₄</td><td>1° Alcohol</td></tr>
+        <tr><td>Oxidation</td><td>KMnO₄, Tollens, Fehling</td><td>Carboxylic acid</td></tr>
+        <tr><td>Acetal formation</td><td>ROH / H⁺ cat.</td><td>Acetal (protecting group)</td></tr>
+        <tr><td>Aldol condensation</td><td>NaOH</td><td>β-Hydroxy aldehyde</td></tr>
+        <tr><td>Wittig reaction</td><td>Ph₃P=CR₂</td><td>Alkene</td></tr>
+        <tr><td>Imine formation</td><td>RNH₂ / H⁺</td><td>Imine (Schiff base)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout info"><strong>Tollens' test:</strong> Ag⁺ (ammoniacal) oxidises aldehydes → silver mirror. <strong>Fehling's test:</strong> Cu²⁺ → Cu₂O red precipitate. Both are negative for ketones.</div>
+    <button class="done-btn" onclick="markDone('aldehydes',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ KETONES ═══════ -->
+<div id="ketones">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Ketones</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Ketones (RCOR′)</h2>
+    <p class="section-lead">Two alkyl groups flanking the C=O. Less electrophilic and less oxidizable than aldehydes, but undergo the same nucleophilic addition reactions.</p>
+    <table class="fg-table">
+      <thead><tr><th>Reaction</th><th>Reagent</th><th>Product</th></tr></thead>
+      <tbody>
+        <tr><td>Nucleophilic addition</td><td>RMgX, RLi</td><td>3° Alcohol</td></tr>
+        <tr><td>Reduction</td><td>NaBH₄</td><td>2° Alcohol</td></tr>
+        <tr><td>Baeyer–Villiger</td><td>mCPBA</td><td>Ester</td></tr>
+        <tr><td>Aldol condensation</td><td>NaOH or LDA</td><td>β-Hydroxy ketone</td></tr>
+        <tr><td>Mannich reaction</td><td>HCHO, RNH₂</td><td>β-Amino ketone</td></tr>
+        <tr><td>Enamine formation</td><td>R₂NH / Δ</td><td>Enamine</td></tr>
+        <tr><td>α-Halogenation</td><td>X₂ / H⁺</td><td>α-Haloketone</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('ketones',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ CARBOXYLIC ACIDS ═══════ -->
+<div id="carboxylic">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Carboxylic Acids</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Carboxylic Acids (RCOOH)</h2>
+    <p class="section-lead">The –COOH group is the most acidic common organic functional group. The carboxylate anion is stabilised by two equivalent resonance structures.</p>
+    <table class="fg-table">
+      <thead><tr><th>Derivative</th><th>Reagent</th><th>Product</th><th>Mechanism</th></tr></thead>
+      <tbody>
+        <tr><td>Esterification (Fischer)</td><td>ROH / H⁺, Δ</td><td>Ester</td><td>Acyl substitution</td></tr>
+        <tr><td>Acid chloride</td><td>SOCl₂ or PCl₅</td><td>RCOCl</td><td>Nucleophilic acyl sub.</td></tr>
+        <tr><td>Anhydride</td><td>RCOOH / Δ or Ac₂O</td><td>(RCO)₂O</td><td>Condensation</td></tr>
+        <tr><td>Amide</td><td>RNH₂ / Δ</td><td>RCONHR</td><td>Fischer amide syn.</td></tr>
+        <tr><td>Reduction</td><td>LiAlH₄</td><td>1° Alcohol</td><td>2 equiv. H⁻</td></tr>
+        <tr><td>Decarboxylation</td><td>Δ (β-keto acid)</td><td>Ketone + CO₂</td><td>Cyclic 6e⁻ TS</td></tr>
+        <tr><td>Hell–Volhard–Zelinskyl</td><td>Br₂/PBr₃</td><td>α-Bromo acid</td><td>Radical at α-C</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('carboxylic',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ESTERS ═══════ -->
+<div id="esters">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Esters</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Esters (RCOOR′)</h2>
+    <p class="section-lead">Fruity fragrance compounds and the backbone of fats and oils. Hydrolyze to give the acid + alcohol; react with nucleophiles via the tetrahedral intermediate.</p>
+    <table class="fg-table">
+      <thead><tr><th>Reaction</th><th>Conditions</th><th>Product</th></tr></thead>
+      <tbody>
+        <tr><td>Saponification (base)</td><td>NaOH, H₂O, Δ</td><td>Carboxylate + alcohol</td></tr>
+        <tr><td>Hydrolysis (acid)</td><td>H₂O / H⁺, Δ</td><td>Acid + alcohol (reversible)</td></tr>
+        <tr><td>Reduction</td><td>LiAlH₄</td><td>2 Primary alcohols</td></tr>
+        <tr><td>Grignard addition</td><td>2 RMgX</td><td>Tertiary alcohol</td></tr>
+        <tr><td>Claisen condensation</td><td>NaOEt / base</td><td>β-Ketoester</td></tr>
+        <tr><td>Transesterification</td><td>ROH / H⁺ or base</td><td>New ester</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('esters',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ AMINES ═══════ -->
+<div id="amines">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Functional Groups</span><span class="sep">/</span><span>Amines</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Functional Groups</div>
+    <h2 class="section-title">Amines (RNH₂, R₂NH, R₃N)</h2>
+    <p class="section-lead">Strong nucleophiles and bases. Classification (1°/2°/3°) refers to carbons attached to N, not H atoms.</p>
+    <table class="fg-table">
+      <thead><tr><th>Reaction</th><th>Conditions</th><th>Product</th></tr></thead>
+      <tbody>
+        <tr><td>Alkylation</td><td>RX (excess leads to over-alkylation)</td><td>2°, 3° amine, salt</td></tr>
+        <tr><td>Acylation</td><td>RCOCl / Et₃N</td><td>Amide</td></tr>
+        <tr><td>Diazotization</td><td>NaNO₂ / HCl, 0°C</td><td>Diazonium salt (ArN₂⁺)</td></tr>
+        <tr><td>Reductive amination</td><td>RCHO / NaBH₃CN</td><td>Amine</td></tr>
+        <tr><td>Gabriel synthesis</td><td>Phthalimide / base / RX</td><td>1° Amine (no over-alkylation)</td></tr>
+        <tr><td>Hofmann rearrangement</td><td>Br₂ / NaOH</td><td>1° Amine (shorter by 1C)</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('amines',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ELECTROPHILIC ADDITION ═══════ -->
+<div id="ea">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>Electrophilic Addition</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">Electrophilic Addition (EA)</h2>
+    <p class="section-lead">Alkenes and alkynes react with electrophiles in a two-stage process: the π bond attacks the electrophile (rate-limiting), then nucleophilic capture of the cationic intermediate.</p>
+
+    <div class="rxn-strip">
+      <div class="rxn-strip-mol"><div class="formula">CH₂=CH₂</div><div class="name">Ethene</div></div>
+      <div class="rxn-strip-arrow">
+        <div class="reagent-lbl">HBr</div>
+        <div class="rxn-strip-line"></div>
+        <div class="cond-lbl">25°C, no peroxides</div>
+      </div>
+      <div class="rxn-strip-mol product"><div class="formula">CH₃CH₂Br</div><div class="name">Bromoethane</div></div>
+    </div>
+
+    <div class="rxn-card">
+      <div class="rxn-card-head"><div class="rxn-card-title">Bromination: Anti-Addition via Bromonium Ion</div><div class="rxn-card-tags"><span class="tag tag-amber">Anti</span><span class="tag tag-blue">Stereospecific</span></div></div>
+      <div class="rxn-card-body">
+        <div class="rxn-card-equation"><span class="mono-formula">R–CH=CH–R′</span><span class="rxn-arrow-txt">+</span><span class="rxn-reagent">Br₂</span><span class="rxn-arrow-txt">—CCl₄→</span><span class="rxn-product">R–CHBr–CHBr–R′</span><span style="font-size:11px;color:var(--text3)">(anti)</span></div>
+        <div class="mech-steps">
+          <div class="mech-step-row">
+            <div class="mech-num">1</div>
+            <div class="mech-text"><strong>π bond polarises Br₂:</strong> The electron-dense alkene π bond induces a dipole in the approaching Br₂ molecule (Brδ⁺–Brδ⁻). No reaction yet.</div>
+            <div class="mech-diagram">
+              <svg width="160" height="90" viewBox="0 0 160 90">
+                <defs><marker id="b1" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="var(--red)"/></marker></defs>
+                <line x1="20" y1="58" x2="55" y2="58" stroke="var(--text)" stroke-width="2.5"/>
+                <line x1="55" y1="54" x2="85" y2="54" stroke="var(--text)" stroke-width="2.5"/>
+                <line x1="55" y1="62" x2="85" y2="62" stroke="var(--text)" stroke-width="2.5"/>
+                <line x1="85" y1="58" x2="118" y2="58" stroke="var(--text)" stroke-width="2.5"/>
+                <circle cx="68" cy="32" r="9" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="1.5"/>
+                <text x="68" y="37" font-size="10" fill="var(--amber)" text-anchor="middle" font-weight="600" font-family="'JetBrains Mono',monospace">Brδ⁺</text>
+                <line x1="77" y1="32" x2="95" y2="32" stroke="var(--amber)" stroke-width="2"/>
+                <circle cx="105" cy="32" r="9" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+                <text x="105" y="37" font-size="10" fill="var(--red)" text-anchor="middle" font-weight="600" font-family="'JetBrains Mono',monospace">Brδ⁻</text>
+                <path d="M68,58 Q68,48 68,42" fill="none" stroke="var(--red)" stroke-width="2" marker-end="url(#b1)"/>
+              </svg>
+            </div>
+          </div>
+          <div class="mech-step-row">
+            <div class="mech-num">2</div>
+            <div class="mech-text"><strong>Bromonium ion formation:</strong> The π electrons attack Brδ⁺, ejecting Br⁻ and forming a 3-membered cyclic bromonium ion. This bridged cation blocks one face — the key to anti stereospecificity.</div>
+            <div class="mech-diagram">
+              <svg width="160" height="95" viewBox="0 0 160 95">
+                <line x1="20" y1="72" x2="60" y2="72" stroke="var(--text)" stroke-width="2.5"/>
+                <line x1="60" y1="72" x2="100" y2="72" stroke="var(--text)" stroke-width="2.5"/>
+                <line x1="100" y1="72" x2="138" y2="72" stroke="var(--text)" stroke-width="2.5"/>
+                <path d="M60,72 Q80,36 100,72" fill="none" stroke="var(--amber)" stroke-width="2.5"/>
+                <circle cx="80" cy="44" r="10" fill="var(--amber-bg)" stroke="var(--amber)" stroke-width="2"/>
+                <text x="80" y="49" font-size="10" fill="var(--amber)" text-anchor="middle" font-weight="700" font-family="'JetBrains Mono',monospace">Br⁺</text>
+                <text x="130" y="88" font-size="11" fill="var(--red)" font-family="'JetBrains Mono',monospace">Br⁻</text>
+                <text x="80" y="92" font-size="9" fill="var(--text3)" text-anchor="middle" font-family="'Inter',sans-serif">top face blocked</text>
+              </svg>
+            </div>
+          </div>
+          <div class="mech-step-row">
+            <div class="mech-num">3</div>
+            <div class="mech-text"><strong>Anti attack by Br⁻:</strong> Br⁻ attacks one of the two carbons from the back side (opposite face), opening the ring. Anti addition gives the <em>meso</em> (or trans) vicinal dibromide.</div>
+            <div class="mech-diagram">
+              <svg width="160" height="95" viewBox="0 0 160 95">
+                <line x1="15" y1="58" x2="55" y2="58" stroke="var(--green)" stroke-width="2.5"/>
+                <line x1="55" y1="58" x2="100" y2="58" stroke="var(--green)" stroke-width="2.5"/>
+                <line x1="100" y1="58" x2="140" y2="58" stroke="var(--green)" stroke-width="2.5"/>
+                <line x1="55" y1="58" x2="55" y2="28" stroke="var(--amber)" stroke-width="2.5"/>
+                <line x1="100" y1="58" x2="100" y2="82" stroke="var(--amber)" stroke-width="2.5"/>
+                <text x="50" y="22" font-size="11" fill="var(--amber)" font-weight="700" font-family="'JetBrains Mono',monospace">Br</text>
+                <text x="96" y="92" font-size="11" fill="var(--amber)" font-weight="700" font-family="'JetBrains Mono',monospace">Br</text>
+                <text x="80" y="12" font-size="9" fill="var(--green)" text-anchor="middle" font-family="'Inter',sans-serif">anti dibromide ✓</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="thermo-row"><span class="tag tag-green">Exothermic</span><span>ΔH ≈ −115 kJ/mol</span><div class="thermo-bar"><div class="thermo-fill" style="width:46%"></div></div><span>CCl₄, 25°C, dark</span></div>
+      </div>
+    </div>
+    <button class="done-btn" onclick="markDone('ea',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ SN1 ═══════ -->
+<div id="sn1">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>SN1</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">SN1 — Unimolecular Nucleophilic Substitution</h2>
+    <p class="section-lead">A two-step mechanism proceeding through a carbocation intermediate. The rate depends only on the substrate — not the nucleophile. <span class="tag tag-amber">Rate = k[R-X]</span></p>
+
+    <div class="callout rule"><strong>Favoured by:</strong> 3° substrates, polar protic solvents (H₂O, ROH, RCOOH), weak nucleophiles, and leaving groups that form stable anions (I⁻ &gt; Br⁻ &gt; Cl⁻).</div>
+
+    <div class="rxn-card">
+      <div class="rxn-card-head"><div class="rxn-card-title">SN1 Mechanism — tert-Butyl Bromide + H₂O</div><div class="rxn-card-tags"><span class="tag tag-red">2 steps</span><span class="tag tag-purple">Racemisation</span></div></div>
+      <div class="rxn-card-body">
+        <div class="rxn-card-equation"><span class="mono-formula">(CH₃)₃CBr</span><span class="rxn-arrow-txt">+ H₂O →</span><span class="rxn-product">(CH₃)₃COH</span><span class="rxn-arrow-txt">+ HBr</span></div>
+        <div class="mech-steps">
+          <div class="mech-step-row">
+            <div class="mech-num">1</div>
+            <div class="mech-text"><strong>Ionisation (rate-limiting):</strong> The C–Br bond breaks heterolytically. Br⁻ departs (good LG) and a <em>tertiary carbocation</em> forms. Polar protic solvent stabilises both ions by solvation. Energy barrier: ~100 kJ/mol.</div>
+            <div class="mech-diagram">
+              <svg width="160" height="90" viewBox="0 0 160 90">
+                <defs><marker id="s1" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="var(--blue)"/></marker></defs>
+                <text x="10" y="45" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">(CH₃)₃C</text>
+                <line x1="72" y1="43" x2="88" y2="43" stroke="var(--text)" stroke-width="2"/>
+                <text x="90" y="45" font-size="11" fill="var(--amber)" font-weight="700" font-family="'JetBrains Mono',monospace">Br</text>
+                <path d="M90,40 Q115,25 130,38" fill="none" stroke="var(--blue)" stroke-width="2.2" marker-end="url(#s1)"/>
+                <circle cx="138" cy="60" r="10" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="1.5"/>
+                <text x="138" y="65" font-size="10" fill="var(--blue)" text-anchor="middle" font-weight="700" font-family="'JetBrains Mono',monospace">Br⁻</text>
+                <text x="40" y="78" font-size="10" fill="var(--blue)" font-family="'JetBrains Mono',monospace">(CH₃)₃C⁺</text>
+              </svg>
+            </div>
+          </div>
+          <div class="mech-step-row">
+            <div class="mech-num">2</div>
+            <div class="mech-text"><strong>Nucleophilic attack:</strong> H₂O (or any nucleophile) attacks the flat sp² carbocation from either face with equal probability → <strong>racemisation</strong> at the former stereocenter (if chiral). A proton is then lost to give the alcohol.</div>
+            <div class="mech-diagram">
+              <svg width="160" height="90" viewBox="0 0 160 90">
+                <defs><marker id="s2" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="var(--red)"/></marker></defs>
+                <text x="50" y="50" font-size="13" fill="var(--blue)" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">C⁺</text>
+                <path d="M20,30 Q35,40 44,47" fill="none" stroke="var(--red)" stroke-width="2.2" marker-end="url(#s2)"/>
+                <path d="M20,70 Q35,60 44,53" fill="none" stroke="var(--red)" stroke-width="2.2" marker-end="url(#s2)"/>
+                <text x="8" y="28" font-size="10" fill="var(--blue)" font-family="'JetBrains Mono',monospace">:OH₂</text>
+                <text x="8" y="73" font-size="10" fill="var(--blue)" font-family="'JetBrains Mono',monospace">:OH₂</text>
+                <text x="110" y="45" font-size="10" fill="var(--text3)" font-family="'Inter',sans-serif">→ 50:50</text>
+                <text x="110" y="58" font-size="10" fill="var(--text3)" font-family="'Inter',sans-serif">mixture</text>
+                <text x="80" y="82" font-size="9" fill="var(--purple)" font-family="'Inter',sans-serif">racemisation</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="thermo-row"><span class="tag tag-green">Exothermic overall</span><span>Ea (ionization) ≈ 100 kJ/mol</span><div class="thermo-bar"><div class="thermo-fill" style="width:40%"></div></div><span>Polar protic solvent</span></div>
+      </div>
+    </div>
+    <button class="done-btn" onclick="markDone('sn1',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ SN2 ═══════ -->
+<div id="sn2">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>SN2</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">SN2 — Bimolecular Nucleophilic Substitution</h2>
+    <p class="section-lead">A concerted one-step mechanism. Nucleophile attacks the backside of the carbon bearing the leaving group simultaneously with LG departure. <span class="tag tag-blue">Rate = k[R-X][Nu]</span></p>
+
+    <div class="callout rule"><strong>Favoured by:</strong> 1° (or methyl) substrates, polar aprotic solvents (DMF, DMSO, acetone), strong nucleophiles (CN⁻, I⁻, RS⁻, RO⁻).</div>
+
+    <div class="rxn-card">
+      <div class="rxn-card-head"><div class="rxn-card-title">SN2: Methyl Bromide + OH⁻</div><div class="rxn-card-tags"><span class="tag tag-blue">Concerted</span><span class="tag tag-purple">Inversion</span></div></div>
+      <div class="rxn-card-body">
+        <div class="rxn-card-equation"><span class="mono-formula">CH₃Br</span><span class="rxn-arrow-txt">+ OH⁻ →</span><span class="rxn-product">CH₃OH</span><span class="rxn-arrow-txt">+ Br⁻</span></div>
+        <div class="mech-steps">
+          <div class="mech-step-row">
+            <div class="mech-num">1</div>
+            <div class="mech-text"><strong>Backside approach:</strong> OH⁻ approaches the carbon 180° from the C–Br bond (backside). The transition state has both Nu and LG partially bonded to the carbon (trigonal bipyramidal, pentacoordinate).</div>
+            <div class="mech-diagram">
+              <svg width="160" height="90" viewBox="0 0 160 90">
+                <defs><marker id="n1" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="var(--red)"/></marker></defs>
+                <text x="10" y="47" font-size="11" fill="var(--blue)" font-weight="600" font-family="'JetBrains Mono',monospace">HO⁻</text>
+                <path d="M35,44 L68,44" fill="none" stroke="var(--red)" stroke-width="2.5" marker-end="url(#n1)"/>
+                <!-- central carbon -->
+                <circle cx="80" cy="44" r="10" fill="var(--bg3)" stroke="var(--border2)" stroke-width="2"/>
+                <text x="80" y="49" font-size="11" fill="var(--text)" text-anchor="middle" font-weight="700" font-family="'JetBrains Mono',monospace">C</text>
+                <!-- LG leaving -->
+                <line x1="90" y1="44" x2="115" y2="44" stroke="var(--text)" stroke-width="2" stroke-dasharray="4,2"/>
+                <text x="120" y="47" font-size="11" fill="var(--amber)" font-weight="600" font-family="'JetBrains Mono',monospace">Br</text>
+                <!-- umbrella -->
+                <line x1="80" y1="35" x2="60" y2="20" stroke="var(--text2)" stroke-width="1.5"/>
+                <line x1="80" y1="35" x2="95" y2="18" stroke="var(--text2)" stroke-width="1.5"/>
+                <text x="80" y="82" font-size="9" fill="var(--purple)" text-anchor="middle" font-family="'Inter',sans-serif">backside attack → TS</text>
+              </svg>
+            </div>
+          </div>
+          <div class="mech-step-row">
+            <div class="mech-num">2</div>
+            <div class="mech-text"><strong>Walden inversion:</strong> As the Nu–C bond forms and the C–LG bond breaks, the three substituents on carbon flip through the plane — like an umbrella in wind. The product has <strong>inverted configuration</strong> (Walden inversion).</div>
+            <div class="mech-diagram">
+              <svg width="160" height="90" viewBox="0 0 160 90">
+                <text x="12" y="45" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">—C—</text>
+                <text x="50" y="30" font-size="14" fill="var(--text3)">→</text>
+                <text x="12" y="20" font-size="9" fill="var(--text3)" font-family="'Inter',sans-serif">(R) config</text>
+                <text x="80" y="45" font-size="11" fill="var(--green)" font-weight="600" font-family="'JetBrains Mono',monospace">—C—</text>
+                <text x="80" y="20" font-size="9" fill="var(--purple)" font-family="'Inter',sans-serif">(S) config</text>
+                <text x="80" y="78" font-size="9" fill="var(--purple)" text-anchor="middle" font-family="'Inter',sans-serif">complete inversion ✓</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="thermo-row"><span class="tag tag-green">Exothermic</span><span>Concerted TS</span><div class="thermo-bar"><div class="thermo-fill" style="width:60%"></div></div><span>DMF or DMSO favoured</span></div>
+      </div>
+    </div>
+
+    <h3 class="subsection">SN1 vs SN2 Summary</h3>
+    <table class="fg-table">
+      <thead><tr><th>Feature</th><th>SN1</th><th>SN2</th></tr></thead>
+      <tbody>
+        <tr><td>Rate law</td><td class="mono">k[RX]</td><td class="mono">k[RX][Nu]</td></tr>
+        <tr><td>Steps</td><td>2 (carbocation)</td><td>1 (concerted)</td></tr>
+        <tr><td>Best substrate</td><td>3°, benzylic, allylic</td><td>Methyl, 1°</td></tr>
+        <tr><td>Stereochemistry</td><td>Racemisation</td><td>Inversion (Walden)</td></tr>
+        <tr><td>Solvent</td><td>Polar protic</td><td>Polar aprotic</td></tr>
+        <tr><td>Nucleophile</td><td>Weak fine</td><td>Strong required</td></tr>
+        <tr><td>Rearrangement?</td><td>Yes (hydride/methyl shift)</td><td>No</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('sn2',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ E1 ═══════ -->
+<div id="e1">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>E1</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">E1 Elimination</h2>
+    <p class="section-lead">A two-step elimination: ionisation of the leaving group forms a carbocation, then a base removes a β-hydrogen to give the alkene. Competes with SN1 under the same conditions.</p>
+    <div class="callout rule"><strong>Zaitsev's Rule:</strong> The more substituted (more stable) alkene is the major product in E1 and E2.</div>
+    <div class="rxn-card">
+      <div class="rxn-card-head"><div class="rxn-card-title">E1: 2-Bromobutane + EtOH / Δ</div><div class="rxn-card-tags"><span class="tag tag-amber">2-Butene (major)</span><span class="tag tag-gray">1-Butene (minor)</span></div></div>
+      <div class="rxn-card-body">
+        <div class="mech-steps">
+          <div class="mech-step-row"><div class="mech-num">1</div><div class="mech-text"><strong>Ionisation:</strong> C–Br bond breaks; Br⁻ leaves (same as SN1 first step). A secondary carbocation forms at C2.</div><div class="mech-diagram"><svg width="160" height="70" viewBox="0 0 160 70"><text x="8" y="35" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">CH₃CH(Br)CH₂CH₃</text><text x="8" y="60" font-size="10" fill="var(--blue)" font-family="'JetBrains Mono',monospace">→ CH₃C⁺HCH₂CH₃</text></svg></div></div>
+          <div class="mech-step-row"><div class="mech-num">2</div><div class="mech-text"><strong>Proton loss:</strong> A base (solvent EtOH, or Br⁻) removes a β-H. Loss from C1 gives 1-butene (minor); loss from C3 gives 2-butene (major — Zaitsev).</div><div class="mech-diagram"><svg width="160" height="70" viewBox="0 0 160 70"><defs><marker id="e1a" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="var(--red)"/></marker></defs><text x="8" y="30" font-size="10" fill="var(--blue)" font-family="'JetBrains Mono',monospace">CH₃C⁺HCH₂CH₃</text><text x="8" y="55" font-size="10" fill="var(--accent)" font-family="'JetBrains Mono',monospace">→ CH₃CH=CHCH₃</text><text x="8" y="70" font-size="9" fill="var(--text3)" font-family="'Inter',sans-serif">(major, 2-butene)</text></svg></div></div>
+        </div>
+        <div class="thermo-row"><span class="tag tag-amber">Endothermic</span><span>Ea ~ 130 kJ/mol</span><div class="thermo-bar"><div class="thermo-fill endo" style="width:52%"></div></div><span>Polar protic, high T</span></div>
+      </div>
+    </div>
+    <button class="done-btn" onclick="markDone('e1',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ E2 ═══════ -->
+<div id="e2">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>E2</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">E2 Elimination</h2>
+    <p class="section-lead">A concerted, one-step elimination. Base removes the β-H while the LG departs simultaneously. Strictly requires anti-periplanar geometry between H and LG. <span class="tag tag-blue">Rate = k[RX][B]</span></p>
+    <div class="callout warn"><strong>Anti-periplanar requirement:</strong> H and LG must be 180° dihedral — this means the E2 is trans-selective and can be used to determine or control stereochemistry.</div>
+    <table class="fg-table">
+      <thead><tr><th>Feature</th><th>E1</th><th>E2</th></tr></thead>
+      <tbody>
+        <tr><td>Steps</td><td>2</td><td>1 (concerted)</td></tr>
+        <tr><td>Rate law</td><td class="mono">k[RX]</td><td class="mono">k[RX][B]</td></tr>
+        <tr><td>Base</td><td>Weak (solvent)</td><td>Strong (t-BuO⁻, NaOEt)</td></tr>
+        <tr><td>Geometry</td><td>No requirement</td><td>Anti-periplanar (180°)</td></tr>
+        <tr><td>Regioselectivity</td><td>Zaitsev</td><td>Zaitsev (or Hofmann with bulky base)</td></tr>
+        <tr><td>Stereospecificity</td><td>No</td><td>Yes — syn/anti selectivity</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('e2',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ EAS ═══════ -->
+<div id="eas">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>EAS</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">Electrophilic Aromatic Substitution (EAS)</h2>
+    <p class="section-lead">Aromatic rings react with electrophiles to give substituted products — retaining aromaticity. The key intermediate is the arenium ion (σ-complex, Wheland intermediate).</p>
+
+    <div class="rxn-card">
+      <div class="rxn-card-head"><div class="rxn-card-title">General EAS Mechanism</div><div class="rxn-card-tags"><span class="tag tag-red">2-step</span><span class="tag tag-green">Aromaticity retained</span></div></div>
+      <div class="rxn-card-body">
+        <div class="mech-steps">
+          <div class="mech-step-row">
+            <div class="mech-num">1</div>
+            <div class="mech-text"><strong>σ-Complex (Wheland intermediate):</strong> The aromatic π system attacks E⁺. One carbon becomes sp³, breaking aromaticity. The positive charge is delocalised over the ring (3 resonance structures).</div>
+            <div class="mech-diagram">
+              <svg width="160" height="100" viewBox="0 0 160 100">
+                <defs><marker id="eas1" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="var(--red)"/></marker></defs>
+                <!-- benzene ring -->
+                <polygon points="60,20 82,32 82,58 60,70 38,58 38,32" fill="none" stroke="var(--text)" stroke-width="2"/>
+                <circle cx="60" cy="45" r="14" fill="none" stroke="var(--text2)" stroke-width="1.2" stroke-dasharray="3,2"/>
+                <!-- electrophile approaching -->
+                <circle cx="110" cy="32" r="9" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/>
+                <text x="110" y="37" font-size="10" fill="var(--red)" text-anchor="middle" font-weight="700" font-family="'JetBrains Mono',monospace">E⁺</text>
+                <path d="M82,38 Q95,28 102,32" fill="none" stroke="var(--red)" stroke-width="2" marker-end="url(#eas1)"/>
+                <text x="80" y="95" font-size="9" fill="var(--text3)" text-anchor="middle" font-family="'Inter',sans-serif">π electrons attack E⁺</text>
+              </svg>
+            </div>
+          </div>
+          <div class="mech-step-row">
+            <div class="mech-num">2</div>
+            <div class="mech-text"><strong>Deprotonation (rearomatisation):</strong> A base (commonly the conjugate base of the acid by-product) removes H⁺ from the sp³ carbon, restoring the aromatic system. This is thermodynamically driven — regaining aromaticity releases ~150 kJ/mol.</div>
+            <div class="mech-diagram">
+              <svg width="160" height="100" viewBox="0 0 160 100">
+                <!-- product benzene with E -->
+                <polygon points="60,20 82,32 82,58 60,70 38,58 38,32" fill="none" stroke="var(--green)" stroke-width="2"/>
+                <circle cx="60" cy="45" r="14" fill="none" stroke="var(--green)" stroke-width="1.2" stroke-dasharray="3,2"/>
+                <line x1="82" y1="32" x2="103" y2="20" stroke="var(--accent)" stroke-width="2"/>
+                <text x="108" y="18" font-size="11" fill="var(--accent)" font-weight="700" font-family="'JetBrains Mono',monospace">E</text>
+                <text x="80" y="95" font-size="9" fill="var(--green)" text-anchor="middle" font-family="'Inter',sans-serif">aromaticity restored ✓</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="subsection">Directing Effects</h3>
+    <table class="fg-table">
+      <thead><tr><th>Group</th><th>Effect on Ring</th><th>Directs to</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td>–OH, –OR, –NH₂</td><td><span class="tag tag-green">Activating (strong)</span></td><td>ortho / para</td><td>Phenol nitration gives o- and p-nitrophenol</td></tr>
+        <tr><td>–R (alkyl)</td><td><span class="tag tag-green">Activating (weak)</span></td><td>ortho / para</td><td>Toluene → o- and p-xylene</td></tr>
+        <tr><td>–F, –Cl, –Br, –I</td><td><span class="tag tag-amber">Deactivating (weak)</span></td><td>ortho / para</td><td>Halobenzenes — slow but ortho/para</td></tr>
+        <tr><td>–NO₂, –CN, –CHO, –COOH</td><td><span class="tag tag-red">Deactivating (strong)</span></td><td>meta</td><td>Nitrobenzene → m-dinitrobenzene</td></tr>
+      </tbody>
+    </table>
+
+    <button class="done-btn" onclick="markDone('eas',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ RADICAL ═══════ -->
+<div id="radical">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>Radical Reactions</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">Radical Reactions</h2>
+    <p class="section-lead">Reactions proceeding through species with one unpaired electron. Initiated by heat or light (homolysis). Chain reactions are the hallmark — one radical spawns thousands of product molecules.</p>
+    <div class="callout warn"><strong>Half-headed arrows</strong> (fishhook) are mandatory for radical mechanisms. Each moves one electron — never use full arrows here.</div>
+    <table class="fg-table">
+      <thead><tr><th>Reaction</th><th>Initiator</th><th>Regioselectivity</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Radical halogenation</td><td>hν, Cl₂ or Br₂</td><td>Br: 3°>2°>1°; Cl: less selective</td><td>Chain mechanism (I/P/T)</td></tr>
+        <tr><td>Radical addition to alkenes</td><td>ROOR (peroxide)</td><td>Anti-Markovnikov</td><td>HBr + peroxide → Br at less-sub C</td></tr>
+        <tr><td>Allylic bromination</td><td>NBS, hν</td><td>Allylic position</td><td>Resonance-stabilised radical</td></tr>
+        <tr><td>Benzylic bromination</td><td>NBS, hν</td><td>Benzylic C–H</td><td>Resonance over ring</td></tr>
+      </tbody>
+    </table>
+    <button class="done-btn" onclick="markDone('radical',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ NUCLEOPHILIC ADDITION ═══════ -->
+<div id="nucleophilic-add">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>Nucleophilic Addition</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">Nucleophilic Addition to Carbonyls</h2>
+    <p class="section-lead">The C=O carbon is electrophilic (δ+). Nucleophiles attack it, breaking the π bond and forming a tetrahedral intermediate.</p>
+    <div class="rxn-card">
+      <div class="rxn-card-head"><div class="rxn-card-title">Grignard Reaction (RMgX + Carbonyl)</div><div class="rxn-card-tags"><span class="tag tag-purple">C–C Bond Forming</span><span class="tag tag-blue">Irreversible</span></div></div>
+      <div class="rxn-card-body">
+        <div class="rxn-card-equation"><span class="rxn-reagent">RMgX</span><span class="rxn-arrow-txt">+</span><span class="mono-formula">R′CHO</span><span class="rxn-arrow-txt">→ [tetrahedral] → H₃O⁺ →</span><span class="rxn-product">R–CH(OH)–R′</span></div>
+        <div class="mech-steps">
+          <div class="mech-step-row"><div class="mech-num">1</div><div class="mech-text"><strong>Nucleophilic attack:</strong> The carbanion equivalent R⁻ (from RMgX) attacks the electrophilic C=O carbon. The π bond electrons shift to oxygen, giving a magnesium alkoxide.</div><div class="mech-diagram"><svg width="160" height="80" viewBox="0 0 160 80"><defs><marker id="na1" markerWidth="7" markerHeight="7" refX="5" refY="2.5" orient="auto"><path d="M0,0 L0,5 L7,2.5 z" fill="var(--red)"/></marker></defs><text x="10" y="42" font-size="11" fill="var(--purple)" font-family="'JetBrains Mono',monospace">R⁻</text><path d="M28,40 L52,40" fill="none" stroke="var(--red)" stroke-width="2.5" marker-end="url(#na1)"/><text x="57" y="42" font-size="11" fill="var(--text)" font-family="'JetBrains Mono',monospace">C=O</text><text x="80" y="65" font-size="9" fill="var(--text3)" font-family="'Inter',sans-serif">→ R–C–O⁻MgX</text></svg></div></div>
+          <div class="mech-step-row"><div class="mech-num">2</div><div class="mech-text"><strong>Aqueous workup:</strong> Addition of H₃O⁺ protonates the alkoxide, releasing the alcohol product. No elimination — the C–O bond is preserved.</div><div class="mech-diagram"><svg width="160" height="70" viewBox="0 0 160 70"><text x="8" y="30" font-size="10" fill="var(--text)" font-family="'JetBrains Mono',monospace">R–C–O⁻MgX</text><text x="8" y="50" font-size="10" fill="var(--text3)" font-family="'Inter',sans-serif">+ H₃O⁺ →</text><text x="8" y="65" font-size="10" fill="var(--accent)" font-family="'JetBrains Mono',monospace">R–C–OH (alcohol)</text></svg></div></div>
+        </div>
+      </div>
+    </div>
+    <button class="done-btn" onclick="markDone('nucleophilic-add',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ ACYL SUBSTITUTION ═══════ -->
+<div id="acyl-sub">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Mechanism Library</span><span class="sep">/</span><span>Acyl Substitution</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Mechanism Library</div>
+    <h2 class="section-title">Nucleophilic Acyl Substitution</h2>
+    <p class="section-lead">Acyl compounds (acid chlorides, esters, anhydrides, amides) react with nucleophiles via an addition-elimination mechanism: addition to C=O gives a tetrahedral intermediate, then the leaving group departs.</p>
+    <div class="callout info"><strong>Reactivity order:</strong> Acid chloride &gt; Anhydride &gt; Ester &gt; Amide. The better the leaving group, the more reactive the acyl compound.</div>
+    <div class="rxn-card">
+      <div class="rxn-card-head"><div class="rxn-card-title">Ester Hydrolysis (Saponification)</div><div class="rxn-card-tags"><span class="tag tag-green">Irreversible in base</span></div></div>
+      <div class="rxn-card-body">
+        <div class="rxn-card-equation"><span class="mono-formula">RCOOR′</span><span class="rxn-arrow-txt">+ OH⁻ →</span><span class="rxn-product">RCOO⁻</span><span class="rxn-arrow-txt">+ R′OH</span></div>
+        <div class="mech-steps">
+          <div class="mech-step-row"><div class="mech-num">1</div><div class="mech-text"><strong>Addition:</strong> OH⁻ attacks the electrophilic acyl carbon. The C=O π bond breaks and both electrons go to oxygen — tetrahedral intermediate forms (alkoxide).</div><div class="mech-diagram"><svg width="160" height="80" viewBox="0 0 160 80"><text x="6" y="35" font-size="10" fill="var(--text)" font-family="'JetBrains Mono',monospace">RCOOR′ + OH⁻</text><text x="6" y="60" font-size="10" fill="var(--blue)" font-family="'JetBrains Mono',monospace">→ [R(OH)(OR′)C–O⁻]</text><text x="6" y="75" font-size="9" fill="var(--text3)" font-family="'Inter',sans-serif">tetrahedral intermediate</text></svg></div></div>
+          <div class="mech-step-row"><div class="mech-num">2</div><div class="mech-text"><strong>Elimination:</strong> The alkoxide OR′ departs (LG), restoring the C=O. The carboxylate anion is the thermodynamic sink — irreversible in base.</div><div class="mech-diagram"><svg width="160" height="70" viewBox="0 0 160 70"><text x="6" y="30" font-size="10" fill="var(--text)" font-family="'JetBrains Mono',monospace">[tetrahedral]</text><text x="6" y="50" font-size="10" fill="var(--accent)" font-family="'JetBrains Mono',monospace">→ RCOO⁻ + R′OH</text><text x="6" y="65" font-size="9" fill="var(--text3)" font-family="'Inter',sans-serif">OR′⁻ leaves, C=O restored</text></svg></div></div>
+        </div>
+      </div>
+    </div>
+    <button class="done-btn" onclick="markDone('acyl-sub',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ NAMED REACTIONS ═══════ -->
+<div id="named">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Named Reactions</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Named Reactions</div>
+    <h2 class="section-title">Named Reaction Library</h2>
+    <p class="section-lead">Twenty-four essential named reactions — each with substrate, product, mechanism type, and conditions.</p>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="named-filter">
+      <button class="mech-btn active" onclick="filterNamed('all',this)">All</button>
+      <button class="mech-btn" onclick="filterNamed('addition',this)">Addition</button>
+      <button class="mech-btn" onclick="filterNamed('substitution',this)">Substitution</button>
+      <button class="mech-btn" onclick="filterNamed('elimination',this)">Elimination</button>
+      <button class="mech-btn" onclick="filterNamed('oxidation',this)">Oxidation</button>
+      <button class="mech-btn" onclick="filterNamed('coupling',this)">Coupling/C–C</button>
+      <button class="mech-btn" onclick="filterNamed('rearrangement',this)">Rearrangement</button>
+    </div>
+
+    <div id="named-list">
+    </div>
+    <button class="done-btn" onclick="markDone('named',this)">✓ Mark as complete</button>
+  </div>
+</div>
+
+<!-- ═══════ QUIZ ═══════ -->
+<div id="quiz">
+  <div class="breadcrumb"><a href="#intro">Home</a><span class="sep">/</span><span>Quiz</span></div>
+  <div class="section">
+    <div class="section-eyebrow">Test Yourself</div>
+    <h2 class="section-title">Reaction Mechanism Quiz</h2>
+    <p class="section-lead">Ten questions spanning mechanisms, functional groups, and named reactions. Instant feedback on every answer.</p>
+
+    <div id="quiz-container"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════
+function toggleTheme(){
+  const d=document.documentElement;
+  const dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('theme-btn').textContent=dark?'◑':'○';
+  localStorage.setItem('sl-theme',dark?'light':'dark');
+}
+(function(){
+  const t=localStorage.getItem('sl-theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('theme-btn').textContent=t==='dark'?'○':'◑';
+})();
+
+// ═══════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════
+const TOTAL=24;
+function getProgress(){return JSON.parse(localStorage.getItem('sl-progress')||'{}');}
+function saveProgress(p){localStorage.setItem('sl-progress',JSON.stringify(p));}
+function updateProgressUI(){
+  const p=getProgress();
+  const done=Object.values(p).filter(Boolean).length;
+  const pct=Math.round(done/TOTAL*100);
+  document.getElementById('progress-label').textContent=pct+'%';
+  document.getElementById('progress-inner').style.width=pct+'%';
+  document.getElementById('progress-count').textContent=done+'/'+TOTAL;
+  // Update sidebar checkmarks
+  Object.entries(p).forEach(([id,val])=>{
+    const chk=document.getElementById('chk-'+id);
+    if(chk){
+      if(val){chk.textContent='✓';chk.parentElement.classList.add('done');}
+      else{chk.textContent='';chk.parentElement.classList.remove('done');}
+    }
+  });
+}
+function markDone(id,btn){
+  const p=getProgress();
+  p[id]=!p[id];
+  saveProgress(p);
+  btn.classList.toggle('done',p[id]);
+  btn.innerHTML=p[id]?'<span>✓</span> Completed':'<span>✓</span> Mark as complete';
+  updateProgressUI();
+}
+// restore done-btn state on load
+function restoreDoneBtns(){
+  const p=getProgress();
+  document.querySelectorAll('.done-btn').forEach(btn=>{
+    const match=btn.getAttribute('onclick').match(/markDone\('([^']+)'/);
+    if(match&&p[match[1]]){
+      btn.classList.add('done');
+      btn.innerHTML='<span>✓</span> Completed';
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+// SIDEBAR NAVIGATION
+// ═══════════════════════════════════════════
+function nav(el,id){
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════
+const SEARCH_INDEX=[
+  {name:'Electron Flow',path:'Fundamentals',tag:'concept',id:'electron-flow'},
+  {name:'Acids & Bases / pKa',path:'Fundamentals',tag:'concept',id:'acids-bases'},
+  {name:'Resonance',path:'Fundamentals',tag:'concept',id:'resonance'},
+  {name:'Carbocation / Carbanion Stability',path:'Fundamentals',tag:'concept',id:'stability'},
+  {name:'Alkanes — Free Radical Halogenation',path:'Functional Groups',tag:'reaction',id:'alkanes'},
+  {name:'Alkenes — Electrophilic Addition',path:'Functional Groups',tag:'reaction',id:'alkenes'},
+  {name:'Alkynes — Hydration / Reduction',path:'Functional Groups',tag:'reaction',id:'alkynes'},
+  {name:'Alcohols — Oxidation, Dehydration',path:'Functional Groups',tag:'reaction',id:'alcohols'},
+  {name:'Ethers — Williamson Synthesis',path:'Functional Groups',tag:'reaction',id:'ethers'},
+  {name:'Aldehydes — Nucleophilic Addition',path:'Functional Groups',tag:'reaction',id:'aldehydes'},
+  {name:'Ketones — Aldol Condensation',path:'Functional Groups',tag:'reaction',id:'ketones'},
+  {name:'Carboxylic Acids — Fischer Esterification',path:'Functional Groups',tag:'reaction',id:'carboxylic'},
+  {name:'Esters — Saponification',path:'Functional Groups',tag:'reaction',id:'esters'},
+  {name:'Amines — Diazotization / Reductive Amination',path:'Functional Groups',tag:'reaction',id:'amines'},
+  {name:'Electrophilic Addition — Bromonium Ion',path:'Mechanism Library',tag:'mechanism',id:'ea'},
+  {name:'SN1 — Carbocation, Racemisation',path:'Mechanism Library',tag:'mechanism',id:'sn1'},
+  {name:'SN2 — Walden Inversion, Concerted',path:'Mechanism Library',tag:'mechanism',id:'sn2'},
+  {name:'E1 Elimination — Zaitsev',path:'Mechanism Library',tag:'mechanism',id:'e1'},
+  {name:'E2 Elimination — Anti-periplanar',path:'Mechanism Library',tag:'mechanism',id:'e2'},
+  {name:'EAS — Wheland Intermediate, Directing Effects',path:'Mechanism Library',tag:'mechanism',id:'eas'},
+  {name:'Radical Reactions — NBS, Chain Mechanism',path:'Mechanism Library',tag:'mechanism',id:'radical'},
+  {name:'Nucleophilic Addition — Grignard',path:'Mechanism Library',tag:'mechanism',id:'nucleophilic-add'},
+  {name:'Acyl Substitution — Saponification',path:'Mechanism Library',tag:'mechanism',id:'acyl-sub'},
+  {name:'Named Reactions — Wittig, Diels–Alder, etc.',path:'Named Reactions',tag:'named',id:'named'},
+];
+const TAG_COLORS={'concept':'tag-blue','reaction':'tag-amber','mechanism':'tag-red','named':'tag-purple'};
+function openSearch(){document.getElementById('search-modal').classList.add('open');setTimeout(()=>document.getElementById('search-input').focus(),50);}
+function closeSearch(e){if(!e||e.target===document.getElementById('search-modal'))document.getElementById('search-modal').classList.remove('open');}
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();openSearch();}if(e.key==='Escape')closeSearch(null);});
+function doSearch(q){
+  const r=document.getElementById('search-results');
+  if(!q.trim()){r.innerHTML='<div style="padding:14px 18px;font-size:12px;color:var(--text3)">Start typing to search…</div>';return;}
+  const hits=SEARCH_INDEX.filter(x=>x.name.toLowerCase().includes(q.toLowerCase())||x.path.toLowerCase().includes(q.toLowerCase()));
+  if(!hits.length){r.innerHTML='<div style="padding:14px 18px;font-size:12px;color:var(--text3)">No results for "'+q+'"</div>';return;}
+  r.innerHTML=hits.map(h=>`<div class="search-result-item" onclick="goTo('${h.id}')">
+    <span class="search-result-type ${TAG_COLORS[h.tag]||'tag-gray'}">${h.tag}</span>
+    <div><div class="search-result-name">${h.name}</div><div class="search-result-path">${h.path}</div></div>
+  </div>`).join('');
+}
+function goTo(id){
+  closeSearch(null);
+  document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ═══════════════════════════════════════════
+// MECHANISM VIEWER
+// ═══════════════════════════════════════════
+const MV_DATA={
+  'mv-hbr':{
+    steps:[
+      {
+        title:'Protonation of the π bond',
+        stepnum:'Step 1 of 3',
+        desc:'The alkene π bond (HOMO) donates electrons to the electrophilic proton (H⁺) from HBr. <strong>The proton adds to the less-substituted carbon</strong> (Markovnikov\'s rule), generating the more stable carbocation.',
+        note:{type:'tip',text:'<strong>Markovnikov\'s Rule:</strong> The electrophile (H⁺) adds to the carbon with more H atoms, placing positive charge on the more substituted, more stable carbon.'},
+        svg:`<svg width="280" height="160" viewBox="0 0 280 160"><defs><marker id="mv1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--red)"/></marker></defs><line x1="50" y1="88" x2="100" y2="88" stroke="var(--text)" stroke-width="2.5"/><line x1="100" y1="84" x2="150" y2="84" stroke="var(--text)" stroke-width="2.5"/><line x1="100" y1="92" x2="150" y2="92" stroke="var(--text)" stroke-width="2.5"/><line x1="150" y1="88" x2="200" y2="88" stroke="var(--text)" stroke-width="2.5"/><text x="88" y="78" font-size="11" fill="var(--text2)" text-anchor="middle" font-family="'JetBrains Mono',monospace">C</text><text x="160" y="78" font-size="11" fill="var(--text2)" text-anchor="middle" font-family="'JetBrains Mono',monospace">C</text><text x="125" y="45" font-size="14" fill="var(--amber)" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono',monospace">H⁺</text><path d="M125,82 Q125,62 122,50" fill="none" stroke="var(--red)" stroke-width="2.5" marker-end="url(#mv1)"/><text x="140" y="150" font-size="10" fill="var(--text3)" text-anchor="middle" font-family="'Inter',sans-serif">π electrons attack electrophilic H⁺</text></svg>`
+      },
+      {
+        title:'Carbocation Intermediate',
+        stepnum:'Step 2 of 3',
+        desc:'The more substituted secondary (or tertiary) carbocation forms. The empty p-orbital is stabilised by hyperconjugation from adjacent C–H and C–C bonds. The carbocation is flat (sp² geometry).',
+        note:{type:'warn',text:'<strong>Rearrangements possible:</strong> If a more stable carbocation can form by a 1,2-hydride or 1,2-methyl shift, it will — especially with secondary carbocations adjacent to a 3° carbon.'},
+        svg:`<svg width="280" height="160" viewBox="0 0 280 160"><line x1="30" y1="88" x2="85" y2="88" stroke="var(--text)" stroke-width="2.5"/><line x1="85" y1="88" x2="140" y2="88" stroke="var(--text)" stroke-width="2.5"/><line x1="140" y1="88" x2="200" y2="88" stroke="var(--text)" stroke-width="2.5"/><circle cx="140" cy="88" r="16" fill="var(--blue-bg)" stroke="var(--blue)" stroke-width="2"/><text x="140" y="93" font-size="13" fill="var(--blue)" text-anchor="middle" font-weight="700" font-family="'JetBrains Mono',monospace">C⁺</text><text x="85" y="75" font-size="10" fill="var(--text2)" text-anchor="middle" font-family="'JetBrains Mono',monospace">H</text><line x1="85" y1="78" x2="85" y2="88" stroke="var(--text2)" stroke-width="1.8"/><text x="140" y="150" font-size="10" fill="var(--blue)" text-anchor="middle" font-family="'Inter',sans-serif">more substituted C bears +charge (more stable)</text></svg>`
+      },
+      {
+        title:'Br⁻ Captures the Carbocation',
+        stepnum:'Step 3 of 3',
+        desc:'Br⁻ (nucleophile) attacks the electrophilic carbocation. Attack can occur from either face of the sp² carbon (no facial selectivity), giving <strong>no stereoselectivity</strong> — a racemic mixture at the new stereocenter.',
+        note:{type:'tip',text:'<strong>Overall:</strong> HBr adds across the double bond. H to the less-substituted carbon (more H atoms), Br to the more-substituted carbon (Markovnikov product).'},
+        svg:`<svg width="280" height="160" viewBox="0 0 280 160"><defs><marker id="mv3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--red)"/></marker></defs><line x1="30" y1="90" x2="85" y2="90" stroke="var(--green)" stroke-width="2.5"/><line x1="85" y1="90" x2="145" y2="90" stroke="var(--green)" stroke-width="2.5"/><line x1="145" y1="90" x2="200" y2="90" stroke="var(--green)" stroke-width="2.5"/><line x1="145" y1="90" x2="145" y2="50" stroke="var(--amber)" stroke-width="2.5"/><text x="141" y="44" font-size="13" fill="var(--amber)" font-weight="700" font-family="'JetBrains Mono',monospace">Br</text><circle cx="240" cy="70" r="12" fill="var(--red-bg)" stroke="var(--red)" stroke-width="1.5"/><text x="240" y="75" font-size="11" fill="var(--red)" text-anchor="middle" font-weight="700" font-family="'JetBrains Mono',monospace">Br⁻</text><path d="M230,70 Q195,70 160,85" fill="none" stroke="var(--red)" stroke-width="2.2" marker-end="url(#mv3)"/><text x="115" y="150" font-size="10" fill="var(--green)" text-anchor="middle" font-family="'Inter',sans-serif">bromoalkane — Markovnikov product ✓</text></svg>`
+      }
+    ]
+  }
+};
+const mvState={};
+function mvTab(viewerId,stepIdx,tabEl){
+  mvState[viewerId]=stepIdx;
+  document.querySelectorAll(`#${viewerId} .mech-tab`).forEach((t,i)=>t.classList.toggle('active',i===stepIdx));
+  const data=MV_DATA[viewerId];
+  if(!data)return;
+  renderMVStep(viewerId,data,stepIdx);
+}
+function mvNav(viewerId,dir){
+  const data=MV_DATA[viewerId];if(!data)return;
+  const cur=mvState[viewerId]||0;
+  const next=Math.max(0,Math.min(data.steps.length-1,cur+dir));
+  mvState[viewerId]=next;
+  document.querySelectorAll(`#${viewerId} .mech-tab`).forEach((t,i)=>t.classList.toggle('active',i===next));
+  renderMVStep(viewerId,data,next);
+}
+function renderMVStep(viewerId,data,idx){
+  const s=data.steps[idx];
+  document.getElementById(`${viewerId}-diag`).innerHTML=s.svg;
+  document.getElementById(`${viewerId}-text`).innerHTML=`
+    <div class="mech-viewer-stepnum">${s.stepnum}</div>
+    <div class="mech-viewer-steptitle">${s.title}</div>
+    <div class="mech-viewer-stepdesc">${s.desc}</div>
+    ${s.note?`<div class="callout ${s.note.type}" style="margin-top:8px;font-size:12px">${s.note.text}</div>`:''}
+  `;
+  const prev=document.getElementById(`${viewerId}-prev`);
+  const next=document.getElementById(`${viewerId}-next`);
+  const counter=document.getElementById(`${viewerId}-counter`);
+  if(prev)prev.disabled=idx===0;
+  if(next){next.disabled=idx===data.steps.length-1;next.textContent=idx===data.steps.length-1?'✓ Done':'Next →';}
+  if(counter)counter.textContent=`${idx+1} / ${data.steps.length}`;
+}
+
+// ═══════════════════════════════════════════
+// NAMED REACTIONS DATA
+// ═══════════════════════════════════════════
+const NAMED=[
+  {name:'Wittig Reaction',year:'1954',category:'addition',type:'C–C Bond Formation',desc:'Phosphorus ylide (Ph₃P=CR₂) reacts with aldehydes or ketones to give alkenes with precise control of the C=C position. Replaces C=O with C=C. Nobel Prize 1979.',example:'RCHO + Ph₃P=CH₂ → RCH=CH₂ + Ph₃P=O'},
+  {name:'Diels–Alder Reaction',year:'1928',category:'addition',type:'[4+2] Cycloaddition',desc:'A conjugated diene reacts with a dienophile (alkene, especially EWG-activated) in a concerted pericyclic [4+2] cycloaddition to give a cyclohexene. Syn addition; endo selectivity (kinetic). Nobel Prize 1950.',example:'Butadiene + ethylene → cyclohexene (6-membered ring)'},
+  {name:'Grignard Reaction',year:'1900',category:'addition',type:'Nucleophilic Addition',desc:'Organomagnesium halides (RMgX) act as carbanion equivalents, attacking carbonyl compounds to form C–C bonds. Nobel Prize 1912.',example:'PhMgBr + CH₃CHO → Ph–CH(OH)–CH₃'},
+  {name:'Aldol Condensation',year:'1872',category:'addition',type:'C–C Bond Forming',desc:'Enolate (or enol) of one carbonyl attacks another carbonyl compound. Gives β-hydroxy carbonyl; if heated, dehydrates to α,β-unsaturated carbonyl (aldol condensation).',example:'2 CH₃CHO →(NaOH)→ CH₃CH(OH)CH₂CHO'},
+  {name:'Michael Addition',year:'1887',category:'addition',type:'1,4-Conjugate Addition',desc:'A nucleophile (Michael donor) adds to the β-carbon of an α,β-unsaturated carbonyl (Michael acceptor). 1,4-addition is kinetically/thermodynamically favoured for soft nucleophiles.',example:'CH₂(COOEt)₂ + CH₂=CHCOCH₃ → 1,4-adduct'},
+  {name:'Claisen Condensation',year:'1881',category:'addition',type:'Ester C–C Coupling',desc:'Two ester molecules react (one acts as nucleophile via enolate) to give a β-ketoester. Requires strong base (NaOEt). Mixed Claisen with different esters possible.',example:'2 EtOOCCH₃ →(NaOEt)→ CH₃COCH₂COOEt'},
+  {name:'Mannich Reaction',year:'1912',category:'addition',type:'Three-Component',desc:'Aminoalkylation of an enolizable carbonyl with formaldehyde and a primary/secondary amine. Gives a β-amino carbonyl compound (Mannich base).',example:'RCOCH₃ + HCHO + R₂NH → RCOCH₂CH₂NR₂'},
+  {name:'SN2 — Williamson Synthesis',year:'1852',category:'substitution',type:'Ether Synthesis',desc:'An alkoxide (RO⁻) displaces a halide from a primary (or methyl) alkyl halide via SN2. Only works cleanly with 1° halides — 2° and 3° give elimination.',example:'NaOEt + CH₃I → EtOCH₃ + NaI'},
+  {name:'Gabriel Synthesis',year:'1887',category:'substitution',type:'Primary Amine Synthesis',desc:'Potassium phthalimide (N–H acidic imide) is alkylated with an alkyl halide (SN2), then hydrolysis releases a primary amine free of over-alkylation.',example:'Phthalimide + RX → N-alkyl phthalimide → RNH₂'},
+  {name:'Finkelstein Reaction',year:'1910',category:'substitution',type:'Halide Exchange',desc:'Exchange of alkyl halides using NaI in acetone. Driven by insolubility of NaCl/NaBr in acetone. Converts alkyl chlorides and bromides to iodides.',example:'RCH₂Cl + NaI →(acetone)→ RCH₂I + NaCl↓'},
+  {name:'Sandmeyer Reaction',year:'1884',category:'substitution',type:'Diazonium Chemistry',desc:'Aryl diazonium salts (ArN₂⁺) react with CuCN, CuCl, or CuBr to give aryl nitriles, chlorides, or bromides. Allows introduction of halogens/cyano from NH₂.',example:'ArN₂⁺ + CuCN → ArCN + N₂'},
+  {name:'Hofmann Elimination',year:'1851',category:'elimination',type:'Quaternary Amine',desc:'Exhaustive methylation of an amine gives a quaternary ammonium salt; Ag₂O/H₂O treatment followed by heating gives the least-substituted alkene (anti-Zaitsev / Hofmann product).',example:'RCH₂CH₂N(CH₃)₃⁺ OH⁻/Δ → RCH=CH₂ + N(CH₃)₃'},
+  {name:'Zaitsev (Saytzeff) Rule',year:'1875',category:'elimination',type:'Regioselectivity Rule',desc:'In E1 and E2 eliminations, the more substituted alkene (more stable, more hyperconjugated) is the major product with small non-bulky bases.',example:'2-Bromobutane + EtO⁻ → 2-butene (major) + 1-butene (minor)'},
+  {name:'Swern Oxidation',year:'1978',category:'oxidation',type:'Alcohol → Aldehyde/Ketone',desc:'Mild oxidation of primary and secondary alcohols using oxalyl chloride and DMSO, then Et₃N. Gives aldehydes from 1° alcohols without over-oxidation to carboxylic acids.',example:'RCH₂OH →(Swern)→ RCHO'},
+  {name:'Jones Oxidation',year:'1946',category:'oxidation',type:'Alcohol Oxidation',desc:'CrO₃ in H₂SO₄/acetone (Jones reagent). Oxidises 1° to carboxylic acids and 2° to ketones. 3° alcohols do not react.',example:'(CH₃)₂CHOH →(Jones)→ (CH₃)₂C=O'},
+  {name:'Baeyer–Villiger Oxidation',year:'1899',category:'oxidation',type:'Ketone → Ester/Lactone',desc:'Ketones react with peracids (mCPBA, peracetic acid) to give esters or lactones. The more-substituted group migrates — migratory aptitude: 3° &gt; 2° &gt; aryl &gt; 1° &gt; methyl.',example:'(CH₃)COCH₂CH₃ + mCPBA → CH₃COOCH₂CH₃ (ester)'},
+  {name:'Ozonolysis',year:'1840s',category:'oxidation',type:'Alkene Cleavage',desc:'O₃ adds to alkenes via a 1,2,3-trioxolane (molozonide) → ozonide → workup. Reductive workup (Zn/H₂O or DMS) gives aldehydes and/or ketones. Oxidative workup (H₂O₂) gives carboxylic acids.',example:'RCH=CHR′ →(1.O₃, 2.Zn/H₂O)→ RCHO + R′CHO'},
+  {name:'Suzuki Coupling',year:'1979',category:'coupling',type:'Pd-catalysed C–C',desc:'Pd-catalysed cross-coupling of aryl/vinyl boronic acids with aryl/vinyl halides. Mild conditions, tolerant of many functional groups. Nobel Prize 2010.',example:'ArB(OH)₂ + ArBr →(Pd, base)→ Ar–Ar + B(OH)₃'},
+  {name:'Heck Reaction',year:'1972',category:'coupling',type:'Pd-catalysed Vinylation',desc:'Pd-catalysed coupling of aryl/vinyl halides with alkenes. Inserts the alkene into an Ar–Pd bond via migratory insertion. Nobel Prize 2010.',example:'ArBr + CH₂=CH₂ →(Pd,base)→ ArCH=CH₂'},
+  {name:'Sonogashira Coupling',year:'1975',category:'coupling',type:'Pd/Cu Alkyne Coupling',desc:'Pd/Cu co-catalysed cross-coupling of terminal alkynes with aryl or vinyl halides. Gives internal alkynes at room temperature.',example:'ArI + HC≡CR →(Pd/Cu, Et₃N)→ Ar–C≡C–R'},
+  {name:'Curtius Rearrangement',year:'1894',category:'rearrangement',type:'Acyl Nitrene',desc:'Acyl azides (RCON₃) thermally rearrange to isocyanates (RNCO) with loss of N₂. Hydrolysis gives 1° amines (1 carbon shorter). Analogous to Hofmann rearrangement.',example:'RCOCl → RCON₃ →(Δ)→ RNCO →(H₂O)→ RNH₂ + CO₂'},
+  {name:'Beckmann Rearrangement',year:'1886',category:'rearrangement',type:'Oxime to Amide',desc:'Oximes (R₂C=NOH) rearrange under acid catalysis to amides. The group anti to –OH migrates. Used industrially to make caprolactam (nylon-6 monomer) from cyclohexanone oxime.',example:'(CH₃)₂C=NOH →(H₂SO₄)→ CH₃CONHCH₃'},
+  {name:'Pinacol Rearrangement',year:'1860',category:'rearrangement',type:'1,2-Diol Rearrangement',desc:'1,2-Diols (pinacols) lose OH⁻ under acid to give a carbocation adjacent to OH; a 1,2-alkyl or -aryl shift then gives a ketone (pinacolone). Driving force: stable carbocation.',example:'(CH₃)₂C(OH)–C(OH)(CH₃)₂ →(H⁺)→ (CH₃)₃C–CO–CH₃'},
+  {name:'Robinson Annulation',year:'1935',category:'addition',type:'Ring-Forming',desc:'A tandem Michael addition followed by intramolecular aldol condensation and dehydration, building a six-membered ring. Central to natural product synthesis.',example:'Enone + vinyl ketone → cyclohexenone'},
+];
+
+function renderNamedList(category='all'){
+  const container=document.getElementById('named-list');
+  const filtered=category==='all'?NAMED:NAMED.filter(r=>r.category===category);
+  container.innerHTML=filtered.map(r=>`
+    <div class="named-rxn" data-cat="${r.category}">
+      <div class="named-rxn-header">
+        <div>
+          <div class="named-rxn-title">${r.name}</div>
+          <div style="margin-top:4px"><span class="tag tag-${r.category==='addition'?'blue':r.category==='substitution'?'amber':r.category==='elimination'?'gray':r.category==='oxidation'?'green':r.category==='coupling'?'purple':'red'}">${r.type}</span></div>
+        </div>
+        <div class="named-rxn-year">${r.year}</div>
+      </div>
+      <div class="named-rxn-desc">${r.desc}</div>
+      <div class="named-rxn-example">${r.example}</div>
+    </div>
+  `).join('');
+}
+function filterNamed(cat,btn){
+  document.querySelectorAll('#named-filter .mech-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNamedList(cat);
+}
+
+// ═══════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════
+const QUIZ_DATA=[
+  {q:'Which mechanism involves a carbocation intermediate and results in racemisation?',opts:['SN2','E2','SN1','E1'],ans:2,explain:'SN1 is a 2-step mechanism. The carbocation intermediate is planar (sp²) and the nucleophile can attack from either face, giving a racemic mixture at a new stereocenter.'},
+  {q:'Markovnikov\'s Rule states that in HX addition to an alkene, H adds to:',opts:['The more substituted carbon','The carbon with more hydrogens','The carbon bearing a leaving group','Randomly to either carbon'],ans:1,explain:'Markovnikov\'s Rule: the proton (H⁺) adds to the carbon already bearing more H atoms, because this generates the more stable (more substituted) carbocation on the other carbon.'},
+  {q:'Bromination of an alkene with Br₂/CCl₄ gives which stereochemical outcome?',opts:['Syn addition, cis product','Anti addition, trans product','Racemic mixture (no selectivity)','Only the R enantiomer'],ans:1,explain:'Bromination proceeds via a cyclic bromonium ion that blocks one face. Br⁻ attacks from the opposite face (anti), giving anti (trans) addition — the vicinal dibromide.'},
+  {q:'Which reagent converts a terminal alkyne to a trans (E) alkene?',opts:['H₂ / Pd,C','H₂ / Lindlar\'s catalyst','Na / NH₃ (liquid)','HBr / peroxides'],ans:2,explain:'Dissolving metal reduction (Na or Li in liquid NH₃) generates a vinyl radical then a vinyl anion; protonation by NH₃ occurs on the less hindered face, giving the trans-alkene (Birch reduction).'},
+  {q:'SN2 reactions are fastest with which substrate?',opts:['Tertiary alkyl halide','Secondary alkyl halide','Primary alkyl halide','Neopentyl halide'],ans:2,explain:'SN2 requires backside attack — steric hindrance is critical. Primary substrates are least hindered and react fastest. Tertiary substrates are essentially blocked to SN2 (proceed via SN1 instead).'},
+  {q:'The Wittig reaction converts:',opts:['Alkene → Aldehyde','Ketone → Alcohol','Aldehyde/Ketone → Alkene','Ester → Amine'],ans:2,explain:'The Wittig reaction uses a phosphorus ylide (Ph₃P=CR₂) to convert C=O (aldehyde or ketone) into a C=C double bond. The C=C position is fixed — key advantage over other alkene syntheses.'},
+  {q:'Which test distinguishes aldehydes from ketones?',opts:['Bromine water test','Tollens\' test','Baeyer\'s test (KMnO₄)','Litmus test'],ans:1,explain:'Tollens\' reagent (silver-ammoniacal solution) oxidises aldehydes to carboxylate, reducing Ag⁺ to Ag° (silver mirror). Ketones have no oxidisable α-H (no C–H on the carbonyl C) and give no reaction.'},
+  {q:'In EAS, electron-donating groups (–OH, –NH₂) direct the electrophile to:',opts:['meta position only','ortho and para positions','ipso position','No preference'],ans:1,explain:'EDGs donate electrons into the ring via resonance and induction, activating ortho/para positions (higher electron density at those positions). The electrophile attacks where electron density is highest.'},
+  {q:'Zaitsev\'s Rule predicts the major product of E2 elimination is:',opts:['The least substituted alkene','The Hofmann product','The more substituted alkene','A 1,2-diol'],ans:2,explain:'Zaitsev\'s Rule: elimination with non-bulky bases gives the more substituted (more stable, more hyperconjugated) alkene as the major product. Bulky bases (t-BuO⁻) give the Hofmann (less hindered) product.'},
+  {q:'Which coupling reaction uses Pd-catalysis and a boronic acid partner?',opts:['Heck reaction','Sonogashira coupling','Suzuki coupling','Mannich reaction'],ans:2,explain:'The Suzuki coupling (Pd-catalysed) uses aryl/vinyl boronic acids with aryl/vinyl halides to form C–C bonds under mild conditions. Negishi and Kumada use zinc and magnesium organometallics respectively.'},
+];
+let quizAnswered={};
+function renderQuiz(){
+  const c=document.getElementById('quiz-container');
+  c.innerHTML=QUIZ_DATA.map((q,qi)=>`
+    <div class="quiz-card" id="qc-${qi}">
+      <div class="quiz-q">Q${qi+1}. ${q.q}</div>
+      <div class="quiz-opts">
+        ${q.opts.map((o,oi)=>`
+          <button class="quiz-opt" id="qo-${qi}-${oi}" onclick="answerQuiz(${qi},${oi})">
+            <span class="quiz-opt-letter">${'ABCD'[oi]}</span>${o}
+          </button>
+        `).join('')}
+      </div>
+      <div class="quiz-explain" id="qe-${qi}">${q.explain}</div>
+    </div>
+  `).join('');
+}
+function answerQuiz(qi,oi){
+  if(quizAnswered[qi])return;
+  quizAnswered[qi]=true;
+  const q=QUIZ_DATA[qi];
+  const correct=oi===q.ans;
+  document.getElementById(`qo-${qi}-${oi}`).classList.add(correct?'correct':'wrong');
+  if(!correct)document.getElementById(`qo-${qi}-${q.ans}`).classList.add('correct');
+  document.getElementById(`qe-${qi}`).classList.add('show');
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderNamedList();
+renderQuiz();
+updateProgressUI();
+restoreDoneBtns();
+// init mv state
+Object.keys(MV_DATA).forEach(id=>{mvState[id]=0;});
+</script>
+</body>
+</html>
+
+
