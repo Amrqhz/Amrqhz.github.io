@@ -10,6 +10,7 @@ let shifts = S.loadShifts();
 
 let viewYear, viewMonth; // currently displayed Jalali year/month
 let selectedDateKey = null; // the day currently open in the sheet
+let reportPharmacyFilter = 'all'; // 'all' or a pharmacy id — scopes the summary view & exports
 
 const todayJ = J.todayJalali();
 
@@ -24,6 +25,7 @@ function init() {
   bindPharmacyForm();
   bindShiftForm();
   bindExport();
+  bindReportFilter();
 
   renderCalendar();
   renderPharmacyList();
@@ -417,25 +419,63 @@ function renderPharmacySelect() {
   if (prevVal && pharmacies.some((p) => p.id === prevVal)) select.value = prevVal;
 }
 
+/* ===================== REPORT PHARMACY FILTER ===================== */
+
+function bindReportFilter() {
+  const select = document.getElementById('reportPharmacyFilter');
+  select.addEventListener('change', () => {
+    reportPharmacyFilter = select.value;
+    renderSummary();
+  });
+}
+
+function renderReportFilterOptions() {
+  const select = document.getElementById('reportPharmacyFilter');
+  const prevVal = select.value || reportPharmacyFilter;
+  const options = ['<option value="all">همه داروخانه‌ها</option>']
+    .concat(pharmacies.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`));
+  select.innerHTML = options.join('');
+  // restore previous selection if it still exists, otherwise fall back to "all"
+  if (prevVal && (prevVal === 'all' || pharmacies.some((p) => p.id === prevVal))) {
+    select.value = prevVal;
+    reportPharmacyFilter = prevVal;
+  } else {
+    select.value = 'all';
+    reportPharmacyFilter = 'all';
+  }
+}
+
+/** Returns shifts for the currently viewed month, scoped to reportPharmacyFilter, sorted by date/time. */
+function getFilteredMonthShifts() {
+  return shifts
+    .filter((s) => {
+      const { jy, jm } = J.parseJalaliKey(s.dateKey);
+      if (jy !== viewYear || jm !== viewMonth) return false;
+      if (reportPharmacyFilter !== 'all' && s.pharmacyId !== reportPharmacyFilter) return false;
+      return true;
+    })
+    .sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start));
+}
+
 /* ===================== SUMMARY VIEW ===================== */
 
 function renderSummary() {
-  const monthShifts = shifts
-    .filter((s) => {
-      const { jy, jm } = J.parseJalaliKey(s.dateKey);
-      return jy === viewYear && jm === viewMonth;
-    })
-    .sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start));
+  renderReportFilterOptions();
+
+  const monthShifts = getFilteredMonthShifts();
 
   const totalHours = monthShifts.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
   const uniqueDays = new Set(monthShifts.map((s) => s.dateKey)).size;
   const uniquePharmacies = new Set(monthShifts.map((s) => s.pharmacyId)).size;
 
   const statGrid = document.getElementById('statGrid');
+  const scopeLabel = reportPharmacyFilter === 'all'
+    ? `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`
+    : `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
   statGrid.innerHTML = `
     <div class="statcard">
       <span class="statcard__value">${J.toPersianDigits(monthShifts.length)}</span>
-      <span class="statcard__label">تعداد شیفت — ${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}</span>
+      <span class="statcard__label">تعداد شیفت — ${scopeLabel}</span>
     </div>
     <div class="statcard">
       <span class="statcard__value">${J.toPersianDigits(totalHours.toFixed(1))}</span>
@@ -528,12 +568,7 @@ function csvEscape(val) {
 }
 
 function exportMonthCsv() {
-  const monthShifts = shifts
-    .filter((s) => {
-      const { jy, jm } = J.parseJalaliKey(s.dateKey);
-      return jy === viewYear && jm === viewMonth;
-    })
-    .sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start));
+  const monthShifts = getFilteredMonthShifts();
 
   if (monthShifts.length === 0) {
     showToast('شیفتی برای خروجی‌گیری وجود ندارد');
@@ -563,9 +598,19 @@ function exportMonthCsv() {
   rows.push(['', '', '', '', '', 'مجموع ساعت:', totalHours.toFixed(2), '']);
 
   const csv = '\uFEFF' + [header, ...rows].map((r) => r.map(csvEscape).join(',')).join('\n');
-  const filename = 'shifts-' + viewYear + '-' + String(viewMonth).padStart(2, '0') + '.csv';
+  const scopeSlug = reportPharmacyFilter === 'all' ? 'all' : slugifyForFilename(pharmacyName(reportPharmacyFilter));
+  const filename = 'shifts-' + viewYear + '-' + String(viewMonth).padStart(2, '0') + '-' + scopeSlug + '.csv';
   downloadFile(filename, csv, 'text/csv;charset=utf-8');
   showToast('فایل CSV دانلود شد');
+}
+
+/** Builds a safe-ish filename fragment from a (possibly Persian) pharmacy name. */
+function slugifyForFilename(name) {
+  return name
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[\\/:*?"<>|]/g, '')
+    .slice(0, 40) || 'pharmacy';
 }
 
 function exportJsonBackup() {
@@ -581,12 +626,7 @@ function exportJsonBackup() {
 /* ===================== PDF EXPORT (via browser print, offline-safe) ===================== */
 
 function exportMonthPdf() {
-  const monthShifts = shifts
-    .filter((s) => {
-      const { jy, jm } = J.parseJalaliKey(s.dateKey);
-      return jy === viewYear && jm === viewMonth;
-    })
-    .sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start));
+  const monthShifts = getFilteredMonthShifts();
 
   if (monthShifts.length === 0) {
     showToast('شیفتی برای خروجی‌گیری وجود ندارد');
@@ -596,6 +636,7 @@ function exportMonthPdf() {
   const totalHours = monthShifts.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
   const uniqueDays = new Set(monthShifts.map((s) => s.dateKey)).size;
   const uniquePharmacies = new Set(monthShifts.map((s) => s.pharmacyId)).size;
+  const isSinglePharmacy = reportPharmacyFilter !== 'all';
 
   const breakdown = {};
   monthShifts.forEach((s) => {
@@ -613,15 +654,24 @@ function exportMonthPdf() {
     </tr>
   `).join('');
 
+  const breakdownSection = isSinglePharmacy ? '' : `
+    <p class="pr-section-title">تفکیک بر اساس داروخانه</p>
+    <table class="pr-table">
+      <thead><tr><th>داروخانه</th><th>تعداد شیفت</th><th>مجموع ساعت</th></tr></thead>
+      <tbody>${breakdownRows}</tbody>
+    </table>
+  `;
+
   const shiftRows = monthShifts.map((s) => {
     const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
     const weekdayIdx = J.jalaliWeekday(jy, jm, jd);
     const hours = S.shiftDurationHours(s.start, s.end);
+    const pharmacyCell = isSinglePharmacy ? '' : `<td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>`;
     return `
       <tr>
         <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}</td>
         <td>${J.PERSIAN_WEEKDAYS[weekdayIdx]}</td>
-        <td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>
+        ${pharmacyCell}
         <td>${s.start}</td>
         <td>${s.end}</td>
         <td>${J.toPersianDigits(hours.toFixed(1))}</td>
@@ -630,15 +680,22 @@ function exportMonthPdf() {
     `;
   }).join('');
 
+  const pharmacyHeaderCell = isSinglePharmacy ? '' : '<th>داروخانه</th>';
+  const shiftListColspan = isSinglePharmacy ? 4 : 5;
+
   const now = new Date();
   const generatedAt = `${J.toPersianDigits(todayJ.jy)}/${J.toPersianDigits(String(todayJ.jm).padStart(2,'0'))}/${J.toPersianDigits(String(todayJ.jd).padStart(2,'0'))}`;
+
+  const reportTitle = isSinglePharmacy
+    ? `گزارش شیفت — ${escapeHtml(pharmacyName(reportPharmacyFilter))}`
+    : 'گزارش شیفت ماهانه';
 
   const reportHtml = `
     <div class="pr-head">
       <div class="pr-head__brand">
         <div class="pr-head__mark">℞</div>
         <div>
-          <p class="pr-head__title">گزارش شیفت ماهانه</p>
+          <p class="pr-head__title">${reportTitle}</p>
           <p class="pr-head__period">${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}</p>
         </div>
       </div>
@@ -658,26 +715,23 @@ function exportMonthPdf() {
         <span class="pr-stat__value">${J.toPersianDigits(uniqueDays)}</span>
         <span class="pr-stat__label">روز کاری</span>
       </div>
+      ${isSinglePharmacy ? '' : `
       <div class="pr-stat">
         <span class="pr-stat__value">${J.toPersianDigits(uniquePharmacies)}</span>
         <span class="pr-stat__label">داروخانه فعال</span>
-      </div>
+      </div>`}
     </div>
 
-    <p class="pr-section-title">تفکیک بر اساس داروخانه</p>
-    <table class="pr-table">
-      <thead><tr><th>داروخانه</th><th>تعداد شیفت</th><th>مجموع ساعت</th></tr></thead>
-      <tbody>${breakdownRows}</tbody>
-    </table>
+    ${breakdownSection}
 
     <p class="pr-section-title">فهرست کامل شیفت‌های ماه</p>
     <table class="pr-table">
       <thead>
-        <tr><th>تاریخ</th><th>روز هفته</th><th>داروخانه</th><th>شروع</th><th>پایان</th><th>مدت (ساعت)</th><th>یادداشت</th></tr>
+        <tr><th>تاریخ</th><th>روز هفته</th>${pharmacyHeaderCell}<th>شروع</th><th>پایان</th><th>مدت (ساعت)</th><th>یادداشت</th></tr>
       </thead>
       <tbody>${shiftRows}</tbody>
       <tfoot>
-        <tr><td colspan="5">مجموع</td><td>${J.toPersianDigits(totalHours.toFixed(1))}</td><td></td></tr>
+        <tr><td colspan="${shiftListColspan}">مجموع</td><td>${J.toPersianDigits(totalHours.toFixed(1))}</td><td></td></tr>
       </tfoot>
     </table>
 
@@ -690,7 +744,8 @@ function exportMonthPdf() {
   const reportEl = document.getElementById('printableReport');
   reportEl.innerHTML = reportHtml;
 
-  document.title = `گزارش شیفت ${J.PERSIAN_MONTHS[viewMonth - 1]} ${viewYear}`;
+  const titleScope = isSinglePharmacy ? pharmacyName(reportPharmacyFilter) : '';
+  document.title = `گزارش شیفت ${titleScope} ${J.PERSIAN_MONTHS[viewMonth - 1]} ${viewYear}`;
   window.print();
   setTimeout(() => { document.title = 'دفتر شیفت'; }, 500);
 }
@@ -717,57 +772,58 @@ function registerServiceWorker() {
     });
   }
 }
-    const shareBtn = document.getElementById('shareBtn');
-    const successMessage = document.getElementById('successMessage');
+const shareBtn = document.getElementById('shareBtn');
+const successMessage = document.getElementById('successMessage');
 
-    shareBtn.addEventListener('click', async () => {
-      // Data to share
-      const shareData = {
-        title: 'My Awesome Project',
-        text: 'Check out this cool project I built!',
-        url: window.location.href  // Current page URL
-      };
+shareBtn.addEventListener('click', async () => {
+  // Data to share
+  const shareData = {
+    title: 'My Awesome Project',
+    text: 'Check out this cool project I built!',
+    url: window.location.href  // Current page URL
+  };
 
-      try {
-        // Check if Web Share API is supported
-        if (navigator.share) {
-          await navigator.share(shareData);
-          showSuccess();
-        } else {
-          // Fallback: Copy link to clipboard
-          await fallbackCopyLink();
-        }
-      } catch (err) {
-        // User cancelled or error occurred
-        if (err.name !== 'AbortError') {
-          console.error('Error sharing:', err);
-          await fallbackCopyLink();
-        }
-      }
-    });
-
-    async function fallbackCopyLink() {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        showSuccess('Link copied to clipboard');
-      } catch (err) {
-        console.error('Clipboard failed:', err);
-        alert('Could not share or copy. Please copy this link manually:\n' + window.location.href);
-      }
+  try {
+    // Check if Web Share API is supported
+    if (navigator.share) {
+      await navigator.share(shareData);
+      showSuccess();
+    } else {
+      // Fallback: Copy link to clipboard
+      await fallbackCopyLink();
     }
-
-    function showSuccess(message = '✅ Shared successfully!') {
-      successMessage.textContent = message;
-      successMessage.style.opacity = '1';
-      
-      // Hide message after 3 seconds
-      setTimeout(() => {
-        successMessage.style.opacity = '0';
-      }, 3000);
+  } catch (err) {
+    // User cancelled or error occurred
+    if (err.name !== 'AbortError') {
+      console.error('Error sharing:', err);
+      await fallbackCopyLink();
     }
+  }
+});
 
-    // Bonus: Make it work even better on mobile
-    console.log('%cShare button ready! 🚀', 'color: #fff; font-size: 14px;');
+async function fallbackCopyLink() {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    showSuccess('Link copied to clipboard');
+  } catch (err) {
+    console.error('Clipboard failed:', err);
+    alert('Could not share or copy. Please copy this link manually:\n' + window.location.href);
+  }
+}
+
+function showSuccess(message = '✅ Shared successfully!') {
+  successMessage.textContent = message;
+  successMessage.style.opacity = '1';
+  
+  // Hide message after 3 seconds
+  setTimeout(() => {
+    successMessage.style.opacity = '0';
+  }, 3000);
+}
+
+// Bonus: Make it work even better on mobile
+console.log('%cShare button ready! 🚀', 'color: #fff; font-size: 14px;');
+
 
 /* ===================== BOOT ===================== */
 

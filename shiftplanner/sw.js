@@ -1,6 +1,6 @@
 /* Service worker — caches app shell for offline use */
 
-const CACHE_NAME = 'shift-planner-v2';
+const CACHE_NAME = 'shift-planner-v3';
 const ASSETS = [
   './',
   './index.html',

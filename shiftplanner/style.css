@@ -60,6 +60,8 @@ html, body {
   font-family: var(--font-ui);
   -webkit-tap-highlight-color: transparent;
   height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -76,9 +78,11 @@ button, input, select {
 
 .app {
   max-width: 720px;
+  width: 100%;
   margin: 0 auto;
   padding: 14px 14px 72px;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
 /* ===================== TOPBAR ===================== */
@@ -94,6 +98,8 @@ button, input, select {
   box-shadow: var(--shadow-sm);
   margin-bottom: 14px;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .topbar__brand {
@@ -182,10 +188,12 @@ button, input, select {
   align-items: center;
   gap: 8px;
   margin-bottom: 14px;
+  width: 100%;
 }
 
 .monthbar__label {
   flex: 1;
+  min-width: 0;
   text-align: center;
   background: var(--panel-raised);
   border: none;
@@ -196,6 +204,9 @@ button, input, select {
   cursor: default;
   font-variant-numeric: tabular-nums;
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .iconbtn {
@@ -239,14 +250,18 @@ button, input, select {
   box-shadow: var(--shadow-md);
   padding: 14px 12px 8px;
   margin-bottom: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ===================== WEEK HEADER ===================== */
 
 .weekheader {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   margin-bottom: 6px;
+  width: 100%;
 }
 
 .weekheader span {
@@ -255,6 +270,7 @@ button, input, select {
   font-weight: 600;
   color: var(--muted-2);
   padding-bottom: 6px;
+  overflow: hidden;
 }
 
 .weekheader span:first-child { color: var(--muted); }
@@ -263,21 +279,24 @@ button, input, select {
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
+  width: 100%;
 }
 
 .daycell {
   border: none;
   border-radius: var(--radius-sm);
   min-height: 60px;
-  padding: 6px 4px 5px;
+  min-width: 0;
+  padding: 6px 3px 5px;
   position: relative;
   cursor: pointer;
   background: transparent;
   display: flex;
   flex-direction: column;
   gap: 3px;
+  overflow: hidden;
   transition: background 0.12s ease, box-shadow 0.12s ease, transform 0.1s ease;
 }
 
@@ -335,19 +354,24 @@ button, input, select {
   flex-direction: column;
   gap: 2px;
   flex: 1;
+  min-width: 0;
+  width: 100%;
 }
 
 .shift-tick {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   background: var(--accent-wash);
   border-radius: 5px;
-  padding: 2px 4px;
-  font-size: 9px;
+  padding: 2px 3px;
+  font-size: 8.5px;
   line-height: 1.3;
   color: var(--ink-soft);
   overflow: hidden;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .shift-tick__time {
@@ -355,6 +379,7 @@ button, input, select {
   font-variant-numeric: tabular-nums;
   color: var(--muted);
   flex-shrink: 0;
+  font-size: 8px;
 }
 
 .shift-tick__name {
@@ -362,6 +387,8 @@ button, input, select {
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 600;
+  min-width: 0;
+  flex: 1;
 }
 
 .daycell__more {
@@ -450,6 +477,38 @@ button, input, select {
   color: var(--paper);
   box-shadow: var(--shadow-sm);
 }
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  background: var(--panel-raised);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-row label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.filter-row select {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: var(--canvas);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+.filter-row select:focus { outline: none; box-shadow: 0 0 0 2px var(--ink); }
 
 .statgrid {
   display: grid;
@@ -830,6 +889,11 @@ button, input, select {
   .topbar__nav { margin-right: 0; align-self: stretch; }
   .topbar__nav .navbtn { flex: 1; text-align: center; }
   .navbtn { padding: 7px 9px; font-size: 11px; }
+
+  .daycell { padding: 5px 2px 4px; min-height: 54px; }
+  .shift-tick__time { display: none; }
+  .shift-tick { padding: 2px 3px; font-size: 8px; justify-content: center; }
+  .daynum { font-size: 11px; }
 }
 
 /* ===================== ACCESSIBILITY ===================== */
@@ -952,6 +1016,7 @@ button, input, select {
 
   .pr-page-break { page-break-after: always; }
 }
+
 
 .developer{
   font-size: 10px;

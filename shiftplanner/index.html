@@ -65,6 +65,7 @@
       Share this project
       </button></span>
     </div>
+
   </main>
 
   <!-- ===================== SUMMARY VIEW ===================== -->
@@ -76,6 +77,13 @@
         <button class="linebtn" id="exportMonthBtn" type="button">خروجی CSV</button>
         <button class="linebtn" id="exportJsonBtn" type="button">پشتیبان JSON</button>
       </div>
+    </div>
+
+    <div class="filter-row">
+      <label for="reportPharmacyFilter">گزارش برای</label>
+      <select id="reportPharmacyFilter">
+        <option value="all">همه داروخانه‌ها</option>
+      </select>
     </div>
 
     <div class="statgrid" id="statGrid"></div>
@@ -158,7 +166,7 @@
   </div>
 </div>
 
-
+<!-- ===================== PRINTABLE REPORT (used only for PDF export via print) ===================== -->
 <div class="printable-report" id="printableReport" style="display:none;"></div>
 
 <!-- ===================== TOAST ===================== -->
