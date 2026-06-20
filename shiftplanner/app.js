@@ -772,6 +772,13 @@ function registerServiceWorker() {
     });
   }
 }
+
+
+/* ===================== BOOT ===================== */
+
+document.addEventListener('DOMContentLoaded', init);
+
+
 const shareBtn = document.getElementById('shareBtn');
 const successMessage = document.getElementById('successMessage');
 
@@ -823,8 +830,3 @@ function showSuccess(message = '✅ Shared successfully!') {
 
 // Bonus: Make it work even better on mobile
 console.log('%cShare button ready! 🚀', 'color: #fff; font-size: 14px;');
-
-
-/* ===================== BOOT ===================== */
-
-document.addEventListener('DOMContentLoaded', init);
