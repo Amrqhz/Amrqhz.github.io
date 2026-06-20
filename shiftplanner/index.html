@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="description" content="برنامه‌ریز شیفت داروخانه">
+<title>دفتر شیفت</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__mark" aria-hidden="true">℞</span>
+      <div class="topbar__text">
+        <h1 class="topbar__title">دفتر شیفت</h1>
+        <p class="topbar__sub" id="monthSummaryLine">—</p>
+      </div>
+    </div>
+    <nav class="topbar__nav" aria-label="بخش‌ها">
+      <button class="navbtn is-active" data-view="calendar" type="button">تقویم</button>
+      <button class="navbtn" data-view="summary" type="button">گزارش ماه</button>
+      <button class="navbtn" data-view="pharmacies" type="button">داروخانه‌ها</button>
+    </nav>
+  </header>
+
+  <!-- ===================== CALENDAR VIEW ===================== -->
+  <main class="view" id="view-calendar" data-active="true">
+
+    <div class="monthbar">
+      <button class="iconbtn" id="prevMonth" type="button" aria-label="ماه قبل">
+        <svg viewBox="0 0 24 24"><path d="M14 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="monthbar__label" id="monthLabel" type="button">—</button>
+      <button class="iconbtn" id="nextMonth" type="button" aria-label="ماه بعد">
+        <svg viewBox="0 0 24 24"><path d="M10 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="todaybtn" id="gotoToday" type="button">امروز</button>
+    </div>
+
+    <div class="calendar-card">
+      <div class="weekheader" id="weekHeader"></div>
+      <div class="calendar-grid" id="calendarGrid" role="grid"></div>
+    </div>
+
+    <div class="legend">
+      <span class="legend__item"><i class="legend__tick"></i> روز دارای شیفت</span>
+      <span class="legend__item"><i class="legend__dot"></i> امروز</span>
+      <span class="developer"><button class="share-btn">
+        <a href="https://amrqhz.github.io/" style="text-decoration: none;">
+          <span class="developer">طراحی و پیاده سازی: امیرحسین قلی زاده</span>
+          <span class="developer">|</span>
+          <span class="developer">social media: @amrqhz</span>
+        </a>
+
+      </button></span>
+      <span class="developer" id="successMessage"><button class="share-btn" id="shareBtn">
+      Share this project
+      </button></span>
+    </div>
+  </main>
+
+  <!-- ===================== SUMMARY VIEW ===================== -->
+  <main class="view" id="view-summary" data-active="false">
+    <div class="panel-head">
+      <h2>گزارش ماه</h2>
+      <div class="panel-head__actions">
+        <button class="linebtn linebtn--solid" id="exportPdfBtn" type="button">خروجی PDF</button>
+        <button class="linebtn" id="exportMonthBtn" type="button">خروجی CSV</button>
+        <button class="linebtn" id="exportJsonBtn" type="button">پشتیبان JSON</button>
+      </div>
+    </div>
+
+    <div class="statgrid" id="statGrid"></div>
+
+    <h3 class="sectiontitle">تفکیک بر اساس داروخانه</h3>
+    <div class="table-wrap">
+      <table class="datatable" id="pharmacyBreakdownTable">
+        <thead>
+          <tr><th>داروخانه</th><th>تعداد شیفت</th><th>مجموع ساعت</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 class="sectiontitle">فهرست شیفت‌های ماه</h3>
+    <div class="table-wrap">
+      <table class="datatable" id="monthShiftsTable">
+        <thead>
+          <tr><th>تاریخ</th><th>روز هفته</th><th>داروخانه</th><th>ساعت شروع</th><th>ساعت پایان</th><th>مدت</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- ===================== PHARMACIES VIEW ===================== -->
+  <main class="view" id="view-pharmacies" data-active="false">
+    <div class="panel-head">
+      <h2>داروخانه‌ها</h2>
+    </div>
+    <form class="inline-form" id="pharmacyForm">
+      <input type="text" id="pharmacyNameInput" placeholder="نام داروخانه" required>
+      <input type="text" id="pharmacyAddrInput" placeholder="آدرس (اختیاری)">
+      <button type="submit" class="linebtn linebtn--solid">افزودن</button>
+    </form>
+    <ul class="pharmacy-list" id="pharmacyList"></ul>
+  </main>
+
+</div>
+
+<!-- ===================== DAY DETAIL / SHIFT FORM SHEET ===================== -->
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="sheet" id="daySheet" aria-hidden="true">
+  <div class="sheet__handle"></div>
+  <div class="sheet__head">
+    <h2 id="sheetDateLabel">—</h2>
+    <button class="iconbtn" id="closeSheet" type="button" aria-label="بستن">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div class="sheet__body">
+    <div id="existingShiftsForDay"></div>
+
+    <form id="shiftForm" class="shiftform">
+      <input type="hidden" id="shiftEditId">
+      <div class="field">
+        <label for="shiftPharmacySelect">داروخانه</label>
+        <select id="shiftPharmacySelect" required></select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="shiftStart">ساعت شروع</label>
+          <input type="time" id="shiftStart" required>
+        </div>
+        <div class="field">
+          <label for="shiftEnd">ساعت پایان</label>
+          <input type="time" id="shiftEnd" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="shiftNote">یادداشت (اختیاری)</label>
+        <input type="text" id="shiftNote" placeholder="مثلاً: جایگزین شیفت آقای...">
+      </div>
+      <div class="field-row field-row--actions">
+        <button type="submit" class="linebtn linebtn--solid" id="saveShiftBtn">ثبت شیفت</button>
+        <button type="button" class="linebtn" id="cancelShiftEdit" hidden>انصراف از ویرایش</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="printable-report" id="printableReport" style="display:none;"></div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast"></div>
+
+<script src="jalali.js"></script>
+<script src="storage.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
