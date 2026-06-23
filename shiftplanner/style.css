@@ -112,7 +112,8 @@ button, input, select {
 .topbar__mark {
   font-size: 22px;
   line-height: 1;
-  background: var(--ink);
+  /* background: var(--ink); */
+  background: #ffffff;
   color: var(--paper);
   width: 44px;
   height: 44px;
@@ -307,7 +308,7 @@ button, input, select {
 }
 
 .daycell.is-weekend:not(.is-outside) {
-  background: var(--weekend-wash);
+  background: rgb(255, 121, 121);
 }
 .daycell.is-weekend:not(.is-outside):hover {
   background: var(--accent-wash);
@@ -1017,6 +1018,292 @@ button, input, select {
   .pr-page-break { page-break-after: always; }
 }
 
+/* ===================== NIGHT / HOLIDAY SHIFT — YELLOW TINT ===================== */
+
+:root {
+  --special-bg:     #fffaeb;
+  --special-border: #f5c842;
+  --special-text:   #8a6a00;
+  --special-chip:   #fef3c7;
+}
+
+/* Calendar chip for special shifts */
+.shift-tick--special {
+  background: var(--special-chip);
+  color: var(--special-text);
+}
+.shift-tick--special .shift-tick__time { color: var(--special-text); opacity: 0.75; }
+.shift-tick--special .shift-tick__name { color: var(--special-text); }
+
+/* Today cell inverts special chip colors */
+.daycell.is-today .shift-tick--special {
+  background: rgba(245,200,66,0.25);
+  color: #ffe082;
+}
+.daycell.is-today .shift-tick--special .shift-tick__name { color: #ffe082; }
+
+/* Table rows for special shifts */
+.row--special td { background: var(--special-bg); }
+.cell--special   { color: var(--special-text); font-weight: 600; }
+
+/* Existing shift card in day sheet */
+.existing-shift--special {
+  border-right: 3px solid var(--special-border);
+}
+.existing-shift__badge {
+  font-size: 10.5px;
+  color: var(--special-text);
+  background: var(--special-chip);
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 99px;
+  margin-top: 4px;
+}
+
+/* Legend */
+.legend__tick--special {
+  background: var(--special-chip);
+  box-shadow: inset 0 0 0 1px var(--special-border);
+}
+
+/* Stat card special tint */
+.statcard--special {
+  background: var(--special-bg);
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--special-border);
+}
+.statcard--special .statcard__label { color: var(--special-text); }
+
+/* ===================== SHIFT TYPE ROW (inside form) ===================== */
+
+.shift-type-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.shift-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--canvas);
+  color: var(--muted);
+  transition: background 0.2s, color 0.2s;
+}
+.shift-type-badge--special {
+  background: var(--special-chip);
+  color: var(--special-text);
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  margin-right: auto;
+}
+.toggle-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+/* ===================== RATE CARD (financial settings inline) ===================== */
+
+.rate-card {
+  background: var(--panel-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.rate-card__title {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 14px;
+  color: var(--ink-soft);
+}
+
+.rate-card__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 380px) {
+  .rate-card__fields { grid-template-columns: 1fr; }
+}
+
+.rate-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rate-field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.rate-field input {
+  width: 100%;
+  border: none;
+  background: var(--canvas);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+}
+.rate-field input:focus { outline: none; box-shadow: 0 0 0 2px var(--ink); }
+
+.rate-field__unit {
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+/* Special rate field highlight */
+.rate-field:last-child input { background: var(--special-chip); }
+.rate-field:last-child label { color: var(--special-text); }
+
+/* ===================== SETTINGS VIEW ===================== */
+
+.settings-section {
+  background: var(--panel-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.settings-section__title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+  padding: 12px 16px 0;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.settings-item:last-child { border-bottom: none; }
+
+.settings-item--installed .settings-item__icon svg { stroke: #3d9e56; }
+
+.settings-item__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--canvas);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.settings-item__icon svg { width: 20px; height: 20px; color: var(--ink); }
+
+.settings-item__text {
+  flex: 1;
+  min-width: 0;
+}
+.settings-item__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.settings-item__desc {
+  display: block;
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.settings-about {
+  padding: 16px;
+}
+.settings-about__name {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+.settings-about__dev,
+.settings-about__social {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0 0 4px;
+}
+.settings-about__social span {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ===================== NAVBTN ICON ===================== */
+
+.navbtn--icon {
+  padding: 7px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.navbtn--icon svg { width: 15px; height: 15px; }
+
+/* Keep nav scrollable on very narrow screens when there are 5 items */
+.topbar__nav {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.topbar__nav::-webkit-scrollbar { display: none; }
+
+/* ===================== PRINT — FINANCIAL ADDITIONS ===================== */
+
+@media print {
+  .pr-rates-note {
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 14px;
+    padding: 6px 10px;
+    background: #f9f9f7;
+    border-radius: 6px;
+    border: 1px solid #e0e0de;
+  }
+
+  .pr-row-special { background: #fffaeb; }
+  .pr-special { color: #8a6a00; font-weight: 700; }
+  .pr-stat--special { background: #fffaeb; box-shadow: inset 0 0 0 1px #f5c842; }
+
+  .pr-dev {
+    margin-top: 28px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+    font-size: 9px;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
 
 .developer{
   font-size: 10px;
@@ -1028,7 +1315,7 @@ button, input, select {
       color: #333;
       border: none;
       padding: 8px 16px;
-      font-size: 010px;
+      font-size: 12px;
       font-weight: bold;
       border-radius: 50px;
       cursor: pointer;
@@ -1042,6 +1329,7 @@ button, input, select {
     .share-btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+      background: #c8c8c8;
     }
 
     .share-btn:active {

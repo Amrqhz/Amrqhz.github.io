@@ -7,8 +7,8 @@
 <meta name="description" content="برنامه‌ریز شیفت داروخانه">
 <title>دفتر شیفت</title>
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/192.png">
+<link rel="icon" href="icons/192.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
   <!-- ===================== HEADER ===================== -->
   <header class="topbar">
     <div class="topbar__brand">
-      <span class="topbar__mark" aria-hidden="true">℞</span>
+      <span class="topbar__mark" aria-hidden="true"><img style="width: 35px;" src="./icons/192.png" alt=""></span>
       <div class="topbar__text">
         <h1 class="topbar__title">دفتر شیفت</h1>
         <p class="topbar__sub" id="monthSummaryLine">—</p>
@@ -27,7 +27,14 @@
     <nav class="topbar__nav" aria-label="بخش‌ها">
       <button class="navbtn is-active" data-view="calendar" type="button">تقویم</button>
       <button class="navbtn" data-view="summary" type="button">گزارش ماه</button>
+      <button class="navbtn" data-view="financial" type="button">گزارش مالی</button>
       <button class="navbtn" data-view="pharmacies" type="button">داروخانه‌ها</button>
+      <button class="navbtn navbtn--icon" data-view="settings" type="button" aria-label="تنظیمات">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
     </nav>
   </header>
 
@@ -51,7 +58,8 @@
     </div>
 
     <div class="legend">
-      <span class="legend__item"><i class="legend__tick"></i> روز دارای شیفت</span>
+      <span class="legend__item"><i class="legend__tick"></i> شیفت عادی</span>
+      <span class="legend__item"><i class="legend__tick legend__tick--special"></i> شب / تعطیل</span>
       <span class="legend__item"><i class="legend__dot"></i> امروز</span>
       <span class="developer"><button class="share-btn">
         <a href="https://amrqhz.github.io/" style="text-decoration: none;">
@@ -61,10 +69,11 @@
         </a>
 
       </button></span>
-      <span class="developer" id="successMessage"><button class="share-btn" id="shareBtn">
-      Share this project
-      </button></span>
+ 
+    
     </div>
+
+
 
   </main>
 
@@ -92,7 +101,7 @@
     <div class="table-wrap">
       <table class="datatable" id="pharmacyBreakdownTable">
         <thead>
-          <tr><th>داروخانه</th><th>تعداد شیفت</th><th>مجموع ساعت</th></tr>
+          <tr><th>داروخانه</th><th>شیفت عادی</th><th>شیفت شب/تعطیل</th><th>مجموع ساعت</th></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -102,7 +111,65 @@
     <div class="table-wrap">
       <table class="datatable" id="monthShiftsTable">
         <thead>
-          <tr><th>تاریخ</th><th>روز هفته</th><th>داروخانه</th><th>ساعت شروع</th><th>ساعت پایان</th><th>مدت</th><th></th></tr>
+          <tr><th>تاریخ</th><th>روز هفته</th><th>نوع</th><th>داروخانه</th><th>شروع</th><th>پایان</th><th>مدت</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- ===================== FINANCIAL VIEW ===================== -->
+  <main class="view" id="view-financial" data-active="false">
+    <div class="panel-head">
+      <h2>گزارش مالی</h2>
+      <div class="panel-head__actions">
+        <button class="linebtn linebtn--solid" id="exportFinancialPdfBtn" type="button">خروجی PDF</button>
+        <button class="linebtn" id="exportFinancialCsvBtn" type="button">خروجی CSV</button>
+      </div>
+    </div>
+
+    <!-- Rate settings inline -->
+    <div class="rate-card">
+      <h3 class="rate-card__title">نرخ دستمزد (تومان / ساعت)</h3>
+      <div class="rate-card__fields">
+        <div class="rate-field">
+          <label for="rateNormal">شیفت عادی</label>
+          <input type="number" id="rateNormal" min="0" step="10000" placeholder="۰" inputmode="numeric">
+          <span class="rate-field__unit">تومان</span>
+        </div>
+        <div class="rate-field">
+          <label for="rateSpecial">شیفت شب / تعطیل</label>
+          <input type="number" id="rateSpecial" min="0" step="10000" placeholder="۰" inputmode="numeric">
+          <span class="rate-field__unit">تومان</span>
+        </div>
+      </div>
+      <button class="linebtn linebtn--solid" id="saveRatesBtn" type="button">ذخیره نرخ‌ها</button>
+    </div>
+
+    <div class="filter-row">
+      <label for="financialPharmacyFilter">گزارش برای</label>
+      <select id="financialPharmacyFilter">
+        <option value="all">همه داروخانه‌ها</option>
+      </select>
+    </div>
+
+    <div class="statgrid" id="financialStatGrid"></div>
+
+    <h3 class="sectiontitle">تفکیک درآمد بر اساس داروخانه</h3>
+    <div class="table-wrap">
+      <table class="datatable" id="financialBreakdownTable">
+        <thead>
+          <tr><th>داروخانه</th><th>ساعت عادی</th><th>ساعت شب/تعطیل</th><th>درآمد (تومان)</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <h3 class="sectiontitle">جزئیات شیفت‌ها</h3>
+    <div class="table-wrap">
+      <table class="datatable" id="financialShiftsTable">
+        <thead>
+          <tr><th>تاریخ</th><th>روز</th><th>نوع</th><th>داروخانه</th><th>شروع</th><th>پایان</th><th>مدت</th><th>درآمد</th></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -120,6 +187,59 @@
       <button type="submit" class="linebtn linebtn--solid">افزودن</button>
     </form>
     <ul class="pharmacy-list" id="pharmacyList"></ul>
+  </main>
+
+  <!-- ===================== SETTINGS VIEW ===================== -->
+  <main class="view" id="view-settings" data-active="false">
+    <div class="panel-head">
+      <h2>تنظیمات</h2>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-item" id="pwaInstallItem">
+        <div class="settings-item__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <div class="settings-item__text">
+          <span class="settings-item__label">نصب اپلیکیشن</span>
+          <span class="settings-item__desc">افزودن دفتر شیفت به صفحه اصلی</span>
+        </div>
+        <button class="linebtn linebtn--solid" id="pwaInstallBtn" type="button">نصب</button>
+      </div>
+
+      <div class="settings-item settings-item--installed" id="pwaInstalledNote" style="display:none;">
+        <div class="settings-item__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="settings-item__text">
+          <span class="settings-item__label">اپلیکیشن نصب شده است</span>
+          <span class="settings-item__desc">دفتر شیفت روی صفحه اصلی شما موجود است</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3 class="settings-section__title">درباره</h3>
+      <div class="settings-about" style="align-items: center; justify-content: center; text-align: center;">
+        <p class="settings-about__name">دفتر شیفت</p>
+        <p class="settings-about__dev">طراحی و توسعه: امیرحسین قلی‌زاده</p>
+        <p class="settings-about__social">سوشال مدیا: <span>@amrqhz</span></p>
+        <p style="font-size: 13px;">این برنامه به صورت رایگان توسعه داده شده است.<br> برای اطلاع از اپدیت ها و سایر برنامه ها میتوانید از طریق کانال تلگرام به ایدی @amrqhz_projects اقدام کنید.<br> مرسی از حمایت های شما</p>
+      </div>
+      <div class="legend" style="align-items: center;justify-content: center; text-align: center; margin-bottom: 3rem;">
+        <span class="developer" id="successMessage"><button class="share-btn" id="shareBtn">
+         Share this project
+        </button></span>
+      </div>
+    </div>
+
+
   </main>
 
 </div>
@@ -154,19 +274,27 @@
           <input type="time" id="shiftEnd" required>
         </div>
       </div>
+      <!-- Night/holiday auto-detection feedback + manual override -->
+      <div class="shift-type-row" id="shiftTypeRow">
+        <div class="shift-type-badge" id="shiftTypeBadge">شیفت عادی</div>
+        <label class="toggle-label">
+          <input type="checkbox" id="shiftIsHoliday">
+          <span>تعطیل</span>
+        </label>
+      </div>
       <div class="field">
         <label for="shiftNote">یادداشت (اختیاری)</label>
         <input type="text" id="shiftNote" placeholder="مثلاً: جایگزین شیفت آقای...">
       </div>
       <div class="field-row field-row--actions">
         <button type="submit" class="linebtn linebtn--solid" id="saveShiftBtn">ثبت شیفت</button>
-        <button type="button" class="linebtn" id="cancelShiftEdit" hidden>انصراف از ویرایش</button>
+        <button type="button" class="linebtn" id="cancelShiftEdit" hidden>انصراف</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- ===================== PRINTABLE REPORT (used only for PDF export via print) ===================== -->
+<!-- ===================== PRINTABLE REPORT ===================== -->
 <div class="printable-report" id="printableReport" style="display:none;"></div>
 
 <!-- ===================== TOAST ===================== -->

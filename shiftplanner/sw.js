@@ -1,6 +1,6 @@
 /* Service worker — caches app shell for offline use */
 
-const CACHE_NAME = 'shift-planner-v3';
+const CACHE_NAME = 'shift-planner-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -9,10 +9,10 @@ const ASSETS = [
   './storage.js',
   './jalali.js',
   './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-192.png',
-  './icons/icon-maskable-512.png',
+  './icons/192.png',
+  './icons/512.png',
+  './icons/192.png',
+  './icons/512.png',
   './fonts/Vazirmatn-Regular.woff2',
   './fonts/Vazirmatn-Bold.woff2',
 ];
