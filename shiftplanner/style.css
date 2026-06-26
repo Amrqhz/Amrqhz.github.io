@@ -307,7 +307,7 @@ button, input, select {
 }
 
 .daycell.is-weekend:not(.is-outside) {
-  background: var(--weekend-wash);
+  background: rgba(255, 81, 81, 0.636);
 }
 .daycell.is-weekend:not(.is-outside):hover {
   background: var(--accent-wash);
