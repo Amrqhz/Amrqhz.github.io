@@ -576,8 +576,54 @@ function renderFinancial() {
 /* =================== SETTINGS + PWA INSTALL =================== */
 
 function bindSettings() {
-  // nothing dynamic needed yet beyond PWA
+  initThemePicker();
 }
+
+/* =================== THEME SYSTEM =================== */
+
+const THEMES = {
+  default:  { label: 'پیش‌فرض',       desc: 'طراحی ساده و مینیمال' },
+  lavender: { label: 'لاواندر',        desc: 'بنفش آرام‌بخش با گرادیان ملایم' },
+  softpink: { label: 'صورتی داروخانه', desc: 'صورتی گرم با تزئینات دارویی' },
+  softblue: { label: 'آبی گل‌دار',     desc: 'آبی ملایم با پس‌زمینه گل‌های دست‌کشیده' },
+  floral:   { label: '🌸 گل‌های ویژه', desc: 'تصویر گل با جلوه شیشه‌ای glassmorphism' },
+};
+
+let currentTheme = localStorage.getItem('shiftplanner.theme') || 'default';
+
+function applyTheme(themeKey, save = true) {
+  currentTheme = themeKey;
+  document.documentElement.setAttribute('data-theme', themeKey);
+  if (save) localStorage.setItem('shiftplanner.theme', themeKey);
+  updateThemePickerUI();
+}
+
+function initThemePicker() {
+  applyTheme(currentTheme, false);
+
+  document.querySelectorAll('.theme-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      const t = card.dataset.theme;
+      applyTheme(t);
+      showToast(`تم «${THEMES[t]?.label}» اعمال شد`);
+    });
+  });
+}
+
+function updateThemePickerUI() {
+  document.querySelectorAll('.theme-card').forEach((card) => {
+    card.classList.toggle('is-active', card.dataset.theme === currentTheme);
+  });
+
+  const info = THEMES[currentTheme];
+  if (info) {
+    const titleEl = document.getElementById('themePreviewTitle');
+    const descEl  = document.querySelector('.theme-preview-box__desc');
+    if (titleEl) titleEl.textContent = info.label;
+    if (descEl)  descEl.textContent  = info.desc;
+  }
+}
+
 
 function bindPwaInstall() {
   // Capture the install prompt

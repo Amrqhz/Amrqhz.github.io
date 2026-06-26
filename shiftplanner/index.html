@@ -10,8 +10,20 @@
 <link rel="apple-touch-icon" href="icons/192.png">
 <link rel="icon" href="icons/192.png">
 <link rel="stylesheet" href="style.css">
+
+<!-- Apply saved theme before first paint to avoid flash -->
+<script>
+  (function(){
+    var t = localStorage.getItem('shiftplanner.theme') || 'default';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 </head>
 <body>
+ 
+<!-- Themed background layer — sits behind entire app, themed SVG backgrounds render here -->
+<div id="themeLayer" aria-hidden="true"></div>
+ 
 
 <div class="app">
 
@@ -61,17 +73,16 @@
       <span class="legend__item"><i class="legend__tick"></i> شیفت عادی</span>
       <span class="legend__item"><i class="legend__tick legend__tick--special"></i> شب / تعطیل</span>
       <span class="legend__item"><i class="legend__dot"></i> امروز</span>
-      <span class="developer"><button class="share-btn">
+          <span class="developer"><button class=" info share-btn ">
         <a href="https://amrqhz.github.io/" style="text-decoration: none;">
           <span class="developer">طراحی و پیاده سازی: امیرحسین قلی زاده</span>
           <span class="developer">|</span>
           <span class="developer">social media: @amrqhz</span>
         </a>
-
-      </button></span>
- 
-    
+    </button></span>
     </div>
+
+
 
 
 
@@ -194,6 +205,58 @@
     <div class="panel-head">
       <h2>تنظیمات</h2>
     </div>
+
+ 
+    <!-- ===== THEME PICKER ===== -->
+    <div class="settings-section theme-picker-section">
+      <h3 class="settings-item__label">تم رابط کاربری</h3>
+      <div class="theme-grid" id="themeGrid">
+ 
+        <button class="theme-card" data-theme="default" type="button" aria-label="پیش‌فرض">
+          <div class="theme-card__preview theme-card__preview--default">
+            <div class="tc-dot"></div><div class="tc-dot"></div><div class="tc-dot"></div>
+          </div>
+          <span class="theme-card__label">پیش‌فرض</span>
+        </button>
+ 
+        <button class="theme-card" data-theme="lavender" type="button" aria-label="لاواندر">
+          <div class="theme-card__preview theme-card__preview--lavender">
+            <div class="tc-dot"></div><div class="tc-dot"></div><div class="tc-dot"></div>
+          </div>
+          <span class="theme-card__label">لاواندر</span>
+        </button>
+ 
+        <button class="theme-card" data-theme="softpink" type="button" aria-label="صورتی">
+          <div class="theme-card__preview theme-card__preview--softpink">
+            <div class="tc-dot"></div><div class="tc-dot"></div><div class="tc-dot"></div>
+          </div>
+          <span class="theme-card__label">صورتی</span>
+        </button>
+ 
+        <button class="theme-card " data-theme="softblue" type="button" aria-label="آبی">
+          <div class="theme-card__preview theme-card__preview--softblue">
+            <div class="tc-dot"></div><div class="tc-dot"></div><div class="tc-dot"></div>
+          </div>
+          <span class="theme-card__label">آبی</span>
+        </button>
+ 
+        <button class="theme-card" data-theme="floral" type="button" aria-label="گل‌های ویژه">
+          <div class="theme-card__preview theme-card__preview--floral">
+            <div class="tc-dot"></div><div class="tc-dot"></div><div class="tc-dot"></div>
+          </div>
+          <span class="theme-card__label">🌸</span>
+        </button>
+ 
+      </div>
+ 
+      <!-- Live preview -->
+      <!-- <div class="theme-preview-box" id="themePreviewBox">
+        <p class="theme-preview-box__title" id="themePreviewTitle">پیش‌فرض</p>
+        <p class="theme-preview-box__desc">تم فعال را در زیر می‌بینید</p>
+        <button class="linebtn linebtn--solid" id="themePreviewBtn">دکمه نمونه</button>
+      </div> -->
+    </div>
+     
 
     <div class="settings-section">
       <div class="settings-item" id="pwaInstallItem">

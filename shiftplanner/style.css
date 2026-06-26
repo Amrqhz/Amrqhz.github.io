@@ -112,8 +112,7 @@ button, input, select {
 .topbar__mark {
   font-size: 22px;
   line-height: 1;
-  /* background: var(--ink); */
-  background: #ffffff;
+  background: white;
   color: var(--paper);
   width: 44px;
   height: 44px;
@@ -308,7 +307,7 @@ button, input, select {
 }
 
 .daycell.is-weekend:not(.is-outside) {
-  background: rgb(255, 121, 121);
+  background: var(--weekend-wash);
 }
 .daycell.is-weekend:not(.is-outside):hover {
   background: var(--accent-wash);
@@ -883,6 +882,7 @@ button, input, select {
   .daycell { min-height: 84px; padding: 8px 6px 6px; }
   .topbar__title { font-size: 19px; }
   .statgrid { grid-template-columns: repeat(4, 1fr); }
+
 }
 
 @media (max-width: 380px) {
@@ -895,6 +895,7 @@ button, input, select {
   .shift-tick__time { display: none; }
   .shift-tick { padding: 2px 3px; font-size: 8px; justify-content: center; }
   .daynum { font-size: 11px; }
+
 }
 
 /* ===================== ACCESSIBILITY ===================== */
@@ -1304,6 +1305,274 @@ button, input, select {
     gap: 4px;
   }
 }
+/* =====================================================================
+   THEME SYSTEM
+   Applied via data-theme attribute on <html>.
+   Each theme overrides CSS custom properties + adds a background layer.
+   ===================================================================== */
+
+/* ---- Theme background layer (sits behind .app, fixed position) ---- */
+#themeLayer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* Show background layer only for themed modes */
+[data-theme="softblue"]  #themeLayer,
+[data-theme="softpink"]  #themeLayer,
+[data-theme="lavender"]  #themeLayer,
+[data-theme="floral"]    #themeLayer { opacity: 1; }
+
+/* ===================================================================== */
+/* LAVENDER THEME                                                         */
+/* ===================================================================== */
+[data-theme="lavender"] {
+  --ink: #2d1b5e;
+  --ink-soft: #3d2870;
+  --paper: #f9f6ff;
+  --canvas: #ede8fb;
+  --panel: #f4f0fe;
+  --panel-raised: #faf8ff;
+  --line: #d9d0f5;
+  --line-strong: #c4b8ee;
+  --muted: #7c6aa8;
+  --muted-2: #b0a2d4;
+  --accent-wash: #e8e0fa;
+  --weekend-wash: #f0ebff;
+  --special-chip: #fde9ff;
+  --special-border: #d47fe0;
+  --special-text: #8b3fa0;
+  --special-bg: #fdf4ff;
+}
+
+[data-theme="lavender"] #themeLayer {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cdefs%3E%3CradialGradient id='lg1' cx='30%25' cy='20%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23c4a8ff' stop-opacity='0.55'/%3E%3Cstop offset='100%25' stop-color='%23e8e0fa' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='lg2' cx='80%25' cy='80%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23b89cff' stop-opacity='0.4'/%3E%3Cstop offset='100%25' stop-color='%23d9d0f5' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='800' height='800' fill='%23ede8fb'/%3E%3Cellipse cx='240' cy='160' rx='280' ry='200' fill='url(%23lg1)'/%3E%3Cellipse cx='620' cy='640' rx='250' ry='190' fill='url(%23lg2)'/%3E%3Ccircle cx='700' cy='100' r='140' fill='%23d4b8ff' opacity='0.18'/%3E%3Ccircle cx='80' cy='700' r='160' fill='%23c4a8ff' opacity='0.15'/%3E%3Cpath d='M400 120 Q450 80 500 120 Q450 160 400 120Z' fill='%23c084fc' opacity='0.12'/%3E%3Cpath d='M380 118 Q400 60 420 118 Q400 176 380 118Z' fill='%23a855f7' opacity='0.1'/%3E%3Cpath d='M200 350 Q240 310 280 350 Q240 390 200 350Z' fill='%23c084fc' opacity='0.1'/%3E%3Cpath d='M600 280 Q640 240 680 280 Q640 320 600 280Z' fill='%23a855f7' opacity='0.09'/%3E%3Cpath d='M550 580 Q590 540 630 580 Q590 620 550 580Z' fill='%23c084fc' opacity='0.11'/%3E%3Cpath d='M100 400 Q130 360 160 400 Q130 440 100 400Z' fill='%23a78bfa' opacity='0.1'/%3E%3C/svg%3E");
+}
+
+/* ===================================================================== */
+/* SOFT PINK THEME — pharmacy / drug motif background                    */
+/* ===================================================================== */
+[data-theme="softpink"] {
+  --ink: #5a1a2e;
+  --ink-soft: #7a2540;
+  --paper: #fff8fa;
+  --canvas: #ffd8e6;
+  --panel: #fef0f4;
+  --panel-raised: #fff8fa;
+  --line: #f5cdd8;
+  --line-strong: #f0b3c4;
+  --muted: #ad5a74;
+  --muted-2: #d49aab;
+  --accent-wash: #fde0e8;
+  --weekend-wash: #fff0f4;
+  --special-chip: #fff0e0;
+  --special-border: #f5a742;
+  --special-text: #a06010;
+  --special-bg: #fff8eb;
+}
+
+[data-theme="softpink"] #themeLayer {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900' viewBox='0 0 900 900'%3E%3Cdefs%3E%3CradialGradient id='pg1' cx='25%25' cy='25%25' r='55%25'%3E%3Cstop offset='0%25' stop-color='%23ffb3c6' stop-opacity='0.5'/%3E%3Cstop offset='100%25' stop-color='%23fce8ef' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='pg2' cx='80%25' cy='75%25' r='45%25'%3E%3Cstop offset='0%25' stop-color='%23ff8fab' stop-opacity='0.35'/%3E%3Cstop offset='100%25' stop-color='%23fce8ef' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='900' height='900' fill='%23fce8ef'/%3E%3Cellipse cx='220' cy='200' rx='260' ry='180' fill='url(%23pg1)'/%3E%3Cellipse cx='700' cy='700' rx='240' ry='170' fill='url(%23pg2)'/%3E%3Crect x='60' y='120' width='90' height='36' rx='18' fill='%23f9a8c0' opacity='0.35'/%3E%3Crect x='60' y='120' width='45' height='36' rx='18' fill='%23f472a8' opacity='0.28'/%3E%3Crect x='720' y='80' width='80' height='32' rx='16' fill='%23fba4be' opacity='0.3' transform='rotate(-30 760 96)'/%3E%3Crect x='720' y='80' width='40' height='32' rx='16' fill='%23f06090' opacity='0.25' transform='rotate(-30 760 96)'/%3E%3Crect x='750' y='350' width='110' height='44' rx='22' fill='%23ffb3cc' opacity='0.28'/%3E%3Crect x='750' y='350' width='55' height='44' rx='22' fill='%23ff7aab' opacity='0.22'/%3E%3Crect x='140' y='620' width='16' height='50' rx='4' fill='%23f472a8' opacity='0.22'/%3E%3Crect x='120' y='637' width='56' height='16' rx='4' fill='%23f472a8' opacity='0.22'/%3E%3Crect x='820' y='180' width='12' height='38' rx='3' fill='%23f472a8' opacity='0.18'/%3E%3Crect x='805' y='195' width='42' height='12' rx='3' fill='%23f472a8' opacity='0.18'/%3E%3Cellipse cx='830' cy='560' rx='38' ry='20' fill='%23f9a8c0' opacity='0.22'/%3E%3Cpath d='M800 540 Q830 520 860 540 L870 560 Q830 575 790 560Z' fill='%23f472a8' opacity='0.15'/%3E%3Cline x1='830' y1='520' x2='855' y2='490' stroke='%23f472a8' stroke-width='5' stroke-linecap='round' opacity='0.2'/%3E%3Crect x='30' y='750' width='80' height='32' rx='16' fill='%23ffb3cc' opacity='0.28' transform='rotate(20 70 766)'/%3E%3Crect x='30' y='750' width='40' height='32' rx='16' fill='%23ff7aab' opacity='0.22' transform='rotate(20 70 766)'/%3E%3Ccircle cx='380' cy='80' r='14' fill='%23f9a8c0' opacity='0.28'/%3E%3Ccircle cx='440' cy='100' r='10' fill='%23f472a8' opacity='0.2'/%3E%3Ccircle cx='500' cy='75' r='12' fill='%23fba4be' opacity='0.25'/%3E%3Ccircle cx='200' cy='820' r='16' fill='%23f9a8c0' opacity='0.25'/%3E%3Ccircle cx='260' cy='840' r='11' fill='%23f472a8' opacity='0.18'/%3E%3Ccircle cx='600' cy='820' r='13' fill='%23fba4be' opacity='0.22'/%3E%3C/svg%3E");
+}
+
+/* ===================================================================== */
+/* SOFT BLUE THEME — hand-drawn botanical flower background              */
+/* ===================================================================== */
+[data-theme="softblue"] {
+  --ink: #0f3460;
+  --ink-soft: #1a4a80;
+  --paper: #f4f9ff;
+  --canvas: transparent;
+  --panel: #edf5fd;
+  --panel-raised: #f4f9ff;
+  --line: #c2d9f0;
+  --line-strong: #a8c8e8;
+  --muted: #4a7aaa;
+  --muted-2: #88b0d0;
+  --accent-wash: #d8ebf8;
+  --weekend-wash: #eaf4fd;
+  --special-chip: #e8f8f5;
+  --special-border: #42c5aa;
+  --special-text: #0e7a65;
+  --special-bg: #f0fdf8;
+}
+
+[data-theme="softblue"] #themeLayer {
+  background-color: #daeaf8;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 700' width='1000' height='700'%3E%3Cdefs%3E%3CradialGradient id='bg1' cx='40%25' cy='35%25' r='65%25'%3E%3Cstop offset='0%25' stop-color='%23b8d8f0' stop-opacity='0.7'/%3E%3Cstop offset='100%25' stop-color='%23daeaf8' stop-opacity='0'/%3E%3C/radialGradient%3E%3CradialGradient id='bg2' cx='75%25' cy='70%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%2390c4e4' stop-opacity='0.4'/%3E%3Cstop offset='100%25' stop-color='%23daeaf8' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='1000' height='700' fill='%23daeaf8'/%3E%3Cellipse cx='300' cy='250' rx='320' ry='220' fill='url(%23bg1)'/%3E%3Cellipse cx='750' cy='500' rx='280' ry='200' fill='url(%23bg2)'/%3E%3Cg transform='translate(80 80)' opacity='0.55'%3E%3Cellipse cx='0' cy='-60' rx='28' ry='70' fill='none' stroke='%234a8fbb' stroke-width='2' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-60' rx='28' ry='70' fill='none' stroke='%234a8fbb' stroke-width='2' transform='rotate(72)'/%3E%3Cellipse cx='0' cy='-60' rx='28' ry='70' fill='none' stroke='%234a8fbb' stroke-width='2' transform='rotate(144)'/%3E%3Cellipse cx='0' cy='-60' rx='28' ry='70' fill='none' stroke='%234a8fbb' stroke-width='2' transform='rotate(216)'/%3E%3Cellipse cx='0' cy='-60' rx='28' ry='70' fill='none' stroke='%234a8fbb' stroke-width='2' transform='rotate(288)'/%3E%3Ccircle cx='0' cy='0' r='18' fill='none' stroke='%234a8fbb' stroke-width='2'/%3E%3Ccircle cx='0' cy='0' r='7' fill='%234a8fbb' opacity='0.5'/%3E%3C/g%3E%3Cg transform='translate(30 200)' opacity='0.45' fill='none' stroke='%23388a6a' stroke-width='2'%3E%3Cellipse cx='0' cy='0' rx='18' ry='45' transform='rotate(-20)'/%3E%3Cline x1='0' y1='-45' x2='0' y2='45' transform='rotate(-20)' stroke-width='1.2'/%3E%3Cellipse cx='30' cy='-15' rx='15' ry='38' transform='rotate(15)'/%3E%3Cline x1='30' y1='-53' x2='30' y2='23' transform='rotate(15)' stroke-width='1.2'/%3E%3C/g%3E%3Cg transform='translate(480 40)' opacity='0.5'%3E%3Cellipse cx='0' cy='-50' rx='22' ry='58' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-50' rx='22' ry='58' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(60)'/%3E%3Cellipse cx='0' cy='-50' rx='22' ry='58' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(120)'/%3E%3Cellipse cx='0' cy='-50' rx='22' ry='58' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-50' rx='22' ry='58' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(240)'/%3E%3Cellipse cx='0' cy='-50' rx='22' ry='58' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(300)'/%3E%3Ccircle cx='0' cy='0' r='16' fill='none' stroke='%234a8fbb' stroke-width='1.8'/%3E%3Ccircle cx='0' cy='0' r='6' fill='%234a8fbb' opacity='0.5'/%3E%3C/g%3E%3Cg transform='translate(600 80)' opacity='0.42' fill='none' stroke='%23388a6a' stroke-width='2.2'%3E%3Cellipse cx='0' cy='0' rx='22' ry='70' transform='rotate(-10)'/%3E%3Cline x1='0' y1='-70' x2='0' y2='70' transform='rotate(-10)' stroke-width='1.3'/%3E%3Cline x1='-8' y1='-30' x2='8' y2='-30' transform='rotate(-10)' stroke-width='1'/%3E%3Cline x1='-12' y1='0' x2='12' y2='0' transform='rotate(-10)' stroke-width='1'/%3E%3Cline x1='-8' y1='30' x2='8' y2='30' transform='rotate(-10)' stroke-width='1'/%3E%3C/g%3E%3Cg transform='translate(900 120)' opacity='0.52'%3E%3Cellipse cx='0' cy='-65' rx='30' ry='75' fill='none' stroke='%234a8fbb' stroke-width='2.2' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-65' rx='30' ry='75' fill='none' stroke='%234a8fbb' stroke-width='2.2' transform='rotate(72)'/%3E%3Cellipse cx='0' cy='-65' rx='30' ry='75' fill='none' stroke='%234a8fbb' stroke-width='2.2' transform='rotate(144)'/%3E%3Cellipse cx='0' cy='-65' rx='30' ry='75' fill='none' stroke='%234a8fbb' stroke-width='2.2' transform='rotate(216)'/%3E%3Cellipse cx='0' cy='-65' rx='30' ry='75' fill='none' stroke='%234a8fbb' stroke-width='2.2' transform='rotate(288)'/%3E%3Ccircle cx='0' cy='0' r='22' fill='none' stroke='%234a8fbb' stroke-width='2'/%3E%3Ccircle cx='0' cy='0' r='9' fill='%234a8fbb' opacity='0.45'/%3E%3C/g%3E%3Cg transform='translate(820 30)' opacity='0.4' fill='none' stroke='%234a8fbb' stroke-width='1.5'%3E%3Cellipse cx='0' cy='0' rx='14' ry='28'/%3E%3Cpath d='M-14 0 Q0 -15 14 0' stroke-width='1.2'/%3E%3C/g%3E%3Cg transform='translate(100 580)' opacity='0.45'%3E%3Cellipse cx='0' cy='-45' rx='20' ry='52' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-45' rx='20' ry='52' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(72)'/%3E%3Cellipse cx='0' cy='-45' rx='20' ry='52' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(144)'/%3E%3Cellipse cx='0' cy='-45' rx='20' ry='52' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(216)'/%3E%3Cellipse cx='0' cy='-45' rx='20' ry='52' fill='none' stroke='%234a8fbb' stroke-width='1.8' transform='rotate(288)'/%3E%3Ccircle cx='0' cy='0' r='15' fill='none' stroke='%234a8fbb' stroke-width='1.8'/%3E%3Ccircle cx='0' cy='0' r='6' fill='%234a8fbb' opacity='0.4'/%3E%3C/g%3E%3Cg transform='translate(920 620)' opacity='0.44' fill='none' stroke='%23388a6a' stroke-width='2'%3E%3Cellipse cx='0' cy='0' rx='26' ry='80' transform='rotate(25)'/%3E%3Cline x1='0' y1='-80' x2='0' y2='80' transform='rotate(25)' stroke-width='1.5'/%3E%3Cline x1='-10' y1='-40' x2='10' y2='-40' transform='rotate(25)'/%3E%3Cline x1='-14' y1='0' x2='14' y2='0' transform='rotate(25)'/%3E%3Cline x1='-10' y1='40' x2='10' y2='40' transform='rotate(25)'/%3E%3C/g%3E%3Cg transform='translate(500 680)' opacity='0.4'%3E%3Cellipse cx='0' cy='-42' rx='19' ry='50' fill='none' stroke='%234a8fbb' stroke-width='1.7' transform='rotate(0)'/%3E%3Cellipse cx='0' cy='-42' rx='19' ry='50' fill='none' stroke='%234a8fbb' stroke-width='1.7' transform='rotate(60)'/%3E%3Cellipse cx='0' cy='-42' rx='19' ry='50' fill='none' stroke='%234a8fbb' stroke-width='1.7' transform='rotate(120)'/%3E%3Cellipse cx='0' cy='-42' rx='19' ry='50' fill='none' stroke='%234a8fbb' stroke-width='1.7' transform='rotate(180)'/%3E%3Cellipse cx='0' cy='-42' rx='19' ry='50' fill='none' stroke='%234a8fbb' stroke-width='1.7' transform='rotate(240)'/%3E%3Cellipse cx='0' cy='-42' rx='19' ry='50' fill='none' stroke='%234a8fbb' stroke-width='1.7' transform='rotate(300)'/%3E%3Ccircle cx='0' cy='0' r='14' fill='none' stroke='%234a8fbb' stroke-width='1.5'/%3E%3C/g%3E%3Cg transform='translate(320 650)' opacity='0.38' fill='none' stroke='%23388a6a' stroke-width='1.8'%3E%3Cellipse cx='0' cy='0' rx='14' ry='42' transform='rotate(-15)'/%3E%3Cline x1='0' y1='-42' x2='0' y2='42' transform='rotate(-15)' stroke-width='1'/%3E%3C/g%3E%3Ccircle cx='720' cy='300' r='4' fill='%234a8fbb' opacity='0.22'/%3E%3Ccircle cx='740' cy='290' r='3' fill='%234a8fbb' opacity='0.18'/%3E%3Ccircle cx='730' cy='318' r='3.5' fill='%234a8fbb' opacity='0.2'/%3E%3Ccircle cx='200' cy='480' r='3.5' fill='%234a8fbb' opacity='0.18'/%3E%3Ccircle cx='215' cy='465' r='3' fill='%234a8fbb' opacity='0.15'/%3E%3C/svg%3E");
+}
+
+/* ===================================================================== */
+/* FLORAL SPECIAL THEME — lush botanical with glassmorphism              */
+/* ===================================================================== */
+[data-theme="floral"] {
+  --ink: #1a3c2a;
+  --ink-soft: #2a5438;
+  --paper: rgba(255,252,248,0.82);
+  --canvas: transparent;
+  --panel: rgba(245,252,248,0.65);
+  --panel-raised: rgba(255,254,250,0.78);
+  --line: rgba(180,215,195,0.6);
+  --line-strong: rgba(140,195,168,0.7);
+  --muted: #4a7a5e;
+  --muted-2: #88b89a;
+  --accent-wash: rgba(200,235,215,0.5);
+  --weekend-wash: rgba(240,255,245,0.55);
+  --special-chip: rgba(255,240,200,0.7);
+  --special-border: #d4a020;
+  --special-text: #7a5500;
+  --special-bg: rgba(255,250,230,0.65);
+}
+
+[data-theme="floral"] #themeLayer {
+  background-color: #c8e8d8;
+  background-image: url("./flower/flower.svg");
+}
+
+/* GLASSMORPHISM for floral theme */
+[data-theme="floral"] .view > .panel-head,
+[data-theme="floral"] .view > .filter-row,
+[data-theme="floral"] .view > .rate-card,
+[data-theme="floral"] .view > .statgrid > .statcard,
+[data-theme="floral"] .view > .table-wrap,
+[data-theme="floral"] .view > .settings-section,
+[data-theme="floral"] .view > .pharmacy-list > .pharmacy-item,
+[data-theme="floral"] .view > .inline-form,
+[data-theme="floral"] .topbar,
+[data-theme="floral"] .monthbar__label,
+[data-theme="floral"] .iconbtn,
+[data-theme="floral"] .todaybtn,
+[data-theme="floral"] .calendar-card,
+[data-theme="floral"] .sheet {
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+}
+[data-theme="floral"] .topbar {
+  background: rgba(255,254,250,0.72) !important;
+  box-shadow: 0 4px 24px rgba(30,80,50,0.12);
+}
+[data-theme="floral"] .calendar-card {
+  background: rgba(255,254,250,0.70) !important;
+  box-shadow: 0 8px 32px rgba(30,80,50,0.10);
+}
+[data-theme="floral"] .sheet {
+  background: rgba(245,252,248,0.88) !important;
+}
+
+[data-theme="lavender"] .topbar,
+[data-theme="softpink"] .topbar,
+[data-theme="softblue"] .topbar {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* ===================================================================== */
+/* THEME PICKER UI                                                         */
+/* ===================================================================== */
+
+.theme-picker-section { padding: 16px; }
+.theme-picker__subtitle { font-size: 12px; color: var(--muted); margin: 0 0 16px; }
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.theme-card--wide { grid-column: 1 / -1; }
+
+.theme-card {
+  border: 2px solid var(--line);
+  background: var(--panel-raised);
+  border-radius: var(--radius-md);
+  padding: 10px 8px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+  min-width: 0;
+}
+.theme-card--wide { flex-direction: row; align-items: center; padding: 12px 16px; gap: 14px; }
+.theme-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.theme-card.is-active { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(14,14,14,0.12), var(--shadow-sm); }
+
+[data-theme="lavender"] .theme-card.is-active { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.2); }
+[data-theme="softpink"]  .theme-card.is-active { border-color: #f472b6; box-shadow: 0 0 0 3px rgba(244,114,182,0.2); }
+[data-theme="softblue"]  .theme-card.is-active { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+[data-theme="floral"]    .theme-card.is-active { border-color: #388a50; box-shadow: 0 0 0 3px rgba(56,138,80,0.2); }
+
+.theme-card__preview {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  overflow: hidden;
+}
+.theme-card--wide .theme-card__preview { width: 80px; flex-shrink: 0; aspect-ratio: 4/3; }
+
+.theme-card__preview--default  { background: linear-gradient(135deg, #f3f3f1 60%, #e2e2e0); }
+.theme-card__preview--lavender { background: linear-gradient(135deg, #ede8fb 40%, #c4b8ee 100%); }
+.theme-card__preview--softpink { background: linear-gradient(135deg, #fce8ef 40%, #f0b3c4 100%); }
+.theme-card__preview--softblue { background: linear-gradient(135deg, #e4f0fb 40%, #a8c8e8 100%); }
+.theme-card__preview--floral   { background: linear-gradient(135deg, #c8e8d8 30%, #e8f5e0 60%, #f8e8d0 100%); }
+
+.tc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.theme-card__preview--default  .tc-dot { background: #0e0e0e; }
+.theme-card__preview--lavender .tc-dot { background: #8b5cf6; }
+.theme-card__preview--softpink .tc-dot { background: #f472b6; }
+.theme-card__preview--softblue .tc-dot { background: #3b82f6; }
+.theme-card__preview--floral   .tc-dot { background: #388a50; }
+.theme-card__preview--floral   .tc-dot:nth-child(2) { background: #e07080; }
+.theme-card__preview--floral   .tc-dot:nth-child(3) { background: #e8b020; }
+
+.theme-card__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.theme-card--wide .theme-card__label { font-size: 13px; }
+
+.theme-preview-box {
+  background: var(--panel-raised);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  border: 1px solid var(--line);
+}
+.theme-preview-box__title { font-size: 15px; font-weight: 700; margin: 0 0 4px; color: var(--ink); }
+.theme-preview-box__desc  { font-size: 12px; color: var(--muted); margin: 0 0 14px; }
+
+/* Smooth colour transitions when switching themes */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
+/* Restore motion-specific transitions */
+.sheet, .sheet-backdrop, .toast, .daycell, .navbtn, .iconbtn, .todaybtn, .theme-card,
+.shift-tick, .linebtn, .minibtn, #themeLayer { transition: none; }
+.sheet         { transition: transform 0.26s cubic-bezier(.32,.72,0,1); }
+.sheet-backdrop{ transition: opacity 0.2s ease; }
+.toast         { transition: opacity 0.2s ease, transform 0.2s ease; }
+.navbtn        { transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease; }
+.theme-card    { transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease; }
+#themeLayer    { transition: opacity 0.5s ease; }
+
 
 .developer{
   font-size: 10px;
@@ -1344,3 +1613,4 @@ button, input, select {
       opacity: 0;
       transition: opacity 0.3s;
     }
+
