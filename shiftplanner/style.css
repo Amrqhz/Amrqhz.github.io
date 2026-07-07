@@ -1635,3 +1635,98 @@ button, input, select {
 }
 .rowedit:hover { background: var(--accent-wash); color: var(--ink); }
 .rate-card__note { font-size: 11.5px; color: var(--muted); margin: -6px 0 14px; }
+
+
+/* =====================================================================
+   PAYMENT TRACKING
+   ===================================================================== */
+
+/* Stat cards for paid / unpaid */
+.statcard--paid {
+  background: #f0fdf4;
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px #86efac;
+}
+.statcard--paid .statcard__label { color: #166534; }
+
+.statcard--unpaid {
+  background: #fffbeb;
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px #fcd34d;
+}
+.statcard--unpaid .statcard__label { color: #92400e; }
+
+/* Paid row highlight in table */
+.row--paid td {
+  background: #f0fdf4;
+}
+
+/* Payment checkbox cell */
+.payment-cell {
+  white-space: nowrap;
+  padding: 8px 12px !important;
+}
+
+.payment-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.payment-check input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.payment-check__box {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--line-strong);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.payment-check__box::after {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 9px;
+  border: 2px solid transparent;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) translate(-1px, -1px);
+  transition: border-color 0.15s ease;
+}
+
+.payment-check input:checked + .payment-check__box {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.payment-check input:checked + .payment-check__box::after {
+  border-color: #ffffff;
+}
+
+.payment-check__label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color 0.18s ease;
+}
+
+.payment-check input:checked ~ .payment-check__label {
+  color: #16a34a;
+}
+
+/* Theme color overrides for paid state */
+[data-theme="lavender"] .payment-check input:checked + .payment-check__box { background: #8b5cf6; border-color: #8b5cf6; }
+[data-theme="softpink"]  .payment-check input:checked + .payment-check__box { background: #f472b6; border-color: #f472b6; }
+[data-theme="softblue"]  .payment-check input:checked + .payment-check__box { background: #3b82f6; border-color: #3b82f6; }
+[data-theme="floral"]    .payment-check input:checked + .payment-check__box { background: #388a50; border-color: #388a50; }

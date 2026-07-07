@@ -85,10 +85,26 @@ function formatHours(hoursDecimal) {
   return `${h} ساعت و ${m} دقیقه`;
 }
 
+const PAYMENT_STORAGE_KEY = 'shiftplanner.payments.v1';
+
+function loadPayments() {
+  try { return JSON.parse(localStorage.getItem(PAYMENT_STORAGE_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+
+function savePayments(obj) {
+  localStorage.setItem(PAYMENT_STORAGE_KEY, JSON.stringify(obj));
+}
+
+function paymentKey(jy, jm, pharmacyId) {
+  return `${jy}-${String(jm).padStart(2,'0')}_${pharmacyId}`;
+}
+
 window.Store = {
   loadPharmacies, savePharmacies,
   loadShifts, saveShifts,
   loadSettings, saveSettings,
+  loadPayments, savePayments, paymentKey,   // ← add these three
   uid,
   shiftDurationHours, formatHours,
   isNightShift, isFridayHoliday,

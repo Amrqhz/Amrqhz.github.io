@@ -544,12 +544,27 @@ function renderFinancial() {
   const specIncome = ms.filter((x) => isSpecialShift(x)).reduce((s, x) => s + calcIncome(x), 0);
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
+  // Payment tracking
+  const payments = S.loadPayments();
+  const breakdown2 = {};
+  ms.forEach((s) => {
+    if (!breakdown2[s.pharmacyId]) breakdown2[s.pharmacyId] = 0;
+    breakdown2[s.pharmacyId] += calcIncome(s);
+  });
+  const paidIncome = Object.entries(breakdown2).reduce((sum, [pid, inc]) => {
+    const key = S.paymentKey(viewYear, viewMonth, pid);
+    return sum + (payments[key] ? inc : 0);
+  }, 0);
+  const unpaidIncome = totalIncome - paidIncome;
+
   document.getElementById('financialStatGrid').innerHTML = `
     <div class="statcard"><span class="statcard__value">${J.toPersianDigits(ms.length)}</span><span class="statcard__label">تعداد شیفت</span></div>
     <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(totalIncome)}</span><span class="statcard__label">درآمد کل ماه</span></div>
-    <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(normalIncome)}</span><span class="statcard__label">درآمد شیفت عادی</span></div>
-    <div class="statcard statcard--special"><span class="statcard__value" style="font-size:15px">${formatToman(specIncome)}</span><span class="statcard__label">درآمد شب/تعطیل</span></div>`;
-
+     <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(normalIncome)}</span><span class="statcard__label">درآمد شیفت عادی</span></div>
+    <div class="statcard statcard--special"><span class="statcard__value" style="font-size:15px">${formatToman(specIncome)}</span><span class="statcard__label">درآمد شب/تعطیل</span></div>
+    
+    <div class="statcard statcard--paid"><span class="statcard__value" style="font-size:15px">${formatToman(paidIncome)}</span><span class="statcard__label">✅ دریافت شده</span></div>
+    <div class="statcard statcard--unpaid"><span class="statcard__value" style="font-size:15px">${formatToman(unpaidIncome)}</span><span class="statcard__label">⏳ در انتظار دریافت</span></div>`;
   // breakdown by pharmacy
   const breakdown = {};
   ms.forEach((s) => {
@@ -560,15 +575,39 @@ function renderFinancial() {
     breakdown[s.pharmacyId].income += calcIncome(s);
   });
   const bEntries = Object.entries(breakdown).sort((a, b) => b[1].income - a[1].income);
-  document.querySelector('#financialBreakdownTable tbody').innerHTML = bEntries.length === 0
-    ? '<tr class="empty-row"><td colspan="4">شیفتی ثبت نشده</td></tr>'
-    : bEntries.map(([pid, d]) => `<tr>
-        <td>${escapeHtml(pharmacyName(pid))}</td>
-        <td>${J.toPersianDigits(d.nH.toFixed(1))}</td>
-        <td class="cell--special">${J.toPersianDigits(d.sH.toFixed(1))}</td>
-        <td class="num">${formatToman(d.income)}</td>
-      </tr>`).join('');
+  const breakdownTbody = document.querySelector('#financialBreakdownTable tbody');
+  breakdownTbody.innerHTML = bEntries.length === 0
+    ? '<tr class="empty-row"><td colspan="5">شیفتی ثبت نشده</td></tr>'
+    : bEntries.map(([pid, d]) => {
+      const pkey = S.paymentKey(viewYear, viewMonth, pid);
+      const isPaid = !!payments[pkey];
+      return `<tr class="${isPaid ? 'row--paid' : ''}">
+          <td>${escapeHtml(pharmacyName(pid))}</td>
+          <td>${J.toPersianDigits(d.nH.toFixed(1))}</td>
+          <td class="cell--special">${J.toPersianDigits(d.sH.toFixed(1))}</td>
+          <td class="num">${formatToman(d.income)}</td>
+          <td class="payment-cell">
+            <label class="payment-check" title="${isPaid ? 'پرداخت شده' : 'در انتظار پرداخت'}">
+              <input type="checkbox" class="payment-checkbox"
+                     data-pid="${pid}" ${isPaid ? 'checked' : ''}>
+              <span class="payment-check__box"></span>
+              <span class="payment-check__label">${isPaid ? 'پرداخت شده' : 'در انتظار'}</span>
+            </label>
+          </td>
+        </tr>`;
+    }).join('');
 
+  // Bind payment checkboxes
+  breakdownTbody.querySelectorAll('.payment-checkbox').forEach((chk) => {
+    chk.addEventListener('change', () => {
+      const pkey = S.paymentKey(viewYear, viewMonth, chk.dataset.pid);
+      const pays = S.loadPayments();
+      pays[pkey] = chk.checked;
+      S.savePayments(pays);
+      showToast(chk.checked ? '✅ پرداخت ثبت شد' : 'پرداخت لغو شد');
+      renderFinancial(); // refresh to update totals
+    });
+  });
   // shift detail list
   // shift detail list — with rate column, custom rate badge, edit button
   const tbody = document.querySelector('#financialShiftsTable tbody');
