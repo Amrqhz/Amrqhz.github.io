@@ -563,8 +563,8 @@ function renderFinancial() {
      <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(normalIncome)}</span><span class="statcard__label">درآمد شیفت عادی</span></div>
     <div class="statcard statcard--special"><span class="statcard__value" style="font-size:15px">${formatToman(specIncome)}</span><span class="statcard__label">درآمد شب/تعطیل</span></div>
     
-    <div class="statcard statcard--paid"><span class="statcard__value" style="font-size:15px">${formatToman(paidIncome)}</span><span class="statcard__label">✅ دریافت شده</span></div>
-    <div class="statcard statcard--unpaid"><span class="statcard__value" style="font-size:15px">${formatToman(unpaidIncome)}</span><span class="statcard__label">⏳ در انتظار دریافت</span></div>`;
+    <div class="statcard statcard--paid"><span class="statcard__value" style="font-size:15px">${formatToman(paidIncome)}</span><span class="statcard__label">دریافت شده</span></div>
+    <div class="statcard statcard--unpaid"><span class="statcard__value" style="font-size:15px">${formatToman(unpaidIncome)}</span><span class="statcard__label">در انتظار دریافت</span></div>`;
   // breakdown by pharmacy
   const breakdown = {};
   ms.forEach((s) => {
