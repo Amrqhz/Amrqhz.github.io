@@ -105,7 +105,7 @@
         <div class="panel-head__actions">
           <button class="linebtn linebtn--solid" id="exportPdfBtn" type="button">خروجی PDF</button>
           <button class="linebtn" id="exportMonthBtn" type="button">خروجی CSV</button>
-          <button class="linebtn" id="exportJsonBtn" type="button">پشتیبان JSON</button>
+          <!-- <button class="linebtn" id="exportJsonBtn" type="button">پشتیبان JSON</button> -->
         </div>
       </div>
 
@@ -293,6 +293,46 @@
 
         </div>
       </div>
+      <!-- BACKUP & RESTORE -->
+      <div class="settings-section">
+        <h3 class="settings-section__title">پشتیبان‌گیری و بازیابی</h3>
+
+        <div class="settings-item">
+          <div class="settings-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+          <div class="settings-item__text">
+            <span class="settings-item__label">خروجی پشتیبان</span>
+            <span class="settings-item__desc">دانلود کامل داده‌ها: شیفت‌ها، داروخانه‌ها، تنظیمات مالی</span>
+          </div>
+          <button class="linebtn linebtn--solid" id="exportJsonBtn" type="button">دانلود JSON</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <div class="settings-item__text">
+            <span class="settings-item__label">وارد کردن پشتیبان</span>
+            <span class="settings-item__desc">بارگذاری فایل JSON — همه داده‌های فعلی جایگزین می‌شوند</span>
+          </div>
+          <label class="linebtn" id="importJsonLabel">
+            انتخاب فایل
+            <input type="file" id="importJsonInput" accept=".json" style="display:none;">
+          </label>
+        </div>
+
+        <!-- Import status message -->
+        <div id="importStatus" class="import-status" style="display:none;"></div>
+      </div>
 
 
       <div class="settings-section">
@@ -306,7 +346,8 @@
             </svg>
           </div>
           <div class="settings-item__text">
-            <span class="settings-item__label">نصب اپلیکیشن</span>
+            <span class="settings-item__label">نصب اپلیکیشن  
+            </span>
             <span class="settings-item__desc">افزودن دفتر شیفت به صفحه اصلی</span>
           </div>
           <button class="linebtn linebtn--solid" id="pwaInstallBtn" type="button">نصب</button>
@@ -330,6 +371,7 @@
         <h3 class="settings-section__title">درباره</h3>
         <div class="settings-about" style="align-items: center; justify-content: center; text-align: center;">
           <p class="settings-about__name">دفتر شیفت</p>
+          <p class="settings-about__dev">1.1.2 version</p>
           <p class="settings-about__dev">طراحی و توسعه: امیرحسین قلی‌زاده</p>
           <p class="settings-about__social">سوشال مدیا: <span>@amrqhz</span></p>
           <p style="font-size: 13px;">این برنامه به صورت رایگان توسعه داده شده است.<br> برای اطلاع از اپدیت ها و سایر
@@ -342,8 +384,6 @@
             </button></span>
         </div>
       </div>
-
-
     </main>
 
   </div>

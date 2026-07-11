@@ -652,11 +652,134 @@ function renderFinancial() {
 }
 
 /* =================== SETTINGS + PWA INSTALL =================== */
-
 function bindSettings() {
   initThemePicker();
+  bindBackupRestore();
 }
 
+function bindBackupRestore() {
+  // Export button (now in settings)
+  document.getElementById('exportJsonBtn')
+    .addEventListener('click', exportJsonBackup);
+
+  // Import — trigger file picker on label click (already handled by <label for>)
+  const fileInput = document.getElementById('importJsonInput');
+  if (!fileInput) return;
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Reset input so same file can be re-imported if needed
+    fileInput.value = '';
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        importJsonBackup(evt.target.result);
+      } catch (err) {
+        showImportStatus('error', 'خطا در خواندن فایل: ' + err.message);
+      }
+    };
+    reader.onerror = () => showImportStatus('error', 'فایل قابل خواندن نیست');
+    reader.readAsText(file, 'UTF-8');
+  });
+}
+
+function importJsonBackup(jsonText) {
+  let data;
+  try {
+    data = JSON.parse(jsonText);
+  } catch (e) {
+    showImportStatus('error', 'فایل JSON معتبر نیست');
+    return;
+  }
+
+  // Validate minimum required fields
+  if (!data.pharmacies || !data.shifts) {
+    showImportStatus('error', 'فایل پشتیبان معتبر نیست — داده‌های لازم یافت نشد');
+    return;
+  }
+
+  const incomingPharmacies = Array.isArray(data.pharmacies) ? data.pharmacies : [];
+  const incomingShifts = Array.isArray(data.shifts) ? data.shifts : [];
+  const exportDate = data.exportedAt
+    ? new Date(data.exportedAt).toLocaleDateString('fa-IR')
+    : 'نامشخص';
+
+  // Count what's actually NEW (not already in current data)
+  const existingPharmacyIds = new Set(pharmacies.map((p) => p.id));
+  const existingShiftIds = new Set(shifts.map((s) => s.id));
+
+  const newPharmacies = incomingPharmacies.filter((p) => !existingPharmacyIds.has(p.id));
+  const newShifts = incomingShifts.filter((s) => !existingShiftIds.has(s.id));
+
+  const confirmed = confirm(
+    `بارگذاری پشتیبان (ادغام)\n\n` +
+    `تاریخ تهیه فایل: ${exportDate}\n\n` +
+    `موارد جدیدی که اضافه می‌شوند:\n` +
+    `• ${newPharmacies.length} داروخانه جدید\n` +
+    `• ${newShifts.length} شیفت جدید\n\n` +
+    `(موارد تکراری نادیده گرفته می‌شوند — داده‌های فعلی حذف نمی‌شوند)`
+  );
+  if (!confirmed) return;
+
+  if (newPharmacies.length === 0 && newShifts.length === 0) {
+    showImportStatus('success', '✅ هیچ داده جدیدی یافت نشد — همه موارد قبلاً وجود دارند');
+    showToast('داده‌ای برای افزودن وجود ندارد');
+    return;
+  }
+
+  // Merge pharmacies
+  pharmacies = [...pharmacies, ...newPharmacies];
+  S.savePharmacies(pharmacies);
+
+  // Merge shifts
+  shifts = [...shifts, ...newShifts];
+  S.saveShifts(shifts);
+
+  // Merge payments — imported values added, existing ones kept
+  if (data.payments && typeof data.payments === 'object') {
+    const currentPayments = S.loadPayments();
+    const mergedPayments = Object.assign({}, data.payments, currentPayments);
+    // currentPayments last so existing paid statuses are never overwritten
+    S.savePayments(mergedPayments);
+  }
+
+  // Merge settings — only fill in rates if currently zero/unset
+  if (data.settings && typeof data.settings === 'object') {
+    if (!settings.rateNormal && data.settings.rateNormal)
+      settings.rateNormal = data.settings.rateNormal;
+    if (!settings.rateSpecial && data.settings.rateSpecial)
+      settings.rateSpecial = data.settings.rateSpecial;
+    S.saveSettings(settings);
+    document.getElementById('rateNormal').value = settings.rateNormal || '';
+    document.getElementById('rateSpecial').value = settings.rateSpecial || '';
+  }
+
+  // Refresh all views
+  renderCalendar();
+  renderPharmacyList();
+  renderPharmacySelect();
+  updateMonthSummaryLine();
+  renderSummary();
+  renderFinancial();
+
+  showImportStatus('success',
+    `✅ ادغام انجام شد — ${newPharmacies.length} داروخانه و ${newShifts.length} شیفت جدید اضافه شدند`
+  );
+  showToast(`✅ ${newShifts.length} شیفت و ${newPharmacies.length} داروخانه اضافه شد`);
+}
+
+function showImportStatus(type, message) {
+  const el = document.getElementById('importStatus');
+  if (!el) return;
+  el.textContent = message;
+  el.className = `import-status import-status--${type}`;
+  el.style.display = '';
+  // Auto-hide after 6 seconds
+  setTimeout(() => { el.style.display = 'none'; }, 6000);
+}
 /* =================== THEME SYSTEM =================== */
 
 const THEMES = {
@@ -755,7 +878,7 @@ function openDaySheetForEdit(jy, jm, jd, shiftId) {
 
 function bindExport() {
   document.getElementById('exportMonthBtn').addEventListener('click', () => exportCsv('summary'));
-  document.getElementById('exportJsonBtn').addEventListener('click', exportJsonBackup);
+  // document.getElementById('exportJsonBtn').addEventListener('click', exportJsonBackup);
   document.getElementById('exportPdfBtn').addEventListener('click', () => exportPdf('summary'));
   document.getElementById('exportFinancialCsvBtn').addEventListener('click', () => exportCsv('financial'));
   document.getElementById('exportFinancialPdfBtn').addEventListener('click', () => exportPdf('financial'));
@@ -781,10 +904,19 @@ function slugify(name) {
 }
 
 function exportJsonBackup() {
-  downloadFile('shift-planner-backup.json',
-    JSON.stringify({ exportedAt: new Date().toISOString(), pharmacies, shifts, settings }, null, 2),
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    version: 1,
+    pharmacies,
+    shifts,
+    settings,
+    payments: S.loadPayments(),
+  };
+  const dateStr = `${viewYear}-${String(viewMonth).padStart(2, '0')}`;
+  downloadFile(`daftar-shift-backup-${dateStr}.json`,
+    JSON.stringify(backup, null, 2),
     'application/json');
-  showToast('فایل پشتیبان دانلود شد');
+  showToast('فایل پشتیبان دانلود شد ✓');
 }
 
 /* =================== CSV EXPORT =================== */
