@@ -363,6 +363,54 @@ function bindPharmacyForm() {
     renderPharmacyList(); renderPharmacySelect();
     showToast('داروخانه اضافه شد');
   });
+  bindPharmacyEdit();
+}
+
+function bindPharmacyEdit() {
+  document.getElementById('cancelPharmacyEditBtn').addEventListener('click', closePharmacyEdit);
+
+  document.getElementById('savePharmacyEditBtn').addEventListener('click', () => {
+    const id      = document.getElementById('editPharmacyId').value;
+    const newName = document.getElementById('editPharmacyName').value.trim();
+    const newAddr = document.getElementById('editPharmacyAddr').value.trim();
+
+    if (!newName) { showToast('نام داروخانه نمی‌تواند خالی باشد'); return; }
+
+    const p = pharmacies.find((x) => x.id === id);
+    if (!p) return;
+
+    p.name    = newName;
+    p.address = newAddr;
+    S.savePharmacies(pharmacies);
+
+    closePharmacyEdit();
+    renderPharmacyList();
+    renderPharmacySelect();
+    renderCalendar();   // refresh calendar chips which show pharmacy names
+    showToast('داروخانه ویرایش شد ✓');
+  });
+}
+
+function openPharmacyEdit(id) {
+  const p = pharmacies.find((x) => x.id === id);
+  if (!p) return;
+
+  document.getElementById('editPharmacyId').value   = p.id;
+  document.getElementById('editPharmacyName').value = p.name;
+  document.getElementById('editPharmacyAddr').value = p.address || '';
+
+  const form = document.getElementById('pharmacyEditForm');
+  form.style.display = '';
+  // Smooth scroll to edit form
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('editPharmacyName').focus();
+}
+
+function closePharmacyEdit() {
+  document.getElementById('pharmacyEditForm').style.display = 'none';
+  document.getElementById('editPharmacyId').value   = '';
+  document.getElementById('editPharmacyName').value = '';
+  document.getElementById('editPharmacyAddr').value = '';
 }
 
 function renderPharmacyList() {
@@ -381,10 +429,14 @@ function renderPharmacyList() {
         ${p.address ? `<div class="pharmacy-item__addr">${escapeHtml(p.address)}</div>` : ''}
         <div class="pharmacy-item__addr">${J.toPersianDigits(cnt)} شیفت</div>
       </div>
-      <button class="pharmacy-item__del" data-id="${p.id}">حذف</button>`;
+      <div class="pharmacy-item__actions">
+        <button class="pharmacy-item__edit" data-id="${p.id}">ویرایش</button>
+        <button class="pharmacy-item__del" data-id="${p.id}">حذف</button>
+      </div>`;
     list.appendChild(li);
   });
-  list.querySelectorAll('.pharmacy-item__del').forEach((b) => b.addEventListener('click', () => deletePharmacy(b.dataset.id)));
+list.querySelectorAll('.pharmacy-item__del').forEach((b) => b.addEventListener('click', () => deletePharmacy(b.dataset.id)));
+  list.querySelectorAll('.pharmacy-item__edit').forEach((b) => b.addEventListener('click', () => openPharmacyEdit(b.dataset.id)));
 }
 
 function deletePharmacy(id) {

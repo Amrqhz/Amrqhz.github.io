@@ -2228,3 +2228,49 @@ label.linebtn {
   align-items: center;
   cursor: pointer;
 }
+
+
+/* =====================================================================
+   PHARMACY EDIT
+   ===================================================================== */
+
+.pharmacy-item__actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pharmacy-item__edit {
+  background: var(--canvas);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 7px 12px;
+  cursor: pointer;
+  color: var(--ink);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.pharmacy-item__edit:hover { background: var(--ink); color: var(--paper); }
+
+.pharmacy-edit-form {
+  background: var(--panel-raised);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 16px;
+  margin-top: 14px;
+  border: 2px solid var(--ink);
+  animation: editFormIn 0.22s cubic-bezier(.32,.72,0,1);
+}
+
+@keyframes editFormIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pharmacy-edit-form__title {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 14px;
+  color: var(--ink);
+}

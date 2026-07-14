@@ -233,6 +233,24 @@
         <button type="submit" class="linebtn linebtn--solid">افزودن</button>
       </form>
       <ul class="pharmacy-list" id="pharmacyList"></ul>
+
+      <!-- Edit pharmacy form — hidden until edit is clicked -->
+      <div class="pharmacy-edit-form" id="pharmacyEditForm" style="display:none;">
+        <h3 class="pharmacy-edit-form__title">ویرایش داروخانه</h3>
+        <input type="hidden" id="editPharmacyId">
+        <div class="field">
+          <label for="editPharmacyName">نام داروخانه</label>
+          <input type="text" id="editPharmacyName" placeholder="نام داروخانه" required>
+        </div>
+        <div class="field">
+          <label for="editPharmacyAddr">آدرس (اختیاری)</label>
+          <input type="text" id="editPharmacyAddr" placeholder="آدرس">
+        </div>
+        <div class="field-row field-row--actions">
+          <button class="linebtn linebtn--solid" id="savePharmacyEditBtn" type="button">ذخیره تغییرات</button>
+          <button class="linebtn" id="cancelPharmacyEditBtn" type="button">انصراف</button>
+        </div>
+      </div>
     </main>
 
     <!-- ===================== SETTINGS VIEW ===================== -->
