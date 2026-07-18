@@ -180,6 +180,63 @@
         </div>
         <button class="linebtn linebtn--solid" id="saveRatesBtn" type="button">ذخیره نرخ‌ها</button>
       </div>
+      <!-- BANK ACCOUNTS -->
+      <div class="bank-card" id="bankCard">
+        <div class="bank-card__head">
+          <h3 class="bank-card__title">حساب‌های بانکی</h3>
+          <button class="linebtn linebtn--solid" id="toggleAddBankBtn" type="button">+ افزودن حساب</button>
+        </div>
+
+        <!-- Saved accounts list -->
+        <div id="bankAccountsList"></div>
+
+        <!-- Add form — hidden by default -->
+        <div class="bank-add-form" id="bankAddForm" style="display:none;">
+          <input type="hidden" id="bankEditId">
+
+          <!-- Type selector -->
+          <div class="bank-type-row">
+            <button class="bank-type-btn is-active" data-type="card" id="typeBtnCard" type="button">
+              💳 شماره کارت
+            </button>
+            <button class="bank-type-btn" data-type="sheba" id="typeBtnSheba" type="button">
+              🏦 شماره شبا
+            </button>
+          </div>
+
+          <div class="field">
+            <label for="bankOwnerName">نام صاحب حساب</label>
+            <input type="text" id="bankOwnerName" placeholder="مثلاً: علی">
+          </div>
+
+          <div class="field">
+            <label for="bankName">نام بانک</label>
+            <input type="text" id="bankName" placeholder="مثلاً: بانک ملت">
+          </div>
+
+          <!-- Card number input -->
+          <div class="field" id="cardNumberField">
+            <label for="bankCardNumber">شماره کارت (۱۶ رقم)</label>
+            <input type="text" id="bankCardNumber" inputmode="numeric" maxlength="19" placeholder="XXXX-XXXX-XXXX-XXXX"
+              autocomplete="off">
+          </div>
+
+          <!-- SHEBA number input -->
+          <div class="field" id="shebaNumberField" style="display:none;">
+            <label for="bankShebaNumber">شماره شبا (۲۴ رقم بعد از IR)</label>
+            <div class="sheba-input-wrap">
+              <span class="sheba-prefix">IR</span>
+              <input type="text" id="bankShebaNumber" inputmode="numeric" maxlength="29"
+                placeholder="XX-XXXX-XXXX-XXXX-XXXX-XXXX-XX" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="field-row field-row--actions">
+            <button class="linebtn linebtn--solid" id="saveBankBtn" type="button">ذخیره حساب</button>
+            <button class="linebtn" id="cancelBankBtn" type="button">انصراف</button>
+          </div>
+        </div>
+      </div>
 
       <div class="filter-row">
         <label for="financialPharmacyFilter">گزارش برای</label>
@@ -210,13 +267,20 @@
       <h3 class="sectiontitle">جزئیات شیفت‌ها</h3>
       <div class="table-wrap">
         <table class="datatable" id="financialShiftsTable">
-<thead>
-  <tr>
-    <th>تاریخ</th><th>روز</th><th>نوع</th><th>داروخانه</th>
-    <th>شروع</th><th>پایان</th><th>مدت</th>
-    <th>نرخ/ساعت</th><th>درآمد</th><th></th>
-  </tr>
-</thead>
+          <thead>
+            <tr>
+              <th>تاریخ</th>
+              <th>روز</th>
+              <th>نوع</th>
+              <th>داروخانه</th>
+              <th>شروع</th>
+              <th>پایان</th>
+              <th>مدت</th>
+              <th>نرخ/ساعت</th>
+              <th>درآمد</th>
+              <th></th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
       </div>
@@ -317,10 +381,11 @@
 
         <div class="settings-item">
           <div class="settings-item__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
           </div>
           <div class="settings-item__text">
@@ -332,10 +397,11 @@
 
         <div class="settings-item">
           <div class="settings-item__icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
           </div>
           <div class="settings-item__text">
@@ -364,7 +430,7 @@
             </svg>
           </div>
           <div class="settings-item__text">
-            <span class="settings-item__label">نصب اپلیکیشن  
+            <span class="settings-item__label">نصب اپلیکیشن
             </span>
             <span class="settings-item__desc">افزودن دفتر شیفت به صفحه اصلی</span>
           </div>
@@ -453,8 +519,8 @@
             <span class="field__hint">(خالی = از نرخ پایه)</span>
           </label>
           <div class="custom-rate-input-wrap">
-            <input type="number" id="shiftCustomRate" min="0" step="10000"
-                  placeholder="از نرخ پایه استفاده شود" inputmode="numeric">
+            <input type="number" id="shiftCustomRate" min="0" step="10000" placeholder="از نرخ پایه استفاده شود"
+              inputmode="numeric">
             <span class="custom-rate-input-wrap__unit">تومان / ساعت</span>
           </div>
         </div>

@@ -552,11 +552,11 @@ function renderSummary() {
 /* =================== FINANCIAL VIEW =================== */
 
 function bindFinancialView() {
-  document.getElementById('rateNormal').value = settings.rateNormal || '';
+  document.getElementById('rateNormal').value  = settings.rateNormal  || '';
   document.getElementById('rateSpecial').value = settings.rateSpecial || '';
 
   document.getElementById('saveRatesBtn').addEventListener('click', () => {
-    settings.rateNormal = parseFloat(document.getElementById('rateNormal').value) || 0;
+    settings.rateNormal  = parseFloat(document.getElementById('rateNormal').value)  || 0;
     settings.rateSpecial = parseFloat(document.getElementById('rateSpecial').value) || 0;
     S.saveSettings(settings);
     renderFinancial();
@@ -566,6 +566,214 @@ function bindFinancialView() {
   document.getElementById('financialPharmacyFilter').addEventListener('change', (e) => {
     financialPharmacyFilter = e.target.value; renderFinancial();
   });
+
+  bindBankAccounts();
+}
+
+/* =================== BANK ACCOUNTS =================== */
+
+let activeBankType = 'card'; // 'card' or 'sheba'
+
+function bindBankAccounts() {
+  renderBankAccountsList();
+
+  // Toggle add form
+  document.getElementById('toggleAddBankBtn').addEventListener('click', () => {
+    const form = document.getElementById('bankAddForm');
+    const isHidden = form.style.display === 'none';
+    form.style.display = isHidden ? '' : 'none';
+    if (isHidden) {
+      resetBankForm();
+      form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  // Type buttons
+  document.getElementById('typeBtnCard').addEventListener('click', () => setBankType('card'));
+  document.getElementById('typeBtnSheba').addEventListener('click', () => setBankType('sheba'));
+
+  // Card number auto-format as user types
+  document.getElementById('bankCardNumber').addEventListener('input', (e) => {
+    let val = e.target.value.replace(/\D/g, '').slice(0, 16);
+    e.target.value = val.replace(/(.{4})/g, '$1-').replace(/-$/, '');
+  });
+
+  // SHEBA number auto-format
+  document.getElementById('bankShebaNumber').addEventListener('input', (e) => {
+    let val = e.target.value.replace(/\D/g, '').slice(0, 24);
+    // Format in groups: 2 4 4 4 4 4 4 2
+    e.target.value = val.replace(/(.{4})/g, '$1 ').trimEnd();
+  });
+
+  // Save
+  document.getElementById('saveBankBtn').addEventListener('click', saveBankAccount);
+
+  // Cancel
+  document.getElementById('cancelBankBtn').addEventListener('click', () => {
+    document.getElementById('bankAddForm').style.display = 'none';
+    resetBankForm();
+  });
+}
+
+function setBankType(type) {
+  activeBankType = type;
+  document.getElementById('typeBtnCard').classList.toggle('is-active', type === 'card');
+  document.getElementById('typeBtnSheba').classList.toggle('is-active', type === 'sheba');
+  document.getElementById('cardNumberField').style.display  = type === 'card'  ? '' : 'none';
+  document.getElementById('shebaNumberField').style.display = type === 'sheba' ? '' : 'none';
+}
+
+function resetBankForm() {
+  document.getElementById('bankEditId').value      = '';
+  document.getElementById('bankOwnerName').value   = '';
+  document.getElementById('bankName').value        = '';
+  document.getElementById('bankCardNumber').value  = '';
+  document.getElementById('bankShebaNumber').value = '';
+  setBankType('card');
+  document.getElementById('saveBankBtn').textContent = 'ذخیره حساب';
+}
+
+function saveBankAccount() {
+  const editId    = document.getElementById('bankEditId').value;
+  const ownerName = document.getElementById('bankOwnerName').value.trim();
+  const bankName  = document.getElementById('bankName').value.trim();
+  const type      = activeBankType;
+
+  if (!ownerName) { showToast('نام صاحب حساب را وارد کنید'); return; }
+  if (!bankName)  { showToast('نام بانک را وارد کنید'); return; }
+
+  let number = '';
+  if (type === 'card') {
+    const digits = document.getElementById('bankCardNumber').value.replace(/\D/g, '');
+    if (digits.length !== 16) { showToast('شماره کارت باید ۱۶ رقم باشد'); return; }
+    number = digits;
+  } else {
+    const digits = document.getElementById('bankShebaNumber').value.replace(/\D/g, '');
+    if (digits.length !== 24) { showToast('شماره شبا باید ۲۴ رقم بعد از IR باشد'); return; }
+    number = digits;
+  }
+
+  if (!settings.bankAccounts) settings.bankAccounts = [];
+
+  if (editId) {
+    const acc = settings.bankAccounts.find((a) => a.id === editId);
+    if (acc) Object.assign(acc, { type, ownerName, bankName, number });
+    showToast('حساب ویرایش شد ✓');
+  } else {
+    settings.bankAccounts.push({ id: S.uid(), type, ownerName, bankName, number });
+    showToast('حساب بانکی اضافه شد ✓');
+  }
+
+  S.saveSettings(settings);
+  document.getElementById('bankAddForm').style.display = 'none';
+  resetBankForm();
+  renderBankAccountsList();
+}
+
+function formatCardDisplay(digits) {
+  return digits.replace(/(.{4})/g, '$1-').replace(/-$/, '');
+}
+
+function formatShebaDisplay(digits) {
+  // IR + 24 digits formatted as IR XX XXXX XXXX XXXX XXXX XXXX XX
+  const grouped = digits.replace(/(.{4})/g, '$1 ').trimEnd();
+  return 'IR' + grouped;
+}
+
+function renderBankAccountsList() {
+  const container = document.getElementById('bankAccountsList');
+  if (!settings.bankAccounts || settings.bankAccounts.length === 0) {
+    container.innerHTML = '<p class="bank-empty">حساب بانکی ثبت نشده است</p>';
+    return;
+  }
+
+  container.innerHTML = settings.bankAccounts.map((acc) => {
+    const displayNum = acc.type === 'card'
+      ? formatCardDisplay(acc.number)
+      : formatShebaDisplay(acc.number);
+    const typeLabel = acc.type === 'card' ? '💳 کارت' : '🏦 شبا';
+
+    return `<div class="bank-account-item" data-id="${acc.id}">
+      <div class="bank-account-item__type">${typeLabel}</div>
+      <div class="bank-account-item__info">
+        <span class="bank-account-item__owner">${escapeHtml(acc.ownerName)}</span>
+        <span class="bank-account-item__bank">${escapeHtml(acc.bankName)}</span>
+        <span class="bank-account-item__number">${displayNum}</span>
+      </div>
+      <div class="bank-account-item__actions">
+        <button class="minibtn bank-edit-btn" data-id="${acc.id}">ویرایش</button>
+        <button class="minibtn bank-del-btn"  data-id="${acc.id}">حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.bank-edit-btn').forEach((btn) => {
+    btn.addEventListener('click', () => openBankEdit(btn.dataset.id));
+  });
+  container.querySelectorAll('.bank-del-btn').forEach((btn) => {
+    btn.addEventListener('click', () => deleteBankAccount(btn.dataset.id));
+  });
+}
+
+function openBankEdit(id) {
+  const acc = (settings.bankAccounts || []).find((a) => a.id === id);
+  if (!acc) return;
+
+  document.getElementById('bankEditId').value    = acc.id;
+  document.getElementById('bankOwnerName').value = acc.ownerName;
+  document.getElementById('bankName').value      = acc.bankName;
+  setBankType(acc.type);
+
+  if (acc.type === 'card') {
+    document.getElementById('bankCardNumber').value = formatCardDisplay(acc.number);
+  } else {
+    // Show without IR prefix, formatted
+    const grouped = acc.number.replace(/(.{4})/g, '$1 ').trimEnd();
+    document.getElementById('bankShebaNumber').value = grouped;
+  }
+
+  document.getElementById('saveBankBtn').textContent = 'به‌روزرسانی حساب';
+  const form = document.getElementById('bankAddForm');
+  form.style.display = '';
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function deleteBankAccount(id) {
+  if (!confirm('این حساب بانکی حذف شود؟')) return;
+  settings.bankAccounts = (settings.bankAccounts || []).filter((a) => a.id !== id);
+  S.saveSettings(settings);
+  renderBankAccountsList();
+  showToast('حساب بانکی حذف شد');
+}
+
+/** Returns HTML block of bank accounts for PDF reports */
+function bankAccountsPdfBlock() {
+  const accounts = settings.bankAccounts || [];
+  if (accounts.length === 0) return '';
+
+  const rows = accounts.map((acc) => {
+    const displayNum = acc.type === 'card'
+      ? formatCardDisplay(acc.number)
+      : formatShebaDisplay(acc.number);
+    const typeLabel = acc.type === 'card' ? 'شماره کارت' : 'شماره شبا';
+    return `<tr>
+      <td>${escapeHtml(acc.ownerName)}</td>
+      <td>${escapeHtml(acc.bankName)}</td>
+      <td>${typeLabel}</td>
+      <td class="bank-num">${displayNum}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="pr-bank-section">
+      <p class="pr-section-title">اطلاعات حساب بانکی</p>
+      <table class="pr-table pr-bank-table">
+        <thead>
+          <tr><th>صاحب حساب</th><th>بانک</th><th>نوع</th><th>شماره</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 function calcIncome(shift) {
@@ -1146,6 +1354,7 @@ function exportPdf(mode) {
       </tbody><tfoot><tr><td colspan="6">مجموع</td><td>${totalH.toFixed(1)}</td><td>${Math.round(totalInc).toLocaleString()}</td></tr></tfoot></table>`;
   }
 
+  html += bankAccountsPdfBlock();
   html += DEV_CREDIT;
 
   document.getElementById('printableReport').innerHTML = html;

@@ -9,8 +9,8 @@
 
 const STORAGE_KEYS = {
   pharmacies: 'shiftplanner.pharmacies.v1',
-  shifts:     'shiftplanner.shifts.v1',
-  settings:   'shiftplanner.settings.v1',
+  shifts: 'shiftplanner.shifts.v1',
+  settings: 'shiftplanner.settings.v1',
 };
 
 function uid() {
@@ -19,7 +19,7 @@ function uid() {
 
 function loadPharmacies() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.pharmacies) || '[]'); }
-  catch(e) { return []; }
+  catch (e) { return []; }
 }
 function savePharmacies(list) {
   localStorage.setItem(STORAGE_KEYS.pharmacies, JSON.stringify(list));
@@ -27,16 +27,17 @@ function savePharmacies(list) {
 
 function loadShifts() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.shifts) || '[]'); }
-  catch(e) { return []; }
+  catch (e) { return []; }
 }
 function saveShifts(list) {
   localStorage.setItem(STORAGE_KEYS.shifts, JSON.stringify(list));
 }
 
-const DEFAULT_SETTINGS = { rateNormal: 0, rateSpecial: 0 };
+const DEFAULT_SETTINGS = { rateNormal: 0, rateSpecial: 0, bankAccounts: [] };
+
 function loadSettings() {
   try { return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem(STORAGE_KEYS.settings) || '{}')); }
-  catch(e) { return { ...DEFAULT_SETTINGS }; }
+  catch (e) { return { ...DEFAULT_SETTINGS }; }
 }
 function saveSettings(obj) {
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(obj));
@@ -47,7 +48,7 @@ function shiftDurationHours(start, end) {
   const [sh, sm] = start.split(':').map(Number);
   const [eh, em] = end.split(':').map(Number);
   let startMin = sh * 60 + sm;
-  let endMin   = eh * 60 + em;
+  let endMin = eh * 60 + em;
   if (endMin <= startMin) endMin += 24 * 60;
   return (endMin - startMin) / 60;
 }
@@ -63,9 +64,9 @@ function isNightShift(start, end) {
   const [eh] = end.split(':').map(Number);
   const [, em] = end.split(':').map(Number);
   const overnight = end <= start; // lexicographic comparison on HH:MM works for this
-  if (sh >= 20) return true;
+  if (sh >= 22) return true;
   if (overnight) return true;
-  if (eh < 8 || (eh === 8 && em === 0)) return true;
+  if (eh < 6 || (eh === 6 && em === 0)) return true;
   return false;
 }
 
@@ -89,7 +90,7 @@ const PAYMENT_STORAGE_KEY = 'shiftplanner.payments.v1';
 
 function loadPayments() {
   try { return JSON.parse(localStorage.getItem(PAYMENT_STORAGE_KEY) || '{}'); }
-  catch(e) { return {}; }
+  catch (e) { return {}; }
 }
 
 function savePayments(obj) {
@@ -97,7 +98,7 @@ function savePayments(obj) {
 }
 
 function paymentKey(jy, jm, pharmacyId) {
-  return `${jy}-${String(jm).padStart(2,'0')}_${pharmacyId}`;
+  return `${jy}-${String(jm).padStart(2, '0')}_${pharmacyId}`;
 }
 
 window.Store = {
