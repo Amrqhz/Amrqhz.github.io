@@ -97,6 +97,17 @@ function pharmacyName(id) {
 }
 
 function isSpecialShift(s) { return s.isNight || s.isHoliday; }
+// true if shift has ANY night portion (used for chip colour on calendar)
+function hasNightPortion(s) {
+  if (s.isHoliday) return false;
+  const { nightHours } = S.splitShiftHours(s.start, s.end);
+  return nightHours > 0;
+}
+function hasDayPortion(s) {
+  if (s.isHoliday) return false;
+  const { dayHours } = S.splitShiftHours(s.start, s.end);
+  return dayHours > 0;
+}
 
 function renderCalendar() {
   document.getElementById('monthLabel').textContent =
@@ -268,12 +279,32 @@ function updateShiftTypeBadge() {
   const end = document.getElementById('shiftEnd').value;
   const holiday = document.getElementById('shiftIsHoliday').checked;
   const badge = document.getElementById('shiftTypeBadge');
-  const night = start && end ? S.isNightShift(start, end) : false;
-  const special = night || holiday;
-  badge.textContent = special ? '🌙 شیفت شب / تعطیل' : '☀️ شیفت عادی';
-  badge.className = 'shift-type-badge' + (special ? ' shift-type-badge--special' : '');
-}
 
+  if (holiday) {
+    badge.textContent = '🗓️ شیفت تعطیل';
+    badge.className = 'shift-type-badge shift-type-badge--holiday';
+    return;
+  }
+
+  if (!start || !end) {
+    badge.textContent = '☀️ شیفت عادی';
+    badge.className = 'shift-type-badge';
+    return;
+  }
+
+  const { dayHours, nightHours } = S.splitShiftHours(start, end);
+
+  if (dayHours > 0 && nightHours > 0) {
+    badge.textContent = `☀️ ${dayHours.toFixed(1)}h عادی + 🌙 ${nightHours.toFixed(1)}h شب`;
+    badge.className = 'shift-type-badge shift-type-badge--split';
+  } else if (nightHours > 0) {
+    badge.textContent = '🌙 شیفت شب';
+    badge.className = 'shift-type-badge shift-type-badge--special';
+  } else {
+    badge.textContent = '☀️ شیفت عادی';
+    badge.className = 'shift-type-badge';
+  }
+}
 function resetShiftForm() {
   document.getElementById('shiftEditId').value = '';
   document.getElementById('shiftStart').value = '';
@@ -370,7 +401,7 @@ function bindPharmacyEdit() {
   document.getElementById('cancelPharmacyEditBtn').addEventListener('click', closePharmacyEdit);
 
   document.getElementById('savePharmacyEditBtn').addEventListener('click', () => {
-    const id      = document.getElementById('editPharmacyId').value;
+    const id = document.getElementById('editPharmacyId').value;
     const newName = document.getElementById('editPharmacyName').value.trim();
     const newAddr = document.getElementById('editPharmacyAddr').value.trim();
 
@@ -379,7 +410,7 @@ function bindPharmacyEdit() {
     const p = pharmacies.find((x) => x.id === id);
     if (!p) return;
 
-    p.name    = newName;
+    p.name = newName;
     p.address = newAddr;
     S.savePharmacies(pharmacies);
 
@@ -395,7 +426,7 @@ function openPharmacyEdit(id) {
   const p = pharmacies.find((x) => x.id === id);
   if (!p) return;
 
-  document.getElementById('editPharmacyId').value   = p.id;
+  document.getElementById('editPharmacyId').value = p.id;
   document.getElementById('editPharmacyName').value = p.name;
   document.getElementById('editPharmacyAddr').value = p.address || '';
 
@@ -408,7 +439,7 @@ function openPharmacyEdit(id) {
 
 function closePharmacyEdit() {
   document.getElementById('pharmacyEditForm').style.display = 'none';
-  document.getElementById('editPharmacyId').value   = '';
+  document.getElementById('editPharmacyId').value = '';
   document.getElementById('editPharmacyName').value = '';
   document.getElementById('editPharmacyAddr').value = '';
 }
@@ -435,7 +466,7 @@ function renderPharmacyList() {
       </div>`;
     list.appendChild(li);
   });
-list.querySelectorAll('.pharmacy-item__del').forEach((b) => b.addEventListener('click', () => deletePharmacy(b.dataset.id)));
+  list.querySelectorAll('.pharmacy-item__del').forEach((b) => b.addEventListener('click', () => deletePharmacy(b.dataset.id)));
   list.querySelectorAll('.pharmacy-item__edit').forEach((b) => b.addEventListener('click', () => openPharmacyEdit(b.dataset.id)));
 }
 
@@ -489,8 +520,20 @@ function renderSummary() {
   const ms = getMonthShifts(reportPharmacyFilter);
 
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
-  const normalH = ms.filter((x) => !isSpecialShift(x)).reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
-  const specialH = ms.filter((x) => isSpecialShift(x)).reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
+
+  // Holiday shifts count entirely as special
+  // Non-holiday shifts split into day/night portions
+  let normalH = 0;
+  let specialH = 0;
+  ms.forEach((x) => {
+    if (x.isHoliday) {
+      specialH += S.shiftDurationHours(x.start, x.end);
+    } else {
+      const { dayHours, nightHours } = S.splitShiftHours(x.start, x.end);
+      normalH += dayHours;
+      specialH += nightHours;
+    }
+  });
   const uniqueDays = new Set(ms.map((x) => x.dateKey)).size;
   const isSingle = reportPharmacyFilter !== 'all';
 
@@ -552,11 +595,11 @@ function renderSummary() {
 /* =================== FINANCIAL VIEW =================== */
 
 function bindFinancialView() {
-  document.getElementById('rateNormal').value  = settings.rateNormal  || '';
+  document.getElementById('rateNormal').value = settings.rateNormal || '';
   document.getElementById('rateSpecial').value = settings.rateSpecial || '';
 
   document.getElementById('saveRatesBtn').addEventListener('click', () => {
-    settings.rateNormal  = parseFloat(document.getElementById('rateNormal').value)  || 0;
+    settings.rateNormal = parseFloat(document.getElementById('rateNormal').value) || 0;
     settings.rateSpecial = parseFloat(document.getElementById('rateSpecial').value) || 0;
     S.saveSettings(settings);
     renderFinancial();
@@ -619,28 +662,28 @@ function setBankType(type) {
   activeBankType = type;
   document.getElementById('typeBtnCard').classList.toggle('is-active', type === 'card');
   document.getElementById('typeBtnSheba').classList.toggle('is-active', type === 'sheba');
-  document.getElementById('cardNumberField').style.display  = type === 'card'  ? '' : 'none';
+  document.getElementById('cardNumberField').style.display = type === 'card' ? '' : 'none';
   document.getElementById('shebaNumberField').style.display = type === 'sheba' ? '' : 'none';
 }
 
 function resetBankForm() {
-  document.getElementById('bankEditId').value      = '';
-  document.getElementById('bankOwnerName').value   = '';
-  document.getElementById('bankName').value        = '';
-  document.getElementById('bankCardNumber').value  = '';
+  document.getElementById('bankEditId').value = '';
+  document.getElementById('bankOwnerName').value = '';
+  document.getElementById('bankName').value = '';
+  document.getElementById('bankCardNumber').value = '';
   document.getElementById('bankShebaNumber').value = '';
   setBankType('card');
   document.getElementById('saveBankBtn').textContent = 'ذخیره حساب';
 }
 
 function saveBankAccount() {
-  const editId    = document.getElementById('bankEditId').value;
+  const editId = document.getElementById('bankEditId').value;
   const ownerName = document.getElementById('bankOwnerName').value.trim();
-  const bankName  = document.getElementById('bankName').value.trim();
-  const type      = activeBankType;
+  const bankName = document.getElementById('bankName').value.trim();
+  const type = activeBankType;
 
   if (!ownerName) { showToast('نام صاحب حساب را وارد کنید'); return; }
-  if (!bankName)  { showToast('نام بانک را وارد کنید'); return; }
+  if (!bankName) { showToast('نام بانک را وارد کنید'); return; }
 
   let number = '';
   if (type === 'card') {
@@ -719,9 +762,9 @@ function openBankEdit(id) {
   const acc = (settings.bankAccounts || []).find((a) => a.id === id);
   if (!acc) return;
 
-  document.getElementById('bankEditId').value    = acc.id;
+  document.getElementById('bankEditId').value = acc.id;
   document.getElementById('bankOwnerName').value = acc.ownerName;
-  document.getElementById('bankName').value      = acc.bankName;
+  document.getElementById('bankName').value = acc.bankName;
   setBankType(acc.type);
 
   if (acc.type === 'card') {
@@ -776,18 +819,52 @@ function bankAccountsPdfBlock() {
     </div>`;
 }
 
+/**
+ * Calculate income for a shift using split day/night logic.
+ * - Holiday: entire duration × rateSpecial (or customRate)
+ * - Non-holiday: split into day/night, each multiplied by its rate
+ * - customRate overrides BOTH rates if set
+ */
 function calcIncome(shift) {
-  const h = S.shiftDurationHours(shift.start, shift.end);
-  const rate = (shift.customRate != null)
-    ? shift.customRate
-    : (isSpecialShift(shift) ? settings.rateSpecial : settings.rateNormal);
-  return h * rate;
+  if (shift.customRate != null) {
+    // Custom rate applies to total hours regardless of day/night split
+    return S.shiftDurationHours(shift.start, shift.end) * shift.customRate;
+  }
+  if (shift.isHoliday) {
+    return S.shiftDurationHours(shift.start, shift.end) * settings.rateSpecial;
+  }
+  const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
+  return (dayHours * settings.rateNormal) + (nightHours * settings.rateSpecial);
 }
 
+/**
+ * Returns a human-readable rate summary for the financial table.
+ * For split shifts returns both rates, for holiday/custom returns one.
+ */
 function effectiveRate(shift) {
-  return (shift.customRate != null)
-    ? shift.customRate
-    : (isSpecialShift(shift) ? settings.rateSpecial : settings.rateNormal);
+  if (shift.customRate != null) return shift.customRate;
+  if (shift.isHoliday) return settings.rateSpecial;
+  // For split shifts we return rateNormal as the "base" — the table will show split detail
+  return settings.rateNormal;
+}
+
+/**
+ * Returns a display string explaining how income was calculated for this shift.
+ */
+function incomeBreakdown(shift) {
+  if (shift.customRate != null) {
+    const h = S.shiftDurationHours(shift.start, shift.end);
+    return `${h.toFixed(1)}h × ${shift.customRate.toLocaleString()}`;
+  }
+  if (shift.isHoliday) {
+    const h = S.shiftDurationHours(shift.start, shift.end);
+    return `${h.toFixed(1)}h × ${settings.rateSpecial.toLocaleString()} (تعطیل)`;
+  }
+  const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
+  const parts = [];
+  if (dayHours > 0) parts.push(`${dayHours.toFixed(1)}h عادی`);
+  if (nightHours > 0) parts.push(`${nightHours.toFixed(1)}h شب`);
+  return parts.join(' + ');
 }
 
 function formatToman(n) {
@@ -800,10 +877,23 @@ function renderFinancial() {
   const ms = getMonthShifts(financialPharmacyFilter);
 
   const totalIncome = ms.reduce((s, x) => s + calcIncome(x), 0);
-  const normalIncome = ms.filter((x) => !isSpecialShift(x)).reduce((s, x) => s + calcIncome(x), 0);
-  const specIncome = ms.filter((x) => isSpecialShift(x)).reduce((s, x) => s + calcIncome(x), 0);
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
+  // Split income correctly: holiday → special, others → split by hour
+  let normalIncome = 0;
+  let specIncome = 0;
+  ms.forEach((x) => {
+    if (x.customRate != null) {
+      // Custom rate: count income as normal (it's a user-defined rate)
+      normalIncome += calcIncome(x);
+    } else if (x.isHoliday) {
+      specIncome += calcIncome(x);
+    } else {
+      const { dayHours, nightHours } = S.splitShiftHours(x.start, x.end);
+      normalIncome += dayHours * settings.rateNormal;
+      specIncome += nightHours * settings.rateSpecial;
+    }
+  });
   // Payment tracking
   const payments = S.loadPayments();
   const breakdown2 = {};
@@ -882,22 +972,34 @@ function renderFinancial() {
     const h = S.shiftDurationHours(s.start, s.end);
     const income = calcIncome(s);
     const sp = isSpecialShift(s);
-    const rate = effectiveRate(s);
+
+    // Shift type icon
+    let typeIcon;
+    if (s.isHoliday) typeIcon = '🗓️';
+    else if (s.customRate != null) typeIcon = '⭐';
+    else {
+      const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+      if (dayHours > 0 && nightHours > 0) typeIcon = '☀️🌙';
+      else if (nightHours > 0) typeIcon = '🌙';
+      else typeIcon = '☀️';
+    }
+
+    // Breakdown column
+    const breakdown = incomeBreakdown(s);
     const hasCustomRate = s.customRate != null;
-    const rateBadge = hasCustomRate ? `<span class="custom-rate-active">اختصاصی</span>` : '';
-    const rateDisplay = rate > 0
-      ? `${J.toPersianDigits(rate.toLocaleString('en'))} ${rateBadge}`
-      : `— ${rateBadge}`;
+    const breakdownDisplay = hasCustomRate
+      ? `${breakdown} <span class="custom-rate-active">اختصاصی</span>`
+      : breakdown;
 
     return `<tr class="${sp ? 'row--special' : ''}" data-shift-id="${s.id}">
       <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}</td>
       <td>${J.PERSIAN_WEEKDAYS[wi]}</td>
-      <td>${sp ? '🌙' : '☀️'}</td>
+      <td>${typeIcon}</td>
       <td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>
       <td class="num">${s.start}</td>
       <td class="num">${s.end}</td>
       <td class="num">${J.toPersianDigits(h.toFixed(1))}</td>
-      <td class="num rate-cell">${rateDisplay}</td>
+      <td class="num rate-cell breakdown-cell">${breakdownDisplay}</td>
       <td class="num">${formatToman(income)}</td>
       <td><button class="rowedit" data-id="${s.id}" data-datekey="${s.dateKey}" type="button">ویرایش</button></td>
     </tr>`;
@@ -1349,7 +1451,15 @@ function exportPdf(mode) {
       const h = S.shiftDurationHours(s.start, s.end);
       const sp = isSpecialShift(s);
       const inc = calcIncome(s);
-      return `<tr class="${sp ? 'pr-row-special' : ''}"><td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}</td><td>${J.PERSIAN_WEEKDAYS[wi]}</td><td>${sp ? '🌙' : '☀️'}</td><td>${escapeHtml(pharmacyName(s.pharmacyId))}</td><td>${s.start}</td><td>${s.end}</td><td>${h.toFixed(1)}</td><td>${Math.round(inc).toLocaleString()}</td></tr>`;
+      const breakdown = incomeBreakdown(s);
+      let typeIcon;
+      if (s.isHoliday) typeIcon = '🗓️';
+      else if (s.customRate != null) typeIcon = '⭐';
+      else {
+        const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+        typeIcon = (dayHours > 0 && nightHours > 0) ? '☀️🌙' : (nightHours > 0 ? '🌙' : '☀️');
+      }
+      return `<tr class="${sp ? 'pr-row-special' : ''}"><td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}</td><td>${J.PERSIAN_WEEKDAYS[wi]}</td><td>${typeIcon}</td><td>${escapeHtml(pharmacyName(s.pharmacyId))}</td><td>${s.start}</td><td>${s.end}</td><td>${h.toFixed(1)}</td><td style="font-size:9px">${breakdown}</td><td>${Math.round(inc).toLocaleString()}</td></tr>`;
     }).join('')}
       </tbody><tfoot><tr><td colspan="6">مجموع</td><td>${totalH.toFixed(1)}</td><td>${Math.round(totalInc).toLocaleString()}</td></tr></tfoot></table>`;
   }

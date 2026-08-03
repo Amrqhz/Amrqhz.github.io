@@ -2452,3 +2452,26 @@ label.linebtn {
     letter-spacing: 0.5px;
   }
 }
+
+/* =====================================================================
+   SHIFT TYPE BADGE — split / holiday variants
+   ===================================================================== */
+
+.shift-type-badge--holiday {
+  background: #fef9ec;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.shift-type-badge--split {
+  background: linear-gradient(90deg, var(--accent-wash) 50%, var(--special-chip) 50%);
+  color: var(--ink-soft);
+  font-size: 11px;
+}
+
+/* Breakdown cell in financial table — slightly smaller text for the formula */
+.breakdown-cell {
+  font-size: 10.5px !important;
+  color: var(--muted);
+  line-height: 1.5;
+}

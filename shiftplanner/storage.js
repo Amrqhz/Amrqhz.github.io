@@ -54,20 +54,80 @@ function shiftDurationHours(start, end) {
 }
 
 /**
- * Determine if a shift qualifies as "night shift".
- * Rule: shift is night if it starts at 20:00 or later,
- *       OR if it is an overnight shift (end <= start clock-time),
- *       OR if it ends at or before 08:00 (e.g. a shift ending at 07:00).
+ * A shift is "night" only if it has NO day portion at all:
+ * purely within 22:00–08:00. Used only for the calendar chip colour.
+ * Income calculation uses splitShiftHours() instead.
  */
 function isNightShift(start, end) {
-  const [sh] = start.split(':').map(Number);
-  const [eh] = end.split(':').map(Number);
-  const [, em] = end.split(':').map(Number);
-  const overnight = end <= start; // lexicographic comparison on HH:MM works for this
-  if (sh >= 22) return true;
-  if (overnight) return true;
-  if (eh < 6 || (eh === 6 && em === 0)) return true;
-  return false;
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  let startMin = sh * 60 + sm;
+  let endMin   = eh * 60 + em;
+  if (endMin <= startMin) endMin += 24 * 60; // overnight
+
+  const NIGHT_START = 22 * 60; // 22:00
+  const NIGHT_END   = 32 * 60; // 08:00 next day = 24+8 = 32*60
+  const DAY_START   =  8 * 60; // 08:00
+  const DAY_END     = 22 * 60; // 22:00
+
+  // Normalise endMin into the overnight window if needed
+  const normEnd = endMin <= startMin ? endMin + 24 * 60 : endMin;
+
+  // Check if shift has ANY day portion (08:00–22:00)
+  // Day portion exists if shift overlaps [8*60, 22*60]
+  const hasDayPortion =
+    startMin < DAY_END && normEnd > DAY_START;
+
+  return !hasDayPortion;
+}
+
+/**
+ * Split a non-holiday shift into day and night minute counts.
+ * Day   = 08:00–22:00
+ * Night = 22:00–08:00 (next day)
+ * Returns { dayMinutes, nightMinutes }
+ */
+function splitShiftHours(start, end) {
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  let startMin = sh * 60 + sm;
+  let endMin   = eh * 60 + em;
+  if (endMin <= startMin) endMin += 24 * 60; // handle overnight
+
+  const DAY_START   =  8 * 60; //  8:00  = 480
+  const DAY_END     = 22 * 60; // 22:00  = 1320
+  const NIGHT_END   = 32 * 60; // 08:00 next day = 1920
+
+  let dayMinutes   = 0;
+  let nightMinutes = 0;
+
+  // Walk through each minute block:
+  // Segment 1: 00:00–08:00  (night, early)
+  // Segment 2: 08:00–22:00  (day)
+  // Segment 3: 22:00–24:00  (night, late)
+  // Segment 4: 24:00–32:00  (night, next day early = 00:00–08:00)
+
+  const segments = [
+    { from:  0,   to: DAY_START, isDay: false },
+    { from: DAY_START, to: DAY_END,   isDay: true  },
+    { from: DAY_END,   to: 24 * 60,   isDay: false },
+    { from: 24 * 60,   to: NIGHT_END, isDay: false },
+  ];
+
+  segments.forEach(({ from, to, isDay }) => {
+    const overlapStart = Math.max(startMin, from);
+    const overlapEnd   = Math.min(endMin,   to);
+    if (overlapEnd > overlapStart) {
+      const mins = overlapEnd - overlapStart;
+      if (isDay) dayMinutes   += mins;
+      else        nightMinutes += mins;
+    }
+  });
+
+  return {
+    dayHours:   dayMinutes   / 60,
+    nightHours: nightMinutes / 60,
+  };
 }
 
 /**
@@ -109,4 +169,5 @@ window.Store = {
   uid,
   shiftDurationHours, formatHours,
   isNightShift, isFridayHoliday,
+  splitShiftHours,     
 };
