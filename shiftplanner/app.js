@@ -344,7 +344,7 @@ function saveShiftFromForm() {
 
   if (!start || !end) { showToast('ساعت شروع و پایان را وارد کنید'); return; }
 
-  const customRateRaw = document.getElementById('shiftCustomRate').value;
+const customRateRaw = S.toLatinDigits(document.getElementById('shiftCustomRate').value);
   const customRate = customRateRaw !== '' ? (parseFloat(customRateRaw) || 0) : null;
 
   const isNight = S.isNightShift(start, end);
@@ -541,30 +541,50 @@ function renderSummary() {
     ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[viewMonth - 1]}`
     : J.PERSIAN_MONTHS[viewMonth - 1] + ' ' + J.toPersianDigits(viewYear);
 
+// Separate holiday hours from night hours for display
+  let holidayH = 0;
+  let nightH   = 0;
+  let dayH     = 0;
+  ms.forEach((x) => {
+    if (x.isHoliday) {
+      holidayH += S.shiftDurationHours(x.start, x.end);
+    } else {
+      const { dayHours, nightHours } = S.splitShiftHours(x.start, x.end);
+      dayH   += dayHours;
+      nightH += nightHours;
+    }
+  });
+
   document.getElementById('statGrid').innerHTML = `
     <div class="statcard"><span class="statcard__value">${J.toPersianDigits(ms.length)}</span><span class="statcard__label">تعداد شیفت — ${scopeLbl}</span></div>
     <div class="statcard"><span class="statcard__value">${J.toPersianDigits(totalH.toFixed(1))}</span><span class="statcard__label">مجموع ساعت</span></div>
-    <div class="statcard"><span class="statcard__value">${J.toPersianDigits(normalH.toFixed(1))}</span><span class="statcard__label">ساعت عادی</span></div>
-    <div class="statcard statcard--special"><span class="statcard__value">${J.toPersianDigits(specialH.toFixed(1))}</span><span class="statcard__label">ساعت شب/تعطیل</span></div>`;
+    <div class="statcard"><span class="statcard__value">${J.toPersianDigits(dayH.toFixed(1))}</span><span class="statcard__label">☀️ ساعت عادی</span></div>
+    <div class="statcard statcard--special"><span class="statcard__value">${J.toPersianDigits(nightH.toFixed(1))}</span><span class="statcard__label">🌙 ساعت شب</span></div>
+    <div class="statcard statcard--holiday"><span class="statcard__value">${J.toPersianDigits(holidayH.toFixed(1))}</span><span class="statcard__label">🗓️ ساعت تعطیل</span></div>`;
 
   // pharmacy breakdown
   const breakdown = {};
   ms.forEach((s) => {
-    if (!breakdown[s.pharmacyId]) breakdown[s.pharmacyId] = { n: 0, nH: 0, sN: 0, sH: 0 };
-    const h = S.shiftDurationHours(s.start, s.end);
-    breakdown[s.pharmacyId].n++;
-    if (isSpecialShift(s)) breakdown[s.pharmacyId].sH += h;
-    else breakdown[s.pharmacyId].nH += h;
+    if (!breakdown[s.pharmacyId]) breakdown[s.pharmacyId] = { dayH: 0, nightH: 0, holidayH: 0 };
+    if (s.isHoliday) {
+      breakdown[s.pharmacyId].holidayH += S.shiftDurationHours(s.start, s.end);
+    } else {
+      const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+      breakdown[s.pharmacyId].dayH   += dayHours;
+      breakdown[s.pharmacyId].nightH += nightHours;
+    }
   });
   const breakdownBody = document.querySelector('#pharmacyBreakdownTable tbody');
-  const entries = Object.entries(breakdown).sort((a, b) => (b[1].nH + b[1].sH) - (a[1].nH + a[1].sH));
+  const entries = Object.entries(breakdown).sort((a, b) =>
+    (b[1].dayH + b[1].nightH + b[1].holidayH) - (a[1].dayH + a[1].nightH + a[1].holidayH));
   breakdownBody.innerHTML = entries.length === 0
-    ? '<tr class="empty-row"><td colspan="4">شیفتی ثبت نشده</td></tr>'
+    ? '<tr class="empty-row"><td colspan="5">شیفتی ثبت نشده</td></tr>'
     : entries.map(([pid, d]) => `<tr>
         <td>${escapeHtml(pharmacyName(pid))}</td>
-        <td>${J.toPersianDigits(d.nH.toFixed(1))}</td>
-        <td class="cell--special">${J.toPersianDigits(d.sH.toFixed(1))}</td>
-        <td>${J.toPersianDigits((d.nH + d.sH).toFixed(1))}</td>
+        <td>${J.toPersianDigits(d.dayH.toFixed(1))}</td>
+        <td class="cell--special">${J.toPersianDigits(d.nightH.toFixed(1))}</td>
+        <td class="cell--holiday">${J.toPersianDigits(d.holidayH.toFixed(1))}</td>
+        <td>${J.toPersianDigits((d.dayH + d.nightH + d.holidayH).toFixed(1))}</td>
       </tr>`).join('');
 
   // shift list
@@ -592,6 +612,18 @@ function renderSummary() {
     .querySelectorAll('.rowdelete').forEach((b) => b.addEventListener('click', () => { deleteShift(b.dataset.id); renderSummary(); }));
 }
 
+/** Sanitize an input field — converts Persian/Arabic digits to Latin on every keystroke */
+function bindLatinInput(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    const pos    = el.selectionStart;
+    const before = el.value;
+    el.value     = S.toLatinDigits(before).replace(/[^0-9.\-]/g, '');
+    // Restore cursor position as best we can
+    try { el.setSelectionRange(pos, pos); } catch(e) {}
+  });
+}
 /* =================== FINANCIAL VIEW =================== */
 
 function bindFinancialView() {
@@ -599,8 +631,8 @@ function bindFinancialView() {
   document.getElementById('rateSpecial').value = settings.rateSpecial || '';
 
   document.getElementById('saveRatesBtn').addEventListener('click', () => {
-    settings.rateNormal = parseFloat(document.getElementById('rateNormal').value) || 0;
-    settings.rateSpecial = parseFloat(document.getElementById('rateSpecial').value) || 0;
+    settings.rateNormal  = parseFloat(S.toLatinDigits(document.getElementById('rateNormal').value))  || 0;
+    settings.rateSpecial = parseFloat(S.toLatinDigits(document.getElementById('rateSpecial').value)) || 0;
     S.saveSettings(settings);
     renderFinancial();
     showToast('نرخ‌ها ذخیره شد');
@@ -611,6 +643,10 @@ function bindFinancialView() {
   });
 
   bindBankAccounts();
+    // Accept Persian/Arabic digit input on all number fields
+  bindLatinInput('rateNormal');
+  bindLatinInput('rateSpecial');
+  bindLatinInput('shiftCustomRate');
 }
 
 /* =================== BANK ACCOUNTS =================== */
@@ -619,6 +655,9 @@ let activeBankType = 'card'; // 'card' or 'sheba'
 
 function bindBankAccounts() {
   renderBankAccountsList();
+    // Accept Persian/Arabic digit input on bank number fields
+  bindLatinInput('bankCardNumber');
+  bindLatinInput('bankShebaNumber');
 
   // Toggle add form
   document.getElementById('toggleAddBankBtn').addEventListener('click', () => {
@@ -686,12 +725,12 @@ function saveBankAccount() {
   if (!bankName) { showToast('نام بانک را وارد کنید'); return; }
 
   let number = '';
-  if (type === 'card') {
-    const digits = document.getElementById('bankCardNumber').value.replace(/\D/g, '');
+if (type === 'card') {
+    const digits = S.toLatinDigits(document.getElementById('bankCardNumber').value).replace(/\D/g, '');
     if (digits.length !== 16) { showToast('شماره کارت باید ۱۶ رقم باشد'); return; }
     number = digits;
   } else {
-    const digits = document.getElementById('bankShebaNumber').value.replace(/\D/g, '');
+    const digits = S.toLatinDigits(document.getElementById('bankShebaNumber').value).replace(/\D/g, '');
     if (digits.length !== 24) { showToast('شماره شبا باید ۲۴ رقم بعد از IR باشد'); return; }
     number = digits;
   }
@@ -918,23 +957,28 @@ function renderFinancial() {
   // breakdown by pharmacy
   const breakdown = {};
   ms.forEach((s) => {
-    if (!breakdown[s.pharmacyId]) breakdown[s.pharmacyId] = { nH: 0, sH: 0, income: 0 };
-    const h = S.shiftDurationHours(s.start, s.end);
-    if (isSpecialShift(s)) breakdown[s.pharmacyId].sH += h;
-    else breakdown[s.pharmacyId].nH += h;
+    if (!breakdown[s.pharmacyId]) breakdown[s.pharmacyId] = { dayH: 0, nightH: 0, holidayH: 0, income: 0 };
+    if (s.isHoliday) {
+      breakdown[s.pharmacyId].holidayH += S.shiftDurationHours(s.start, s.end);
+    } else {
+      const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+      breakdown[s.pharmacyId].dayH   += dayHours;
+      breakdown[s.pharmacyId].nightH += nightHours;
+    }
     breakdown[s.pharmacyId].income += calcIncome(s);
   });
   const bEntries = Object.entries(breakdown).sort((a, b) => b[1].income - a[1].income);
   const breakdownTbody = document.querySelector('#financialBreakdownTable tbody');
   breakdownTbody.innerHTML = bEntries.length === 0
-    ? '<tr class="empty-row"><td colspan="5">شیفتی ثبت نشده</td></tr>'
+    ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
     : bEntries.map(([pid, d]) => {
-      const pkey = S.paymentKey(viewYear, viewMonth, pid);
-      const isPaid = !!payments[pkey];
-      return `<tr class="${isPaid ? 'row--paid' : ''}">
+        const pkey   = S.paymentKey(viewYear, viewMonth, pid);
+        const isPaid = !!payments[pkey];
+        return `<tr class="${isPaid ? 'row--paid' : ''}">
           <td>${escapeHtml(pharmacyName(pid))}</td>
-          <td>${J.toPersianDigits(d.nH.toFixed(1))}</td>
-          <td class="cell--special">${J.toPersianDigits(d.sH.toFixed(1))}</td>
+          <td>${J.toPersianDigits(d.dayH.toFixed(1))}</td>
+          <td class="cell--special">${J.toPersianDigits(d.nightH.toFixed(1))}</td>
+          <td class="cell--holiday">${J.toPersianDigits(d.holidayH.toFixed(1))}</td>
           <td class="num">${formatToman(d.income)}</td>
           <td class="payment-cell">
             <label class="payment-check" title="${isPaid ? 'پرداخت شده' : 'در انتظار پرداخت'}">
@@ -945,7 +989,7 @@ function renderFinancial() {
             </label>
           </td>
         </tr>`;
-    }).join('');
+      }).join('');
 
   // Bind payment checkboxes
   breakdownTbody.querySelectorAll('.payment-checkbox').forEach((chk) => {

@@ -16,6 +16,12 @@ const STORAGE_KEYS = {
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
+/** Convert Persian (۰-۹) and Arabic-Indic (٠-٩) digits to Latin (0-9) */
+function toLatinDigits(str) {
+  return String(str)
+    .replace(/[۰-۹]/g, (d) => d.charCodeAt(0) - 0x06F0)
+    .replace(/[٠-٩]/g, (d) => d.charCodeAt(0) - 0x0660);
+}
 
 function loadPharmacies() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEYS.pharmacies) || '[]'); }
@@ -169,5 +175,5 @@ window.Store = {
   uid,
   shiftDurationHours, formatHours,
   isNightShift, isFridayHoliday,
-  splitShiftHours,     
+  splitShiftHours, toLatinDigits,     
 };

@@ -2475,3 +2475,15 @@ label.linebtn {
   color: var(--muted);
   line-height: 1.5;
 }
+/* Holiday hour cell */
+.cell--holiday {
+  color: #92400e;
+  font-weight: 600;
+  background: #fef9ec;
+}
+
+.statcard--holiday {
+  background: #fef9ec;
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px #fcd34d;
+}
+.statcard--holiday .statcard__label { color: #92400e; }
