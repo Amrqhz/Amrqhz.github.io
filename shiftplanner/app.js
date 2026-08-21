@@ -1339,7 +1339,7 @@ function exportSms() {
   const lines       = [];
 
   // Header
-  lines.push(`📋 گزارش مالی — ${monthLabel}`);
+  lines.push(` گزارش مالی — ${monthLabel}`);
 
   if (isSingle) {
     // Single pharmacy report
@@ -1361,14 +1361,14 @@ function exportSms() {
     });
 
     lines.push(`━━━━━━━━━━━━━━`);
-    lines.push(`🏥 ${pname}`);
+    lines.push(` ${pname}`);
     lines.push(`━━━━━━━━━━━━━━`);
     lines.push(`شیفت‌ها: ${J.toPersianDigits(ms.length)}`);
-    if (dayH     > 0) lines.push(`☀️ عادی: ${J.toPersianDigits(dayH.toFixed(1))} ساعت`);
-    if (nightH   > 0) lines.push(`🌙 شب: ${J.toPersianDigits(nightH.toFixed(1))} ساعت`);
-    if (holidayH > 0) lines.push(`🗓️ تعطیل: ${J.toPersianDigits(holidayH.toFixed(1))} ساعت`);
-    lines.push(`💰 درآمد: ${J.toPersianDigits(Math.round(totalInc).toLocaleString('en'))} تومان`);
-    lines.push(`وضعیت: ${isPaid ? '✅ دریافت شده' : '⏳ در انتظار دریافت'}`);
+    if (dayH     > 0) lines.push(` عادی: ${J.toPersianDigits(dayH.toFixed(1))} ساعت`);
+    if (nightH   > 0) lines.push(` شب: ${J.toPersianDigits(nightH.toFixed(1))} ساعت`);
+    if (holidayH > 0) lines.push(` تعطیل: ${J.toPersianDigits(holidayH.toFixed(1))} ساعت`);
+    lines.push(` درآمد: ${J.toPersianDigits(Math.round(totalInc).toLocaleString('en'))} تومان`);
+    lines.push(`وضعیت: ${isPaid ? ' دریافت شده' : ' در انتظار دریافت'}`);
 
   } else {
     // All pharmacies — one block per pharmacy
@@ -1400,23 +1400,23 @@ function exportSms() {
         else        unpaidTotal += d.income;
 
         lines.push(`━━━━━━━━━━━━━━`);
-        lines.push(`🏥 ${pharmacyName(pid)}`);
+        lines.push(` ${pharmacyName(pid)}`);
         lines.push(`شیفت‌ها: ${J.toPersianDigits(d.count)}`);
-        if (d.dayH     > 0) lines.push(`☀️ ${J.toPersianDigits(d.dayH.toFixed(1))}h عادی`);
-        if (d.nightH   > 0) lines.push(`🌙 ${J.toPersianDigits(d.nightH.toFixed(1))}h شب`);
-        if (d.holidayH > 0) lines.push(`🗓️ ${J.toPersianDigits(d.holidayH.toFixed(1))}h تعطیل`);
-        lines.push(`💰 ${J.toPersianDigits(Math.round(d.income).toLocaleString('en'))} تومان`);
-        lines.push(isPaid ? '✅ دریافت شده' : '⏳ در انتظار');
+        if (d.dayH     > 0) lines.push(` ${J.toPersianDigits(d.dayH.toFixed(1))}h عادی`);
+        if (d.nightH   > 0) lines.push(` ${J.toPersianDigits(d.nightH.toFixed(1))}h شب`);
+        if (d.holidayH > 0) lines.push(` ${J.toPersianDigits(d.holidayH.toFixed(1))}h تعطیل`);
+        lines.push(` ${J.toPersianDigits(Math.round(d.income).toLocaleString('en'))} تومان`);
+        lines.push(isPaid ? ' دریافت شده' : ' در انتظار');
       });
 
     lines.push(`━━━━━━━━━━━━━━`);
-    lines.push(`💼 جمع کل: ${J.toPersianDigits(Math.round(totalIncome).toLocaleString('en'))} تومان`);
-    lines.push(`✅ دریافتی: ${J.toPersianDigits(Math.round(paidTotal).toLocaleString('en'))} تومان`);
-    lines.push(`⏳ مانده: ${J.toPersianDigits(Math.round(unpaidTotal).toLocaleString('en'))} تومان`);
+    lines.push(` جمع کل: ${J.toPersianDigits(Math.round(totalIncome).toLocaleString('en'))} تومان`);
+    lines.push(` دریافتی: ${J.toPersianDigits(Math.round(paidTotal).toLocaleString('en'))} تومان`);
+    lines.push(` مانده: ${J.toPersianDigits(Math.round(unpaidTotal).toLocaleString('en'))} تومان`);
   }
 
   lines.push(`━━━━━━━━━━━━━━`);
-  lines.push(`📱 دفتر شیفت — @amrqhz`);
+  lines.push(` دفتر شیفت — @amrqhz`);
 
   const body = lines.join('\n');
 
