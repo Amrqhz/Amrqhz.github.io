@@ -1288,6 +1288,7 @@ function bindExport() {
   document.getElementById('exportPdfBtn').addEventListener('click', () => exportPdf('summary'));
   document.getElementById('exportFinancialCsvBtn').addEventListener('click', () => exportCsv('financial'));
   document.getElementById('exportFinancialPdfBtn').addEventListener('click', () => exportPdf('financial'));
+  document.getElementById('exportSmsBtn').addEventListener('click', exportSms);
 }
 
 function downloadFile(filename, content, mime) {
@@ -1323,6 +1324,112 @@ function exportJsonBackup() {
     JSON.stringify(backup, null, 2),
     'application/json');
   showToast('فایل پشتیبان دانلود شد ✓');
+}
+function exportSms() {
+  const ms = getMonthShifts(financialPharmacyFilter);
+
+  if (ms.length === 0) {
+    showToast('شیفتی برای ارسال وجود ندارد');
+    return;
+  }
+
+  const payments    = S.loadPayments();
+  const monthLabel  = `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
+  const isSingle    = financialPharmacyFilter !== 'all';
+  const lines       = [];
+
+  // Header
+  lines.push(`📋 گزارش مالی — ${monthLabel}`);
+
+  if (isSingle) {
+    // Single pharmacy report
+    const pid     = financialPharmacyFilter;
+    const pname   = pharmacyName(pid);
+    const pkey    = S.paymentKey(viewYear, viewMonth, pid);
+    const isPaid  = !!payments[pkey];
+
+    let dayH = 0, nightH = 0, holidayH = 0, totalInc = 0;
+    ms.forEach((s) => {
+      if (s.isHoliday) {
+        holidayH += S.shiftDurationHours(s.start, s.end);
+      } else {
+        const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+        dayH   += dayHours;
+        nightH += nightHours;
+      }
+      totalInc += calcIncome(s);
+    });
+
+    lines.push(`━━━━━━━━━━━━━━`);
+    lines.push(`🏥 ${pname}`);
+    lines.push(`━━━━━━━━━━━━━━`);
+    lines.push(`شیفت‌ها: ${J.toPersianDigits(ms.length)}`);
+    if (dayH     > 0) lines.push(`☀️ عادی: ${J.toPersianDigits(dayH.toFixed(1))} ساعت`);
+    if (nightH   > 0) lines.push(`🌙 شب: ${J.toPersianDigits(nightH.toFixed(1))} ساعت`);
+    if (holidayH > 0) lines.push(`🗓️ تعطیل: ${J.toPersianDigits(holidayH.toFixed(1))} ساعت`);
+    lines.push(`💰 درآمد: ${J.toPersianDigits(Math.round(totalInc).toLocaleString('en'))} تومان`);
+    lines.push(`وضعیت: ${isPaid ? '✅ دریافت شده' : '⏳ در انتظار دریافت'}`);
+
+  } else {
+    // All pharmacies — one block per pharmacy
+    const byPharmacy = {};
+    ms.forEach((s) => {
+      if (!byPharmacy[s.pharmacyId])
+        byPharmacy[s.pharmacyId] = { dayH: 0, nightH: 0, holidayH: 0, income: 0, count: 0 };
+      const d = byPharmacy[s.pharmacyId];
+      d.count++;
+      if (s.isHoliday) {
+        d.holidayH += S.shiftDurationHours(s.start, s.end);
+      } else {
+        const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+        d.dayH   += dayHours;
+        d.nightH += nightHours;
+      }
+      d.income += calcIncome(s);
+    });
+
+    const totalIncome = ms.reduce((sum, s) => sum + calcIncome(s), 0);
+    let paidTotal = 0, unpaidTotal = 0;
+
+    Object.entries(byPharmacy)
+      .sort((a, b) => b[1].income - a[1].income)
+      .forEach(([pid, d]) => {
+        const pkey   = S.paymentKey(viewYear, viewMonth, pid);
+        const isPaid = !!payments[pkey];
+        if (isPaid) paidTotal   += d.income;
+        else        unpaidTotal += d.income;
+
+        lines.push(`━━━━━━━━━━━━━━`);
+        lines.push(`🏥 ${pharmacyName(pid)}`);
+        lines.push(`شیفت‌ها: ${J.toPersianDigits(d.count)}`);
+        if (d.dayH     > 0) lines.push(`☀️ ${J.toPersianDigits(d.dayH.toFixed(1))}h عادی`);
+        if (d.nightH   > 0) lines.push(`🌙 ${J.toPersianDigits(d.nightH.toFixed(1))}h شب`);
+        if (d.holidayH > 0) lines.push(`🗓️ ${J.toPersianDigits(d.holidayH.toFixed(1))}h تعطیل`);
+        lines.push(`💰 ${J.toPersianDigits(Math.round(d.income).toLocaleString('en'))} تومان`);
+        lines.push(isPaid ? '✅ دریافت شده' : '⏳ در انتظار');
+      });
+
+    lines.push(`━━━━━━━━━━━━━━`);
+    lines.push(`💼 جمع کل: ${J.toPersianDigits(Math.round(totalIncome).toLocaleString('en'))} تومان`);
+    lines.push(`✅ دریافتی: ${J.toPersianDigits(Math.round(paidTotal).toLocaleString('en'))} تومان`);
+    lines.push(`⏳ مانده: ${J.toPersianDigits(Math.round(unpaidTotal).toLocaleString('en'))} تومان`);
+  }
+
+  lines.push(`━━━━━━━━━━━━━━`);
+  lines.push(`📱 دفتر شیفت — @amrqhz`);
+
+  const body = lines.join('\n');
+
+  // Open native SMS/messaging app with pre-filled body
+  // sms: URI scheme works on iOS (iMessage) and Android
+  const smsLink = document.createElement('a');
+  smsLink.href  = `sms:?body=${encodeURIComponent(body)}`;
+  smsLink.style.display = 'none';
+  document.body.appendChild(smsLink);
+  smsLink.click();
+  document.body.removeChild(smsLink);
+
+  showToast('در حال باز کردن پیام‌رسان...');
 }
 
 /* =================== CSV EXPORT =================== */

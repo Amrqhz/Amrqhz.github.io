@@ -2487,3 +2487,12 @@ label.linebtn {
   box-shadow: var(--shadow-sm), inset 0 0 0 1px #fcd34d;
 }
 .statcard--holiday .statcard__label { color: #92400e; }
+
+/* SMS export button */
+.linebtn--sms {
+  background: #16a34a;
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+.linebtn--sms:hover  { background: #15803d; }
+.linebtn--sms:active { transform: scale(0.96); }
