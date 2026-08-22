@@ -67,6 +67,100 @@ a:hover {
     background: var(--bg);
     z-index: 100;
 }
+/* ===== MOBILE MENU ===== */
+
+.menu-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--text);
+    transition:
+        transform 0.25s ease,
+        opacity 0.25s ease;
+}
+
+
+/* ===== TABLET & MOBILE ===== */
+
+@media (max-width: 720px) {
+
+    .site-header {
+        position: sticky;
+        padding: 1rem 1.25rem;
+    }
+
+    .menu-toggle {
+        display: flex;
+        z-index: 101;
+    }
+
+    .site-nav {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+
+        padding: 0.5rem 1.25rem 1rem;
+
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+
+        transition:
+            max-height 0.3s ease,
+            opacity 0.25s ease;
+    }
+
+    .site-nav.open {
+        max-height: 500px;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .nav-link {
+        width: 100%;
+        padding: 0.8rem 0;
+        font-size: 0.9rem;
+    }
+
+    /* Active hamburger animation */
+
+    .menu-toggle.active span:nth-child(1) {
+        transform: translateY(6.5px) rotate(45deg);
+    }
+
+    .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-toggle.active span:nth-child(3) {
+        transform: translateY(-6.5px) rotate(-45deg);
+    }
+}
 
 .logo-mark {
     font-family: var(--mono);

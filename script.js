@@ -38,3 +38,25 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, { rootMargin: "-40% 0px -55% 0px" });
 sections.forEach(s => observer.observe(s));
+
+
+const menuToggle = document.querySelector(".menu-toggle");
+const siteNav = document.querySelector(".site-nav");
+
+menuToggle.addEventListener("click", () => {
+    const isOpen = siteNav.classList.toggle("open");
+
+    menuToggle.classList.toggle("active", isOpen);
+    menuToggle.setAttribute("aria-expanded", isOpen);
+});
+
+
+/* Close menu when clicking a navigation link */
+
+document.querySelectorAll(".site-nav .nav-link").forEach(link => {
+    link.addEventListener("click", () => {
+        siteNav.classList.remove("open");
+        menuToggle.classList.remove("active");
+        menuToggle.setAttribute("aria-expanded", "false");
+    });
+});
