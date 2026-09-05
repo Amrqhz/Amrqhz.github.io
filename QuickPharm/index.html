@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>QuickDose · حافظه دوم داروساز</title>
+<meta name="description" content="محاسبه‌گر دوز اطفال و ابزارهای مرجع بالینی داروساز — سریع، آفلاین و قابل نصب." />
+<meta name="theme-color" content="#1F6F5C" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="topbar">
+    <div class="wordmark">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+        <rect x="20" y="4" width="8" height="14" rx="2" />
+        <path d="M16 16 L32 16 L34 34 A10 10 0 0 1 14 34 Z" />
+        <line x1="17.2" y1="24" x2="21" y2="24" class="tick" />
+        <line x1="17.6" y1="29" x2="21" y2="29" class="tick" />
+        <line x1="27" y1="24" x2="30.8" y2="24" class="tick" />
+        <line x1="27" y1="29" x2="31.2" y2="29" class="tick" />
+      </svg>
+      <div class="wordmark-text">
+        <span class="brand">QuickDose</span>
+        <span class="tagline">حافظه دوم داروساز</span>
+      </div>
+    </div>
+    <button class="install-btn" id="installBtn" hidden type="button">نصب برنامه</button>
+  </header>
+
+  <main class="views">
+
+    <!-- ====================== CALCULATOR VIEW ====================== -->
+    <section class="view" id="view-calculator" data-view="calculator">
+
+      <div class="search-block">
+        <label class="field-label" for="drugSearch">جست‌وجوی دارو یا علامت بالینی</label>
+        <div class="search-input-wrap">
+          <input
+            id="drugSearch"
+            type="text"
+            inputmode="search"
+            autocomplete="off"
+            placeholder="مثلاً «آموکسی‌سیلین» یا «تب»…"
+          />
+          <button class="clear-btn" id="clearSearch" type="button" hidden aria-label="پاک کردن">×</button>
+        </div>
+        <ul class="results-list" id="resultsList" hidden></ul>
+        <p class="empty-hint" id="emptyHint" hidden>موردی یافت نشد — املا یا نام دیگر دارو را امتحان کنید.</p>
+      </div>
+
+      <div class="selected-panel" id="selectedPanel" hidden>
+
+        <div class="drug-card">
+          <button class="reset-drug" id="resetDrug" type="button" aria-label="انتخاب داروی دیگر">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 1 2.6 6.3"/><polyline points="3 17 3 21 7 21"/></svg>
+          </button>
+          <p class="drug-form" id="drugForm"></p>
+          <h2 class="drug-name" id="drugName"></h2>
+          <p class="drug-strength" id="drugStrength"></p>
+        </div>
+
+        <div class="indication-row" id="indicationRow" hidden>
+          <span class="field-label">مورد مصرف</span>
+          <div class="chip-group" id="indicationChips"></div>
+        </div>
+
+        <div class="measure-grid">
+          <div class="measure-field">
+            <label class="field-label" for="weightInput">وزن (کیلوگرم)</label>
+            <div class="measure-input-wrap">
+              <input id="weightInput" type="number" inputmode="decimal" min="0" step="0.1" placeholder="—" />
+              <span class="unit">kg</span>
+            </div>
+          </div>
+          <div class="measure-field">
+            <label class="field-label" for="ageYearsInput">سن</label>
+            <div class="age-input-wrap">
+              <div class="measure-input-wrap small">
+                <input id="ageYearsInput" type="number" inputmode="numeric" min="0" step="1" placeholder="۰" />
+                <span class="unit">سال</span>
+              </div>
+              <div class="measure-input-wrap small">
+                <input id="ageMonthsInput" type="number" inputmode="numeric" min="0" max="11" step="1" placeholder="۰" />
+                <span class="unit">ماه</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block" id="resultBlock" hidden>
+          <div class="result-rule"></div>
+          <div class="result-body" id="resultBody"></div>
+        </div>
+
+        <p class="prompt-hint" id="promptHint">وزن و سن را برای محاسبه دوز وارد کنید.</p>
+
+      </div>
+
+    </section>
+
+    <!-- ====================== COMPOUNDING VIEW ====================== -->
+    <section class="view" id="view-compounding" data-view="compounding" hidden>
+
+      <div class="search-block" id="compoundSearchBlock">
+        <label class="field-label" for="compoundSearch">جست‌وجوی فرآورده یا بیماری</label>
+        <div class="search-input-wrap">
+          <input
+            id="compoundSearch"
+            type="text"
+            inputmode="search"
+            autocomplete="off"
+            placeholder="مثلاً «آکنه»، «زگیل» یا «ویتفیلد»…"
+          />
+          <button class="clear-btn" id="clearCompoundSearch" type="button" hidden aria-label="پاک کردن">×</button>
+        </div>
+
+        <div class="chip-group category-filter" id="categoryFilter"></div>
+
+        <ul class="results-list compound-list" id="compoundResultsList"></ul>
+        <p class="empty-hint" id="compoundEmptyHint" hidden>موردی یافت نشد.</p>
+      </div>
+
+      <div class="compound-detail" id="compoundDetail" hidden>
+        <button class="reset-drug" id="backToCompoundList" type="button" aria-label="بازگشت به فهرست">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg>
+        </button>
+
+        <div class="compound-hero">
+          <div class="compound-icon" id="compoundIcon"></div>
+          <div class="compound-form" id="compoundForm"></div>
+          <h2 class="compound-name" id="compoundName"></h2>
+          <p class="compound-name-en" id="compoundNameEn"></p>
+        </div>
+
+        <div class="doc-section" id="docIndications">
+          <h3>موارد مصرف</h3>
+          <ul class="doc-list" id="indicationsList"></ul>
+        </div>
+
+        <div class="doc-section" id="docIngredients">
+          <h3>ترکیبات</h3>
+          <table class="ingredients-table" id="ingredientsTable"></table>
+        </div>
+
+        <div class="doc-section" id="docMethod">
+          <h3>روش تهیه</h3>
+          <ol class="method-list" id="methodList"></ol>
+        </div>
+
+        <div class="doc-section" id="docUsage">
+          <h3>نحوه مصرف</h3>
+          <p class="doc-text" id="usageText"></p>
+        </div>
+
+        <div class="doc-section" id="docStorage">
+          <h3>نگهداری</h3>
+          <p class="doc-text" id="storageText"></p>
+        </div>
+
+        <div class="doc-section" id="docCautions">
+          <h3>نکات و هشدارها</h3>
+          <div id="cautionsFlags"></div>
+        </div>
+
+        <p class="reference-note" id="referenceNote"></p>
+      </div>
+
+    </section>
+
+
+  </main>
+
+  <nav class="bottom-nav" aria-label="بخش‌های برنامه">
+    <button class="nav-btn is-active" data-nav="calculator" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v6l4 9a3 3 0 0 1-3 4H8a3 3 0 0 1-3-4l4-9V2z"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+      <span>دوزینگ</span>
+    </button>
+    <button class="nav-btn" data-nav="compounding" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v6l5 9a2 2 0 0 1-2 3H6a2 2 0 0 1-2-3l5-9V3z"/><line x1="7" y1="15" x2="17" y2="15"/></svg>
+      <span>دستورهای ساخت</span>
+    </button>
+  </nav>
+
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
