@@ -407,9 +407,15 @@ button:active { transform: scale(0.95); }
 
 .measure-grid {
   display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 14px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
   margin-top: 22px;
+  align-items: start;
+}
+
+.measure-field {
+  display: flex;
+  flex-direction: column;
 }
 
 .measure-input-wrap {
@@ -417,7 +423,7 @@ button:active { transform: scale(0.95); }
   align-items: baseline;
   background: var(--paper-dim);
   border-radius: var(--radius-md);
-  padding: 4px 14px;
+  padding: 4px 12px;
   gap: 6px;
   border: 1.5px solid transparent;
   transition: border-color 180ms var(--ease);
@@ -431,10 +437,17 @@ button:active { transform: scale(0.95); }
   background: transparent;
   font-family: var(--font-num);
   font-variant-numeric: tabular-nums;
-  font-size: 23px;
+  font-size: 22px;
   padding: 10px 2px;
   outline: none;
   width: 100%;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+.measure-input-wrap input::-webkit-outer-spin-button,
+.measure-input-wrap input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .measure-input-wrap .unit {
@@ -443,33 +456,22 @@ button:active { transform: scale(0.95); }
   padding-bottom: 2px;
 }
 
-.age-input-wrap {
-  display: flex;
-  gap: 10px;
-}
-.measure-input-wrap.small input { font-size: 19px; }
-
 /* --------------------------------------------------------- weight estimate */
-
-.field-label-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-.field-label-row .field-label { margin-bottom: 0; }
 
 .estimate-toggle {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   border: 1.5px solid var(--paper-line);
   background: var(--paper);
   color: var(--ink-soft);
   border-radius: 999px;
-  padding: 5px 11px 5px 9px;
+  padding: 8px 11px;
   font-size: 11.5px;
   cursor: pointer;
+  margin-top: 8px;
+  width: 100%;
 }
 .estimate-toggle svg {
   width: 13px;
@@ -1049,5 +1051,8 @@ button:active { transform: scale(0.95); }
 
 @media (max-width: 380px) {
   .result-value { font-size: 38px; }
-  .measure-grid { grid-template-columns: 1fr 1fr; }
+  .measure-grid { gap: 7px; }
+  .measure-input-wrap { padding: 4px 6px; }
+  .measure-input-wrap input { font-size: 19px; }
+  .estimate-toggle span { display: none; }
 }
