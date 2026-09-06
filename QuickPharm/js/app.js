@@ -3,6 +3,7 @@ import { calculateDose, formatAge } from "./calculator.js";
 import { ALIASES } from "./aliases.js";
 import { COMPOUNDS, CATEGORIES } from "./compounds-data.js";
 import { getFormIcon } from "./compound-icons.js";
+import { estimateWeightKg } from "./weight-estimate.js";
 
 /* ---------------------------------------------------------- search index */
 
@@ -53,6 +54,7 @@ function search(query) {
 const state = {
   drug: null,
   indication: null,
+  useEstimatedWeight: false,
 };
 
 /* ------------------------------------------------------------- els */
@@ -70,6 +72,9 @@ const el = {
   indicationRow: document.getElementById("indicationRow"),
   indicationChips: document.getElementById("indicationChips"),
   weightInput: document.getElementById("weightInput"),
+  weightInputWrap: document.getElementById("weightInputWrap"),
+  estimateToggle: document.getElementById("estimateToggle"),
+  estimateHint: document.getElementById("estimateHint"),
   ageYearsInput: document.getElementById("ageYearsInput"),
   ageMonthsInput: document.getElementById("ageMonthsInput"),
   resultBlock: document.getElementById("resultBlock"),
@@ -174,13 +179,58 @@ el.resetDrug.addEventListener("click", () => {
   el.weightInput.value = "";
   el.ageYearsInput.value = "";
   el.ageMonthsInput.value = "";
+  setEstimateMode(false);
   el.search.focus();
 });
+
+/* --------------------------------------------------- weight estimation */
+
+function setEstimateMode(on) {
+  state.useEstimatedWeight = on;
+  el.estimateToggle.classList.toggle("is-active", on);
+  el.weightInputWrap.classList.toggle("is-estimated", on);
+  el.weightInput.readOnly = on;
+  if (on) {
+    refreshEstimatedWeight();
+  } else {
+    el.weightInput.value = "";
+    el.estimateHint.hidden = true;
+    el.weightInput.focus();
+  }
+  computeAndRender();
+}
+
+function refreshEstimatedWeight() {
+  if (!state.useEstimatedWeight) return;
+  const ageInYears = getAgeInYears();
+  el.estimateHint.hidden = false;
+
+  if (ageInYears === null) {
+    el.weightInput.value = "";
+    el.estimateHint.textContent = "ابتدا سن کودک را وارد کنید.";
+    return;
+  }
+  const kg = estimateWeightKg(ageInYears);
+  if (kg === null) {
+    el.weightInput.value = "";
+    el.estimateHint.textContent = "برای سنین بالای ۱۲ سال این تخمین معتبر نیست — وزن واقعی را وارد کنید.";
+    return;
+  }
+  el.weightInput.value = kg;
+  el.estimateHint.textContent = `وزن تخمینی بر اساس سن، برای کودک سالم با رشد طبیعی: ${formatNumber(kg)} کیلوگرم.`;
+}
+
+el.estimateToggle.addEventListener("click", () => setEstimateMode(!state.useEstimatedWeight));
 
 /* ------------------------------------------------------------- compute */
 
 [el.weightInput, el.ageYearsInput, el.ageMonthsInput].forEach((input) => {
-  input.addEventListener("input", computeAndRender);
+  input.addEventListener("input", () => {
+    if (state.useEstimatedWeight && (input === el.ageYearsInput || input === el.ageMonthsInput)) {
+      refreshEstimatedWeight();
+    }
+    computeAndRender();
+  });
 });
 
 function getAgeInYears() {
@@ -205,12 +255,18 @@ function computeAndRender() {
 
   el.promptHint.hidden = true;
   const result = calculateDose(state.drug, { ageInYears, weightKg, indication: state.indication });
-  renderResult(result);
+  renderResult(result, state.useEstimatedWeight);
 }
 
-function renderResult(result) {
+function renderResult(result, isEstimatedWeight) {
   el.resultBlock.hidden = false;
   el.resultBody.innerHTML = "";
+
+  if (isEstimatedWeight && (result.kind === "weightBased" || result.kind === "standard")) {
+    el.resultBody.appendChild(
+      flag("amber", "این محاسبه بر پایه وزن تخمینی (از روی سن) است، نه وزن اندازه‌گیری‌شده — در صورت امکان از وزن واقعی کودک استفاده کنید.")
+    );
+  }
 
   if (result.kind === "blocked") {
     el.resultBody.appendChild(flag("brick", result.reason));
@@ -302,29 +358,84 @@ function formatNumber(n) {
 const navButtons = document.querySelectorAll(".nav-btn");
 const views = document.querySelectorAll(".view");
 
+function switchView(target) {
+  navButtons.forEach((b) => b.classList.toggle("is-active", b.dataset.nav === target));
+  views.forEach((v) => (v.hidden = v.dataset.view !== target));
+  window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+}
+
 navButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const target = btn.dataset.nav;
-    navButtons.forEach((b) => b.classList.toggle("is-active", b === btn));
-    views.forEach((v) => (v.hidden = v.dataset.view !== target));
-  });
+  btn.addEventListener("click", () => switchView(btn.dataset.nav));
 });
+
+document.getElementById("settingsIconBtn").addEventListener("click", () => switchView("settings"));
+
+/* ------------------------------------------------------------- topbar elevation */
+
+const topbar = document.getElementById("topbar");
+function updateTopbarShadow() {
+  topbar.classList.toggle("is-scrolled", window.scrollY > 4);
+}
+window.addEventListener("scroll", updateTopbarShadow, { passive: true });
+updateTopbarShadow();
+
+/* ------------------------------------------------------------------ toast */
+
+let toastTimer = null;
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("is-visible");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 2200);
+}
 
 /* ------------------------------------------------------------- PWA install */
 
 let deferredPrompt = null;
+const installBtn = document.getElementById("installBtnSettings");
+
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  document.getElementById("installBtn").hidden = false;
+  installBtn.hidden = false;
 });
 
-document.getElementById("installBtn").addEventListener("click", async () => {
+installBtn.addEventListener("click", async () => {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
   await deferredPrompt.userChoice;
   deferredPrompt = null;
-  document.getElementById("installBtn").hidden = true;
+  installBtn.hidden = true;
+});
+
+window.addEventListener("appinstalled", () => {
+  installBtn.hidden = true;
+});
+
+/* -------------------------------------------------------------- share */
+
+const shareBtn = document.getElementById("shareBtn");
+shareBtn.addEventListener("click", async () => {
+  const shareData = {
+    title: "QuickPharm — حافظه دوم داروساز",
+    text: "محاسبه‌گر دوز اطفال و مرجع داروهای ترکیبی، آفلاین و قابل نصب.",
+    url: window.location.href,
+  };
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch (err) {
+      // user cancelled — no-op
+    }
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(shareData.url);
+    showToast("لینک کپی شد");
+  } catch (err) {
+    showToast(shareData.url);
+  }
 });
 
 if ("serviceWorker" in navigator) {

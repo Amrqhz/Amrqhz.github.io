@@ -1,4 +1,4 @@
-// Auto-generated from the QuickDose drug database.
+// Auto-generated from the QuickPharm drug database.
 // Each entry: id, name, concentration, dosageform, calculationType ("weightBased" | "standard" | ""),
 // indications[], parameters{minAge,maxAge,dosePerKg,maxDose,frequency,ds}, indicationSpecificParams{}, note.
 export const DRUGS = [

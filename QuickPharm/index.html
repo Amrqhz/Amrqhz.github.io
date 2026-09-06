@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>QuickDose · حافظه دوم داروساز</title>
+<title>QuickPharm · حافظه دوم داروساز</title>
 <meta name="description" content="محاسبه‌گر دوز اطفال و ابزارهای مرجع بالینی داروساز — سریع، آفلاین و قابل نصب." />
 <meta name="theme-color" content="#1F6F5C" />
 <link rel="manifest" href="manifest.webmanifest" />
@@ -18,22 +18,17 @@
 
 <div class="app-shell">
 
-  <header class="topbar">
+  <header class="topbar" id="topbar">
     <div class="wordmark">
-      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
-        <rect x="20" y="4" width="8" height="14" rx="2" />
-        <path d="M16 16 L32 16 L34 34 A10 10 0 0 1 14 34 Z" />
-        <line x1="17.2" y1="24" x2="21" y2="24" class="tick" />
-        <line x1="17.6" y1="29" x2="21" y2="29" class="tick" />
-        <line x1="27" y1="24" x2="30.8" y2="24" class="tick" />
-        <line x1="27" y1="29" x2="31.2" y2="29" class="tick" />
-      </svg>
+      <img class="mark" src="icons/mark.png" alt="" aria-hidden="true" />
       <div class="wordmark-text">
-        <span class="brand">QuickDose</span>
+        <span class="brand">QuickPharm</span>
         <span class="tagline">حافظه دوم داروساز</span>
       </div>
     </div>
-    <button class="install-btn" id="installBtn" hidden type="button">نصب برنامه</button>
+    <button class="settings-icon-btn" id="settingsIconBtn" type="button" aria-label="تنظیمات">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/></svg>
+    </button>
   </header>
 
   <main class="views">
@@ -44,6 +39,7 @@
       <div class="search-block">
         <label class="field-label" for="drugSearch">جست‌وجوی دارو یا علامت بالینی</label>
         <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input
             id="drugSearch"
             type="text"
@@ -51,7 +47,9 @@
             autocomplete="off"
             placeholder="مثلاً «آموکسی‌سیلین» یا «تب»…"
           />
-          <button class="clear-btn" id="clearSearch" type="button" hidden aria-label="پاک کردن">×</button>
+          <button class="clear-btn" id="clearSearch" type="button" hidden aria-label="پاک کردن">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
         <ul class="results-list" id="resultsList" hidden></ul>
         <p class="empty-hint" id="emptyHint" hidden>موردی یافت نشد — املا یا نام دیگر دارو را امتحان کنید.</p>
@@ -75,8 +73,14 @@
 
         <div class="measure-grid">
           <div class="measure-field">
-            <label class="field-label" for="weightInput">وزن (کیلوگرم)</label>
-            <div class="measure-input-wrap">
+            <div class="field-label-row">
+              <label class="field-label" for="weightInput">وزن (کیلوگرم)</label>
+              <button type="button" class="estimate-toggle" id="estimateToggle">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                <span>تخمین از سن</span>
+              </button>
+            </div>
+            <div class="measure-input-wrap" id="weightInputWrap">
               <input id="weightInput" type="number" inputmode="decimal" min="0" step="0.1" placeholder="—" />
               <span class="unit">kg</span>
             </div>
@@ -96,6 +100,8 @@
           </div>
         </div>
 
+        <p class="estimate-hint" id="estimateHint" hidden></p>
+
         <div class="result-block" id="resultBlock" hidden>
           <div class="result-rule"></div>
           <div class="result-body" id="resultBody"></div>
@@ -113,6 +119,7 @@
       <div class="search-block" id="compoundSearchBlock">
         <label class="field-label" for="compoundSearch">جست‌وجوی فرآورده یا بیماری</label>
         <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input
             id="compoundSearch"
             type="text"
@@ -120,7 +127,9 @@
             autocomplete="off"
             placeholder="مثلاً «آکنه»، «زگیل» یا «ویتفیلد»…"
           />
-          <button class="clear-btn" id="clearCompoundSearch" type="button" hidden aria-label="پاک کردن">×</button>
+          <button class="clear-btn" id="clearCompoundSearch" type="button" hidden aria-label="پاک کردن">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <div class="chip-group category-filter" id="categoryFilter"></div>
@@ -131,7 +140,7 @@
 
       <div class="compound-detail" id="compoundDetail" hidden>
         <button class="reset-drug" id="backToCompoundList" type="button" aria-label="بازگشت به فهرست">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
 
         <div class="compound-hero">
@@ -176,21 +185,81 @@
 
     </section>
 
+    <!-- ====================== SETTINGS VIEW ====================== -->
+    <section class="view" id="view-settings" data-view="settings" hidden>
+      <div class="settings-content">
+
+        <div class="app-id-card">
+          <img class="app-id-icon" src="icons/icon-192.png" alt="" />
+          <div>
+            <p class="app-id-name">QuickPharm</p>
+            <p class="app-id-version">نسخه ۲٫۰ · حافظه دوم داروساز</p>
+          </div>
+        </div>
+
+        <button class="settings-action primary" id="installBtnSettings" type="button" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>نصب برنامه روی دستگاه</span>
+        </button>
+
+        <button class="settings-action" id="shareBtn" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>اشتراک‌گذاری این پروژه</span>
+        </button>
+
+        <div class="doc-section settings-section">
+          <h3>درباره QuickPharm</h3>
+          <p class="doc-text">
+            QuickPharm با یک محاسبه‌گر ساده دوز اطفال شروع شد، اما ایده اصلی چیز بزرگ‌تری است:
+            یک «حافظه دوم» برای داروساز — جایی که محاسبات دوز، فرمول‌های ترکیبی و مرجع‌های بالینی
+            روزمره، به‌جای پخش‌شدن بین دفترچه‌ها و حافظه، در یک ابزار آفلاین و همیشه در دسترس
+            کنار هم باشند.
+          </p>
+          <ul class="feature-list">
+            <li><span class="feature-dot"></span>محاسبه‌گر دوز وزنی و سنی اطفال، با بیش از ۸۰ فرآورده</li>
+            <li><span class="feature-dot"></span>مرجع کامل داروهای ترکیبی (ساختنی) با ترکیبات، روش ساخت و نکات بالینی</li>
+            <li><span class="feature-dot"></span>کاملاً آفلاین و قابل نصب — بدون نیاز به اینترنت پس از اولین بار</li>
+            <li><span class="feature-dot"></span>در حال توسعه مداوم؛ فرمول‌ها و بخش‌های تازه به‌مرور اضافه می‌شوند</li>
+          </ul>
+        </div>
+
+        <div class="doc-section settings-section">
+          <h3>درباره سازنده</h3>
+          <div class="dev-card">
+            <div class="dev-avatar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div>
+              <p class="dev-name">امیرحسین</p>
+              <p class="dev-role">دانشجوی داروسازی (PharmD) و توسعه‌دهنده وب</p>
+            </div>
+          </div>
+          <a class="settings-link" href="https://amrqhz.github.io" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+            <span>amrqhz.github.io</span>
+          </a>
+        </div>
+
+        <p class="settings-footer">ساخته‌شده برای داروسازانی که وقت ورق‌زدن دفترچه ندارند.</p>
+      </div>
+    </section>
 
   </main>
 
   <nav class="bottom-nav" aria-label="بخش‌های برنامه">
     <button class="nav-btn is-active" data-nav="calculator" type="button">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 2h6v6l4 9a3 3 0 0 1-3 4H8a3 3 0 0 1-3-4l4-9V2z"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H9a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8" cy="10.5" r=".6"/><circle cx="12" cy="10.5" r=".6"/><circle cx="16" cy="10.5" r=".6"/><circle cx="8" cy="14.5" r=".6"/><circle cx="12" cy="14.5" r=".6"/><circle cx="16" cy="14.5" r=".6"/><circle cx="8" cy="18.5" r=".6"/><circle cx="12" cy="18.5" r=".6"/><circle cx="16" cy="18.5" r=".6"/></svg></span>
       <span>دوزینگ</span>
     </button>
     <button class="nav-btn" data-nav="compounding" type="button">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v6l5 9a2 2 0 0 1-2 3H6a2 2 0 0 1-2-3l5-9V3z"/><line x1="7" y1="15" x2="17" y2="15"/></svg>
-      <span>دستورهای ساخت</span>
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.34a2 2 0 0 1-.4 1.2L4.42 17.6A2 2 0 0 0 6 21h12a2 2 0 0 0 1.58-3.4l-5.18-7.06a2 2 0 0 1-.4-1.2V3"/><path d="M7 15h10"/></svg></span>
+      <span>داروهای ساختنی</span>
     </button>
   </nav>
 
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script type="module" src="js/app.js"></script>
 </body>

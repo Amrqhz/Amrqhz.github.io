@@ -1,4 +1,4 @@
-const CACHE = "quickdose-v1";
+const CACHE = "quickpharm-v1";
 const SHELL = [
   "./",
   "./index.html",
@@ -10,9 +10,11 @@ const SHELL = [
   "./js/aliases.js",
   "./js/compounds-data.js",
   "./js/compound-icons.js",
+  "./js/icons.js",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  "./icons/mark.png",
 ];
 
 self.addEventListener("install", (event) => {

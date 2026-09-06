@@ -1,6 +1,6 @@
 {
-  "name": "QuickDose — حافظه دوم داروساز",
-  "short_name": "QuickDose",
+  "name": "QuickPharm — حافظه دوم داروساز",
+  "short_name": "QuickPharm",
   "description": "محاسبه‌گر دوز اطفال و ابزارهای مرجع بالینی داروساز",
   "start_url": "./index.html",
   "scope": "./",

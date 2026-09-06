@@ -1,5 +1,5 @@
 // Fixed-text dosing rules for calculationType === "standard".
-// Ported directly from the original QuickDose (Flutter) switch-case logic.
+// Ported directly from the original QuickPharm (Flutter) switch-case logic.
 // Keyed by exact drug `name` as it appears in drugs-data.js.
 // Each function receives { ageInYears, weightKg } and returns a result string,
 // or null if this drug has no ported rule yet (falls back to the drug's note).
