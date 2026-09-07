@@ -268,10 +268,20 @@ function renderExistingShiftsForDay() {
 function bindShiftForm() {
   document.getElementById('shiftForm').addEventListener('submit', (e) => { e.preventDefault(); saveShiftFromForm(); });
   document.getElementById('cancelShiftEdit').addEventListener('click', resetShiftForm);
-  // live badge update when times change
-  document.getElementById('shiftStart').addEventListener('change', updateShiftTypeBadge);
-  document.getElementById('shiftEnd').addEventListener('change', updateShiftTypeBadge);
+  document.getElementById('shiftStart').addEventListener('change', () => {
+    updateShiftTypeBadge();
+    updateDurationSuggestions();
+  });
+  document.getElementById('shiftEnd').addEventListener('change', () => {
+    updateShiftTypeBadge();
+    updateDurationPreview();
+  });
   document.getElementById('shiftIsHoliday').addEventListener('change', updateShiftTypeBadge);
+
+  // Bind each chip
+  document.querySelectorAll('.dur-chip').forEach((chip) => {
+    chip.addEventListener('click', () => applyDurationChip(Number(chip.dataset.hours)));
+  });
 }
 
 function updateShiftTypeBadge() {
@@ -305,12 +315,89 @@ function updateShiftTypeBadge() {
     badge.className = 'shift-type-badge';
   }
 }
+
+function updateDurationSuggestions() {
+  const start     = document.getElementById('shiftStart').value;
+  const suggestEl = document.getElementById('durationSuggestions');
+  if (!start) {
+    suggestEl.style.display = 'none';
+    return;
+  }
+  suggestEl.style.display = '';
+  suggestEl.classList.add('duration-suggestions--visible');
+
+  // Highlight chips whose suggested end would cross midnight (night shift)
+  document.querySelectorAll('.dur-chip').forEach((chip) => {
+    const hours  = Number(chip.dataset.hours);
+    const endVal = addHoursToTime(start, hours);
+    const [sh]   = start.split(':').map(Number);
+    const [eh]   = endVal.split(':').map(Number);
+    const crossesNight = sh < 22 && eh >= 22 || sh >= 22 || (endVal < start);
+
+    chip.classList.toggle('dur-chip--night', crossesNight);
+    chip.title = `پایان: ${endVal}`;
+  });
+
+  updateDurationPreview();
+}
+
+function applyDurationChip(hours) {
+  const start = document.getElementById('shiftStart').value;
+  if (!start) return;
+
+  const endVal = addHoursToTime(start, hours);
+  document.getElementById('shiftEnd').value = endVal;
+
+  // Highlight the selected chip
+  document.querySelectorAll('.dur-chip').forEach((c) => {
+    c.classList.toggle('dur-chip--selected', Number(c.dataset.hours) === hours);
+  });
+
+  updateDurationPreview();
+  updateShiftTypeBadge();
+}
+
+function updateDurationPreview() {
+  const start     = document.getElementById('shiftStart').value;
+  const end       = document.getElementById('shiftEnd').value;
+  const previewEl = document.getElementById('durationPreview');
+  if (!previewEl) return;
+
+  if (!start || !end) {
+    previewEl.textContent = '';
+    return;
+  }
+
+  const { dayHours, nightHours } = S.splitShiftHours(start, end);
+  const totalH = dayHours + nightHours;
+
+
+}
+
+/** Add N hours to a HH:MM string, returns HH:MM (wraps past midnight) */
+function addHoursToTime(timeStr, hours) {
+  const [h, m]   = timeStr.split(':').map(Number);
+  const totalMin = h * 60 + m + hours * 60;
+  const wrappedH = Math.floor(totalMin / 60) % 24;
+  const wrappedM = totalMin % 60;
+  return `${String(wrappedH).padStart(2,'0')}:${String(wrappedM).padStart(2,'0')}`;
+}
+
 function resetShiftForm() {
   document.getElementById('shiftEditId').value = '';
   document.getElementById('shiftStart').value = '';
   document.getElementById('shiftEnd').value = '';
   document.getElementById('shiftNote').value = '';
   document.getElementById('shiftIsHoliday').checked = false;
+    // Hide duration suggestions
+  const suggestEl = document.getElementById('durationSuggestions');
+  if (suggestEl) {
+    suggestEl.style.display = 'none';
+    suggestEl.classList.remove('duration-suggestions--visible');
+  }
+  document.querySelectorAll('.dur-chip').forEach((c) => c.classList.remove('dur-chip--selected'));
+  const previewEl = document.getElementById('durationPreview');
+  if (previewEl) previewEl.textContent = '';
   document.getElementById('saveShiftBtn').textContent = 'ثبت شیفت';
   document.getElementById('cancelShiftEdit').hidden = true;
   document.getElementById('shiftCustomRate').value = '';
@@ -1061,6 +1148,115 @@ function renderFinancial() {
 function bindSettings() {
   initThemePicker();
   bindBackupRestore();
+  bindProfile();
+}
+/* =================== PERSONAL PROFILE =================== */
+
+function bindProfile() {
+  renderProfileHeader();
+
+  document.getElementById('toggleProfileEditBtn').addEventListener('click', () => {
+    const form   = document.getElementById('profileEditForm');
+    const isOpen = form.style.display !== 'none';
+    if (isOpen) {
+      form.style.display = 'none';
+    } else {
+      loadProfileIntoForm();
+      form.style.display = '';
+      form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  });
+
+  document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+  document.getElementById('cancelProfileBtn').addEventListener('click', () => {
+    document.getElementById('profileEditForm').style.display = 'none';
+  });
+}
+
+function loadProfileIntoForm() {
+  const p = settings.profile || {};
+  document.getElementById('profileFullName').value  = p.fullName      || '';
+  document.getElementById('profileRole').value      = p.role          || 'داروساز';
+  document.getElementById('profileLicense').value   = p.licenseNumber || '';
+  document.getElementById('profilePhone').value     = p.phone         || '';
+  document.getElementById('profileEmail').value     = p.email         || '';
+  document.getElementById('profileSignature').value = p.signatureNote || '';
+}
+
+function saveProfile() {
+  const profile = {
+    fullName:      document.getElementById('profileFullName').value.trim(),
+    role:          document.getElementById('profileRole').value,
+    licenseNumber: S.toLatinDigits(document.getElementById('profileLicense').value.trim()),
+    phone:         document.getElementById('profilePhone').value.trim(),
+    email:         document.getElementById('profileEmail').value.trim(),
+    signatureNote: document.getElementById('profileSignature').value.trim(),
+  };
+  settings.profile = profile;
+  S.saveSettings(settings);
+  renderProfileHeader();
+  document.getElementById('profileEditForm').style.display = 'none';
+  showToast('پروفایل ذخیره شد ✓');
+}
+
+function renderProfileHeader() {
+  const p        = settings.profile || {};
+  const nameEl   = document.getElementById('profileDisplayName');
+  const roleEl   = document.getElementById('profileDisplayRole');
+  const avatarEl = document.getElementById('profileAvatar');
+
+  const name = p.fullName || 'نام شما';
+  const role = p.role     || 'داروساز';
+
+  if (nameEl) nameEl.textContent = name;
+  if (roleEl) roleEl.textContent = p.licenseNumber
+    ? `${role} — نظام دارویی: ${p.licenseNumber}`
+    : role;
+
+  // Show initials in avatar if name is set
+  if (avatarEl && p.fullName) {
+    const parts    = p.fullName.trim().split(/\s+/);
+    const initials = parts.length >= 2
+      ? parts[0][0] + parts[parts.length - 1][0]
+      : parts[0][0];
+    avatarEl.textContent = initials;
+    avatarEl.classList.add('profile-avatar--filled');
+  } else if (avatarEl) {
+    avatarEl.classList.remove('profile-avatar--filled');
+    avatarEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+      <circle cx="12" cy="7" r="4"/>
+    </svg>`;
+  }
+}
+
+/** Returns an HTML block for PDF reports showing the user's profile */
+function profilePdfBlock() {
+  const p = settings.profile || {};
+  if (!p.fullName && !p.licenseNumber && !p.phone) return '';
+
+  const rows = [];
+  if (p.fullName)      rows.push(`<tr><td>نام:</td><td>${escapeHtml(p.fullName)}</td></tr>`);
+  if (p.role)          rows.push(`<tr><td>سمت:</td><td>${escapeHtml(p.role)}</td></tr>`);
+  if (p.licenseNumber) rows.push(`<tr><td>شماره نظام دارویی:</td><td>${escapeHtml(p.licenseNumber)}</td></tr>`);
+  if (p.phone)         rows.push(`<tr><td>شماره تماس:</td><td style="direction:ltr;text-align:right">${escapeHtml(p.phone)}</td></tr>`);
+  if (p.email)         rows.push(`<tr><td>ایمیل:</td><td style="direction:ltr;text-align:right">${escapeHtml(p.email)}</td></tr>`);
+
+  const signature = p.signatureNote
+    ? `<div class="pr-signature">
+        <div class="pr-signature__line"></div>
+        <p class="pr-signature__text">${escapeHtml(p.signatureNote)}</p>
+        <p class="pr-signature__name">${escapeHtml(p.fullName || '')}</p>
+      </div>`
+    : '';
+
+  return `
+    <div class="pr-profile-block">
+      <table class="pr-profile-table">
+        <tbody>${rows.join('')}</tbody>
+      </table>
+      ${signature}
+    </div>`;
 }
 
 function bindBackupRestore() {
@@ -1529,6 +1725,7 @@ function exportPdf(mode) {
     const days = new Set(ms.map((x) => x.dateKey)).size;
 
     html += prHead(isSingle ? `گزارش شیفت — ${escapeHtml(pharmacyName(filter))}` : 'گزارش شیفت ماهانه', period, genAt);
+    html += profilePdfBlock();
     html += `<div class="pr-stats">
       <div class="pr-stat"><span class="pr-stat__value">${J.toPersianDigits(ms.length)}</span><span class="pr-stat__label">شیفت</span></div>
       <div class="pr-stat"><span class="pr-stat__value">${J.toPersianDigits(totalH.toFixed(1))}</span><span class="pr-stat__label">ساعت کل</span></div>
@@ -1571,6 +1768,7 @@ function exportPdf(mode) {
     const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
     html += prHead(isSingle ? `گزارش مالی — ${escapeHtml(pharmacyName(filter))}` : 'گزارش مالی ماهانه', period, genAt);
+    html += profilePdfBlock();
     html += `<div class="pr-rates-note">نرخ عادی: ${settings.rateNormal.toLocaleString()} تومان/ساعت &nbsp;|&nbsp; نرخ شب/تعطیل: ${settings.rateSpecial.toLocaleString()} تومان/ساعت</div>`;
     html += `<div class="pr-stats">
       <div class="pr-stat"><span class="pr-stat__value">${J.toPersianDigits(ms.length)}</span><span class="pr-stat__label">شیفت</span></div>

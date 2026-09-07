@@ -39,7 +39,19 @@ function saveShifts(list) {
   localStorage.setItem(STORAGE_KEYS.shifts, JSON.stringify(list));
 }
 
-const DEFAULT_SETTINGS = { rateNormal: 0, rateSpecial: 0, bankAccounts: [] };
+const DEFAULT_SETTINGS = {
+  rateNormal: 0,
+  rateSpecial: 0,
+  bankAccounts: [],
+  profile: {
+    fullName:      '',
+    licenseNumber: '',
+    phone:         '',
+    role:          'داروساز',
+    email:         '',
+    signatureNote: '',
+  },
+};
 
 function loadSettings() {
   try { return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(localStorage.getItem(STORAGE_KEYS.settings) || '{}')); }

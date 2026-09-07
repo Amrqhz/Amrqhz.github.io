@@ -335,6 +335,65 @@
       <div class="panel-head">
         <h2>تنظیمات</h2>
       </div>
+          <!-- PERSONAL PROFILE -->
+      <div class="settings-section profile-section">
+        <div class="profile-header">
+          <div class="profile-avatar" id="profileAvatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="profile-header__text">
+            <span class="profile-header__name" id="profileDisplayName">نام شما</span>
+            <span class="profile-header__role" id="profileDisplayRole">داروساز</span>
+          </div>
+          <button class="linebtn" id="toggleProfileEditBtn" type="button">ویرایش</button>
+        </div>
+
+        <!-- Edit form — collapsed by default -->
+        <div class="profile-edit-form" id="profileEditForm" style="display:none;">
+          <div class="field-row">
+            <div class="field">
+              <label for="profileFullName">نام و نام خانوادگی</label>
+              <input type="text" id="profileFullName" placeholder="امیرحسین قلی‌زاده">
+            </div>
+            <div class="field">
+              <label for="profileRole">سمت</label>
+              <select id="profileRole">
+                <option value="داروساز">داروساز</option>
+                <option value="مسئول فنی">مسئول فنی</option>
+                <option value="قائم مقام">قائم مقام</option>
+                <option value="کمک داروساز">کمک داروساز</option>
+                <option value="دستیار داروساز">دستیار داروساز</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="profileLicense">شماره نظام دارویی</label>
+              <input type="text" id="profileLicense" placeholder="مثلاً: ۱۲۳۴۵۶" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label for="profilePhone">شماره تماس</label>
+              <input type="tel" id="profilePhone" placeholder="۰۹۱۲۳۴۵۶۷۸۹" inputmode="numeric">
+            </div>
+          </div>
+          <div class="field">
+            <label for="profileEmail">ایمیل (اختیاری)</label>
+            <input type="email" id="profileEmail" placeholder="example@email.com">
+          </div>
+          <div class="field">
+            <label for="profileSignature">متن امضا / تأییدیه در PDF (اختیاری)</label>
+            <input type="text" id="profileSignature"
+                  placeholder="مثلاً: این گزارش به تأیید اینجانب می‌رسد">
+          </div>
+          <div class="field-row field-row--actions">
+            <button class="linebtn linebtn--solid" id="saveProfileBtn" type="button">ذخیره پروفایل</button>
+            <button class="linebtn" id="cancelProfileBtn" type="button">انصراف</button>
+          </div>
+        </div>
+      </div>
 
 
       <!-- ===== THEME PICKER ===== -->
@@ -468,11 +527,12 @@
         <h3 class="settings-section__title">درباره</h3>
         <div class="settings-about" style="align-items: center; justify-content: center; text-align: center;">
           <p class="settings-about__name">دفتر شیفت</p>
-          <p class="settings-about__dev">1.6 version</p>
+          <p class="settings-about__dev">1.7 version</p>
           <p class="settings-about__dev">طراحی و توسعه: امیرحسین قلی‌زاده</p>
           <p class="settings-about__social">سوشال مدیا: <span>@amrqhz</span></p>
           <p style="font-size: 13px;">این برنامه به صورت رایگان توسعه داده شده است.<br> برای اطلاع از اپدیت ها و سایر
             برنامه ها میتوانید از طریق کانال تلگرام به ایدی @amrqhz_projects اقدام کنید.<br> مرسی از حمایت های شما</p>
+          <span class="loader"></span>
         </div>
         <div class="legend"
           style="align-items: center;justify-content: center; text-align: center; margin-bottom: 3rem;">
@@ -516,6 +576,19 @@
             <label for="shiftEnd">ساعت پایان</label>
             <input type="time" id="shiftEnd" required>
           </div>
+        </div>
+
+        <!-- Duration suggestion chips — appear after start time is set -->
+        <div class="duration-suggestions" id="durationSuggestions" style="display:none;">
+          <span class="duration-suggestions__label">پیشنهاد مدت:</span>
+          <div class="duration-chips">
+            <button class="dur-chip" data-hours="4"  type="button">+۴ ساعت</button>
+            <button class="dur-chip" data-hours="6"  type="button">+۶ ساعت</button>
+            <button class="dur-chip" data-hours="8"  type="button">+۸ ساعت</button>
+            <button class="dur-chip" data-hours="12" type="button">+۱۲ ساعت</button>
+            <button class="dur-chip" data-hours="24" type="button">+۲۴ ساعت</button>
+          </div>
+          <div class="duration-preview" id="durationPreview"></div>
         </div>
         <!-- Night/holiday auto-detection feedback + manual override -->
         <div class="shift-type-row" id="shiftTypeRow">
