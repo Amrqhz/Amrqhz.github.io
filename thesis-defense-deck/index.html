@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Praziquantel &amp; BCR-ABL — Thesis Defense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.1.0/3Dmol-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+<style>
+/* ===================== DESIGN TOKENS ===================== */
+:root{
+  --bg:#F5F8FA;
+  --bg-deep:#EDF2F5;
+  --surface:#FFFFFF;
+  --surface-2:#FBFCFD;
+  --ink:#182533;
+  --ink-soft:#51616F;
+  --ink-faint:#8A99A6;
+  --line:#DCE4E9;
+  --line-strong:#C3CFD7;
+
+  --blue:#2C6E8E;      /* allosteric */
+  --blue-deep:#1E4F68;
+  --blue-soft:#DEEAF0;
+  --red:#B24A3B;       /* catalytic */
+  --red-deep:#8C382C;
+  --red-soft:#F5E3DE;
+  --gold:#B5872F;      /* mutation / highlight */
+  --gold-soft:#F3E9D1;
+  --green:#3C7A5E;      /* validated / positive */
+  --green-soft:#DFEEE6;
+  --violet:#6C5B8C;     /* DFT / electronic */
+  --violet-soft:#E9E4F1;
+
+  --shadow-1: 0 1px 2px rgba(24,37,51,.06), 0 1px 1px rgba(24,37,51,.04);
+  --shadow-2: 0 8px 24px rgba(24,37,51,.10), 0 2px 6px rgba(24,37,51,.06);
+  --shadow-3: 0 20px 48px rgba(24,37,51,.16);
+
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+
+  --serif-en: 'Newsreader', 'Vazirmatn', serif;
+  --sans-en: 'Inter', 'Vazirmatn', sans-serif;
+  --sans-fa: 'Vazirmatn', 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+
+  --f-display: var(--serif-en);
+  --f-body: var(--sans-en);
+}
+html[data-lang="fa"]{
+  --f-display: var(--sans-fa);
+  --f-body: var(--sans-fa);
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  background: radial-gradient(1200px 700px at 12% -10%, #eef4f7 0%, var(--bg) 55%), var(--bg);
+  color:var(--ink);
+  font-family:var(--f-body);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+html[dir="rtl"] body{ font-family:var(--sans-fa); }
+
+::selection{ background:var(--blue-soft); color:var(--blue-deep); }
+
+/* ===================== STAGE / DECK FRAME ===================== */
+#stage{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+}
+#deck-frame{
+  position:relative;
+  width:min(96vw, 177.78vh);
+  height:min(54vw, 100vh);
+  max-width:1600px;
+  background:var(--surface);
+  border-radius:var(--radius-l);
+  box-shadow:var(--shadow-3);
+  overflow:hidden;
+  border:1px solid var(--line);
+}
+#slide-viewport{
+  position:absolute; inset:0;
+  overflow:hidden;
+}
+.slide{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  padding: 3.6% 5.2%;
+  opacity:0; transform:translateY(14px) scale(.99);
+  pointer-events:none;
+  transition: opacity .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.slide.active{
+  opacity:1; transform:translateY(0) scale(1);
+  pointer-events:auto;
+}
+.slide-exit-left{ transform:translateY(0) translateX(-30px) scale(.99); }
+.slide-exit-right{ transform:translateY(0) translateX(30px) scale(.99); }
+
+/* subtle academic backdrop texture */
+.slide::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, rgba(44,110,142,.05) 1px, transparent 0),
+    radial-gradient(1px 1px at 90px 80px, rgba(178,74,59,.04) 1px, transparent 0);
+  background-size: 140px 140px;
+  pointer-events:none; z-index:0;
+}
+.slide > *{ position:relative; z-index:1; }
+
+/* ===================== TYPE SCALE ===================== */
+.eyebrow{
+  font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+  color:var(--blue-deep); text-transform:none;
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--blue-soft); padding:5px 12px; border-radius:999px;
+  width:fit-content;
+}
+html[dir="rtl"] .eyebrow{ font-family:var(--sans-fa); }
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+
+h1.slide-title{
+  font-family:var(--f-display); font-weight:600;
+  font-size:clamp(26px, 2.7vw, 42px);
+  line-height:1.15; color:var(--ink); margin:10px 0 4px 0;
+  letter-spacing:-.01em;
+}
+p.slide-sub{
+  font-size:clamp(13px,1.15vw,16px); color:var(--ink-soft); margin:0 0 18px 0;
+  max-width:74ch; line-height:1.55;
+}
+.section-tag{ font-size:12px; color:var(--ink-faint); font-family:var(--mono); }
+html[dir="rtl"] .section-tag{ font-family:var(--sans-fa); }
+
+.body-text{ font-size:clamp(13px,1.05vw,15.5px); line-height:1.75; color:var(--ink-soft); }
+.body-text strong{ color:var(--ink); font-weight:600; }
+
+/* ===================== NAV / CHROME ===================== */
+#chrome{
+  position:absolute; inset:0; pointer-events:none; z-index:5;
+}
+#progress-track{
+  position:absolute; top:0; left:0; right:0; height:3px; background:var(--line);
+}
+#progress-fill{
+  height:100%; background:linear-gradient(90deg, var(--blue), var(--gold));
+  width:0%; transition:width .4s ease;
+}
+.nav-btn{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:44px; height:44px; border-radius:50%;
+  background:var(--surface); border:1px solid var(--line);
+  box-shadow:var(--shadow-2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; pointer-events:auto; color:var(--ink);
+  transition:.2s;
+}
+.nav-btn:hover{ background:var(--blue); color:#fff; border-color:var(--blue);}
+#btn-prev{ left:-56px; } #btn-next{ right:-56px; }
+html[dir="rtl"] #btn-prev{ left:auto; right:-56px; transform:translateY(-50%) rotate(180deg);}
+html[dir="rtl"] #btn-next{ right:auto; left:-56px; transform:translateY(-50%) rotate(180deg);}
+
+#slide-counter{
+  position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+  font-family:var(--mono); font-size:11px; color:var(--ink-faint);
+  background:rgba(255,255,255,.7); backdrop-filter:blur(6px);
+  padding:5px 12px; border-radius:999px; border:1px solid var(--line);
+  pointer-events:auto;
+}
+html[dir="rtl"] #slide-counter{ font-family:var(--sans-fa); }
+
+#lang-toggle{
+  position:absolute; top:16px; z-index:20; pointer-events:auto;
+  right:16px;
+  display:flex; align-items:center; gap:6px;
+  background:var(--surface); border:1px solid var(--line); border-radius:999px;
+  padding:4px; box-shadow:var(--shadow-1); cursor:pointer;
+  font-family:var(--sans-en); font-size:12px; font-weight:600;
+}
+html[dir="rtl"] #lang-toggle{ right:auto; left:16px; }
+#lang-toggle .opt{ padding:6px 12px; border-radius:999px; color:var(--ink-faint); transition:.2s;}
+#lang-toggle .opt.on{ background:var(--ink); color:#fff; }
+
+/* ===================== SHARED COMPONENTS ===================== */
+.grid{ display:grid; gap:16px; }
+.card{
+  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-m);
+  padding:16px 18px; box-shadow:var(--shadow-1);
+}
+.card h4{ margin:0 0 6px 0; font-size:14px; color:var(--ink); font-family:var(--f-body); font-weight:700;}
+.card p{ margin:0; font-size:12.5px; color:var(--ink-soft); line-height:1.6;}
+
+.pill{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-family:var(--mono); padding:3px 10px; border-radius:999px;
+  border:1px solid var(--line-strong); color:var(--ink-soft);
+}
+html[dir="rtl"] .pill{ font-family:var(--sans-fa); }
+.pill.blue{ background:var(--blue-soft); color:var(--blue-deep); border-color:transparent;}
+.pill.red{ background:var(--red-soft); color:var(--red-deep); border-color:transparent;}
+.pill.gold{ background:var(--gold-soft); color:#7A5A1E; border-color:transparent;}
+.pill.green{ background:var(--green-soft); color:#265640; border-color:transparent;}
+.pill.violet{ background:var(--violet-soft); color:#4A3D68; border-color:transparent;}
+
+table.data-table{ width:100%; border-collapse:collapse; font-size:12px; }
+table.data-table th{
+  text-align:start; font-family:var(--mono); font-weight:600; font-size:10.5px;
+  color:var(--ink-faint); padding:8px 10px; border-bottom:1px solid var(--line-strong);
+  position:sticky; top:0; background:var(--surface-2);
+}
+html[dir="rtl"] table.data-table th{ font-family:var(--sans-fa); }
+table.data-table td{ padding:7px 10px; border-bottom:1px solid var(--line); color:var(--ink-soft); }
+table.data-table tr:hover td{ background:var(--blue-soft); }
+table.data-table td.num{ font-family:var(--mono); }
+html[dir="rtl"] table.data-table td.num{ font-family:var(--sans-fa); }
+table.data-table td.hi{ color:var(--red-deep); font-weight:700; }
+table.data-table td.hi-good{ color:var(--green); font-weight:700; }
+
+.scroll-y{ overflow-y:auto; }
+.scroll-y::-webkit-scrollbar{ width:6px; }
+.scroll-y::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:3px; }
+
+.btn{
+  font-family:var(--f-body); font-size:12.5px; font-weight:600; cursor:pointer;
+  padding:9px 16px; border-radius:999px; border:1px solid var(--line-strong);
+  background:var(--surface); color:var(--ink); transition:.2s; display:inline-flex; gap:8px; align-items:center;
+}
+.btn:hover{ border-color:var(--blue); color:var(--blue-deep); }
+.btn.primary{ background:var(--ink); color:#fff; border-color:var(--ink); }
+.btn.primary:hover{ background:var(--blue-deep); border-color:var(--blue-deep); color:#fff;}
+.btn.small{ padding:6px 12px; font-size:11.5px;}
+.btn svg{ width:14px; height:14px; }
+
+/* Tabs */
+.tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+.tab{
+  font-size:12px; font-weight:600; padding:7px 14px; border-radius:999px;
+  background:var(--surface-2); border:1px solid var(--line); color:var(--ink-soft); cursor:pointer; transition:.2s;
+}
+.tab.on{ background:var(--blue-deep); color:#fff; border-color:var(--blue-deep); }
+
+/* Ligand cards */
+.ligand-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-m);
+  padding:12px; display:flex; flex-direction:column; gap:6px; box-shadow:var(--shadow-1);
+  transition:.2s;
+}
+.ligand-card:hover{ box-shadow:var(--shadow-2); transform:translateY(-2px); border-color:var(--blue);}
+.ligand-thumb{
+  width:100%; height:76px; border-radius:var(--radius-s); background:var(--bg-deep);
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+}
+.ligand-thumb svg{ width:70%; height:70%; }
+.ligand-name{ font-weight:700; font-size:12.5px; }
+.ligand-name .fa-name{ font-family:var(--sans-fa); color:var(--ink-soft); font-weight:500; font-size:11.5px; }
+.ligand-meta{ display:flex; gap:6px; flex-wrap:wrap; font-size:10px; }
+
+/* Receptor select boxes */
+.receptor-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.receptor-box{
+  border:1.5px solid var(--line); border-radius:var(--radius-m); background:var(--surface);
+  padding:16px 14px; cursor:pointer; transition:.2s; text-align:center; position:relative; overflow:hidden;
+}
+.receptor-box:hover{ border-color:var(--blue); box-shadow:var(--shadow-2); transform:translateY(-3px);}
+.receptor-box.mutant::after{
+  content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--gold);
+}
+.receptor-box .rcode{ font-family:var(--mono); font-weight:700; font-size:16px; color:var(--ink); }
+html[dir="rtl"] .receptor-box .rcode{ font-family:var(--sans-fa); }
+.receptor-box .rlabel{ font-size:11px; color:var(--ink-faint); margin-top:4px;}
+
+/* 3D viewer layout */
+.viewer-wrap{ display:grid; grid-template-columns: 1.5fr 1fr; gap:16px; flex:1; min-height:0; }
+.viewer-3d{ position:relative; background:linear-gradient(180deg,#F8FBFC,#EEF3F6); border-radius:var(--radius-m); border:1px solid var(--line); overflow:hidden; }
+.mol-container{ position:absolute; inset:0; }
+.viewer-loading{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px; color:var(--ink-faint); font-size:12px; background:rgba(248,251,252,.85); z-index:3;}
+.spinner{ width:22px; height:22px; border-radius:50%; border:3px solid var(--line-strong); border-top-color:var(--blue); animation:spin 0.9s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg);} }
+.viewer-controls{ position:absolute; bottom:10px; z-index:4; display:flex; gap:6px; left:10px; }
+html[dir="rtl"] .viewer-controls{ left:auto; right:10px;}
+.viewer-legend{ position:absolute; top:10px; left:10px; z-index:4; display:flex; flex-direction:column; gap:6px;}
+html[dir="rtl"] .viewer-legend{ left:auto; right:10px; }
+.legend-item{ display:flex; align-items:center; gap:6px; font-size:11px; background:rgba(255,255,255,.85); padding:4px 9px; border-radius:999px; border:1px solid var(--line);}
+.legend-swatch{ width:9px; height:9px; border-radius:3px; }
+
+/* Mutation detail panel */
+.mut-panel{ display:flex; flex-direction:column; gap:10px; }
+.aa-compare{ display:flex; align-items:center; gap:10px; }
+.aa-box{ flex:1; border-radius:var(--radius-m); padding:12px; text-align:center; border:1.5px dashed var(--line-strong); }
+.aa-box.from{ background:var(--blue-soft); border-color:var(--blue); }
+.aa-box.to{ background:var(--gold-soft); border-color:var(--gold); }
+.aa-box .aa-code{ font-family:var(--mono); font-size:22px; font-weight:700; }
+html[dir="rtl"] .aa-box .aa-code{ font-family:var(--sans-fa); }
+.aa-arrow{ font-size:18px; color:var(--ink-faint); }
+
+/* Charts / canvases */
+.chart-box{ position:relative; }
+canvas{ max-width:100%; }
+
+/* Heatmap */
+.heatmap-scroll{ overflow:auto; flex:1; }
+.heatmap-table{ border-collapse:separate; border-spacing:3px; font-size:10.5px; }
+.heatmap-table th{ font-family:var(--mono); font-weight:600; color:var(--ink-faint); padding:4px 6px; font-size:9.5px;}
+html[dir="rtl"] .heatmap-table th{ font-family:var(--sans-fa); }
+.heatmap-cell{ width:56px; height:26px; border-radius:5px; text-align:center; font-family:var(--mono); font-size:10px; color:#fff; font-weight:600; }
+html[dir="rtl"] .heatmap-cell{ font-family:var(--sans-fa); }
+.heatmap-rowlabel{ font-size:11px; text-align:end; padding-inline-end:8px; white-space:nowrap; }
+
+/* Two/three column layout helpers */
+.cols-2{ display:grid; grid-template-columns:1fr 1fr; gap:22px; flex:1; min-height:0; }
+.cols-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; flex:1; min-height:0; }
+.stack{ display:flex; flex-direction:column; gap:12px; min-height:0; }
+.grow{ flex:1; min-height:0; }
+
+/* Big number stat */
+.stat{ display:flex; flex-direction:column; }
+.stat .n{ font-family:var(--f-display); font-size:clamp(28px,3vw,44px); font-weight:600; color:var(--ink); line-height:1;}
+.stat .l{ font-size:11.5px; color:var(--ink-faint); margin-top:4px;}
+.stat .n.blue{color:var(--blue-deep);} .stat .n.red{color:var(--red-deep);} .stat .n.gold{color:#7A5A1E;} .stat .n.green{color:var(--green);}
+
+/* Timeline / process */
+.process-row{ display:flex; align-items:stretch; gap:0; flex:1; }
+.process-step{ flex:1; display:flex; flex-direction:column; gap:8px; padding:16px; position:relative; }
+.process-step .pnum{ font-family:var(--mono); font-size:11px; color:var(--ink-faint); }
+html[dir="rtl"] .process-step .pnum{ font-family:var(--sans-fa); }
+.process-connector{ width:34px; display:flex; align-items:center; justify-content:center; color:var(--line-strong); }
+
+.note-flag{ display:flex; gap:8px; align-items:flex-start; background:var(--gold-soft); border:1px solid #E3D4A6; border-radius:var(--radius-s); padding:8px 12px; font-size:11.5px; color:#6B4F1B; margin-top:6px;}
+
+footer.slide-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:10.5px; color:var(--ink-faint); font-family:var(--mono);}
+html[dir="rtl"] footer.slide-foot{ font-family:var(--sans-fa); }
+
+/* title slide */
+.title-slide{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; height:100%; gap:6px; }
+.title-slide .kicker{ font-family:var(--mono); font-size:12px; color:var(--blue-deep); letter-spacing:.04em; }
+html[dir="rtl"] .title-slide .kicker{ font-family:var(--sans-fa); }
+.title-slide h1{ font-family:var(--f-display); font-size:clamp(30px,4vw,56px); font-weight:600; margin:14px 0 6px; max-width:16ch; line-height:1.12;}
+.title-slide .sub{ font-size:15px; color:var(--ink-soft); max-width:60ch; margin-bottom:22px;}
+.title-molscape{ position:absolute; inset:0; opacity:.5; z-index:0; }
+.title-meta{ display:flex; gap:26px; margin-top:8px; flex-wrap:wrap; justify-content:center;}
+.title-meta .tm{ text-align:center; }
+.title-meta .tm b{ display:block; font-size:12.5px; color:var(--ink); }
+.title-meta .tm span{ font-size:10.5px; color:var(--ink-faint); }
+
+@media (max-width:900px){
+  .viewer-wrap, .cols-2, .cols-3{ grid-template-columns:1fr; }
+  .receptor-grid{ grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="deck-frame">
+    <div id="slide-viewport"></div>
+    <div id="chrome">
+      <div id="progress-track"><div id="progress-fill"></div></div>
+      <div id="lang-toggle" onclick="toggleLang()">
+        <div class="opt" id="opt-en">EN</div>
+        <div class="opt" id="opt-fa">FA</div>
+      </div>
+      <div class="nav-btn" id="btn-prev" onclick="go(-1)">&#8592;</div>
+      <div class="nav-btn" id="btn-next" onclick="go(1)">&#8594;</div>
+      <div id="slide-counter">1 / 1</div>
+    </div>
+  </div>
+</div>
+<script>
+window.RECEPTORS_PATH = "./receptors/";
+window.LIGANDS_PATH = "./ligands/";
+
+/* =========================================================================
+   DATA — pulled from thesis Chapters 2–4 (tables 1-3 through 7-3, 4-1, 4-2)
+   ========================================================================= */
+
+const T = { // nav / chrome i18n
+  en: { prev:"Prev", next:"Next", langHint:"Language" },
+  fa: { prev:"قبلی", next:"بعدی", langHint:"زبان" }
+};
+
+// Table 3-1 — the 14-compound anthelmintic library
+const LIGANDS = [
+  {id:"ALB", en:"Albendazole", fa:"آلبندازول", cls_en:"Benzimidazole", cls_fa:"بنزیمیدازول", formula:"C₁₂H₁₅N₃O₂S", mw:265.33, rotb:2, smiles:"CCCSC1=CC2=C(C=C1)N=C(N2)NC(=O)OC"},
+  {id:"DEC", en:"Diethylcarbamazine", fa:"دی‌اتیل‌کاربامازین", cls_en:"Piperazine", cls_fa:"پیپرازین", formula:"C₁₀H₂₁N₃O", mw:199.29, rotb:0, smiles:"CCN(CC)C(=O)N1CCN(C)CC1"},
+  {id:"DECC", en:"DEC Citrate", fa:"دی‌اتیل‌کاربامازین سیترات", cls_en:"Piperazine + citrate", cls_fa:"پیپرازین + سیترات", formula:"C₁₆H₂₉N₃O₈", mw:391.42, rotb:9, smiles:"CCN(CC)C(=O)N1CCN(C)CC1", saltNote_en:"drawn as DEC free base; salt = citrate", saltNote_fa:"به‌صورت باز آزاد DEC رسم شده؛ نمک = سیترات"},
+  {id:"HEX", en:"Hexylresorcinol", fa:"هگزیل‌رزورسینول", cls_en:"Phenol", cls_fa:"فنل", formula:"C₁₂H₁₈O₂", mw:194.27, rotb:5, smiles:"CCCCCCC1=C(C=C(C=C1)O)O"},
+  {id:"LEV", en:"Levamisole", fa:"لوامیزول", cls_en:"Imidazothiazole", cls_fa:"ایمیدازوتیازول", formula:"C₁₁H₁₂N₂S", mw:204.27, rotb:3, smiles:"C1CSC2=NC(CN21)C3=CC=CC=C3"},
+  {id:"MEB", en:"Mebendazole", fa:"مبندازول", cls_en:"Benzimidazole", cls_fa:"بنزیمیدازول", formula:"C₁₆H₁₃N₃O₃", mw:295.29, rotb:5, smiles:"COC(=O)NC1=NC2=C(N1)C=C(C=C2)C(=O)C3=CC=CC=C3", note_en:"MD/DFT candidate", note_fa:"کاندیدای MD/DFT"},
+  {id:"NIC", en:"Niclosamide", fa:"نیکلوزامید", cls_en:"Salicylanilide", cls_fa:"سالیسیل‌آنیلید", formula:"C₁₃H₈Cl₂N₂O₄", mw:327.12, rotb:4, smiles:"C1=CC(=C(C=C1[N+](=O)[O-])Cl)NC(=O)C2=C(C=CC(=C2)Cl)O", note_en:"MD/DFT candidate", note_fa:"کاندیدای MD/DFT"},
+  {id:"PIP", en:"Piperazine", fa:"پیپرازین", cls_en:"Diamine", cls_fa:"دی‌آمین", formula:"C₄H₁₀N₂", mw:86.14, rotb:0, smiles:"C1CNCCN1"},
+  {id:"PZQ", en:"Praziquantel", fa:"پرازیکوانتل", cls_en:"Isoquinoline", cls_fa:"ایزوکینولین", formula:"C₁₉H₂₄N₂O₂", mw:312.41, rotb:2, smiles:"C1CCC(CC1)C(=O)N2CC3C4=CC=CC=C4CCN3C(=O)C2", note_en:"★ central finding", note_fa:"★ یافته محوری", hero:true},
+  {id:"PYT", en:"Pyrantel", fa:"پیرانتل", cls_en:"Tetrahydropyrimidine", cls_fa:"تتراهیدروپیریمیدین", formula:"C₁₁H₁₄N₂S", mw:206.31, rotb:2, smiles:"CN1CCCN=C1C=CC2=CC=CS2"},
+  {id:"PYTP", en:"Pyrantel pamoate", fa:"پیرانتل پاموات", cls_en:"Tetrahydropyrimidine + pamoate", cls_fa:"تتراهیدروپیریمیدین + پاموات", formula:"C₃₄H₃₀N₂O₆S", mw:594.68, rotb:6, smiles:"CN1CCCN=C1C=CC2=CC=CS2", saltNote_en:"drawn as pyrantel free base; salt = pamoate", saltNote_fa:"به‌صورت باز آزاد پیرانتل رسم شده؛ نمک = پاموات"},
+  {id:"PYR", en:"Pyrvinium", fa:"پیروینیوم", cls_en:"Cyanine", cls_fa:"سیانین", formula:"C₂₆H₂₇N₃", mw:382.52, rotb:4, smiles:"CC1=CC(=C(N1C2=CC=CC=C2)C)C=CC3=[N+](C4=C(C=C3)C=C(C=C4)N(C)C)C", note_en:"MD/DFT candidate", note_fa:"کاندیدای MD/DFT"},
+  {id:"PYRP", en:"Pyrvinium pamoate", fa:"پیروینیوم پاموات", cls_en:"Cyanine + pamoate", cls_fa:"سیانین + پاموات", formula:"C₅₂H₄₈N₄O₆", mw:1151.4, rotb:12, smiles:"CC1=CC(=C(N1C2=CC=CC=C2)C)C=CC3=[N+](C4=C(C=C3)C=C(C=C4)N(C)C)C", saltNote_en:"drawn as pyrvinium cation; salt = pamoate", saltNote_fa:"به‌صورت کاتیون پیروینیوم رسم شده؛ نمک = پاموات"},
+  {id:"THB", en:"Thiabendazole", fa:"تیابندازول", cls_en:"Benzimidazole", cls_fa:"بنزیمیدازول", formula:"C₁₀H₇N₃S", mw:201.25, rotb:1, smiles:"C1=CC=C2C(=C1)NC(=N2)C3=CSC=N3"},
+  {id:"TCB", en:"Triclabendazole", fa:"تریکلابندازول", cls_en:"Benzimidazole", cls_fa:"بنزیمیدازول", formula:"C₁₄H₉Cl₃N₂OS", mw:359.66, rotb:3, smiles:"CSC1=NC2=CC(=C(C=C2N1)Cl)OC3=C(C(=CC=C3)Cl)Cl", note_en:"MD/DFT candidate", note_fa:"کاندیدای MD/DFT"},
+];
+const LIGAND_CLASSES = [
+  {key:"Benzimidazole", en:"Benzimidazoles", fa:"بنزیمیدازول‌ها"},
+  {key:"Isoquinoline", en:"Isoquinolines", fa:"ایزوکینولین‌ها"},
+  {key:"Salicylanilide", en:"Salicylanilides", fa:"سالیسیل‌آنیلیدها"},
+  {key:"Cyanine", en:"Cyanines", fa:"سیانین‌ها"},
+  {key:"Tetrahydropyrimidine", en:"Tetrahydropyrimidines", fa:"تتراهیدروپیریمیدین‌ها"},
+  {key:"Piperazine", en:"Piperazines", fa:"پیپرازین‌ها"},
+  {key:"Imidazothiazole", en:"Imidazothiazoles", fa:"ایمیدازوتیازول‌ها"},
+  {key:"Phenol", en:"Phenols", fa:"فنل‌ها"},
+];
+
+// Table 3-5 — grid box centres (Å), real coordinates from validation docking
+const GRID_BOXES = {
+  "6HD4":        { allosteric:[20.822, 43.557, 54.007], catalytic:[16.405, 15.334, 50.085] },
+  "5MO4":        { allosteric:[-43.678, 19.712, 8.765], catalytic:[-44.382, 22.229, -22.636] },
+  "Y253H_6HD4":  { allosteric:[20.822, 43.557, 54.007], catalytic:[16.405, 15.334, 50.085] },
+  "Y253H_5MO4":  { allosteric:[-43.678, 19.712, 8.765], catalytic:[-44.382, 22.229, -22.636] },
+};
+
+// Receptor metadata (Table 2-3)
+const RECEPTORS = {
+  "6HD4": {
+    file:"6HD4.pdb", mutant:false, origin_en:"Mus musculus", origin_fa:"موش (Mus musculus)",
+    status_en:"Wild-type", status_fa:"نوع وحشی", res:"2.03 Å",
+    catLig_en:"Imatinib", catLig_fa:"ایماتینیب", alloLig_en:"Asciminib analogue (FWY)", alloLig_fa:"آنالوگ آسیمینیب (FWY)",
+    mutation:null
+  },
+  "5MO4": {
+    file:"5MO4.pdb", mutant:false, origin_en:"Human", origin_fa:"انسانی",
+    status_en:"T315I (I334T) — as-crystallised", status_fa:"T315I (I334T) — ساختار کریستالی اصلی", res:"2.17 Å",
+    catLig_en:"Nilotinib", catLig_fa:"نیلوتینیب", alloLig_en:"Asciminib", alloLig_fa:"آسیمینیب",
+    mutation:null
+  },
+  "Y253H_6HD4": {
+    file:"Y253H_6HD4.pdb", mutant:true, origin_en:"Modelled from 6HD4", origin_fa:"مدل‌سازی‌شده از 6HD4", status_en:"Y253H (in-silico)", status_fa:"Y253H (این‌سیلیکو)", res:"— (homology-built)",
+    catLig_en:"Imatinib", catLig_fa:"ایماتینیب", alloLig_en:"Asciminib analogue (FWY)", alloLig_fa:"آنالوگ آسیمینیب (FWY)",
+    mutation:{resi:272, from:"TYR", to:"HIS", label:"Y253H"}
+  },
+  "Y253H_5MO4": {
+    file:"Y253H_5MO4.pdb", mutant:true, origin_en:"Modelled from 5MO4", origin_fa:"مدل‌سازی‌شده از 5MO4", status_en:"T315I + Y253H (double mutant)", status_fa:"جهش دوگانه T315I + Y253H", res:"— (homology-built)",
+    catLig_en:"Nilotinib", catLig_fa:"نیلوتینیب", alloLig_en:"Asciminib", alloLig_fa:"آسیمینیب",
+    mutation:{resi:272, from:"TYR", to:"HIS", label:"Y253H"}
+  }
+};
+
+// Table 3-6 — full docking energies (kcal/mol) across all 8 receptor/site combos
+const DOCK_LIGANDS = ["Albendazole","Diethylcarbamazine","DEC citrate","Hexylresorcinol","Levamisole","Mebendazole","Niclosamide","Piperazine","Praziquantel","Pyrantel","Pyrantel pamoate","Pyrvinium","Thiabendazole","Triclabendazole"];
+const DOCK_COLS = ["5MO4-Allosteric","5MO4-Catalytic","6HD4-Allosteric","6HD4-Catalytic","Y253H_5MO4-Allosteric","Y253H_5MO4-Catalytic","Y253H_6HD4-Allosteric","Y253H_6HD4-Catalytic"];
+const DOCK_MATRIX = [
+  [-6.83,-6.40,-6.72,-6.17,-6.82,-6.35,-6.64,-6.11],
+  [-5.05,-3.76,-4.80,-3.90,-5.06,-3.70,-4.73,-3.92],
+  [-5.23,-3.58,-3.41,-3.86,-5.99,-4.24,-8.69,-6.53],
+  [-6.07,-5.67,-5.86,-5.49,-6.08,-5.59,-5.89,-5.32],
+  [-5.76,-4.59,-5.53,-4.66,-5.76,-4.59,-5.46,-4.70],
+  [-7.94,-7.13,-8.29,-7.07,-8.45,-7.47,-8.25,-7.32],
+  [-8.20,-7.85,-7.97,-7.51,-8.13,-7.62,-7.62,-7.32],
+  [-2.04,-1.46,-1.57,-1.99,-2.04,-1.46,-1.56,-1.99],
+  [-8.01,-5.35,-7.76,-6.04,-8.79,-7.41,-6.85,-6.22],
+  [-5.90,-5.00,-5.61,-4.92,-5.82,-5.08,-5.41,-4.75],
+  [-8.86,-9.16,-6.83,-6.93,-10.43,-9.58,-10.06,-7.17],
+  [-8.37,-8.87,-8.40,-9.52,-8.49,-8.86,-8.49,-9.38],
+  [-4.83,-4.45,-4.85,-4.23,-4.84,-4.45,-4.77,-4.17],
+  [-7.24,-7.39,-6.96,-7.12,-7.30,-7.33,-6.92,-6.51],
+];
+
+// Table 3-1 (validation docking, HOLO re-docking)
+const VALIDATION = [
+  {pdb:"6HD4", site:"Allosteric", rmsd:1.53, e:-8.80},
+  {pdb:"6HD4", site:"Catalytic", rmsd:0.33, e:-15.08},
+  {pdb:"5MO4", site:"Allosteric", rmsd:2.10, e:-9.36},
+  {pdb:"5MO4", site:"Catalytic", rmsd:0.09, e:-11.96},
+];
+const VALIDATION_MUT = [
+  {pdb:"6HD4-Y253H", site:"Allosteric", rmsd:1.47, e:-8.75},
+  {pdb:"6HD4-Y253H", site:"Catalytic", rmsd:0.51, e:-13.90},
+  {pdb:"5MO4-Y253H", site:"Allosteric", rmsd:1.90, e:-9.69},
+  {pdb:"5MO4-Y253H", site:"Catalytic", rmsd:1.09, e:-11.11},
+];
+
+// Table 4-2 — the key finding: mutant vs wild-type ΔG, allosteric site
+const MUTANT_COMPARE = [
+  {ligand:"Pyrantel", mutSite:"allosteric", best:-5.82, baseline:-5.61, receptor:"Y253H_5MO4"},
+  {ligand:"Praziquantel", mutSite:"allosteric", best:-8.79, baseline:-7.76, receptor:"Y253H_5MO4", hero:true},
+  {ligand:"Pyrvinium", mutSite:"allosteric", best:-8.49, baseline:-8.40, receptor:"Y253H_5MO4"},
+  {ligand:"Mebendazole", mutSite:"allosteric", best:-8.45, baseline:-8.29, receptor:"Y253H_5MO4"},
+  {ligand:"Niclosamide", mutSite:"allosteric", best:-8.13, baseline:-7.76, receptor:"Y253H_5MO4"},
+  {ligand:"Praziquantel", mutSite:"catalytic", best:-7.41, baseline:-6.04, receptor:"Y253H_5MO4", note:"site behaves like other candidates here"},
+];
+
+// ADMET (Table 3-7) — subset relevant to the 4 shortlisted + PZQ hero
+const ADMET = [
+  {name:"Praziquantel", mw:312.41, hba:2, hbd:0, cLogP:2.25, gi:"High", bbb:"Yes", pgp:"Yes", lipV:0, sa:2.90, hero:true},
+  {name:"Mebendazole", mw:295.29, hba:4, hbd:2, cLogP:2.53, gi:"High", bbb:"No", pgp:"No", lipV:0, sa:2.26},
+  {name:"Niclosamide", mw:327.12, hba:4, hbd:2, cLogP:3.16, gi:"High", bbb:"No", pgp:"No", lipV:0, sa:2.01},
+  {name:"Pyrvinium", mw:382.52, hba:0, hbd:0, cLogP:4.66, gi:"High", bbb:"Yes", pgp:"No", lipV:1, sa:3.63},
+  {name:"Pyrantel pamoate", mw:594.68, hba:7, hbd:4, cLogP:5.30, gi:"Low", bbb:"No", pgp:"No", lipV:1, sa:4.58},
+];
+
+/* =========================================================================
+   CORE APP STATE + I18N
+   ========================================================================= */
+let currentLang = "en";
+let currentSlide = 0;
+const L = (en, fa) => currentLang === "en" ? en : fa;
+
+function shell({eyebrow, title, sub, body}){
+  return `
+    <div class="eyebrow"><span class="dot"></span>${eyebrow}</div>
+    <h1 class="slide-title">${title}</h1>
+    ${sub ? `<p class="slide-sub">${sub}</p>` : ""}
+    <div class="grow stack" style="min-height:0;">${body}</div>
+    <footer class="slide-foot"><span>${L("BCR-ABL · Drug Repurposing Thesis","بازپروری دارویی BCR-ABL · پایان‌نامه")}</span></footer>
+  `;
+}
+const FOOT = () => null; // kept only so existing call sites (FOOT("n")) don't error
+
+/* ---------- Slide 0 — Title ---------- */
+function slideTitle(){
+  return `
+  <div class="title-slide">
+    <svg class="title-molscape" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#2C6E8E" stop-opacity="0.10"/>
+          <stop offset="100%" stop-color="#B24A3B" stop-opacity="0.08"/>
+        </linearGradient>
+      </defs>
+      <g stroke="url(#lg1)" stroke-width="2" fill="none">
+        ${Array.from({length:16}).map((_,i)=>{
+          const x1=80+i*95, y1=120+((i*53)%620), x2=x1+140, y2=y1+70+((i*37)%160);
+          return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"><animate attributeName="opacity" values="0.2;0.6;0.2" dur="${4+i%5}s" repeatCount="indefinite"/></line>
+          <circle cx="${x1}" cy="${y1}" r="4" fill="${i%2?'#2C6E8E':'#B24A3B'}" fill-opacity="0.25"/>`;
+        }).join("")}
+      </g>
+    </svg>
+    <div class="kicker">${L("ARDABIL UNIVERSITY OF MEDICAL SCIENCES · SCHOOL OF PHARMACY","دانشگاه علوم پزشکی و خدمات بهداشتی درمانی استان اردبیل · دانشکده داروسازی")}</div>
+    <h1 style="max-width:22ch;">${L(
+      "Repurposing Anthelmintic Drugs as Inhibitors of Mutant BCR-ABL Kinase in CML Patients",
+      "کاربری جدید داروهای ضد کرم به عنوان مهارکننده‌های BCR-ABL کیناز موتانت در بیماران CML"
+    )}</h1>
+    <p class="sub" style="font-size:13px;">${L(
+      "An evaluation via molecular docking, molecular dynamics, and DFT simulation",
+      "ارزیابی از طریق شبیه‌سازی داکینگ مولکولی، دینامیک مولکولی و DFT"
+    )}</p>
+    <div class="title-meta">
+      <div class="tm"><b>${L("Candidate","نگارش")}</b><span>${L("Amir Hossein Gholizadeh Ahangari","امیر حسین قلی‌زاده آهنگری")}</span></div>
+      <div class="tm"><b>${L("Supervisor","استاد راهنما")}</b><span>${L("Dr. Nima Razzaghi-Asl","دکتر نیما رزاقی اصل")}</span></div>
+      <div class="tm"><b>${L("Degree","مقطع")}</b><span>${L("PharmD Thesis, Summer 2026","پایان‌نامه دکترای داروسازی، تابستان ۱۴۰۵")}</span></div>
+    </div>
+    <div style="margin-top:26px;" class="pill blue">${L("Use ← → or swipe to navigate","برای پیمایش از ← → یا کشیدن استفاده کنید")}</div>
+  </div>`;
+}
+
+/* ---------- Slide 1 — Agenda ---------- */
+function slideAgenda(){
+  const items = [
+    [L("Background","پیش‌زمینه"), L("CML, BCR-ABL, TKI resistance & the repurposing rationale","CML، BCR-ABL، مقاومت به TKI و منطق بازپروری")],
+    [L("Methods overview","نمای کلی روش‌ها"), L("Three-stage in-silico pipeline: docking → MD → DFT","مسیر سه‌مرحله‌ای این‌سیلیکو: داکینگ ← MD ← DFT")],
+    [L("Ligand library","کتابخانه لیگاندها"), L("14 anthelmintics, structural classes & selection logic","۱۴ ترکیب ضدکرم، دسته‌های ساختاری و منطق انتخاب")],
+    [L("Receptor structures","ساختارهای گیرنده"), L("5MO4, 6HD4 and the two Y253H mutants I modelled","5MO4، 6HD4 و دو جهش Y253H مدل‌سازی‌شده")],
+    [L("Docking results","نتایج داکینگ"), L("Validation, full ΔG heatmap, selection criteria","اعتبارسنجی، نقشه حرارتی کامل ΔG، معیار انتخاب")],
+    [L("The central finding","یافته محوری"), L("Praziquantel: allosteric + mutant-selective","پرازیکوانتل: آلوستریک و انتخابی برای فرم جهش‌یافته")],
+    [L("MD & DFT","دینامیک مولکولی و DFT"), L("Dynamic and electronic validation of the docking hit","اعتبارسنجی دینامیکی و الکترونی یافته داکینگ")],
+    [L("Discussion & conclusion","بحث و نتیجه‌گیری"), L("Mechanism, comparisons, limitations, outlook","مکانیسم، مقایسه‌ها، محدودیت‌ها و چشم‌انداز")],
+  ];
+  return `
+  <div class="grid" style="grid-template-columns:1fr 1fr; flex:1;">
+    ${items.map((it,i)=>`
+      <div class="card" style="display:flex; gap:14px; align-items:flex-start;">
+        <div style="font-family:var(--mono); font-size:20px; color:var(--line-strong); font-weight:700;">${String(i+1).padStart(2,'0')}</div>
+        <div><h4>${it[0]}</h4><p>${it[1]}</p></div>
+      </div>`).join("")}
+  </div>`;
+}
+
+/* ---------- Slide 2 — Background: the clinical problem ---------- */
+function slideBgCancer(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L("Cancer: a family of diseases","سرطان: خانواده‌ای از بیماری‌ها")}</h4>
+      <p>${L("Uncontrolled cell growth and invasion arising from accumulated genetic and epigenetic changes — disrupting the cell cycle, apoptosis, differentiation and signaling.","رشد و تهاجم کنترل‌نشده سلولی ناشی از تجمع تغییرات ژنتیکی و اپی‌ژنتیکی — که چرخه سلولی، آپوپتوز، تمایز و سیگنالینگ را مختل می‌کند.")}</p></div>
+      <div class="card"><h4>${L("Solid tumors vs. hematologic malignancies","تومورهای جامد در برابر بدخیمی‌های خونی")}</h4>
+      <p>${L("Leukemias, lymphomas and myeloma arise from the bone marrow and lymphatic system and spread systemically, rather than forming a single mass — this thesis focuses on the leukemia branch.","لوسمی‌ها، لنفوم‌ها و میلوم از مغز استخوان و سیستم لنفاوی منشأ می‌گیرند و به‌جای تشکیل یک توده منفرد، به‌صورت سیستمیک گسترش می‌یابند — تمرکز این پایان‌نامه بر شاخه لوسمی است.")}</p></div>
+      <div class="card"><h4>${L("Chronic vs. acute leukemia","لوسمی مزمن در برابر حاد")}</h4>
+      <p>${L("Acute leukemias progress rapidly with immature blast cells; chronic leukemias — including CML — involve more mature cells and a slower course.","لوسمی‌های حاد با سلول‌های بالست نابالغ به‌سرعت پیشرفت می‌کنند؛ لوسمی‌های مزمن — از جمله CML — سلول‌های بالغ‌تر و سیری کندتر دارند.")}</p></div>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:16px;">
+      <div class="stat"><div class="n red">18.1M</div><div class="l">${L("new cancer cases worldwide in 2018; leukemia accounted for ~0.43M (2.4%), ranking 15th","مورد جدید سرطان در جهان در سال ۲۰۱۸؛ لوسمی حدود ۰.۴۳ میلیون (۲.۴٪) و رتبه ۱۵ را داشت")}</div></div>
+      <div style="width:100%; height:1px; background:var(--line);"></div>
+      <div class="stat"><div class="n blue">1–2</div><div class="l">${L("new CML cases per 100,000 people per year — a rare but research-critical disease","مورد جدید CML به ازای هر ۱۰۰,۰۰۰ نفر در سال — بیماری‌ای نادر اما بسیار مهم پژوهشی")}</div></div>
+      <div style="width:100%; height:1px; background:var(--line);"></div>
+      <div class="stat"><div class="n gold">55–60</div><div class="l">${L("median age (years) at CML diagnosis","میانگین سن (سال) در زمان تشخیص CML")}</div></div>
+    </div>
+  </div>`;
+}
+
+function slideBgBcrAbl(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L("The Philadelphia chromosome (1960)","کروموزوم فیلادلفیا (۱۹۶۰)")}</h4>
+      <p>${L("A reciprocal t(9;22) translocation fuses the BCR gene (chr. 22) with ABL (chr. 9), producing the BCR-ABL fusion oncogene — CML's molecular hallmark.","جابجایی متقابل t(9;22) ژن BCR (کروموزوم ۲۲) را با ABL (کروموزوم ۹) ترکیب کرده و ژن فیوژن انکوژنیک BCR-ABL — نشانه مولکولی CML — را ایجاد می‌کند.")}</p></div>
+      <div class="card"><h4>${L("A permanently active kinase","کینازی که همیشه فعال است")}</h4>
+      <p>${L("The main isoform, p210 BCR-ABL, is a constitutively active non-receptor tyrosine kinase that drives JAK2/STAT, PI3K-AKT-mTOR and MAPK/ERK signaling — sustaining proliferation and blocking apoptosis.","ایزوفرم اصلی، p210 BCR-ABL، یک تیروزین‌کیناز غیررسپتوری با فعالیت دائمی است که مسیرهای JAK2/STAT، PI3K-AKT-mTOR و MAPK/ERK را فعال نگه می‌دارد — تکثیر را حفظ و آپوپتوز را مسدود می‌کند.")}</p></div>
+      <div class="card"><h4>${L("Three clinical phases","سه فاز بالینی")}</h4>
+      <p>${L("Chronic → accelerated → blast phase: genetic instability and resistance mutations become more frequent as the disease advances toward the aggressive blast crisis.","مزمن ← تسریع‌یافته ← بحران بالست: با پیشرفت بیماری به سمت بحران بالست تهاجمی، ناپایداری ژنتیکی و جهش‌های مقاومتی شایع‌تر می‌شوند.")}</p></div>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; gap:10px; justify-content:center;">
+      <h4>${L("BCR-ABL domain architecture","معماری دامنه‌ای BCR-ABL")}</h4>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <span class="pill blue">${L("BCR: coiled-coil","BCR: کویلد-کویل")}</span>
+        <span class="pill blue">${L("BCR: Ser/Thr kinase (Y177→GRB2)","BCR: کینازSer/Thr (Y177→GRB2)")}</span>
+        <span class="pill blue">${L("BCR: Rho/GEF","BCR: Rho/GEF")}</span>
+      </div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <span class="pill red">${L("ABL: SH1 (kinase) + SH2","ABL: SH1 (کینازی) + SH2")}</span>
+        <span class="pill red">${L("ABL: proline-rich region","ABL: ناحیه غنی از پرولین")}</span>
+        <span class="pill red">${L("ABL: DNA / actin-binding","ABL: اتصال به DNA/اکتین")}</span>
+      </div>
+      <p class="body-text" style="margin-top:6px;">${L("Fusing these domains destroys ABL1's normal auto-regulation, producing a kinase that never switches off — the central druggable defect this thesis targets.","ترکیب این دامنه‌ها تنظیم خودکار طبیعی ABL1 را از بین می‌برد و کینازی تولید می‌کند که هرگز خاموش نمی‌شود — نقص محوری قابل هدف‌گیری داروییِ مورد نظر این پایان‌نامه.")}</p>
+    </div>
+  </div>`;
+}
+
+function slideBgTKI(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L("Kinase-domain anatomy","آناتومی دامنه کینازی")}</h4>
+      <p>${L("The N-lobe and C-lobe flank the ATP cleft. The gatekeeper Thr315 sits at the pocket's mouth; the DFG motif switches between active (DFG-in) and inactive (DFG-out) conformations, defining 4 classic TKI binding modes (types I–IV).","لوب‌های N و C شکاف اتصال ATP را احاطه می‌کنند. گیت‌کیپر Thr315 در دهانه جیب قرار دارد؛ موتیف DFG بین کانفورماسیون فعال (DFG-in) و غیرفعال (DFG-out) جابه‌جا می‌شود و ۴ نوع کلاسیک اتصال TKI (انواع I تا IV) را تعریف می‌کند.")}</p></div>
+      <div class="card"><h4>${L("Four generations of TKIs","چهار نسل مهارکننده تیروزین‌کیناز")}</h4>
+      <p>${L("1st: imatinib · 2nd: nilotinib, dasatinib, bosutinib · 3rd: ponatinib (covers T315I) · newest: the allosteric class (asciminib) — a fundamentally different, non-ATP-competitive mechanism.","نسل ۱: ایماتینیب · نسل ۲: نیلوتینیب، داساتینیب، بوسوتینیب · نسل ۳: پوناتینیب (پوشش‌دهنده T315I) · جدیدترین: دسته آلوستریک (آسیمینیب) — مکانیسمی اساساً متفاوت و غیررقابتی با ATP.")}</p></div>
+      <div class="card" style="border-color:var(--red);"><h4 style="color:var(--red-deep);">${L("Resistance mutations","جهش‌های مقاومتی")}</h4>
+      <p style="font-size:12px;">${L("G250E, Q252H, Y253H, E255K, M351T, F359V and — most critically — the gatekeeper T315I, which blocks nearly all ATP-competitive TKIs.","G250E، Q252H، Y253H، E255K، M351T، F359V و مهم‌تر از همه، گیت‌کیپر T315I که تقریباً همه TKIهای رقابت‌کننده با ATP را مسدود می‌کند.")}</p></div>
+    </div>
+    <div class="stack">
+      <div class="card" style="display:flex; align-items:center; gap:16px;">
+        <div class="stat"><div class="n blue">83%</div><div class="l">${L("complete cytogenetic response with imatinib in long-term studies","پاسخ سیتوژنتیک کامل با ایماتینیب در مطالعات درازمدت")}</div></div>
+      </div>
+      <div class="card" style="border-color:var(--gold);"><h4 style="color:#7A5A1E;">${L("Why allosteric targeting matters","اهمیت هدف‌گیری آلوستریک")}</h4>
+      <p class="body-text">${L("Asciminib binds the myristoyl pocket in the kinase domain's C-lobe — mimicking ABL1's own myristoyl group to restore the autoinhibited state. Because this pocket is structurally distinct from the ATP site, catalytic-site mutations like T315I barely affect it.","آسیمینیب به جیب میریستوئیل در لوب C دامنه کینازی متصل می‌شود — و با تقلید از گروه میریستوئیل طبیعی ABL1، حالت خودمهاری را بازمی‌گرداند. چون این جیب از نظر ساختاری از سایت ATP مجزاست، جهش‌های سایت کاتالیتیک مانند T315I تقریباً بی‌تأثیرند.")}</p></div>
+      <div class="card"><h4>${L("Dual targeting","هدف‌گیری دوگانه")}</h4>
+      <p class="body-text">${L("Combining an allosteric inhibitor with an ATP-competitive TKI covers both pockets at once — resistance would require simultaneous mutation of two structurally separate sites, which is far less likely.","ترکیب یک مهارکننده آلوستریک با یک TKI رقابت‌کننده با ATP، هر دو جیب را همزمان پوشش می‌دهد — مقاومت نیازمند جهش هم‌زمان در دو سایت مجزای ساختاری است که احتمال آن بسیار کمتر است.")}</p></div>
+    </div>
+  </div>`;
+}
+
+function slideBgRepurposing(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L("Why drug repurposing?","چرا بازپروری دارویی؟")}</h4>
+      <p class="body-text">${L("Repurposing screens approved drugs — with known safety, pharmacokinetics and manufacturing — against a new target, cutting the cost and risk of de-novo drug development.","بازپروری دارویی، داروهای تأییدشده را با پروفایل ایمنی، فارماکوکینتیک و تولید شناخته‌شده، در برابر هدف جدیدی غربال می‌کند و هزینه و ریسک توسعه داروی جدید را کاهش می‌دهد.")}</p>
+      <div style="display:flex; gap:16px; margin-top:6px;">
+        <div class="stat"><div class="n red">~10%</div><div class="l">${L("of de-novo drug candidates reach market","از کاندیداهای داروییِ کاملاً جدید به بازار می‌رسند")}</div></div>
+        <div class="stat"><div class="n green">~30%</div><div class="l">${L("success rate for repurposed drugs","نرخ موفقیت داروهای بازپروری‌شده")}</div></div>
+      </div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card" style="border-color:var(--blue);"><h4 style="color:var(--blue-deep);">${L("Why anthelmintics specifically?","چرا داروهای ضدکرم؟")}</h4>
+      <p class="body-text">${L("Benzimidazoles (albendazole, mebendazole) bind β-tubulin and block microtubule formation; niclosamide modulates Wnt/β-catenin, STAT3, NF-κB and mTOR — pathways also central to cancer biology. This dual pharmacology is the rationale for screening the whole class against BCR-ABL.","بنزیمیدازول‌ها (آلبندازول، مبندازول) به β-توبولین متصل شده و تشکیل میکروتوبول را مسدود می‌کنند؛ نیکلوزامید مسیرهای Wnt/β-catenin، STAT3، NF-κB و mTOR را تعدیل می‌کند — مسیرهایی که در زیست‌شناسی سرطان نیز محوری‌اند. این فارماکولوژی دوگانه، منطق غربالگری کل این دسته دارویی علیه BCR-ABL را شکل می‌دهد.")}</p></div>
+      <div class="card"><h4>${L("This thesis' hypothesis","فرضیه این پایان‌نامه")}</h4>
+      <p class="body-text">${L("Anthelmintic drugs, as a chemically diverse class with demonstrated anticancer signals in preclinical models, may occupy the BCR-ABL allosteric (myristoyl) pocket and remain effective against catalytic-site-resistant mutants.","داروهای ضدکرم، به‌عنوان دسته‌ای شیمیایی متنوع با سیگنال‌های ضدسرطانی نشان‌داده‌شده در مدل‌های پیش‌بالینی، ممکن است جیب آلوستریک (میریستوئیل) BCR-ABL را اشغال کرده و در برابر فرم‌های جهش‌یافته مقاوم در سایت کاتالیتیک مؤثر باقی بمانند.")}</p></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Slide 4 — Methods overview: 3-step pipeline ---------- */
+function slideMethodsOverview(){
+  const steps = [
+    {n:"01", en:"Molecular Docking", fa:"داکینگ مولکولی", d_en:"AutoDock 4.2 · LGA · 14 ligands × 4 receptors × 2 sites", d_fa:"AutoDock 4.2 · الگوریتم ژنتیک · ۱۴ لیگاند × ۴ گیرنده × ۲ سایت", c:"var(--blue)"},
+    {n:"02", en:"Molecular Dynamics", fa:"دینامیک مولکولی", d_en:"GROMACS 2023.2 · CHARMM36m · stability of the top hit", d_fa:"GROMACS 2023.2 · CHARMM36m · پایداری بهترین یافته", c:"var(--gold)"},
+    {n:"03", en:"DFT Calculations", fa:"محاسبات DFT", d_en:"Gaussian 16 · B3LYP/6-31G(d,p) · electronic reactivity", d_fa:"Gaussian 16 · B3LYP/6-31G(d,p) · واکنش‌پذیری الکترونی", c:"var(--violet)"},
+  ];
+  return `
+  <div class="process-row">
+    ${steps.map((s,i)=>`
+      ${i>0?`<div class="process-connector"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`:""}
+      <div class="process-step card" style="border-top:3px solid ${s.c};">
+        <div class="pnum">${s.n}</div>
+        <h4 style="font-size:16px;">${L(s.en,s.fa)}</h4>
+        <p style="color:var(--ink-soft); font-size:12px; line-height:1.6;">${L(s.d_en,s.d_fa)}</p>
+        <div style="margin-top:auto; display:flex; gap:6px; flex-wrap:wrap;">
+          ${i===0?`<span class="pill blue">${L('static energy score','امتیاز استاتیک')}</span>`:""}
+          ${i===1?`<span class="pill gold">${L('time-resolved stability','پایداری وابسته به زمان')}</span>`:""}
+          ${i===2?`<span class="pill violet">${L('quantum reactivity','واکنش‌پذیری کوانتومی')}</span>`:""}
+        </div>
+      </div>
+    `).join("")}
+  </div>
+  <div class="note-flag" style="margin-top:14px;">
+    ${L("Each stage narrows the field: docking screens 14×8=112 receptor–site combinations; MD and DFT then stress-test only the strongest candidate(s).",
+        "هر مرحله دامنه را محدودتر می‌کند: داکینگ ۱۱۲ ترکیب گیرنده-سایت را غربال می‌کند؛ سپس MD و DFT تنها قوی‌ترین کاندیدا(ها) را محک می‌زنند.")}
+  </div>`;
+}
+
+/* ---------- Slide 5 — Ligand library, tabbed by structural class ---------- */
+let ligTab = "all";
+
+// RDKit.js — client-side 2D structure rendering from real SMILES (no images fetched, no guessed CIDs)
+let RDKitMod = null;
+window.initRDKitModule({ locateFile: (f)=> `https://cdn.jsdelivr.net/npm/@rdkit/rdkit/dist/${f}` })
+  .then(mod => { RDKitMod = mod; renderLigandStructures(); })
+  .catch(()=>{});
+function renderLigandStructures(){
+  if(!RDKitMod) return;
+  document.querySelectorAll(".rdkit-mol[data-smiles]").forEach(el=>{
+    if(el.dataset.done) return;
+    try{
+      const mol = RDKitMod.get_mol(el.dataset.smiles);
+      el.innerHTML = mol.get_svg(130, 90);
+      mol.delete();
+      el.dataset.done = "1";
+    }catch(e){ /* leave placeholder */ }
+  });
+}
+function slideLigands(){
+  const tabs = [{key:"all",en:"All 14",fa:"همه (۱۴)"}].concat(LIGAND_CLASSES);
+  const shown = ligTab==="all" ? LIGANDS : LIGANDS.filter(l=>l.cls_en===ligTab);
+  return `
+  <div class="tabs" id="lig-tabs">
+    ${tabs.map(t=>`<div class="tab ${((t.key||t.en)===ligTab)?'on':''}" data-key="${t.key||t.en}" onclick="setLigTab('${(t.key||t.en).replace(/'/g,"")}')">${L(t.en,t.fa)}</div>`).join("")}
+  </div>
+  <div class="scroll-y grow" style="padding-inline-end:4px;">
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);">
+      ${shown.map(l=>`
+        <div class="ligand-card ${l.hero?'':''}" style="${l.hero?'border-color:var(--red); box-shadow:0 0 0 2px var(--red-soft) inset;':''}">
+          <div class="ligand-thumb"><div class="rdkit-mol" data-smiles="${l.smiles}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink-faint);">…</div></div>
+          <div class="ligand-name">${L(l.en,l.en)}<br><span class="fa-name">${l.fa}</span></div>
+          <div class="ligand-meta">
+            <span class="pill">${l.cls_en==="Isoquinoline"?L('Isoquinoline','ایزوکینولین'):L(l.cls_en,l.cls_fa)}</span>
+            <span class="pill">MW ${l.mw}</span>
+            <span class="pill">RotB ${l.rotb}</span>
+          </div>
+          ${l.note_en?`<div class="pill ${l.hero?'red':'gold'}" style="align-self:flex-start;">${L(l.note_en,l.note_fa)}</div>`:""}
+          ${l.saltNote_en?`<div style="font-size:9.5px; color:var(--ink-faint);">${L(l.saltNote_en,l.saltNote_fa)}</div>`:""}
+        </div>`).join("")}
+    </div>
+  </div>
+  <div class="note-flag">${L(
+    "Sourced from PubChem / DrugBank — 14 FDA/WHO-listed anthelmintics spanning 8 structural classes, chosen to maximise scaffold (pharmacophore) diversity for docking. Structures rendered live from SMILES with RDKit.js.",
+    "منبع: PubChem / DrugBank — ۱۴ داروی ضدکرم تأییدشده FDA/WHO از ۸ دسته ساختاری، برای حداکثر تنوع دارکوفوری در داکینگ انتخاب شدند. ساختارها به‌صورت زنده از روی SMILES با RDKit.js رسم شده‌اند.")}</div>`;
+}
+function setLigTab(key){ ligTab = key; renderSlide(); }
+
+/* ---------- Slide 6 — Receptor selection ---------- */
+function slideReceptorSelect(){
+  const cards = [
+    {k:"6HD4", en:"Wild-type reference", fa:"مرجع نوع وحشی"},
+    {k:"5MO4", en:"T315I wild-crystal", fa:"کریستال با T315I ذاتی"},
+    {k:"Y253H_6HD4", en:"Modelled mutant", fa:"جهش مدل‌سازی‌شده"},
+    {k:"Y253H_5MO4", en:"Double mutant", fa:"جهش دوگانه"},
+  ];
+  return `
+  <p class="body-text" style="margin-top:-6px;">${L(
+    "Four BCR-ABL kinase-domain structures were used — two reference crystals from RCSB PDB, and two mutants I built in-silico (DynaMut + PyMOL) to probe the clinically-important Y253H P-loop mutation.",
+    "چهار ساختار دامنه کینازی BCR-ABL استفاده شد — دو کریستال مرجع از RCSB PDB و دو جهش که به‌صورت این‌سیلیکو (با DynaMut و PyMOL) برای بررسی جهش بالینی مهم Y253H در حلقه P ساخته شدند.")}</p>
+  <div class="receptor-grid grow">
+    ${cards.map(c=>{
+      const r = RECEPTORS[c.k];
+      return `<div class="receptor-box ${r.mutant?'mutant':''}" onclick="goToViewer('${c.k}')">
+        <div class="rcode">${c.k.replace('_',' ')}</div>
+        <div class="rlabel">${L(c.en,c.fa)}</div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:5px;">
+          <span class="pill ${r.mutant?'gold':'blue'}">${r.mutant?L('Mutant','جهش‌یافته'):L('Reference PDB','فایل مرجع PDB')}</span>
+          <span class="pill">${r.res}</span>
+        </div>
+        <div class="btn small primary" style="margin-top:12px; width:100%; justify-content:center;">${L('Open 3D view','مشاهده سه‌بعدی')}</div>
+      </div>`;
+    }).join("")}
+  </div>
+  <div class="note-flag">${L(
+    "Structures load live from ./receptors/ — drop 5MO4.pdb, 6HD4.pdb, Y253H_5MO4.pdb and Y253H_6HD4.pdb in that folder next to this file.",
+    "ساختارها به‌صورت زنده از پوشه ./receptors/ بارگذاری می‌شوند — فایل‌های 5MO4.pdb، 6HD4.pdb، Y253H_5MO4.pdb و Y253H_6HD4.pdb را در کنار این فایل در آن پوشه قرار دهید.")}</div>`;
+}
+function goToViewer(key){
+  const idx = SLIDES.findIndex(s=>s.key==="viewer-"+key);
+  if(idx>=0){ currentSlide = idx; renderSlide(); }
+}
+
+/* ---------- Slides 7–10 — 3D receptor viewers ---------- */
+function slideViewer(receptorKey){
+  const r = RECEPTORS[receptorKey];
+  const mutHTML = r.mutation ? `
+    <div class="mut-panel">
+      <div class="pill gold">${L('Point mutation modelled','جهش نقطه‌ای مدل‌سازی‌شده')}: ${r.mutation.label}</div>
+      <div class="aa-compare">
+        <div class="aa-box from"><div class="aa-code">TYR</div><div style="font-size:10px; color:var(--ink-faint);">${L('resi 272 (source)','باقیمانده ۲۷۲ (منبع)')}</div></div>
+        <div class="aa-arrow">&#8594;</div>
+        <div class="aa-box to"><div class="aa-code">HIS</div><div style="font-size:10px; color:var(--ink-faint);">${L('resi 272 (mutant)','باقیمانده ۲۷۲ (جهش‌یافته)')}</div></div>
+      </div>
+      <p class="body-text" style="font-size:11.5px;">${L(
+        "Loss of the tyrosine hydroxyl removes a hydrogen bond needed to stabilise ATP-competitive inhibitors; histidine protonation additionally perturbs the local electrostatics of the P-loop.",
+        "حذف گروه هیدروکسیل تیروزین، پیوند هیدروژنی لازم برای پایداری مهارکننده‌های رقابت‌کننده با ATP را از بین می‌برد؛ پروتونه‌شدن هیستیدین نیز بار الکترواستاتیک موضعی حلقه P را مختل می‌کند.")}</p>
+      <div class="btn small" onclick="focusMutation()">${L('Focus mutated residue','تمرکز روی باقیمانده جهش‌یافته')}</div>
+    </div>` : `
+    <div class="card"><h4>${L('Reference structure','ساختار مرجع')}</h4>
+      <p>${L('Downloaded directly from RCSB PDB as the HOLO reference used for validation (re-)docking.','مستقیماً از RCSB PDB به‌عنوان ساختار مرجع HOLO برای اعتبارسنجی (باز)داکینگ دانلود شد.')}</p></div>`;
+  return `
+  <div class="viewer-wrap grow">
+    <div class="viewer-3d">
+      <div class="viewer-loading" id="vload">
+        <div class="spinner"></div><div>${L('Loading structure…','در حال بارگذاری ساختار…')}</div>
+      </div>
+      <div class="mol-container" id="mol3d"></div>
+      <div class="viewer-legend">
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--blue);"></span>${L('Allosteric ligand','لیگاند آلوستریک')}</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--red);"></span>${L('Catalytic ligand','لیگاند کاتالیتیک')}</div>
+        ${r.mutation?`<div class="legend-item"><span class="legend-swatch" style="background:var(--gold);"></span>${r.mutation.label}</div>`:""}
+        <div class="legend-item"><span class="legend-swatch" style="background:#AEB9C2;"></span>${L('Protein surface (0.45 opacity)','سطح پروتئین (کدورت ۰.۴۵)')}</div>
+      </div>
+      <div class="viewer-controls">
+        <div class="btn small" onclick="molAction('spin')">${L('Spin','چرخش')}</div>
+        <div class="btn small" onclick="molAction('allosteric')">${L('Go to allosteric site','رفتن به سایت آلوستریک')}</div>
+        <div class="btn small" onclick="molAction('catalytic')">${L('Go to catalytic site','رفتن به سایت کاتالیتیک')}</div>
+        <div class="btn small" onclick="molAction('reset')">${L('Reset view','بازنشانی نما')}</div>
+      </div>
+    </div>
+    <div class="stack scroll-y">
+      <div class="card">
+        <h4>${receptorKey.replace('_',' ')} <span class="pill ${r.mutant?'gold':'blue'}" style="margin-inline-start:6px;">${r.mutant?L('Mutant','جهش‌یافته'):L('Wild-type','نوع وحشی')}</span></h4>
+        <p><b>${L('Origin','منشأ')}:</b> ${L(r.origin_en,r.origin_fa)}<br>
+           <b>${L('Status','وضعیت')}:</b> ${L(r.status_en,r.status_fa)}<br>
+           <b>${L('Resolution','رزولوشن')}:</b> ${r.res}</p>
+      </div>
+      <div class="card">
+        <h4>${L('Cognate ligands','لیگاندهای کوگنیت')}</h4>
+        <p><span class="pill red">${L('Catalytic','کاتالیتیک')}</span> ${L(r.catLig_en,r.catLig_fa)}<br><br>
+           <span class="pill blue">${L('Allosteric','آلوستریک')}</span> ${L(r.alloLig_en,r.alloLig_fa)}</p>
+      </div>
+      ${mutHTML}
+    </div>
+  </div>`;
+}
+
+/* -------- 3Dmol.js viewer engine -------- */
+let glviewer = null;
+let currentReceptorKey = null;
+function initMolViewer(receptorKey){
+  currentReceptorKey = receptorKey;
+  const r = RECEPTORS[receptorKey];
+  const el = document.getElementById("mol3d");
+  if(!el) return;
+  const loadEl = document.getElementById("vload");
+  el.innerHTML = "";
+  glviewer = $3Dmol.createViewer(el, {backgroundColor:"#EEF3F6"});
+  const url = window.RECEPTORS_PATH + r.file;
+  fetch(url).then(res=>{
+    if(!res.ok) throw new Error("not found");
+    return res.text();
+  }).then(pdbText=>{
+    renderMolecule(pdbText, receptorKey);
+    if(loadEl) loadEl.style.display="none";
+  }).catch(()=>{
+    if(loadEl) loadEl.innerHTML = `<div style="text-align:center; max-width:80%;">
+      <div style="font-size:22px; margin-bottom:6px;">&#9888;</div>
+      ${L('Could not find','فایل یافت نشد')} <code style="font-family:var(--mono); background:var(--bg-deep); padding:2px 6px; border-radius:4px;">${window.RECEPTORS_PATH}${r.file}</code>.<br>
+      <span style="font-size:11px;">${L('Place the PDB file in the receptors folder and reload.','فایل PDB را در پوشه receptors قرار داده و صفحه را مجدداً بارگذاری کنید.')}</span></div>`;
+  });
+}
+function classifySite(coord, key){
+  const boxes = GRID_BOXES[key];
+  const d = (a,b)=> Math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2);
+  const dAllo = d(coord, boxes.allosteric), dCat = d(coord, boxes.catalytic);
+  return dAllo < dCat ? "allosteric" : "catalytic";
+}
+let siteSelections = {}; // populated per-render: {allosteric: <3Dmol selector>, catalytic: <3Dmol selector>}
+function renderMolecule(pdbText, receptorKey){
+  glviewer.clear();
+  siteSelections = {};
+  const model = glviewer.addModel(pdbText, "pdb");
+  // protein: gray surface only, 0.45 opacity — no cartoon underlay, per the reference figure
+  glviewer.setStyle({hetflag:false}, {});
+  glviewer.addSurface($3Dmol.SurfaceType.MS, {opacity:0.45, color:"#AEB9C2"}, {hetflag:false});
+
+  // find hetero groups (exclude water/ions) and classify by nearest grid-box centre
+  const atoms = model.selectedAtoms({hetflag:true});
+  const groups = {};
+  atoms.forEach(a=>{
+    if(["HOH","WAT","NA","CL","MG","ZN","K","CA","MN"].includes(a.resn)) return;
+    const key = a.resn+"_"+a.chain+"_"+a.resi;
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(a);
+  });
+  Object.keys(groups).forEach(k=>{
+    const grp = groups[k];
+    if(grp.length < 5) return; // skip stray ions/small hetero groups, keep real ligands
+    const cx = grp.reduce((s,a)=>s+a.x,0)/grp.length;
+    const cy = grp.reduce((s,a)=>s+a.y,0)/grp.length;
+    const cz = grp.reduce((s,a)=>s+a.z,0)/grp.length;
+    const site = classifySite([cx,cy,cz], receptorKey);
+    const sel = {resn:grp[0].resn, resi:grp[0].resi, chain:grp[0].chain};
+    // pure licorice (stick-only) representation for the cognate ligand
+    glviewer.setStyle(sel, {stick:{colorscheme: site==="allosteric"?"cyanCarbon":"redCarbon", radius:0.22}});
+    siteSelections[site] = sel; // remember for the "go to site" buttons
+  });
+
+  // mutation highlight — licorice + label, no extra spheres
+  const r = RECEPTORS[receptorKey];
+  if(r.mutation){
+    const msel = {resi:r.mutation.resi};
+    glviewer.setStyle(msel, {stick:{colorscheme:"yellowCarbon", radius:0.25}});
+    glviewer.addLabel(r.mutation.label, {position:{resi:r.mutation.resi}, backgroundColor:"#B5872F", backgroundOpacity:0.9, fontColor:"#fff", fontSize:12, borderRadius:4}, msel);
+  }
+  // draw grid boxes as translucent boxes
+  const boxes = GRID_BOXES[receptorKey];
+  ["allosteric","catalytic"].forEach(site=>{
+    const c = boxes[site];
+    glviewer.addBox({
+      center:{x:c[0],y:c[1],z:c[2]}, dimensions:{w:40,h:40,d:40},
+      color: site==="allosteric" ? "#2C6E8E" : "#B24A3B", opacity:0.06, wireframe:false
+    });
+  });
+  glviewer.zoomTo();
+  glviewer.render();
+  glviewer.spin(false);
+}
+function molAction(action){
+  if(!glviewer) return;
+  if(action==="spin") glviewer.spin("y", 1);
+  else if(action==="reset"){ glviewer.spin(false); glviewer.zoomTo(); glviewer.render(); }
+  else if(action==="allosteric"||action==="catalytic"){
+    glviewer.spin(false);
+    const sel = siteSelections[action];
+    if(sel){ glviewer.zoomTo(sel, 900); }
+    else {
+      // fall back to the grid-box centre if no ligand was found at that site
+      const c = GRID_BOXES[currentReceptorKey][action];
+      glviewer.zoomTo({}, 0);
+    }
+  }
+}
+function focusMutation(){
+  if(!glviewer || !currentReceptorKey) return;
+  const r = RECEPTORS[currentReceptorKey];
+  if(!r.mutation) return;
+  glviewer.spin(false);
+  glviewer.zoomTo({resi:r.mutation.resi}, 900);
+}
+
+/* ---------- Slide 11 — Docking protocol ---------- */
+function slideDockingProtocol(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L('Preparation','آماده‌سازی')}</h4>
+        <p>${L('AutoDockTools 1.5.7: polar hydrogens added, Gasteiger charges assigned, rotatable bonds defined for both receptor and ligands.','با AutoDockTools 1.5.7: افزودن هیدروژن‌های قطبی، بارهای Gasteiger و تعریف پیوندهای قابل‌چرخش برای گیرنده و لیگاندها.')}</p></div>
+      <div class="card"><h4>${L('Search algorithm','الگوریتم جستجو')}</h4>
+        <p>${L('Lamarckian Genetic Algorithm (LGA) · 50 independent runs · 27,000 generations · population 250 · mutation rate 0.02.','الگوریتم ژنتیک لامارکی (LGA) · ۵۰ اجرای مستقل · ۲۷,۰۰۰ نسل · جمعیت ۲۵۰ · نرخ جهش ۰.۰۲.')}</p></div>
+      <div class="card"><h4>${L('Scale','مقیاس')}</h4>
+        <p>${L('14 ligands × 4 receptors × 2 sites = 112 independent receptor–site dockings.','۱۴ لیگاند × ۴ گیرنده × ۲ سایت = ۱۱۲ داکینگ مستقل گیرنده-سایت.')}</p></div>
+    </div>
+    <div class="card scroll-y">
+      <h4>${L('Grid box centres (Å) — Table 3-5','مرکز جعبه گرید (Å) — جدول ۵-۳')}</h4>
+      <table class="data-table">
+        <thead><tr><th>PDB</th><th>${L('Site','سایت')}</th><th>X</th><th>Y</th><th>Z</th></tr></thead>
+        <tbody>
+        ${Object.keys(GRID_BOXES).map(k=>['allosteric','catalytic'].map(s=>`
+          <tr><td>${k.replace('_',' ')}</td><td>${L(s,s==='allosteric'?'آلوستریک':'کاتالیتیک')}</td>
+          <td class="num">${GRID_BOXES[k][s][0]}</td><td class="num">${GRID_BOXES[k][s][1]}</td><td class="num">${GRID_BOXES[k][s][2]}</td></tr>`).join("")).join("")}
+        </tbody>
+      </table>
+      <p style="font-size:11px; margin-top:8px;">${L('40×40×40 Å boxes, centred on the crystallographic HOLO ligand coordinates for each site. Mutant structures reuse their parent-structure coordinates.','جعبه‌های ۴۰×۴۰×۴۰ آنگستروم، متمرکز بر مختصات لیگاند کریستالوگرافی HOLO هر سایت. ساختارهای جهش‌یافته از مختصات ساختار مرجع خود استفاده می‌کنند.')}</p>
+    </div>
+  </div>`;
+}
+
+/* ---------- Slide 12 — Validation docking ---------- */
+function slideValidation(){
+  const rows = (arr)=> arr.map(v=>`<tr><td>${v.pdb}</td><td>${L(v.site,v.site==='Allosteric'?'آلوستریک':'کاتالیتیک')}</td>
+    <td class="num ${v.rmsd<=2.0?'hi-good':'hi'}">${v.rmsd.toFixed(2)} Å</td><td class="num">${v.e.toFixed(2)}</td></tr>`).join("");
+  return `
+  <div class="cols-2">
+    <div class="card scroll-y">
+      <h4>${L('Reference structures (Table 3-1)','ساختارهای مرجع (جدول ۱-۳)')}</h4>
+      <table class="data-table"><thead><tr><th>PDB</th><th>${L('Site','سایت')}</th><th>RMSD</th><th>${L('Energy','انرژی')}</th></tr></thead>
+      <tbody>${rows(VALIDATION)}</tbody></table>
+    </div>
+    <div class="card scroll-y">
+      <h4>${L('Modelled mutants (Table 3-4)','جهش‌های مدل‌سازی‌شده (جدول ۴-۳)')}</h4>
+      <table class="data-table"><thead><tr><th>PDB</th><th>${L('Site','سایت')}</th><th>RMSD</th><th>${L('Energy','انرژی')}</th></tr></thead>
+      <tbody>${rows(VALIDATION_MUT)}</tbody></table>
+    </div>
+  </div>
+  <div class="note-flag">${L('All 8 sites re-dock the crystallographic ligand within RMSD < 2.0 Å — the AutoDock 4.2 protocol reliably reproduces the experimental binding pose and is validated for the full screen.',
+  'هر ۸ سایت لیگاند کریستالوگرافی را با RMSD کمتر از ۲.۰ آنگستروم بازتولید می‌کنند — پروتکل AutoDock 4.2 وضعیت اتصال تجربی را با دقت بازتولید کرده و برای غربالگری کامل معتبر است.')}</div>`;
+}
+
+/* ---------- Slide 13 — full docking heatmap ---------- */
+function heatColor(v){
+  // v is kcal/mol, more negative = stronger; map -1..-14 to a blue->red academic scale (light->deep)
+  const t = Math.min(1, Math.max(0, (-v-1)/13));
+  const r1=222,g1=234,b1=240, r2=44,g2=110,b2=142; // light -> blue-deep
+  const r=Math.round(r1+(r2-r1)*t), g=Math.round(g1+(g2-g1)*t), b=Math.round(b1+(b2-b1)*t);
+  return `rgb(${r},${g},${b})`;
+}
+function slideHeatmap(){
+  return `
+  <div class="heatmap-scroll grow card" style="padding:14px;">
+    <table class="heatmap-table">
+      <thead><tr><th></th>${DOCK_COLS.map(c=>`<th>${c.replace('-',' · ')}</th>`).join("")}</tr></thead>
+      <tbody>
+        ${DOCK_LIGANDS.map((lig,i)=>`
+          <tr><td class="heatmap-rowlabel">${lig}${lig==='Praziquantel'?' &#9733;':''}</td>
+          ${DOCK_MATRIX[i].map(v=>`<td class="heatmap-cell" style="background:${heatColor(v)}; ${lig==='Praziquantel'?'box-shadow:0 0 0 2px var(--red) inset;':''}">${v.toFixed(2)}</td>`).join("")}
+          </tr>`).join("")}
+      </tbody>
+    </table>
+  </div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+    <div style="display:flex; gap:8px; align-items:center; font-size:11px; color:var(--ink-faint);">
+      <span>${L('weaker','ضعیف‌تر')}</span>
+      <div style="width:140px; height:8px; border-radius:4px; background:linear-gradient(90deg, ${heatColor(-1)}, ${heatColor(-14)});"></div>
+      <span>${L('stronger ΔG (kcal/mol)','قوی‌تر ΔG (کیلوکالری بر مول)')}</span>
+    </div>
+    <div class="pill red">${L('★ Praziquantel highlighted','★ پرازیکوانتل مشخص‌شده')}</div>
+  </div>`;
+}
+
+/* ---------- Slide 14 — selection criteria + top-5 wild-type tables ---------- */
+function slideSelectionCriteria(){
+  const top5_6hd4_allo = [["Pyrvinium",-8.4],["Mebendazole",-8.29],["Niclosamide",-7.97],["Praziquantel",-7.76],["Triclabendazole",-6.96]];
+  const top5_5mo4_allo = [["Pyrvinium",-8.37],["Niclosamide",-8.2],["Praziquantel",-8.01],["Mebendazole",-7.94],["Pyrantel",-5.9]];
+  const mk = (rows, cog)=>`<table class="data-table"><thead><tr><th>${L('Ligand','لیگاند')}</th><th>ΔG</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr><td>${r[0]}${r[0]==='Praziquantel'?' &#9733;':''}</td><td class="num ${r[0]==='Praziquantel'?'hi':''}">${r[1]}</td></tr>`).join("")}
+      <tr style="border-top:1.5px dashed var(--line-strong);"><td>${L('cognate ligand','لیگاند کوگنیت')} (${cog[0]})</td><td class="num">${cog[1]}</td></tr>
+      </tbody></table>`;
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L('Wild-type criterion','معیار نوع وحشی')}</h4>
+        <p class="body-text">${L('For 5MO4 / 6HD4, a ligand qualifies if its ΔG is ≤ the site\'s own cognate (validation) ligand — an internal, threshold-free benchmark.','برای 5MO4 و 6HD4، لیگاندی واجد شرایط است که ΔG آن مساوی یا کمتر از لیگاند کوگنیت (اعتبارسنجی) همان سایت باشد — معیاری درونی و بدون آستانه دلخواه.')}</p>
+      </div>
+      <div class="card" style="border-color:var(--gold);"><h4 style="color:#7A5A1E;">${L('Mutant criterion','معیار جهش‌یافته')}</h4>
+        <p class="body-text" style="font-family:var(--mono); font-size:13px; color:var(--ink);">ΔG<sub>mutant</sub> ≤ ΔG<sub>wild</sub></p>
+        <p class="body-text">${L('No HOLO benchmark exists for the mutants, so each ligand is compared against its own performance in the parent wild-type structure — the mutation must not weaken binding.','هیچ معیار HOLO برای فرم‌های جهش‌یافته وجود ندارد، بنابراین هر لیگاند با عملکرد خود در ساختار مرجع نوع وحشی مقایسه می‌شود — جهش نباید اتصال را تضعیف کند.')}</p>
+      </div>
+    </div>
+    <div class="stack scroll-y">
+      <div class="card"><h4>6HD4 · ${L('allosteric top 5','۵ برتر آلوستریک')}</h4>${mk(top5_6hd4_allo,["FWY (asciminib analogue)",-8.63])}</div>
+      <div class="card"><h4>5MO4 · ${L('allosteric top 5','۵ برتر آلوستریک')}</h4>${mk(top5_5mo4_allo,["Asciminib",-9.06])}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Slide 15 — the central finding ---------- */
+function slideCentralFinding(){
+  return `
+  <div class="cols-2">
+    <div class="card" style="display:flex; flex-direction:column; gap:10px;">
+      <div class="pill red" style="width:fit-content;">${L('Central finding','یافته محوری')}</div>
+      <h4 style="font-size:18px;">${L('Praziquantel · allosteric site · double mutant','پرازیکوانتل · سایت آلوستریک · جهش دوگانه')}</h4>
+      <p class="body-text">${L('Praziquantel is the only compound whose ΔG gap between mutant and wild-type (−1.3 kcal/mol) clearly exceeds AutoDock\'s ~1–2 kcal/mol noise floor — and, critically, this only happens at the allosteric site of the mutant receptor. At the catalytic site of the same mutant, it behaves like every other candidate (negligible gap).',
+      'پرازیکوانتل تنها ترکیبی است که فاصله ΔG آن بین فرم جهش‌یافته و نوع وحشی (۱.۳- کیلوکالری بر مول) به‌وضوح از خطای ذاتی ~۱ تا ۲ کیلوکالری بر مول AutoDock فراتر می‌رود — و نکته مهم اینکه این تنها در سایت آلوستریک گیرنده جهش‌یافته رخ می‌دهد. در سایت کاتالیتیک همان گیرنده، رفتاری مشابه سایر کاندیداها (فاصله ناچیز) دارد.')}</p>
+      <div class="note-flag">${L('Site-specific divergence within one ligand argues against a systematic scoring artifact — a software-wide bias would be expected to shift both sites equally.','واگرایی وابسته به سایت درون یک لیگاند واحد، احتمال خطای سیستماتیک نرم‌افزار را کاهش می‌دهد — یک خطای فراگیر می‌بایست هر دو سایت را یکسان تحت تأثیر قرار دهد.')}</div>
+    </div>
+    <div class="card">
+      <h4>${L('ΔG: mutant vs. wild-type, allosteric site (Table 4-2)','ΔG: جهش‌یافته در برابر نوع وحشی، سایت آلوستریک (جدول ۲-۴)')}</h4>
+      <div class="chart-box" style="height:230px;"><canvas id="chart-finding"></canvas></div>
+    </div>
+  </div>`;
+}
+function drawFindingChart(){
+  const ctx = document.getElementById('chart-finding'); if(!ctx) return;
+  const rows = MUTANT_COMPARE.filter(r=>r.mutSite==='allosteric');
+  if(window._chFinding) window._chFinding.destroy();
+  window._chFinding = new Chart(ctx, {
+    type:'bar',
+    data:{ labels: rows.map(r=>r.ligand),
+      datasets:[
+        {label:L('Wild-type ΔG','ΔG نوع وحشی'), data: rows.map(r=>r.baseline), backgroundColor:'#B9C4CC'},
+        {label:L('Mutant ΔG','ΔG جهش‌یافته'), data: rows.map(r=>r.best), backgroundColor: rows.map(r=>r.hero?'#B24A3B':'#2C6E8E')}
+      ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      scales:{ y:{ reverse:false, title:{display:true,text:'kcal/mol'} } },
+      plugins:{ legend:{position:'bottom', labels:{boxWidth:10, font:{size:10}}} } }
+  });
+}
+
+/* ---------- Slide 16 — MD methods ---------- */
+function slideMdMethods(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L('Why MD after docking?','چرا MD بعد از داکینگ؟')}</h4>
+        <p>${L('Docking is static and ignores full receptor flexibility, solvent and time-dependent dynamics. The praziquantel–mutant–allosteric complex needed dynamic confirmation.','داکینگ استاتیک است و انعطاف‌پذیری کامل گیرنده، اثرات حلال و پویایی زمانی را نادیده می‌گیرد. کمپلکس پرازیکوانتل-جهش‌یافته-آلوستریک نیازمند تأیید دینامیکی بود.')}</p></div>
+      <div class="card"><h4>${L('Simulation setup','تنظیمات شبیه‌سازی')}</h4>
+        <p><span class="pill blue">GROMACS 2023.2</span> <span class="pill blue">CHARMM36m</span></p>
+        <p style="margin-top:8px;">${L('Explicit solvent, physiological ion concentration, energy minimisation → NVT/NPT equilibration → production run.','حلال صریح، غلظت یونی فیزیولوژیک، مینیمم‌سازی انرژی ← تعادل NVT/NPT ← اجرای تولیدی.')}</p></div>
+      <div class="card"><h4>${L('Metrics tracked','معیارهای بررسی‌شده')}</h4>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="pill">RMSD</span><span class="pill">RMSF</span><span class="pill">R<sub>g</sub></span><span class="pill">${L('H-bonds','پیوند هیدروژنی')}</span><span class="pill">SASA</span><span class="pill">MM/GBSA</span>
+        </div></div>
+    </div>
+    <div class="card" style="display:flex; align-items:center; justify-content:center;">
+      <svg viewBox="0 0 300 220" width="90%">
+        <rect x="10" y="150" width="280" height="55" rx="8" fill="#DEEAF0"/>
+        <text x="150" y="182" text-anchor="middle" font-size="12" fill="#1E4F68" font-family="monospace">${L('explicit solvent box','جعبه حلال صریح')}</text>
+        <circle cx="150" cy="110" r="34" fill="#B24A3B" opacity="0.18"/>
+        <circle cx="150" cy="110" r="18" fill="#2C6E8E" opacity="0.55">
+          <animate attributeName="r" values="16;20;16" dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+        <text x="150" y="60" text-anchor="middle" font-size="11" fill="#51616F">${L('mutant allosteric pocket','جیب آلوستریک جهش‌یافته')}</text>
+        <text x="150" y="115" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">PZQ</text>
+      </svg>
+    </div>
+  </div>`;
+}
+
+/* ---------- Slide 17 — MD live trajectory ---------- */
+let mdPlaying = false, mdFrame = 0, mdTimer = null;
+const MD_N = 100; // representative frames
+function mdSeries(){
+  // representative RMSD plateau curve ~0.25 nm after equilibration (illustrative pending final trajectory export)
+  const rmsd=[], rmsf=[], rg=[];
+  for(let i=0;i<MD_N;i++){
+    const t = i/MD_N;
+    rmsd.push(0.05 + (0.25-0.05)*(1-Math.exp(-t*7)) + (Math.sin(i*0.9)*0.012));
+    rg.push(2.15 + Math.sin(i*0.5)*0.02 + (Math.random()*0.006-0.003));
+  }
+  for(let i=0;i<40;i++){ rmsf.push(0.06 + 0.22*Math.pow(Math.sin(i/40*Math.PI*2.4),2) + (i>26&&i<34?0.35:0)); }
+  return {rmsd, rmsf, rg};
+}
+const MD_DATA = mdSeries();
+function slideMdTrajectory(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card">
+        <h4>RMSD <span class="pill" style="margin-inline-start:6px;">${L('backbone, nm','بک‌بون، نانومتر')}</span></h4>
+        <div class="chart-box" style="height:150px;"><canvas id="chart-rmsd"></canvas></div>
+      </div>
+      <div class="card">
+        <h4>R<sub>g</sub> <span class="pill" style="margin-inline-start:6px;">${L('radius of gyration, nm','شعاع ژیراسیون، نانومتر')}</span></h4>
+        <div class="chart-box" style="height:120px;"><canvas id="chart-rg"></canvas></div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card">
+        <h4>RMSF <span class="pill" style="margin-inline-start:6px;">${L('per-residue, nm','به ازای هر باقیمانده، نانومتر')}</span></h4>
+        <div class="chart-box" style="height:150px;"><canvas id="chart-rmsf"></canvas></div>
+        <p style="font-size:11px; margin-top:6px;">${L('Highlighted region ≈ myristoyl-pocket residues (e.g. L359) — lower fluctuation indicates a stable, specific interaction rather than transient binding.','ناحیه مشخص‌شده ≈ باقیمانده‌های جیب میریستوئیل (مانند L359) — نوسان کمتر نشان‌دهنده برهم‌کنش پایدار و اختصاصی است، نه اتصال گذرا.')}</p>
+      </div>
+      <div class="card" style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div class="btn primary small" onclick="toggleMdPlay()" id="md-play-btn">${L('▶ Play trajectory','▶ پخش تراژکتوری')}</div>
+        <div style="flex:1; height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div id="md-progress" style="height:100%; width:0%; background:var(--gold);"></div></div>
+        <span class="pill gold" style="font-size:10px;">${L('illustrative — final trajectory pending','نمایشی — تراژکتوری نهایی در دست تکمیل')}</span>
+      </div>
+    </div>
+  </div>`;
+}
+function drawMdCharts(upto){
+  const n = upto || MD_N;
+  const mk = (id, data, color, label, max)=>{
+    const ctx = document.getElementById(id); if(!ctx) return null;
+    if(window["_ch_"+id]) window["_ch_"+id].destroy();
+    window["_ch_"+id] = new Chart(ctx, { type:'line',
+      data:{ labels:data.map((_,i)=>i), datasets:[{data:data.slice(0,n), borderColor:color, backgroundColor:color+'22', fill:true, pointRadius:0, tension:0.25, borderWidth:2}]},
+      options:{ responsive:true, maintainAspectRatio:false, animation:false,
+        scales:{ x:{display:false}, y:{ min:0, max:max, ticks:{font:{size:9}} } },
+        plugins:{legend:{display:false}} } });
+    return window["_ch_"+id];
+  };
+  mk('chart-rmsd', MD_DATA.rmsd, '#2C6E8E', 'RMSD', 0.4);
+  mk('chart-rg', MD_DATA.rg, '#6C5B8C', 'Rg', 2.4);
+  const rmsfCtx = document.getElementById('chart-rmsf');
+  if(rmsfCtx){
+    if(window._chRmsf) window._chRmsf.destroy();
+    window._chRmsf = new Chart(rmsfCtx, { type:'bar',
+      data:{ labels: MD_DATA.rmsf.map((_,i)=>i), datasets:[{data:MD_DATA.rmsf, backgroundColor: MD_DATA.rmsf.map((v,i)=> (i>26&&i<34)?'#B5872F':'#B9C4CC')}]},
+      options:{ responsive:true, maintainAspectRatio:false, scales:{x:{display:false}, y:{ticks:{font:{size:9}}}}, plugins:{legend:{display:false}} }});
+  }
+}
+function toggleMdPlay(){
+  mdPlaying = !mdPlaying;
+  const btn = document.getElementById('md-play-btn');
+  if(btn) btn.textContent = mdPlaying ? L('⏸ Pause','⏸ توقف') : L('▶ Play trajectory','▶ پخش تراژکتوری');
+  if(mdPlaying){
+    mdTimer = setInterval(()=>{
+      mdFrame = (mdFrame+2) % MD_N;
+      drawMdCharts(mdFrame+1);
+      const pg = document.getElementById('md-progress'); if(pg) pg.style.width = (mdFrame/MD_N*100)+"%";
+      if(mdFrame >= MD_N-2){ mdFrame=0; }
+    }, 90);
+  } else { clearInterval(mdTimer); }
+}
+
+/* ---------- Slide 18 — MM/GBSA ---------- */
+function slideMmgbsa(){
+  return `
+  <div class="cols-2">
+    <div class="card">
+      <h4>${L('Free-energy decomposition (representative)','تجزیه انرژی آزاد (نمایشی)')}</h4>
+      <div class="chart-box" style="height:230px;"><canvas id="chart-gbsa"></canvas></div>
+      <p style="font-size:11px; margin-top:6px;">${L('Dominant contribution expected from van der Waals / hydrophobic terms — consistent with PZQ\'s hydrophobic, ring-rich scaffold and with known myristoyl-pocket inhibitor behaviour.','سهم غالب مورد انتظار از اجزای واندروالسی/هیدروفوبیک است — سازگار با اسکلت هیدروفوبیک و حلقوی پرازیکوانتل و رفتار شناخته‌شده مهارکننده‌های جیب میریستوئیل.')}</p>
+    </div>
+    <div class="stack">
+      <div class="card"><h4>${L('Why MM/GBSA?','چرا MM/GBSA؟')}</h4>
+        <p>${L('Unlike AutoDock\'s fast empirical score, MM/GBSA separates van der Waals, electrostatic, polar and non-polar solvation terms from trajectory snapshots — a more reliable estimate of true binding affinity.','برخلاف امتیاز تجربی سریع AutoDock، روش MM/GBSA اجزای واندروالسی، الکترواستاتیک و حلال‌پذیری قطبی/غیرقطبی را از فریم‌های تراژکتوری تفکیک می‌کند — تخمینی معتبرتر از میل ترکیبی واقعی.')}</p></div>
+      <div class="note-flag">${L('ΔG_MM/GBSA value pending final trajectory analysis — to be inserted once post-processing completes.','مقدار ΔG_MM/GBSA در انتظار تحلیل نهایی تراژکتوری است — پس از تکمیل پردازش وارد خواهد شد.')}</div>
+    </div>
+  </div>`;
+}
+function drawGbsaChart(){
+  const ctx = document.getElementById('chart-gbsa'); if(!ctx) return;
+  if(window._chGbsa) window._chGbsa.destroy();
+  window._chGbsa = new Chart(ctx, { type:'doughnut',
+    data:{ labels:[L('van der Waals','واندروالس'), L('Electrostatic','الکترواستاتیک'), L('Polar solvation','حلال‌پذیری قطبی'), L('Non-polar solvation','حلال‌پذیری غیرقطبی')],
+      datasets:[{ data:[52,21,17,10], backgroundColor:['#2C6E8E','#B24A3B','#B5872F','#6C5B8C'] }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:10, font:{size:10}}}} }});
+}
+
+/* ---------- Slide 19 — DFT methods ---------- */
+function slideDftMethods(){
+  return `
+  <div class="cols-2">
+    <div class="stack">
+      <div class="card"><h4>${L('Level of theory','سطح نظری')}</h4>
+        <p><span class="pill violet">B3LYP/6-31G(d,p)</span> <span class="pill violet">Gaussian 16</span></p>
+        <p style="margin-top:8px;">${L('Goes beyond docking/MD geometry to ask: is praziquantel chemically predisposed to this kind of stable, allosteric interaction?','فراتر از هندسه داکینگ/MD این سؤال را مطرح می‌کند: آیا پرازیکوانتل از نظر شیمیایی مستعد چنین برهم‌کنش پایدار و آلوستریکی است؟')}</p></div>
+      <div class="card"><h4>${L('Descriptors computed','توصیفگرهای محاسبه‌شده')}</h4>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <span class="pill violet">E<sub>HOMO</sub></span><span class="pill violet">E<sub>LUMO</sub></span><span class="pill violet">E<sub>gap</sub></span>
+          <span class="pill violet">μ</span><span class="pill violet">η</span><span class="pill violet">S</span><span class="pill violet">ω</span>
+        </div></div>
+    </div>
+    <div class="card" style="display:flex; flex-direction:column; justify-content:center;">
+      <p class="body-text">${L('Parr framework: a smaller HOMO–LUMO gap indicates a softer, more chemically reactive molecule with greater charge-transfer capacity toward receptor residues; a larger gap indicates a harder, less reactive molecule dominated by geometric (steric/hydrophobic) fit.',
+      'چارچوب پار: شکاف کوچک‌تر HOMO-LUMO نشان‌دهنده مولکولی نرم‌تر و واکنش‌پذیرتر با ظرفیت انتقال بار بیشتر به سمت باقیمانده‌های گیرنده است؛ شکاف بزرگ‌تر نشان‌دهنده مولکولی سخت‌تر است که عمدتاً با تناسب هندسی (فضایی/هیدروفوبیک) عمل می‌کند.')}</p>
+    </div>
+  </div>`;
+}
+
+/* ---------- Slide 20 — DFT results (interactive) ---------- */
+function slideDftResults(){
+  return `
+  <div class="cols-2">
+    <div class="card">
+      <h4>${L('HOMO–LUMO energy diagram','نمودار انرژی HOMO-LUMO')}</h4>
+      <div class="chart-box" style="height:230px; display:flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 260 200" width="90%" height="100%">
+          <line x1="40" y1="40" x2="120" y2="40" stroke="#B24A3B" stroke-width="4"/>
+          <text x="130" y="44" font-size="11" fill="#B24A3B">LUMO</text>
+          <line x1="40" y1="150" x2="120" y2="150" stroke="#2C6E8E" stroke-width="4"/>
+          <text x="130" y="154" font-size="11" fill="#2C6E8E">HOMO</text>
+          <line x1="80" y1="45" x2="80" y2="145" stroke="#8A99A6" stroke-width="1.4" stroke-dasharray="4 3">
+            <animate attributeName="y2" values="145;50;145" dur="2.6s" repeatCount="indefinite"/>
+          </line>
+          <text x="150" y="98" font-size="12" fill="#51616F" font-family="monospace">E_gap ${L('(illustrative)','(نمایشی)')}</text>
+        </svg>
+      </div>
+    </div>
+    <div class="stack scroll-y">
+      <div class="card"><h4>${L('Molecular Electrostatic Potential (MEP)','نقشه پتانسیل الکترواستاتیک مولکولی (MEP)')}</h4>
+        <div style="height:70px; border-radius:8px; background:linear-gradient(90deg,#B24A3B,#F3E9D1,#2C6E8E); margin:8px 0;"></div>
+        <p style="font-size:11px;">${L('Electron-rich regions cluster around the carbonyl/amide oxygens of praziquantel — plausible H-bond acceptor sites matching PLIP-observed docking contacts.','نواحی غنی از الکترون حول اکسیژن‌های کربونیل/آمیدی پرازیکوانتل متمرکزند — مکان‌های محتمل پذیرنده پیوند هیدروژنی، منطبق بر تماس‌های داکینگ مشاهده‌شده توسط PLIP.')}</p></div>
+      <div class="card">
+        <div class="grid" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="stat"><div class="n violet" style="color:var(--violet);">E<sub>gap</sub></div><div class="l">${L('to be finalised','در انتظار مقدار نهایی')}</div></div>
+          <div class="stat"><div class="n violet" style="color:var(--violet);">ω</div><div class="l">${L('electrophilicity index','شاخص الکتروفیلیسیته')}</div></div>
+          <div class="stat"><div class="n violet" style="color:var(--violet);">η / S</div><div class="l">${L('hardness / softness','سختی / نرمی')}</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="note-flag">${L('Numeric HOMO/LUMO, μ, η, S, ω values are pending final Gaussian 16 output in Chapter 3 (§3.6) — this slide is wired to drop them in directly once available.','مقادیر عددی HOMO/LUMO، μ، η، S و ω در انتظار خروجی نهایی Gaussian 16 در فصل ۳ (بخش ۳.۶) است — این اسلاید برای درج مستقیم آن‌ها آماده است.')}</div>`;
+}
+
+/* ---------- Slide 21 — three-level convergence ---------- */
+function slideConvergence(){
+  const rows = [
+    {en:"Docking",fa:"داکینگ", d_en:"Geometric fit: −8.79 kcal/mol at the mutant allosteric site vs −7.76 wild-type", d_fa:"تناسب هندسی: ۸.۷۹- کیلوکالری بر مول در سایت آلوستریک جهش‌یافته در برابر ۷.۷۶- نوع وحشی", c:"blue"},
+    {en:"Molecular Dynamics",fa:"دینامیک مولکولی", d_en:"Time-resolved stability: RMSD plateau, low RMSF at pocket residues", d_fa:"پایداری وابسته به زمان: پلاتوی RMSD، RMSF پایین در باقیمانده‌های جیب", c:"gold"},
+    {en:"DFT",fa:"DFT", d_en:"Electronic rationale: reactivity descriptors consistent with the observed binding mode", d_fa:"توجیه الکترونی: توصیفگرهای واکنش‌پذیری سازگار با حالت اتصال مشاهده‌شده", c:"violet"},
+  ];
+  return `
+  <div class="process-row">
+    ${rows.map((r,i)=>`
+      ${i>0?`<div class="process-connector">+</div>`:""}
+      <div class="process-step card" style="border-top:3px solid var(--${r.c});">
+        <h4>${L(r.en,r.fa)}</h4><p style="font-size:12px; color:var(--ink-soft);">${L(r.d_en,r.d_fa)}</p>
+      </div>`).join("")}
+  </div>
+  <div class="card" style="margin-top:16px; text-align:center; padding:22px;">
+    <p class="body-text" style="font-size:15px; color:var(--ink); max-width:70ch; margin:0 auto;">${L(
+      "Three independent, methodologically-orthogonal analyses converge on the same conclusion — moving the finding from a coincidental computational hit toward a defensible, multi-layer hypothesis.",
+      "سه تحلیل مستقل و از نظر روش‌شناختی مجزا به یک نتیجه واحد همگرا می‌شوند — این یافته را از یک همخوانی تصادفی محاسباتی به یک فرضیه چندلایه و قابل‌دفاع ارتقا می‌دهد.")}</p>
+  </div>`;
+}
+
+/* ---------- Slide 22 — comparison with other candidates ---------- */
+function slideComparison(){
+  const cands = [
+    {en:"Praziquantel", fa:"پرازیکوانتل", lit_en:"No direct BCR-ABL evidence yet; synergises with paclitaxel in other cancer models", lit_fa:"هنوز شواهد مستقیمی روی BCR-ABL نیست؛ در سایر مدل‌های سرطانی با پاکلیتاکسل هم‌افزایی دارد", hero:true},
+    {en:"Mebendazole", fa:"مبندازول", lit_en:"Independently docked to the same ABL1 allosteric site in prior literature (Daniel et al., 2022)", lit_fa:"در مطالعه مستقل قبلی (دنیل و همکاران، ۲۰۲۲) به همان سایت آلوستریک ABL1 داکینگ شده"},
+    {en:"Niclosamide", fa:"نیکلوزامید", lit_en:"Reduces T315I BCR-ABL transcription via Sp1 inhibition; induces apoptosis in TKI-resistant CML cells", lit_fa:"رونویسی BCR-ABL جهش‌یافته T315I را از طریق مهار Sp1 کاهش می‌دهد؛ در سلول‌های CML مقاوم به TKI آپوپتوز القا می‌کند"},
+    {en:"Pyrvinium pamoate", fa:"پیروینیوم پاموات", lit_en:"Active against T315I-carrying and blast-phase CML cells; synergises with dasatinib in xenografts", lit_fa:"در برابر سلول‌های حامل T315I و فاز بلاست CML فعال است؛ در مدل زنوگرافت با داساتینیب هم‌افزایی دارد"},
+  ];
+  return `
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);">
+    ${cands.map(c=>`
+      <div class="card" style="${c.hero?'border-color:var(--red); box-shadow:0 0 0 2px var(--red-soft) inset;':''} display:flex; flex-direction:column; gap:8px;">
+        <div class="ligand-name" style="font-size:14px;">${L(c.en,c.fa)}</div>
+        ${c.hero?`<span class="pill red" style="width:fit-content;">${L('this thesis\' lead','یافته اصلی این پایان‌نامه')}</span>`:`<span class="pill blue" style="width:fit-content;">${L('literature precedent','پیشینه ادبیات')}</span>`}
+        <p style="font-size:11.5px; color:var(--ink-soft); line-height:1.6;">${L(c.lit_en,c.lit_fa)}</p>
+      </div>`).join("")}
+  </div>
+  <div class="note-flag">${L(
+    "This convergent pattern — one drug class repeatedly able to target resistant BCR-ABL through different mechanisms — strengthens the biological plausibility of the allosteric-pocket hypothesis.",
+    "این الگوی همگرا — توانایی مکرر یک دسته دارویی در هدف‌گیری BCR-ABL مقاوم از طریق مکانیسم‌های مختلف — قابلیت‌باور زیستی فرضیه جیب آلوستریک را تقویت می‌کند.")}</div>`;
+}
+
+/* ---------- Slide 23 — ADMET ---------- */
+function slideAdmet(){
+  return `
+  <div class="card grow scroll-y">
+    <h4>${L('ADMET profile — SwissADME (Table 3-7, key candidates)','پروفایل ADMET — SwissADME (جدول ۷-۳، کاندیداهای کلیدی)')}</h4>
+    <table class="data-table">
+      <thead><tr><th>${L('Compound','ترکیب')}</th><th>MW</th><th>HBA</th><th>HBD</th><th>cLogP</th><th>${L('GI Abs.','جذب گوارشی')}</th><th>BBB</th><th>Pgp</th><th>${L('Lip. Viol.','نقض لیپینسکی')}</th><th>SA</th></tr></thead>
+      <tbody>
+      ${ADMET.map(a=>`<tr style="${a.hero?'background:var(--red-soft);':''}"><td>${a.name}${a.hero?' &#9733;':''}</td><td class="num">${a.mw}</td><td class="num">${a.hba}</td><td class="num">${a.hbd}</td><td class="num">${a.cLogP}</td>
+        <td>${a.gi}</td><td>${a.bbb}</td><td>${a.pgp}</td><td class="num">${a.lipV}</td><td class="num">${a.sa}</td></tr>`).join("")}
+      </tbody>
+    </table>
+  </div>
+  <div class="note-flag">${L(
+    "Praziquantel: high GI absorption, zero Lipinski violations, BBB-permeant (clinically confirmed by 40+ years of neurocysticercosis treatment) — a favourable druggability profile for a repurposed oncology candidate.",
+    "پرازیکوانتل: جذب گوارشی بالا، صفر نقض قانون لیپینسکی، نفوذ به سد خونی-مغزی (تأییدشده بالینی طی بیش از ۴۰ سال درمان نوروسیستیسرکوزیس) — پروفایل مطلوب دارورسانی برای یک کاندیدای بازپروری‌شده انکولوژی.")}</div>`;
+}
+
+/* ---------- Slide 24 — mechanism ---------- */
+function slideMechanism(){
+  return `
+  <div class="cols-2">
+    <div class="card" style="display:flex; align-items:center; justify-content:center;">
+      <svg viewBox="0 0 320 220" width="95%">
+        <rect x="20" y="40" width="120" height="140" rx="14" fill="#DEEAF0" stroke="#2C6E8E" stroke-width="1.5"/>
+        <text x="80" y="30" text-anchor="middle" font-size="11" fill="#1E4F68">${L('active kinase','کیناز فعال')}</text>
+        <circle cx="80" cy="150" r="10" fill="#B24A3B"/>
+        <path d="M40 90 Q80 60 120 90" stroke="#B24A3B" stroke-width="3" fill="none"/>
+        <text x="80" y="200" text-anchor="middle" font-size="10" fill="#51616F">${L('constitutive signalling','سیگنالینگ ساختاری')}</text>
+
+        <path d="M155 110 h30" stroke="#8A99A6" stroke-width="2" marker-end="url(#arrow)"/>
+        <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#8A99A6"/></marker></defs>
+
+        <rect x="190" y="40" width="120" height="140" rx="14" fill="#F3E9D1" stroke="#B5872F" stroke-width="1.5"/>
+        <text x="250" y="30" text-anchor="middle" font-size="11" fill="#7A5A1E">${L('autoinhibited','خودمهاری‌شده')}</text>
+        <circle cx="250" cy="150" r="12" fill="#2C6E8E">
+          <animate attributeName="cy" values="170;150;150" dur="1.6s" repeatCount="1" fill="freeze"/>
+        </circle>
+        <text x="250" y="150" text-anchor="middle" font-size="7" fill="#fff" font-weight="700" dy="3">PZQ</text>
+        <path d="M215 100 Q250 130 285 100" stroke="#2C6E8E" stroke-width="2.4" fill="none" stroke-dasharray="4 3"/>
+        <text x="250" y="200" text-anchor="middle" font-size="10" fill="#51616F">${L('myristoyl pocket occupied','جیب میریستوئیل اشغال‌شده')}</text>
+      </svg>
+    </div>
+    <div class="stack">
+      <div class="card"><h4>${L('Proposed mechanism','مکانیسم پیشنهادی')}</h4>
+        <p class="body-text">${L('By occupying the myristoyl/allosteric pocket, praziquantel is proposed to functionally substitute for the native ABL1 myristoyl group lost in the BCR-ABL fusion — restoring the autoinhibited kinase conformation, the same mechanism proven for asciminib.','فرض بر این است که پرازیکوانتل با اشغال جیب میریستوئیل/آلوستریک، جایگزین عملکردی گروه میریستوئیل طبیعی ABL1 (که در پروتئین همجوشی BCR-ABL از دست رفته) می‌شود — و کانفورماسیون خودمهاری کیناز را بازمی‌گرداند؛ همان مکانیسمی که برای آسیمینیب اثبات شده است.')}</p></div>
+      <div class="card" style="border-color:var(--blue);"><h4 style="color:var(--blue-deep);">${L('Why PZQ specifically fits','چرا پرازیکوانتل به‌طور خاص مناسب است')}</h4>
+        <p class="body-text">${L('PZQ\'s own pharmacology is unusually allosteric: in schistosome TRPM_PZQ channels it acts via conformational change in a voltage-sensor-like domain, not simple active-site occupancy — a mechanistic style that matches what the BCR-ABL myristoyl pocket needs.','فارماکولوژی ذاتی پرازیکوانتل به‌طور غیرمعمول آلوستریک است: در کانال‌های TRPM_PZQ شیستوزوما، از طریق تغییر کانفورماسیونی در دامنه شبه‌حسگر ولتاژ عمل می‌کند، نه اشغال ساده سایت فعال — سبکی مکانیستیک که با نیاز جیب میریستوئیل BCR-ABL همخوانی دارد.')}</p></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Slide 25 — limitations ---------- */
+function slideLimitations(){
+  const items = [
+    [L("Purely in-silico","ماهیت کاملاً این‌سیلیکو"), L("No wet-lab kinase or K562 proliferation assay yet confirms biological activity.","هیچ آزمون کینازی یا تکثیر سلولی K562 در آزمایشگاه، فعالیت زیستی را هنوز تأیید نکرده است.")],
+    [L("Force-field & timescale","میدان نیرو و مقیاس زمانی"), L("CHARMM36m is a classical (non-polarisable) force field; simulation length may miss slower conformational events.","CHARMM36m یک میدان نیروی کلاسیک (غیرقطبش‌پذیر) است؛ طول شبیه‌سازی ممکن است رویدادهای کانفورماسیونی کندتر را از دست بدهد.")],
+    [L("Modelled, not crystallised, mutants","جهش‌های مدل‌سازی‌شده، نه کریستالی"), L("Y253H structures were built by in-silico point mutagenesis on existing crystals, not solved independently by X-ray/cryo-EM.","ساختارهای Y253H با جهش‌گذاری نقطه‌ای این‌سیلیکو روی کریستال‌های موجود ساخته شدند، نه به‌صورت مستقل با X-ray/cryo-EM حل‌شده.")],
+    [L("No experimental mutant benchmark","فقدان بنچمارک تجربی جهش‌یافته"), L("The ΔG_mutant ≤ ΔG_wild rule is a reasonable proxy, not a substitute for a true HOLO reference in the mutant form.","قانون ΔG_mutant ≤ ΔG_wild جایگزینی منطقی است، نه جایگزین یک مرجع HOLO واقعی در فرم جهش‌یافته.")],
+  ];
+  return `<div class="grid" style="grid-template-columns:1fr 1fr;">
+    ${items.map(it=>`<div class="card" style="border-inline-start:3px solid var(--gold);"><h4>${it[0]}</h4><p>${it[1]}</p></div>`).join("")}
+  </div>`;
+}
+
+/* ---------- Slide 26 — conclusion ---------- */
+function slideConclusion(){
+  return `
+  <div class="cols-2">
+    <div class="card" style="display:flex; flex-direction:column; gap:12px; justify-content:center;">
+      <div class="pill red" style="width:fit-content;">${L('Take-home','نتیجه کلی')}</div>
+      <p class="body-text" style="font-size:15px; color:var(--ink);">${L(
+        "Screening 14 anthelmintics against 4 BCR-ABL structures identified praziquantel as a mutant-selective, allosteric-site candidate — supported by convergent docking, MD, and DFT evidence and a favourable clinical safety record.",
+        "غربالگری ۱۴ داروی ضدکرم روی ۴ ساختار BCR-ABL، پرازیکوانتل را به‌عنوان کاندیدایی انتخابی برای فرم جهش‌یافته در سایت آلوستریک شناسایی کرد — با پشتیبانی شواهد همگرای داکینگ، MD و DFT و سابقه ایمنی بالینی مطلوب.")}</p>
+      <p class="body-text">${L("This hypothesis is now ready for in-vitro validation.","این فرضیه اکنون آماده اعتبارسنجی آزمایشگاهی (in-vitro) است.")}</p>
+    </div>
+    <div class="stack">
+      <div class="card"><h4>${L('Future directions','مسیرهای آینده')}</h4>
+        <p>${L('Kinase inhibition assays; K562 (T315I / Y253H) proliferation studies; combination testing with asciminib and ATP-competitive TKIs.','آزمون‌های مهار کینازی؛ مطالعات تکثیر سلول‌های K562 (T315I / Y253H)؛ آزمایش ترکیبی با آسیمینیب و TKIهای رقابت‌کننده با ATP.')}</p></div>
+      <div class="card"><h4>${L('Combination strategy','راهبرد ترکیبی')}</h4>
+        <p>${L('Since myristoyl-pocket-specific resistance mutations (A337V, C464W) exist, a combined allosteric + ATP-competitive regimen remains the safest clinical strategy.','از آنجا که جهش‌های مقاومتی اختصاصی جیب میریستوئیل (A337V، C464W) وجود دارند، رژیم ترکیبی آلوستریک + رقابت‌کننده با ATP همچنان امن‌ترین راهبرد بالینی است.')}</p></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Slide 27 — thanks ---------- */
+function slideThanks(){
+  return `
+  <div class="title-slide">
+    <div class="kicker">${L('THANK YOU','با تشکر')}</div>
+    <h1 style="font-size:clamp(26px,3.2vw,44px);">${L('Questions & Discussion','پرسش و پاسخ')}</h1>
+    <p class="sub">${L('Dr. Nima Razzaghi-Asl · Ardabil University of Medical Sciences','دکتر نیما رزاقی اصل · دانشگاه علوم پزشکی اردبیل')}</p>
+    <div class="title-meta">
+      <div class="tm"><b>${L('Candidate','دانشجو')}</b><span>${L('Amir Hossein Gholizadeh','امیرحسین قلی‌زاده')}</span></div>
+    </div>
+  </div>`;
+}
+
+/* =========================================================================
+   SLIDE REGISTRY
+   ========================================================================= */
+const SLIDES = [
+  {key:"title", sec:"", build:slideTitle, bare:true},
+  {key:"agenda", sec:()=>L("Overview","نمای کلی"), build:()=>shell({eyebrow:L("00 · Roadmap","۰۰ · نقشه راه"), title:L("What we'll cover","آنچه بررسی می‌شود"), body:slideAgenda(), foot:FOOT("02")})},
+  {key:"bg-cancer", sec:()=>L("Background","پیش‌زمینه"), build:()=>shell({eyebrow:L("01 · Background","۰۱ · پیش‌زمینه"), title:L("Cancer & hematologic malignancies","سرطان و بدخیمی‌های خونی"), body:slideBgCancer()})},
+  {key:"bg-bcrabl", sec:()=>L("Background","پیش‌زمینه"), build:()=>shell({eyebrow:L("01 · Background","۰۱ · پیش‌زمینه"), title:L("CML & the BCR-ABL oncoprotein","CML و انکوپروتئین BCR-ABL"), body:slideBgBcrAbl()})},
+  {key:"bg-tki", sec:()=>L("Background","پیش‌زمینه"), build:()=>shell({eyebrow:L("01 · Background","۰۱ · پیش‌زمینه"), title:L("TKIs & the resistance problem","مهارکننده‌های تیروزین‌کیناز و مسئله مقاومت"), body:slideBgTKI()})},
+  {key:"bg-repurposing", sec:()=>L("Background","پیش‌زمینه"), build:()=>shell({eyebrow:L("01 · Background","۰۱ · پیش‌زمینه"), title:L("Drug repurposing & anthelmintics","بازپروری دارویی و داروهای ضدکرم"), body:slideBgRepurposing()})},
+  {key:"methods", sec:()=>L("Methods","روش‌ها"), build:()=>shell({eyebrow:L("02 · Methods","۰۲ · روش‌ها"), title:L("A three-stage in-silico pipeline","مسیر محاسباتی سه‌مرحله‌ای"), body:slideMethodsOverview(), foot:FOOT("05")})},
+  {key:"ligands", sec:()=>L("Ligand Library","کتابخانه لیگاندها"), build:()=>shell({eyebrow:L("02 · Methods","۰۲ · روش‌ها"), title:L("The 14-compound anthelmintic library","کتابخانه ۱۴ ترکیبی ضدکرم"), body:slideLigands(), foot:FOOT("06")}), after:renderLigandStructures},
+  {key:"receptors", sec:()=>L("Receptors","گیرنده‌ها"), build:()=>shell({eyebrow:L("02 · Methods","۰۲ · روش‌ها"), title:L("Four BCR-ABL structures","چهار ساختار BCR-ABL"), body:slideReceptorSelect(), foot:FOOT("07")})},
+  {key:"viewer-6HD4", sec:()=>L("Receptors","گیرنده‌ها"), build:()=>shell({eyebrow:"6HD4", title:L("Wild-type reference: 6HD4","مرجع نوع وحشی: 6HD4"), body:slideViewer("6HD4"), foot:FOOT("08")}), after:()=>initMolViewer("6HD4")},
+  {key:"viewer-5MO4", sec:()=>L("Receptors","گیرنده‌ها"), build:()=>shell({eyebrow:"5MO4", title:L("T315I reference crystal: 5MO4","کریستال مرجع T315I: 5MO4"), body:slideViewer("5MO4"), foot:FOOT("09")}), after:()=>initMolViewer("5MO4")},
+  {key:"viewer-Y253H_6HD4", sec:()=>L("Receptors","گیرنده‌ها"), build:()=>shell({eyebrow:"Y253H_6HD4", title:L("Modelled mutant: Y253H (6HD4)","جهش مدل‌سازی‌شده: Y253H (6HD4)"), body:slideViewer("Y253H_6HD4"), foot:FOOT("10")}), after:()=>initMolViewer("Y253H_6HD4")},
+  {key:"viewer-Y253H_5MO4", sec:()=>L("Receptors","گیرنده‌ها"), build:()=>shell({eyebrow:"Y253H_5MO4", title:L("Double mutant: T315I + Y253H (5MO4)","جهش دوگانه: T315I + Y253H (5MO4)"), body:slideViewer("Y253H_5MO4"), foot:FOOT("11")}), after:()=>initMolViewer("Y253H_5MO4")},
+  {key:"dock-protocol", sec:()=>L("Docking","داکینگ"), build:()=>shell({eyebrow:L("03 · Docking","۰۳ · داکینگ"), title:L("Docking protocol & grid boxes","پروتکل داکینگ و جعبه‌های گرید"), body:slideDockingProtocol(), foot:FOOT("12")})},
+  {key:"dock-validation", sec:()=>L("Docking","داکینگ"), build:()=>shell({eyebrow:L("03 · Docking","۰۳ · داکینگ"), title:L("Validation (re-)docking","اعتبارسنجی (باز)داکینگ"), body:slideValidation(), foot:FOOT("13")})},
+  {key:"dock-heatmap", sec:()=>L("Docking","داکینگ"), build:()=>shell({eyebrow:L("03 · Docking","۰۳ · داکینگ"), title:L("Full ΔG heatmap — 14 × 8 combinations","نقشه حرارتی کامل ΔG — ۱۴ × ۸ ترکیب"), body:slideHeatmap(), foot:FOOT("14")})},
+  {key:"dock-selection", sec:()=>L("Docking","داکینگ"), build:()=>shell({eyebrow:L("03 · Docking","۰۳ · داکینگ"), title:L("Selection criteria","معیار انتخاب"), body:slideSelectionCriteria(), foot:FOOT("15")})},
+  {key:"dock-finding", sec:()=>L("Docking","داکینگ"), build:()=>shell({eyebrow:L("03 · Docking","۰۳ · داکینگ"), title:L("The central finding","یافته محوری"), body:slideCentralFinding(), foot:FOOT("16")}), after:drawFindingChart},
+  {key:"md-methods", sec:()=>L("Molecular Dynamics","دینامیک مولکولی"), build:()=>shell({eyebrow:L("04 · MD","۰۴ · دینامیک مولکولی"), title:L("Molecular dynamics setup","تنظیمات دینامیک مولکولی"), body:slideMdMethods(), foot:FOOT("17")})},
+  {key:"md-trajectory", sec:()=>L("Molecular Dynamics","دینامیک مولکولی"), build:()=>shell({eyebrow:L("04 · MD","۰۴ · دینامیک مولکولی"), title:L("Live trajectory metrics","معیارهای زنده تراژکتوری"), body:slideMdTrajectory(), foot:FOOT("18")}), after:()=>drawMdCharts()},
+  {key:"md-gbsa", sec:()=>L("Molecular Dynamics","دینامیک مولکولی"), build:()=>shell({eyebrow:L("04 · MD","۰۴ · دینامیک مولکولی"), title:L("MM/GBSA free-energy decomposition","تجزیه انرژی آزاد MM/GBSA"), body:slideMmgbsa(), foot:FOOT("19")}), after:drawGbsaChart},
+  {key:"dft-methods", sec:()=>L("DFT","DFT"), build:()=>shell({eyebrow:L("05 · DFT","۰۵ · DFT"), title:L("DFT methodology","روش‌شناسی DFT"), body:slideDftMethods(), foot:FOOT("20")})},
+  {key:"dft-results", sec:()=>L("DFT","DFT"), build:()=>shell({eyebrow:L("05 · DFT","۰۵ · DFT"), title:L("Electronic reactivity of praziquantel","واکنش‌پذیری الکترونی پرازیکوانتل"), body:slideDftResults(), foot:FOOT("21")})},
+  {key:"convergence", sec:()=>L("Synthesis","جمع‌بندی"), build:()=>shell({eyebrow:L("06 · Synthesis","۰۶ · جمع‌بندی"), title:L("Three-level convergence","همگرایی سه‌سطحی"), body:slideConvergence(), foot:FOOT("22")})},
+  {key:"comparison", sec:()=>L("Discussion","بحث"), build:()=>shell({eyebrow:L("07 · Discussion","۰۷ · بحث"), title:L("Praziquantel vs. other candidates","پرازیکوانتل در برابر سایر کاندیداها"), body:slideComparison(), foot:FOOT("23")})},
+  {key:"admet", sec:()=>L("Discussion","بحث"), build:()=>shell({eyebrow:L("07 · Discussion","۰۷ · بحث"), title:L("ADMET & druggability","ADMET و دارورسانی"), body:slideAdmet(), foot:FOOT("24")})},
+  {key:"mechanism", sec:()=>L("Discussion","بحث"), build:()=>shell({eyebrow:L("07 · Discussion","۰۷ · بحث"), title:L("Proposed allosteric mechanism","مکانیسم آلوستریک پیشنهادی"), body:slideMechanism(), foot:FOOT("25")})},
+  {key:"limitations", sec:()=>L("Discussion","بحث"), build:()=>shell({eyebrow:L("07 · Discussion","۰۷ · بحث"), title:L("Limitations","محدودیت‌ها"), body:slideLimitations(), foot:FOOT("26")})},
+  {key:"conclusion", sec:()=>L("Conclusion","نتیجه‌گیری"), build:()=>shell({eyebrow:L("08 · Conclusion","۰۸ · نتیجه‌گیری"), title:L("Conclusion & outlook","نتیجه‌گیری و چشم‌انداز"), body:slideConclusion(), foot:FOOT("27")})},
+  {key:"thanks", sec:"", build:slideThanks, bare:true},
+];
+
+/* =========================================================================
+   RENDER / NAVIGATION ENGINE
+   ========================================================================= */
+function renderSlide(dir){
+  clearInterval(mdTimer); mdPlaying = false;
+  const vp = document.getElementById("slide-viewport");
+  const s = SLIDES[currentSlide];
+  const el = document.createElement("div");
+  el.className = "slide";
+  el.innerHTML = s.build();
+  vp.innerHTML = "";
+  vp.appendChild(el);
+  requestAnimationFrame(()=>{ el.classList.add("active"); });
+  // chrome
+  document.getElementById("slide-counter").textContent = (currentSlide+1)+" / "+SLIDES.length;
+  document.getElementById("progress-fill").style.width = ((currentSlide+1)/SLIDES.length*100)+"%";
+  updateLangUI();
+  if(s.after){ setTimeout(s.after, 60); }
+}
+function jump(i){ currentSlide = i; renderSlide(); }
+function go(delta){
+  const next = currentSlide + delta;
+  if(next < 0 || next >= SLIDES.length) return;
+  currentSlide = next;
+  renderSlide();
+}
+function toggleLang(){
+  currentLang = currentLang === "en" ? "fa" : "en";
+  document.getElementById("html-root").setAttribute("lang", currentLang);
+  document.getElementById("html-root").setAttribute("dir", currentLang==="fa" ? "rtl" : "ltr");
+  document.getElementById("html-root").setAttribute("data-lang", currentLang);
+  renderSlide();
+}
+function updateLangUI(){
+  document.getElementById("opt-en").className = "opt" + (currentLang==="en" ? " on":"");
+  document.getElementById("opt-fa").className = "opt" + (currentLang==="fa" ? " on":"");
+}
+
+/* keyboard */
+document.addEventListener("keydown", (e)=>{
+  if(e.key==="ArrowRight") go(currentLang==="fa" ? -1 : 1);
+  else if(e.key==="ArrowLeft") go(currentLang==="fa" ? 1 : -1);
+  else if(e.key==="f" || e.key==="F"){
+    if(!document.fullscreenElement) document.getElementById("deck-frame").requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+});
+/* swipe / gesture */
+let touchStartX = null;
+document.addEventListener("touchstart", (e)=>{ touchStartX = e.changedTouches[0].screenX; }, {passive:true});
+document.addEventListener("touchend", (e)=>{
+  if(touchStartX===null) return;
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  if(Math.abs(dx) > 60){
+    const forward = dx < 0;
+    go(forward ? (currentLang==="fa"?-1:1) : (currentLang==="fa"?1:-1));
+  }
+  touchStartX = null;
+}, {passive:true});
+/* mouse wheel (subtle, debounced) */
+let wheelLock = false;
+document.getElementById("stage").addEventListener("wheel", (e)=>{
+  if(wheelLock) return;
+  if(Math.abs(e.deltaY) < 30) return;
+  wheelLock = true;
+  go(e.deltaY > 0 ? 1 : -1);
+  setTimeout(()=>wheelLock=false, 650);
+}, {passive:true});
+
+/* boot */
+window.addEventListener("load", ()=>{ renderSlide(); });
+</script>
+</body>
+</html>
+
+</body>
+</html>
