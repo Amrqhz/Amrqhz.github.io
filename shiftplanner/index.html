@@ -44,6 +44,7 @@
         <button class="navbtn" data-view="summary" type="button">گزارش ماه</button>
         <button class="navbtn" data-view="financial" type="button">گزارش مالی</button>
         <button class="navbtn" data-view="pharmacies" type="button">داروخانه‌ها</button>
+        <button class="navbtn" data-view="deputies" type="button">قائم مقام</button>
         <button class="navbtn navbtn--icon" data-view="settings" type="button" aria-label="تنظیمات">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
             stroke-linejoin="round">
@@ -114,11 +115,15 @@
 
       <div class="filter-row">
         <label for="reportPharmacyFilter">گزارش برای</label>
-        <select id="reportPharmacyFilter">
-          <option value="all">همه داروخانه‌ها</option>
+        <select id="reportPharmacyFilter"><option value="all">همه داروخانه‌ها</option></select>
+      </div>
+      <div class="filter-row">
+        <label for="reportDeputyFilter">قائم مقام</label>
+        <select id="reportDeputyFilter">
+          <option value="all">همه (با و بدون قائم مقام)</option>
+          <option value="none">بدون قائم مقام</option>
         </select>
       </div>
-
       <div class="statgrid" id="statGrid"></div>
 
       <h3 class="sectiontitle">تفکیک بر اساس داروخانه</h3>
@@ -252,8 +257,13 @@
 
       <div class="filter-row">
         <label for="financialPharmacyFilter">گزارش برای</label>
-        <select id="financialPharmacyFilter">
-          <option value="all">همه داروخانه‌ها</option>
+        <select id="financialPharmacyFilter"><option value="all">همه داروخانه‌ها</option></select>
+      </div>
+      <div class="filter-row">
+        <label for="financialDeputyFilter">قائم مقام</label>
+        <select id="financialDeputyFilter">
+          <option value="all">همه (با و بدون قائم مقام)</option>
+          <option value="none">بدون قائم مقام</option>
         </select>
       </div>
 
@@ -276,6 +286,15 @@
           <tbody></tbody>
         </table>
       </div>
+      <h3 class="sectiontitle" id="deputyBreakdownTitle" style="display:none;">تفکیک بدهی به قائم مقام‌ها</h3>
+      <div class="table-wrap" id="deputyBreakdownWrap" style="display:none;">
+        <table class="datatable" id="deputyBreakdownTable">
+          <thead><tr><th>قائم مقام</th><th>تعداد شیفت</th><th>مجموع ساعت</th><th>مبلغ بدهی (تومان)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+
 
       <h3 class="sectiontitle">جزئیات شیفت‌ها</h3>
       <div class="table-wrap">
@@ -289,9 +308,10 @@
               <th>شروع</th>
               <th>پایان</th>
               <th>مدت</th>
-              <th>نرخ/ساعت</th>
-              <th>درآمد</th>
-              <th></th>
+            <th>نرخ/ساعت</th>
+            <th>درآمد</th>
+            <th>قائم مقام</th>
+            <th></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -326,6 +346,33 @@
         <div class="field-row field-row--actions">
           <button class="linebtn linebtn--solid" id="savePharmacyEditBtn" type="button">ذخیره تغییرات</button>
           <button class="linebtn" id="cancelPharmacyEditBtn" type="button">انصراف</button>
+        </div>
+      </div>
+    </main>
+
+      <!-- ===================== DEPUTIES VIEW ===================== -->
+    <main class="view" id="view-deputies" data-active="false">
+      <div class="panel-head"><h2>قائم مقام‌ها</h2></div>
+      <form class="inline-form" id="deputyForm">
+        <input type="text" id="deputyNameInput" placeholder="نام قائم مقام" required>
+        <input type="tel"  id="deputyPhoneInput" placeholder="شماره تماس (اختیاری)" inputmode="numeric">
+        <button type="submit" class="linebtn linebtn--solid">افزودن</button>
+      </form>
+      <ul class="pharmacy-list" id="deputyList"></ul>
+
+      <!-- Deputy shift report -->
+      <div id="deputyReportSection" style="display:none;">
+        <div class="panel-head" style="margin-top:20px;">
+          <h2 id="deputyReportTitle">گزارش قائم مقام</h2>
+        </div>
+        <div class="statgrid" id="deputyStatGrid"></div>
+        <div class="table-wrap">
+          <table class="datatable" id="deputyShiftsTable">
+            <thead>
+              <tr><th>تاریخ</th><th>داروخانه</th><th>شروع</th><th>پایان</th><th>مدت</th><th>درآمد</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
     </main>
@@ -527,7 +574,7 @@
         <h3 class="settings-section__title">درباره</h3>
         <div class="settings-about" style="align-items: center; justify-content: center; text-align: center;">
           <p class="settings-about__name">دفتر شیفت</p>
-          <p class="settings-about__dev">1.7 version</p>
+          <p class="settings-about__dev">2.1 version</p>
           <p class="settings-about__dev">طراحی و توسعه: امیرحسین قلی‌زاده</p>
           <p class="settings-about__social">سوشال مدیا: <span>@amrqhz</span></p>
           <p style="font-size: 13px;">این برنامه به صورت رایگان توسعه داده شده است.<br> برای اطلاع از اپدیت ها و سایر
@@ -566,6 +613,15 @@
         <div class="field">
           <label for="shiftPharmacySelect">داروخانه</label>
           <select id="shiftPharmacySelect" required></select>
+        </div>
+        <div class="field">
+          <label for="shiftDeputySelect">
+            قائم مقام
+            <span class="field__hint">(اختیاری — اگر شیفت به کس دیگری واگذار شده)</span>
+          </label>
+          <select id="shiftDeputySelect">
+            <option value="">— بدون قائم مقام</option>
+          </select>
         </div>
         <div class="field-row">
           <div class="field">

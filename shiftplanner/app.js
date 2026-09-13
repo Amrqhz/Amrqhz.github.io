@@ -10,11 +10,14 @@ const S = window.Store;
 let pharmacies = S.loadPharmacies();
 let shifts = S.loadShifts();
 let settings = S.loadSettings();
+let deputies   = S.loadDeputies();
 
 let viewYear, viewMonth;
 let selectedDateKey = null;
 let reportPharmacyFilter = 'all';
 let financialPharmacyFilter = 'all';
+let reportDeputyFilter      = 'all';
+let financialDeputyFilter   = 'all';
 let deferredInstallPrompt = null; // PWA beforeinstallprompt event
 
 const todayJ = J.todayJalali();
@@ -30,6 +33,7 @@ function init() {
   bindMonthControls();
   bindSheet();
   bindPharmacyForm();
+    bindDeputyForm();
   bindShiftForm();
   bindExport();
   bindReportFilter();
@@ -40,6 +44,7 @@ function init() {
   renderCalendar();
   renderPharmacyList();
   renderPharmacySelect();
+  renderDeputySelect();
   registerServiceWorker();
 }
 
@@ -56,6 +61,7 @@ function bindNav() {
       if (target === 'summary') renderSummary();
       if (target === 'financial') renderFinancial();
       if (target === 'pharmacies') renderPharmacyList();
+      if (target === 'deputies')   renderDeputyList();
     });
   });
 }
@@ -184,6 +190,8 @@ function renderCalendar() {
     }
     grid.appendChild(cell);
   });
+    renderDeputyList();
+  renderDeputySelect();
 
   updateMonthSummaryLine();
 }
@@ -251,6 +259,7 @@ function renderExistingShiftsForDay() {
         <div class="existing-shift__pharm">${escapeHtml(pharmacyName(s.pharmacyId))}</div>
         <div class="existing-shift__time">${s.start} – ${s.end} · ${J.toPersianDigits(hours.toFixed(1))} ساعت</div>
         ${special ? '<div class="existing-shift__badge">🌙 شب / تعطیل</div>' : ''}
+        ${s.deputyId ? `<div class="existing-shift__note"> قائم مقام: ${escapeHtml(deputyName(s.deputyId))}</div>` : ''}
         ${s.note ? `<div class="existing-shift__note">${escapeHtml(s.note)}</div>` : ''}
       </div>
       <div class="existing-shift__actions">
@@ -387,6 +396,7 @@ function resetShiftForm() {
   document.getElementById('shiftEditId').value = '';
   document.getElementById('shiftStart').value = '';
   document.getElementById('shiftEnd').value = '';
+  document.getElementById('shiftDeputySelect').value = '';
   document.getElementById('shiftNote').value = '';
   document.getElementById('shiftIsHoliday').checked = false;
     // Hide duration suggestions
@@ -413,6 +423,7 @@ function loadShiftIntoForm(id) {
   document.getElementById('shiftEnd').value = s.end;
   document.getElementById('shiftNote').value = s.note || '';
   document.getElementById('shiftIsHoliday').checked = !!s.isHoliday;
+    document.getElementById('shiftDeputySelect').value = s.deputyId || '';
   document.getElementById('saveShiftBtn').textContent = 'به‌روزرسانی';
   document.getElementById('cancelShiftEdit').hidden = false;
   updateShiftTypeBadge();
@@ -428,7 +439,7 @@ function saveShiftFromForm() {
   const end = document.getElementById('shiftEnd').value;
   const note = document.getElementById('shiftNote').value.trim();
   const isHoliday = document.getElementById('shiftIsHoliday').checked;
-
+  const deputyId   = document.getElementById('shiftDeputySelect').value || null;
   if (!start || !end) { showToast('ساعت شروع و پایان را وارد کنید'); return; }
 
 const customRateRaw = S.toLatinDigits(document.getElementById('shiftCustomRate').value);
@@ -442,13 +453,13 @@ const customRateRaw = S.toLatinDigits(document.getElementById('shiftCustomRate')
     const s = shifts.find((x) => x.id === editId);
     if (s) Object.assign(s, {
       pharmacyId, start, end, note, isNight,
-      isHoliday: isHoliday || fridayHol, customRate
+      isHoliday: isHoliday || fridayHol, customRate, deputyId
     });
     showToast('شیفت به‌روزرسانی شد');
   } else {
     shifts.push({
       id: S.uid(), dateKey: selectedDateKey, pharmacyId, start, end, note,
-      isNight, isHoliday: isHoliday || fridayHol, customRate
+      isNight, isHoliday: isHoliday || fridayHol, customRate, deputyId
     });
     showToast('شیفت ثبت شد');
   }
@@ -566,6 +577,110 @@ function deletePharmacy(id) {
   renderPharmacyList(); renderPharmacySelect(); renderCalendar();
   showToast('داروخانه حذف شد');
 }
+/* =================== DEPUTIES =================== */
+
+function bindDeputyForm() {
+  document.getElementById('deputyForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const ni = document.getElementById('deputyNameInput');
+    const pi = document.getElementById('deputyPhoneInput');
+    const name = ni.value.trim();
+    if (!name) return;
+    deputies.push({ id: S.uid(), name, phone: pi.value.trim() });
+    S.saveDeputies(deputies);
+    ni.value = ''; pi.value = '';
+    renderDeputyList();
+    renderDeputySelect();
+    renderDeputyFilterOptions();
+    showToast('قائم مقام اضافه شد');
+  });
+}
+
+function renderDeputyList() {
+  const list = document.getElementById('deputyList');
+  if (!list) return;
+
+  if (deputies.length === 0) {
+    list.innerHTML = '<li class="pharmacy-empty">هنوز قائم مقامی ثبت نشده است.</li>';
+    document.getElementById('deputyReportSection').style.display = 'none';
+    return;
+  }
+
+  list.innerHTML = '';
+  deputies.forEach((d) => {
+    const shiftCount = shifts.filter((s) => s.deputyId === d.id).length;
+    const li = document.createElement('li');
+    li.className = 'pharmacy-item';
+    li.innerHTML = `
+      <div>
+        <div class="pharmacy-item__name">${escapeHtml(d.name)}</div>
+        ${d.phone ? `<div class="pharmacy-item__addr">📞 ${escapeHtml(d.phone)}</div>` : ''}
+        <div class="pharmacy-item__addr">${J.toPersianDigits(shiftCount)} شیفت واگذار شده</div>
+      </div>
+      <div class="pharmacy-item__actions">
+        <button class="pharmacy-item__edit deputy-view-btn" data-id="${d.id}">گزارش</button>
+        <button class="pharmacy-item__del deputy-del-btn" data-id="${d.id}">حذف</button>
+      </div>`;
+    list.appendChild(li);
+  });
+
+  list.querySelectorAll('.deputy-del-btn').forEach((b) =>
+    b.addEventListener('click', () => deleteDeputy(b.dataset.id)));
+  list.querySelectorAll('.deputy-view-btn').forEach((b) =>
+    b.addEventListener('click', () => renderDeputyReport(b.dataset.id)));
+}
+
+function deleteDeputy(id) {
+  const used = shifts.filter((s) => s.deputyId === id).length;
+  if (used > 0 && !confirm(`این قائم مقام در ${used} شیفت ثبت شده. حذف شود؟`)) return;
+  // Clear deputyId from shifts
+  shifts.forEach((s) => { if (s.deputyId === id) s.deputyId = null; });
+  deputies = deputies.filter((d) => d.id !== id);
+  S.saveDeputies(deputies);
+  S.saveShifts(shifts);
+  renderDeputyList();
+  renderDeputySelect();
+  renderDeputyFilterOptions();
+  showToast('قائم مقام حذف شد');
+}
+
+function renderDeputyReport(deputyId) {
+  const d           = deputies.find((x) => x.id === deputyId);
+  if (!d) return;
+  const deputyShifts = shifts
+    .filter((s) => s.deputyId === deputyId)
+    .sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start));
+
+  const section = document.getElementById('deputyReportSection');
+  section.style.display = '';
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('deputyReportTitle').textContent = `گزارش — ${d.name}`;
+
+  const totalH   = deputyShifts.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
+  const totalInc = deputyShifts.reduce((s, x) => s + calcIncome(x), 0);
+
+  document.getElementById('deputyStatGrid').innerHTML = `
+    <div class="statcard"><span class="statcard__value">${J.toPersianDigits(deputyShifts.length)}</span><span class="statcard__label">تعداد شیفت واگذاری</span></div>
+    <div class="statcard"><span class="statcard__value">${J.toPersianDigits(totalH.toFixed(1))}</span><span class="statcard__label">مجموع ساعت</span></div>
+    <div class="statcard statcard--unpaid"><span class="statcard__value" style="font-size:14px">${formatToman(totalInc)}</span><span class="statcard__label">مبلغ بدهی به قائم مقام</span></div>`;
+
+  const tbody = document.querySelector('#deputyShiftsTable tbody');
+  tbody.innerHTML = deputyShifts.length === 0
+    ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
+    : deputyShifts.map((s) => {
+        const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
+        const h   = S.shiftDurationHours(s.start, s.end);
+        const inc = calcIncome(s);
+        return `<tr>
+          <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm-1]} ${J.toPersianDigits(jy)}</td>
+          <td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>
+          <td class="num">${s.start}</td>
+          <td class="num">${s.end}</td>
+          <td class="num">${J.toPersianDigits(h.toFixed(1))}</td>
+          <td class="num">${formatToman(inc)}</td>
+        </tr>`;
+      }).join('');
+}
 
 function renderPharmacySelect() {
   const sel = document.getElementById('shiftPharmacySelect');
@@ -580,6 +695,9 @@ function bindReportFilter() {
   document.getElementById('reportPharmacyFilter').addEventListener('change', (e) => {
     reportPharmacyFilter = e.target.value; renderSummary();
   });
+  document.getElementById('reportDeputyFilter')?.addEventListener('change', (e) => {
+    reportDeputyFilter = e.target.value; renderSummary();
+  });
 }
 
 function renderFilterOptions(selectId, currentFilter) {
@@ -590,12 +708,40 @@ function renderFilterOptions(selectId, currentFilter) {
   sel.value = (prev === 'all' || pharmacies.some((p) => p.id === prev)) ? prev : 'all';
   return sel.value;
 }
+function renderDeputyFilterOptions() {
+  ['reportDeputyFilter', 'financialDeputyFilter'].forEach((selId) => {
+    const sel = document.getElementById(selId);
+    if (!sel) return;
+    const prev = sel.value;
+    sel.innerHTML = `<option value="all">همه (با و بدون قائم مقام)</option>
+      <option value="none">بدون قائم مقام</option>
+      ${deputies.map((d) => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('')}`;
+    if (prev && (prev === 'all' || prev === 'none' || deputies.some((d) => d.id === prev)))
+      sel.value = prev;
+  });
+}
 
-function getMonthShifts(pharmacyFilter) {
+function renderDeputySelect() {
+  const sel = document.getElementById('shiftDeputySelect');
+  if (!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = `<option value="">— بدون قائم مقام</option>
+    ${deputies.map((d) => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('')}`;
+  if (prev && deputies.some((d) => d.id === prev)) sel.value = prev;
+}
+function deputyName(id) {
+  if (!id) return '—';
+  const d = deputies.find((x) => x.id === id);
+  return d ? d.name : '—';
+}
+
+function getMonthShifts(pharmacyFilter, deputyFilter = 'all') {
   return shifts.filter((s) => {
     const { jy, jm } = J.parseJalaliKey(s.dateKey);
     if (jy !== viewYear || jm !== viewMonth) return false;
     if (pharmacyFilter !== 'all' && s.pharmacyId !== pharmacyFilter) return false;
+    if (deputyFilter === 'none' && s.deputyId) return false;
+    if (deputyFilter !== 'all' && deputyFilter !== 'none' && s.deputyId !== deputyFilter) return false;
     return true;
   }).sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start));
 }
@@ -603,8 +749,9 @@ function getMonthShifts(pharmacyFilter) {
 /* =================== MONTHLY SUMMARY VIEW =================== */
 
 function renderSummary() {
+  renderDeputyFilterOptions();
   reportPharmacyFilter = renderFilterOptions('reportPharmacyFilter', reportPharmacyFilter);
-  const ms = getMonthShifts(reportPharmacyFilter);
+  const ms = getMonthShifts(reportPharmacyFilter, reportDeputyFilter);
 
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
@@ -716,7 +863,9 @@ function bindLatinInput(inputId) {
 function bindFinancialView() {
   document.getElementById('rateNormal').value = settings.rateNormal || '';
   document.getElementById('rateSpecial').value = settings.rateSpecial || '';
-
+  document.getElementById('financialDeputyFilter')?.addEventListener('change', (e) => {
+    financialDeputyFilter = e.target.value; renderFinancial();
+  });
   document.getElementById('saveRatesBtn').addEventListener('click', () => {
     settings.rateNormal  = parseFloat(S.toLatinDigits(document.getElementById('rateNormal').value))  || 0;
     settings.rateSpecial = parseFloat(S.toLatinDigits(document.getElementById('rateSpecial').value)) || 0;
@@ -999,8 +1148,9 @@ function formatToman(n) {
 }
 
 function renderFinancial() {
+    renderDeputyFilterOptions();
   financialPharmacyFilter = renderFilterOptions('financialPharmacyFilter', financialPharmacyFilter);
-  const ms = getMonthShifts(financialPharmacyFilter);
+  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter);
 
   const totalIncome = ms.reduce((s, x) => s + calcIncome(x), 0);
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
@@ -1132,10 +1282,33 @@ function renderFinancial() {
       <td class="num">${J.toPersianDigits(h.toFixed(1))}</td>
       <td class="num rate-cell breakdown-cell">${breakdownDisplay}</td>
       <td class="num">${formatToman(income)}</td>
+     <td class="deputy-cell">${s.deputyId ? `<span class="deputy-badge"> ${escapeHtml(deputyName(s.deputyId))}</span>` : ''}</td>
       <td><button class="rowedit" data-id="${s.id}" data-datekey="${s.dateKey}" type="button">ویرایش</button></td>
     </tr>`;
   }).join('');
-
+  // Deputy breakdown — show what's owed to each deputy this month
+  const deputyBreakdown = {};
+  ms.forEach((s) => {
+    if (!s.deputyId) return;
+    if (!deputyBreakdown[s.deputyId]) deputyBreakdown[s.deputyId] = { count: 0, hours: 0, income: 0 };
+    deputyBreakdown[s.deputyId].count++;
+    deputyBreakdown[s.deputyId].hours  += S.shiftDurationHours(s.start, s.end);
+    deputyBreakdown[s.deputyId].income += calcIncome(s);
+  });
+  const depEntries = Object.entries(deputyBreakdown);
+  const depTitleEl = document.getElementById('deputyBreakdownTitle');
+  const depWrapEl  = document.getElementById('deputyBreakdownWrap');
+  if (depTitleEl) depTitleEl.style.display = depEntries.length > 0 ? '' : 'none';
+  if (depWrapEl)  depWrapEl.style.display  = depEntries.length > 0 ? '' : 'none';
+  if (depEntries.length > 0) {
+    document.querySelector('#deputyBreakdownTable tbody').innerHTML =
+      depEntries.sort((a, b) => b[1].income - a[1].income).map(([did, d]) => `<tr>
+        <td>${escapeHtml(deputyName(did))}</td>
+        <td>${J.toPersianDigits(d.count)}</td>
+        <td>${J.toPersianDigits(d.hours.toFixed(1))}</td>
+        <td class="num">${formatToman(d.income)}</td>
+      </tr>`).join('');
+  }
   tbody.querySelectorAll('.rowedit').forEach((btn) => {
     btn.addEventListener('click', () => {
       const { jy, jm, jd } = J.parseJalaliKey(btn.dataset.datekey);
@@ -1301,6 +1474,13 @@ function importJsonBackup(jsonText) {
   if (!data.pharmacies || !data.shifts) {
     showImportStatus('error', 'فایل پشتیبان معتبر نیست — داده‌های لازم یافت نشد');
     return;
+  }
+    // Merge deputies
+  if (Array.isArray(data.deputies)) {
+    const existingDepIds = new Set(deputies.map((d) => d.id));
+    const newDeputies = data.deputies.filter((d) => !existingDepIds.has(d.id));
+    deputies = [...deputies, ...newDeputies];
+    S.saveDeputies(deputies);
   }
 
   const incomingPharmacies = Array.isArray(data.pharmacies) ? data.pharmacies : [];
@@ -1513,6 +1693,7 @@ function exportJsonBackup() {
     pharmacies,
     shifts,
     settings,
+    deputies,
     payments: S.loadPayments(),
   };
   const dateStr = `${viewYear}-${String(viewMonth).padStart(2, '0')}`;

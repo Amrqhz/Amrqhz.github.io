@@ -60,6 +60,13 @@ function loadSettings() {
 function saveSettings(obj) {
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(obj));
 }
+function loadDeputies() {
+  try { return JSON.parse(localStorage.getItem('shiftplanner.deputies.v1') || '[]'); }
+  catch(e) { return []; }
+}
+function saveDeputies(list) {
+  localStorage.setItem('shiftplanner.deputies.v1', JSON.stringify(list));
+}
 
 /** Compute duration in hours (decimal) between HH:MM start and end. Handles overnight. */
 function shiftDurationHours(start, end) {
@@ -187,5 +194,6 @@ window.Store = {
   uid,
   shiftDurationHours, formatHours,
   isNightShift, isFridayHoliday,
-  splitShiftHours, toLatinDigits,     
+  splitShiftHours, toLatinDigits, 
+  loadDeputies, saveDeputies,    
 };
