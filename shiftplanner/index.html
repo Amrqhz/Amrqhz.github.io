@@ -29,38 +29,40 @@
 
 
   <div class="app">
-      <!-- ===================== BOTTOM NAV (mobile) ===================== -->
-      <nav class="bottom-nav" id="bottomNav" aria-label="ناوبری">
+    <!-- ===================== BOTTOM NAV (mobile) ===================== -->
+    <nav class="bottom-nav" id="bottomNav" aria-label="ناوبری">
 
-        <button class="bottom-nav__btn is-active" data-view="calendar" type="button">
-          <span class="bottom-nav__label">تقویم</span>
-        </button>
+      <button class="bottom-nav__btn is-active" data-view="calendar" type="button">
+        <span class="bottom-nav__label">تقویم</span>
+      </button>
 
-        <button class="bottom-nav__btn" data-view="summary" type="button">
-          <span class="bottom-nav__label">گزارش ماه</span>
-        </button>
+      <button class="bottom-nav__btn" data-view="summary" type="button">
+        <span class="bottom-nav__label">گزارش ماه</span>
+      </button>
 
-        <button class="bottom-nav__btn" data-view="financial" type="button">
-          <span class="bottom-nav__label">گزارش مالی</span>
-        </button>
+      <button class="bottom-nav__btn" data-view="financial" type="button">
+        <span class="bottom-nav__label">گزارش مالی</span>
+      </button>
 
-        <button class="bottom-nav__btn" data-view="pharmacies" type="button">
-          <span class="bottom-nav__label">داروخانه‌ها</span>
-        </button>
+      <button class="bottom-nav__btn" data-view="pharmacies" type="button">
+        <span class="bottom-nav__label">داروخانه‌ها</span>
+      </button>
 
-        <button class="bottom-nav__btn" data-view="deputies" type="button">
-          <span class="bottom-nav__label">قائم مقام</span>
-        </button>
+      <button class="bottom-nav__btn" data-view="deputies" type="button">
+        <span class="bottom-nav__label">قائم مقام</span>
+      </button>
 
-        <button class="bottom-nav__btn" data-view="settings" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-          <!-- <span class="bottom-nav__label">تنظیمات</span> -->
-        </button>
+      <button class="bottom-nav__btn" data-view="settings" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+          stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        <!-- <span class="bottom-nav__label">تنظیمات</span> -->
+      </button>
 
-      </nav>
+    </nav>
 
     <!-- ===================== HEADER ===================== -->
     <header class="topbar">
@@ -147,7 +149,9 @@
 
       <div class="filter-row">
         <label for="reportPharmacyFilter">گزارش برای</label>
-        <select id="reportPharmacyFilter"><option value="all">همه داروخانه‌ها</option></select>
+        <select id="reportPharmacyFilter">
+          <option value="all">همه داروخانه‌ها</option>
+        </select>
       </div>
       <div class="filter-row">
         <label for="reportDeputyFilter">قائم مقام</label>
@@ -289,7 +293,9 @@
 
       <div class="filter-row">
         <label for="financialPharmacyFilter">گزارش برای</label>
-        <select id="financialPharmacyFilter"><option value="all">همه داروخانه‌ها</option></select>
+        <select id="financialPharmacyFilter">
+          <option value="all">همه داروخانه‌ها</option>
+        </select>
       </div>
       <div class="filter-row">
         <label for="financialDeputyFilter">قائم مقام</label>
@@ -321,7 +327,14 @@
       <h3 class="sectiontitle" id="deputyBreakdownTitle" style="display:none;">تفکیک بدهی به قائم مقام‌ها</h3>
       <div class="table-wrap" id="deputyBreakdownWrap" style="display:none;">
         <table class="datatable" id="deputyBreakdownTable">
-          <thead><tr><th>قائم مقام</th><th>تعداد شیفت</th><th>مجموع ساعت</th><th>مبلغ بدهی (تومان)</th></tr></thead>
+          <thead>
+            <tr>
+              <th>قائم مقام</th>
+              <th>تعداد شیفت</th>
+              <th>مجموع ساعت</th>
+              <th>مبلغ بدهی (تومان)</th>
+            </tr>
+          </thead>
           <tbody></tbody>
         </table>
       </div>
@@ -340,10 +353,10 @@
               <th>شروع</th>
               <th>پایان</th>
               <th>مدت</th>
-            <th>نرخ/ساعت</th>
-            <th>درآمد</th>
-            <th>قائم مقام</th>
-            <th></th>
+              <th>نرخ/ساعت</th>
+              <th>درآمد</th>
+              <th>قائم مقام</th>
+              <th></th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -382,12 +395,14 @@
       </div>
     </main>
 
-      <!-- ===================== DEPUTIES VIEW ===================== -->
+    <!-- ===================== DEPUTIES VIEW ===================== -->
     <main class="view" id="view-deputies" data-active="false">
-      <div class="panel-head"><h2>قائم مقام‌ها</h2></div>
+      <div class="panel-head">
+        <h2>قائم مقام‌ها</h2>
+      </div>
       <form class="inline-form" id="deputyForm">
         <input type="text" id="deputyNameInput" placeholder="نام قائم مقام" required>
-        <input type="tel"  id="deputyPhoneInput" placeholder="شماره تماس" inputmode="numeric">
+        <input type="tel" id="deputyPhoneInput" placeholder="شماره تماس" inputmode="numeric">
         <button type="submit" class="linebtn linebtn--solid">افزودن</button>
       </form>
       <ul class="pharmacy-list" id="deputyList"></ul>
@@ -401,7 +416,14 @@
         <div class="table-wrap">
           <table class="datatable" id="deputyShiftsTable">
             <thead>
-              <tr><th>تاریخ</th><th>داروخانه</th><th>شروع</th><th>پایان</th><th>مدت</th><th>درآمد</th></tr>
+              <tr>
+                <th>تاریخ</th>
+                <th>داروخانه</th>
+                <th>شروع</th>
+                <th>پایان</th>
+                <th>مدت</th>
+                <th>درآمد</th>
+              </tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -414,13 +436,14 @@
       <div class="panel-head">
         <h2>تنظیمات</h2>
       </div>
-          <!-- PERSONAL PROFILE -->
+      <!-- PERSONAL PROFILE -->
       <div class="settings-section profile-section">
         <div class="profile-header">
           <div class="profile-avatar" id="profileAvatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
           </div>
           <div class="profile-header__text">
@@ -464,8 +487,7 @@
           </div>
           <div class="field">
             <label for="profileSignature">متن امضا / تأییدیه در PDF (اختیاری)</label>
-            <input type="text" id="profileSignature"
-                  placeholder="مثلاً: این گزارش به تأیید اینجانب می‌رسد">
+            <input type="text" id="profileSignature" placeholder="مثلاً: این گزارش به تأیید اینجانب می‌رسد">
           </div>
           <div class="field-row field-row--actions">
             <button class="linebtn linebtn--solid" id="saveProfileBtn" type="button">ذخیره پروفایل</button>
@@ -606,7 +628,7 @@
         <h3 class="settings-section__title">درباره</h3>
         <div class="settings-about" style="align-items: center; justify-content: center; text-align: center;">
           <p class="settings-about__name">دفتر شیفت</p>
-          <p class="settings-about__dev">2.1 version</p>
+          <p class="settings-about__dev">2.1.2 version</p>
           <p class="settings-about__dev">طراحی و توسعه: امیرحسین قلی‌زاده</p>
           <p class="settings-about__social">سوشال مدیا: <span>@amrqhz</span></p>
           <p style="font-size: 13px;">این برنامه به صورت رایگان توسعه داده شده است.<br> برای اطلاع از اپدیت ها و سایر
@@ -670,9 +692,9 @@
         <div class="duration-suggestions" id="durationSuggestions" style="display:none;">
           <span class="duration-suggestions__label">پیشنهاد مدت:</span>
           <div class="duration-chips">
-            <button class="dur-chip" data-hours="4"  type="button">+۴ ساعت</button>
-            <button class="dur-chip" data-hours="6"  type="button">+۶ ساعت</button>
-            <button class="dur-chip" data-hours="8"  type="button">+۸ ساعت</button>
+            <button class="dur-chip" data-hours="4" type="button">+۴ ساعت</button>
+            <button class="dur-chip" data-hours="6" type="button">+۶ ساعت</button>
+            <button class="dur-chip" data-hours="8" type="button">+۸ ساعت</button>
             <button class="dur-chip" data-hours="12" type="button">+۱۲ ساعت</button>
             <button class="dur-chip" data-hours="24" type="button">+۲۴ ساعت</button>
           </div>

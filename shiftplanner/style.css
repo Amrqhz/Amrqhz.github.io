@@ -2889,11 +2889,11 @@ label.linebtn {
     background: var(--canvas);
     border-radius: var(--radius-pill);
     box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-    padding: 6px 2px calc(6px + env(safe-area-inset-bottom));
+    padding: 4px 1px calc(6px + env(safe-area-inset-bottom));
     justify-content: space-around;
     align-items: center;
-    gap: 3px;
-      margin: 10px 0.8rem;
+    gap: 1px;
+      margin: 10px 0.5rem;
   }
 }
 @media (max-width: 400px) {
