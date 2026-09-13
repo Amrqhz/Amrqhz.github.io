@@ -2893,7 +2893,7 @@ label.linebtn {
     justify-content: space-around;
     align-items: center;
     gap: 1px;
-      margin: 10px 0.5rem;
+      margin: 10px 15px;
   }
 }
 @media (max-width: 400px) {
