@@ -1515,11 +1515,10 @@ select {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  flex-shrink: 0;
+  max-width: 100%;
 }
-
-.topbar__nav::-webkit-scrollbar {
-  display: none;
-}
+.topbar__nav::-webkit-scrollbar { display: none; }
 
 /* ===================== PRINT — FINANCIAL ADDITIONS ===================== */
 
@@ -2858,4 +2857,111 @@ label.linebtn {
 [data-theme="lavender"] .deputy-badge { background: #f5f3ff; color: #6d28d9; }
 [data-theme="softpink"]  .deputy-badge { background: #fdf2f8; color: #be185d; }
 [data-theme="softblue"]  .deputy-badge { background: #eff6ff; color: #1d4ed8; }
-[data-theme="floral"]    .deputy-badge { background: #f0fdf4; color: #15803d; }
+[data-theme="floral"]    .deputy-badge { background: #f0fdf4; color: #15803d; }/* =====================================================================
+   MOBILE BOTTOM NAV — replaces top nav on narrow screens
+   ===================================================================== */
+
+/* Hide the top nav pill on mobile, show bottom bar instead */
+@media (max-width: 600px) {
+  .topbar__nav {
+    display: none !important;
+  }
+
+  /* Extra bottom padding so content isn't hidden behind bottom bar */
+  .app {
+    padding-bottom: 80px;
+  }
+}
+
+/* Bottom nav bar — only visible on mobile */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: var(--panel-raised);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    padding: 6px 2px calc(6px + env(safe-area-inset-bottom));
+    justify-content: space-around;
+    align-items: center;
+    gap: 0;
+  }
+}
+
+.bottom-nav__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 6px 2px;
+  border-radius: var(--radius-md);
+  color: var(--muted);
+  font-family: var(--font-ui);
+  transition: color 0.15s ease, background 0.15s ease;
+  min-width: 0;
+}
+
+.bottom-nav__btn.is-active {
+  color: var(--ink);
+}
+
+.bottom-nav__btn svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.bottom-nav__label {
+  font-size: 9.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 54px;
+}
+
+/* Active indicator dot above icon */
+.bottom-nav__btn.is-active::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--ink);
+  position: absolute;
+  top: 0;
+}
+
+.bottom-nav__btn {
+  position: relative;
+}
+
+/* Theme accent colors for active tab */
+[data-theme="lavender"] .bottom-nav__btn.is-active { color: #8b5cf6; }
+[data-theme="lavender"] .bottom-nav__btn.is-active::before { background: #8b5cf6; }
+[data-theme="softpink"]  .bottom-nav__btn.is-active { color: #f472b6; }
+[data-theme="softpink"]  .bottom-nav__btn.is-active::before { background: #f472b6; }
+[data-theme="softblue"]  .bottom-nav__btn.is-active { color: #3b82f6; }
+[data-theme="softblue"]  .bottom-nav__btn.is-active::before { background: #3b82f6; }
+[data-theme="floral"]    .bottom-nav__btn.is-active { color: #388a50; }
+[data-theme="floral"]    .bottom-nav__btn.is-active::before { background: #388a50; }
+
+/* Glassmorphism bottom nav for floral theme */
+[data-theme="floral"] .bottom-nav {
+  background: rgba(255,254,250,0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}

@@ -10,14 +10,14 @@ const S = window.Store;
 let pharmacies = S.loadPharmacies();
 let shifts = S.loadShifts();
 let settings = S.loadSettings();
-let deputies   = S.loadDeputies();
+let deputies = S.loadDeputies();
 
 let viewYear, viewMonth;
 let selectedDateKey = null;
 let reportPharmacyFilter = 'all';
 let financialPharmacyFilter = 'all';
-let reportDeputyFilter      = 'all';
-let financialDeputyFilter   = 'all';
+let reportDeputyFilter = 'all';
+let financialDeputyFilter = 'all';
 let deferredInstallPrompt = null; // PWA beforeinstallprompt event
 
 const todayJ = J.todayJalali();
@@ -33,7 +33,7 @@ function init() {
   bindMonthControls();
   bindSheet();
   bindPharmacyForm();
-    bindDeputyForm();
+  bindDeputyForm();
   bindShiftForm();
   bindExport();
   bindReportFilter();
@@ -51,17 +51,27 @@ function init() {
 /* =================== NAVIGATION =================== */
 
 function bindNav() {
-  document.querySelectorAll('.navbtn').forEach((btn) => {
+  const allNavBtns = document.querySelectorAll('.navbtn, .bottom-nav__btn');
+
+  allNavBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.navbtn').forEach((b) => b.classList.remove('is-active'));
-      btn.classList.add('is-active');
       const target = btn.dataset.view;
-      document.querySelectorAll('.view').forEach((v) => v.setAttribute('data-active', 'false'));
+
+      // Update active state on BOTH top and bottom navs
+      document.querySelectorAll('.navbtn').forEach((b) =>
+        b.classList.toggle('is-active', b.dataset.view === target));
+      document.querySelectorAll('.bottom-nav__btn').forEach((b) =>
+        b.classList.toggle('is-active', b.dataset.view === target));
+
+      // Switch view
+      document.querySelectorAll('.view').forEach((v) =>
+        v.setAttribute('data-active', 'false'));
       document.getElementById(`view-${target}`).setAttribute('data-active', 'true');
+
       if (target === 'summary') renderSummary();
       if (target === 'financial') renderFinancial();
       if (target === 'pharmacies') renderPharmacyList();
-      if (target === 'deputies')   renderDeputyList();
+      if (target === 'deputies') renderDeputyList();
     });
   });
 }
@@ -190,7 +200,7 @@ function renderCalendar() {
     }
     grid.appendChild(cell);
   });
-    renderDeputyList();
+  renderDeputyList();
   renderDeputySelect();
 
   updateMonthSummaryLine();
@@ -326,7 +336,7 @@ function updateShiftTypeBadge() {
 }
 
 function updateDurationSuggestions() {
-  const start     = document.getElementById('shiftStart').value;
+  const start = document.getElementById('shiftStart').value;
   const suggestEl = document.getElementById('durationSuggestions');
   if (!start) {
     suggestEl.style.display = 'none';
@@ -337,10 +347,10 @@ function updateDurationSuggestions() {
 
   // Highlight chips whose suggested end would cross midnight (night shift)
   document.querySelectorAll('.dur-chip').forEach((chip) => {
-    const hours  = Number(chip.dataset.hours);
+    const hours = Number(chip.dataset.hours);
     const endVal = addHoursToTime(start, hours);
-    const [sh]   = start.split(':').map(Number);
-    const [eh]   = endVal.split(':').map(Number);
+    const [sh] = start.split(':').map(Number);
+    const [eh] = endVal.split(':').map(Number);
     const crossesNight = sh < 22 && eh >= 22 || sh >= 22 || (endVal < start);
 
     chip.classList.toggle('dur-chip--night', crossesNight);
@@ -367,8 +377,8 @@ function applyDurationChip(hours) {
 }
 
 function updateDurationPreview() {
-  const start     = document.getElementById('shiftStart').value;
-  const end       = document.getElementById('shiftEnd').value;
+  const start = document.getElementById('shiftStart').value;
+  const end = document.getElementById('shiftEnd').value;
   const previewEl = document.getElementById('durationPreview');
   if (!previewEl) return;
 
@@ -385,11 +395,11 @@ function updateDurationPreview() {
 
 /** Add N hours to a HH:MM string, returns HH:MM (wraps past midnight) */
 function addHoursToTime(timeStr, hours) {
-  const [h, m]   = timeStr.split(':').map(Number);
+  const [h, m] = timeStr.split(':').map(Number);
   const totalMin = h * 60 + m + hours * 60;
   const wrappedH = Math.floor(totalMin / 60) % 24;
   const wrappedM = totalMin % 60;
-  return `${String(wrappedH).padStart(2,'0')}:${String(wrappedM).padStart(2,'0')}`;
+  return `${String(wrappedH).padStart(2, '0')}:${String(wrappedM).padStart(2, '0')}`;
 }
 
 function resetShiftForm() {
@@ -399,7 +409,7 @@ function resetShiftForm() {
   document.getElementById('shiftDeputySelect').value = '';
   document.getElementById('shiftNote').value = '';
   document.getElementById('shiftIsHoliday').checked = false;
-    // Hide duration suggestions
+  // Hide duration suggestions
   const suggestEl = document.getElementById('durationSuggestions');
   if (suggestEl) {
     suggestEl.style.display = 'none';
@@ -423,7 +433,7 @@ function loadShiftIntoForm(id) {
   document.getElementById('shiftEnd').value = s.end;
   document.getElementById('shiftNote').value = s.note || '';
   document.getElementById('shiftIsHoliday').checked = !!s.isHoliday;
-    document.getElementById('shiftDeputySelect').value = s.deputyId || '';
+  document.getElementById('shiftDeputySelect').value = s.deputyId || '';
   document.getElementById('saveShiftBtn').textContent = 'به‌روزرسانی';
   document.getElementById('cancelShiftEdit').hidden = false;
   updateShiftTypeBadge();
@@ -439,10 +449,10 @@ function saveShiftFromForm() {
   const end = document.getElementById('shiftEnd').value;
   const note = document.getElementById('shiftNote').value.trim();
   const isHoliday = document.getElementById('shiftIsHoliday').checked;
-  const deputyId   = document.getElementById('shiftDeputySelect').value || null;
+  const deputyId = document.getElementById('shiftDeputySelect').value || null;
   if (!start || !end) { showToast('ساعت شروع و پایان را وارد کنید'); return; }
 
-const customRateRaw = S.toLatinDigits(document.getElementById('shiftCustomRate').value);
+  const customRateRaw = S.toLatinDigits(document.getElementById('shiftCustomRate').value);
   const customRate = customRateRaw !== '' ? (parseFloat(customRateRaw) || 0) : null;
 
   const isNight = S.isNightShift(start, end);
@@ -645,7 +655,7 @@ function deleteDeputy(id) {
 }
 
 function renderDeputyReport(deputyId) {
-  const d           = deputies.find((x) => x.id === deputyId);
+  const d = deputies.find((x) => x.id === deputyId);
   if (!d) return;
   const deputyShifts = shifts
     .filter((s) => s.deputyId === deputyId)
@@ -656,7 +666,7 @@ function renderDeputyReport(deputyId) {
   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   document.getElementById('deputyReportTitle').textContent = `گزارش — ${d.name}`;
 
-  const totalH   = deputyShifts.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
+  const totalH = deputyShifts.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
   const totalInc = deputyShifts.reduce((s, x) => s + calcIncome(x), 0);
 
   document.getElementById('deputyStatGrid').innerHTML = `
@@ -668,18 +678,18 @@ function renderDeputyReport(deputyId) {
   tbody.innerHTML = deputyShifts.length === 0
     ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
     : deputyShifts.map((s) => {
-        const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
-        const h   = S.shiftDurationHours(s.start, s.end);
-        const inc = calcIncome(s);
-        return `<tr>
-          <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm-1]} ${J.toPersianDigits(jy)}</td>
+      const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
+      const h = S.shiftDurationHours(s.start, s.end);
+      const inc = calcIncome(s);
+      return `<tr>
+          <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]} ${J.toPersianDigits(jy)}</td>
           <td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>
           <td class="num">${s.start}</td>
           <td class="num">${s.end}</td>
           <td class="num">${J.toPersianDigits(h.toFixed(1))}</td>
           <td class="num">${formatToman(inc)}</td>
         </tr>`;
-      }).join('');
+    }).join('');
 }
 
 function renderPharmacySelect() {
@@ -775,16 +785,16 @@ function renderSummary() {
     ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[viewMonth - 1]}`
     : J.PERSIAN_MONTHS[viewMonth - 1] + ' ' + J.toPersianDigits(viewYear);
 
-// Separate holiday hours from night hours for display
+  // Separate holiday hours from night hours for display
   let holidayH = 0;
-  let nightH   = 0;
-  let dayH     = 0;
+  let nightH = 0;
+  let dayH = 0;
   ms.forEach((x) => {
     if (x.isHoliday) {
       holidayH += S.shiftDurationHours(x.start, x.end);
     } else {
       const { dayHours, nightHours } = S.splitShiftHours(x.start, x.end);
-      dayH   += dayHours;
+      dayH += dayHours;
       nightH += nightHours;
     }
   });
@@ -804,7 +814,7 @@ function renderSummary() {
       breakdown[s.pharmacyId].holidayH += S.shiftDurationHours(s.start, s.end);
     } else {
       const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-      breakdown[s.pharmacyId].dayH   += dayHours;
+      breakdown[s.pharmacyId].dayH += dayHours;
       breakdown[s.pharmacyId].nightH += nightHours;
     }
   });
@@ -851,11 +861,11 @@ function bindLatinInput(inputId) {
   const el = document.getElementById(inputId);
   if (!el) return;
   el.addEventListener('input', () => {
-    const pos    = el.selectionStart;
+    const pos = el.selectionStart;
     const before = el.value;
-    el.value     = S.toLatinDigits(before).replace(/[^0-9.\-]/g, '');
+    el.value = S.toLatinDigits(before).replace(/[^0-9.\-]/g, '');
     // Restore cursor position as best we can
-    try { el.setSelectionRange(pos, pos); } catch(e) {}
+    try { el.setSelectionRange(pos, pos); } catch (e) { }
   });
 }
 /* =================== FINANCIAL VIEW =================== */
@@ -867,7 +877,7 @@ function bindFinancialView() {
     financialDeputyFilter = e.target.value; renderFinancial();
   });
   document.getElementById('saveRatesBtn').addEventListener('click', () => {
-    settings.rateNormal  = parseFloat(S.toLatinDigits(document.getElementById('rateNormal').value))  || 0;
+    settings.rateNormal = parseFloat(S.toLatinDigits(document.getElementById('rateNormal').value)) || 0;
     settings.rateSpecial = parseFloat(S.toLatinDigits(document.getElementById('rateSpecial').value)) || 0;
     S.saveSettings(settings);
     renderFinancial();
@@ -879,7 +889,7 @@ function bindFinancialView() {
   });
 
   bindBankAccounts();
-    // Accept Persian/Arabic digit input on all number fields
+  // Accept Persian/Arabic digit input on all number fields
   bindLatinInput('rateNormal');
   bindLatinInput('rateSpecial');
   bindLatinInput('shiftCustomRate');
@@ -891,7 +901,7 @@ let activeBankType = 'card'; // 'card' or 'sheba'
 
 function bindBankAccounts() {
   renderBankAccountsList();
-    // Accept Persian/Arabic digit input on bank number fields
+  // Accept Persian/Arabic digit input on bank number fields
   bindLatinInput('bankCardNumber');
   bindLatinInput('bankShebaNumber');
 
@@ -961,7 +971,7 @@ function saveBankAccount() {
   if (!bankName) { showToast('نام بانک را وارد کنید'); return; }
 
   let number = '';
-if (type === 'card') {
+  if (type === 'card') {
     const digits = S.toLatinDigits(document.getElementById('bankCardNumber').value).replace(/\D/g, '');
     if (digits.length !== 16) { showToast('شماره کارت باید ۱۶ رقم باشد'); return; }
     number = digits;
@@ -1148,7 +1158,7 @@ function formatToman(n) {
 }
 
 function renderFinancial() {
-    renderDeputyFilterOptions();
+  renderDeputyFilterOptions();
   financialPharmacyFilter = renderFilterOptions('financialPharmacyFilter', financialPharmacyFilter);
   const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter);
 
@@ -1199,7 +1209,7 @@ function renderFinancial() {
       breakdown[s.pharmacyId].holidayH += S.shiftDurationHours(s.start, s.end);
     } else {
       const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-      breakdown[s.pharmacyId].dayH   += dayHours;
+      breakdown[s.pharmacyId].dayH += dayHours;
       breakdown[s.pharmacyId].nightH += nightHours;
     }
     breakdown[s.pharmacyId].income += calcIncome(s);
@@ -1209,9 +1219,9 @@ function renderFinancial() {
   breakdownTbody.innerHTML = bEntries.length === 0
     ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
     : bEntries.map(([pid, d]) => {
-        const pkey   = S.paymentKey(viewYear, viewMonth, pid);
-        const isPaid = !!payments[pkey];
-        return `<tr class="${isPaid ? 'row--paid' : ''}">
+      const pkey = S.paymentKey(viewYear, viewMonth, pid);
+      const isPaid = !!payments[pkey];
+      return `<tr class="${isPaid ? 'row--paid' : ''}">
           <td>${escapeHtml(pharmacyName(pid))}</td>
           <td>${J.toPersianDigits(d.dayH.toFixed(1))}</td>
           <td class="cell--special">${J.toPersianDigits(d.nightH.toFixed(1))}</td>
@@ -1226,7 +1236,7 @@ function renderFinancial() {
             </label>
           </td>
         </tr>`;
-      }).join('');
+    }).join('');
 
   // Bind payment checkboxes
   breakdownTbody.querySelectorAll('.payment-checkbox').forEach((chk) => {
@@ -1292,14 +1302,14 @@ function renderFinancial() {
     if (!s.deputyId) return;
     if (!deputyBreakdown[s.deputyId]) deputyBreakdown[s.deputyId] = { count: 0, hours: 0, income: 0 };
     deputyBreakdown[s.deputyId].count++;
-    deputyBreakdown[s.deputyId].hours  += S.shiftDurationHours(s.start, s.end);
+    deputyBreakdown[s.deputyId].hours += S.shiftDurationHours(s.start, s.end);
     deputyBreakdown[s.deputyId].income += calcIncome(s);
   });
   const depEntries = Object.entries(deputyBreakdown);
   const depTitleEl = document.getElementById('deputyBreakdownTitle');
-  const depWrapEl  = document.getElementById('deputyBreakdownWrap');
+  const depWrapEl = document.getElementById('deputyBreakdownWrap');
   if (depTitleEl) depTitleEl.style.display = depEntries.length > 0 ? '' : 'none';
-  if (depWrapEl)  depWrapEl.style.display  = depEntries.length > 0 ? '' : 'none';
+  if (depWrapEl) depWrapEl.style.display = depEntries.length > 0 ? '' : 'none';
   if (depEntries.length > 0) {
     document.querySelector('#deputyBreakdownTable tbody').innerHTML =
       depEntries.sort((a, b) => b[1].income - a[1].income).map(([did, d]) => `<tr>
@@ -1329,7 +1339,7 @@ function bindProfile() {
   renderProfileHeader();
 
   document.getElementById('toggleProfileEditBtn').addEventListener('click', () => {
-    const form   = document.getElementById('profileEditForm');
+    const form = document.getElementById('profileEditForm');
     const isOpen = form.style.display !== 'none';
     if (isOpen) {
       form.style.display = 'none';
@@ -1348,21 +1358,21 @@ function bindProfile() {
 
 function loadProfileIntoForm() {
   const p = settings.profile || {};
-  document.getElementById('profileFullName').value  = p.fullName      || '';
-  document.getElementById('profileRole').value      = p.role          || 'داروساز';
-  document.getElementById('profileLicense').value   = p.licenseNumber || '';
-  document.getElementById('profilePhone').value     = p.phone         || '';
-  document.getElementById('profileEmail').value     = p.email         || '';
+  document.getElementById('profileFullName').value = p.fullName || '';
+  document.getElementById('profileRole').value = p.role || 'داروساز';
+  document.getElementById('profileLicense').value = p.licenseNumber || '';
+  document.getElementById('profilePhone').value = p.phone || '';
+  document.getElementById('profileEmail').value = p.email || '';
   document.getElementById('profileSignature').value = p.signatureNote || '';
 }
 
 function saveProfile() {
   const profile = {
-    fullName:      document.getElementById('profileFullName').value.trim(),
-    role:          document.getElementById('profileRole').value,
+    fullName: document.getElementById('profileFullName').value.trim(),
+    role: document.getElementById('profileRole').value,
     licenseNumber: S.toLatinDigits(document.getElementById('profileLicense').value.trim()),
-    phone:         document.getElementById('profilePhone').value.trim(),
-    email:         document.getElementById('profileEmail').value.trim(),
+    phone: document.getElementById('profilePhone').value.trim(),
+    email: document.getElementById('profileEmail').value.trim(),
     signatureNote: document.getElementById('profileSignature').value.trim(),
   };
   settings.profile = profile;
@@ -1373,13 +1383,13 @@ function saveProfile() {
 }
 
 function renderProfileHeader() {
-  const p        = settings.profile || {};
-  const nameEl   = document.getElementById('profileDisplayName');
-  const roleEl   = document.getElementById('profileDisplayRole');
+  const p = settings.profile || {};
+  const nameEl = document.getElementById('profileDisplayName');
+  const roleEl = document.getElementById('profileDisplayRole');
   const avatarEl = document.getElementById('profileAvatar');
 
   const name = p.fullName || 'نام شما';
-  const role = p.role     || 'داروساز';
+  const role = p.role || 'داروساز';
 
   if (nameEl) nameEl.textContent = name;
   if (roleEl) roleEl.textContent = p.licenseNumber
@@ -1388,7 +1398,7 @@ function renderProfileHeader() {
 
   // Show initials in avatar if name is set
   if (avatarEl && p.fullName) {
-    const parts    = p.fullName.trim().split(/\s+/);
+    const parts = p.fullName.trim().split(/\s+/);
     const initials = parts.length >= 2
       ? parts[0][0] + parts[parts.length - 1][0]
       : parts[0][0];
@@ -1409,11 +1419,11 @@ function profilePdfBlock() {
   if (!p.fullName && !p.licenseNumber && !p.phone) return '';
 
   const rows = [];
-  if (p.fullName)      rows.push(`<tr><td>نام:</td><td>${escapeHtml(p.fullName)}</td></tr>`);
-  if (p.role)          rows.push(`<tr><td>سمت:</td><td>${escapeHtml(p.role)}</td></tr>`);
+  if (p.fullName) rows.push(`<tr><td>نام:</td><td>${escapeHtml(p.fullName)}</td></tr>`);
+  if (p.role) rows.push(`<tr><td>سمت:</td><td>${escapeHtml(p.role)}</td></tr>`);
   if (p.licenseNumber) rows.push(`<tr><td>شماره نظام دارویی:</td><td>${escapeHtml(p.licenseNumber)}</td></tr>`);
-  if (p.phone)         rows.push(`<tr><td>شماره تماس:</td><td style="direction:ltr;text-align:right">${escapeHtml(p.phone)}</td></tr>`);
-  if (p.email)         rows.push(`<tr><td>ایمیل:</td><td style="direction:ltr;text-align:right">${escapeHtml(p.email)}</td></tr>`);
+  if (p.phone) rows.push(`<tr><td>شماره تماس:</td><td style="direction:ltr;text-align:right">${escapeHtml(p.phone)}</td></tr>`);
+  if (p.email) rows.push(`<tr><td>ایمیل:</td><td style="direction:ltr;text-align:right">${escapeHtml(p.email)}</td></tr>`);
 
   const signature = p.signatureNote
     ? `<div class="pr-signature">
@@ -1475,7 +1485,7 @@ function importJsonBackup(jsonText) {
     showImportStatus('error', 'فایل پشتیبان معتبر نیست — داده‌های لازم یافت نشد');
     return;
   }
-    // Merge deputies
+  // Merge deputies
   if (Array.isArray(data.deputies)) {
     const existingDepIds = new Set(deputies.map((d) => d.id));
     const newDeputies = data.deputies.filter((d) => !existingDepIds.has(d.id));
@@ -1710,20 +1720,20 @@ function exportSms() {
     return;
   }
 
-  const payments    = S.loadPayments();
-  const monthLabel  = `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
-  const isSingle    = financialPharmacyFilter !== 'all';
-  const lines       = [];
+  const payments = S.loadPayments();
+  const monthLabel = `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
+  const isSingle = financialPharmacyFilter !== 'all';
+  const lines = [];
 
   // Header
   lines.push(` گزارش مالی — ${monthLabel}`);
 
   if (isSingle) {
     // Single pharmacy report
-    const pid     = financialPharmacyFilter;
-    const pname   = pharmacyName(pid);
-    const pkey    = S.paymentKey(viewYear, viewMonth, pid);
-    const isPaid  = !!payments[pkey];
+    const pid = financialPharmacyFilter;
+    const pname = pharmacyName(pid);
+    const pkey = S.paymentKey(viewYear, viewMonth, pid);
+    const isPaid = !!payments[pkey];
 
     let dayH = 0, nightH = 0, holidayH = 0, totalInc = 0;
     ms.forEach((s) => {
@@ -1731,7 +1741,7 @@ function exportSms() {
         holidayH += S.shiftDurationHours(s.start, s.end);
       } else {
         const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-        dayH   += dayHours;
+        dayH += dayHours;
         nightH += nightHours;
       }
       totalInc += calcIncome(s);
@@ -1741,8 +1751,8 @@ function exportSms() {
     lines.push(` ${pname}`);
     lines.push(`━━━━━━━━━━━━━━`);
     lines.push(`شیفت‌ها: ${J.toPersianDigits(ms.length)}`);
-    if (dayH     > 0) lines.push(` عادی: ${J.toPersianDigits(dayH.toFixed(1))} ساعت`);
-    if (nightH   > 0) lines.push(` شب: ${J.toPersianDigits(nightH.toFixed(1))} ساعت`);
+    if (dayH > 0) lines.push(` عادی: ${J.toPersianDigits(dayH.toFixed(1))} ساعت`);
+    if (nightH > 0) lines.push(` شب: ${J.toPersianDigits(nightH.toFixed(1))} ساعت`);
     if (holidayH > 0) lines.push(` تعطیل: ${J.toPersianDigits(holidayH.toFixed(1))} ساعت`);
     lines.push(` درآمد: ${J.toPersianDigits(Math.round(totalInc).toLocaleString('en'))} تومان`);
     lines.push(`وضعیت: ${isPaid ? ' دریافت شده' : ' در انتظار دریافت'}`);
@@ -1759,7 +1769,7 @@ function exportSms() {
         d.holidayH += S.shiftDurationHours(s.start, s.end);
       } else {
         const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-        d.dayH   += dayHours;
+        d.dayH += dayHours;
         d.nightH += nightHours;
       }
       d.income += calcIncome(s);
@@ -1771,16 +1781,16 @@ function exportSms() {
     Object.entries(byPharmacy)
       .sort((a, b) => b[1].income - a[1].income)
       .forEach(([pid, d]) => {
-        const pkey   = S.paymentKey(viewYear, viewMonth, pid);
+        const pkey = S.paymentKey(viewYear, viewMonth, pid);
         const isPaid = !!payments[pkey];
-        if (isPaid) paidTotal   += d.income;
-        else        unpaidTotal += d.income;
+        if (isPaid) paidTotal += d.income;
+        else unpaidTotal += d.income;
 
         lines.push(`━━━━━━━━━━━━━━`);
         lines.push(` ${pharmacyName(pid)}`);
         lines.push(`شیفت‌ها: ${J.toPersianDigits(d.count)}`);
-        if (d.dayH     > 0) lines.push(` ${J.toPersianDigits(d.dayH.toFixed(1))}h عادی`);
-        if (d.nightH   > 0) lines.push(` ${J.toPersianDigits(d.nightH.toFixed(1))}h شب`);
+        if (d.dayH > 0) lines.push(` ${J.toPersianDigits(d.dayH.toFixed(1))}h عادی`);
+        if (d.nightH > 0) lines.push(` ${J.toPersianDigits(d.nightH.toFixed(1))}h شب`);
         if (d.holidayH > 0) lines.push(` ${J.toPersianDigits(d.holidayH.toFixed(1))}h تعطیل`);
         lines.push(` ${J.toPersianDigits(Math.round(d.income).toLocaleString('en'))} تومان`);
         lines.push(isPaid ? ' دریافت شده' : ' در انتظار');
@@ -1800,7 +1810,7 @@ function exportSms() {
   // Open native SMS/messaging app with pre-filled body
   // sms: URI scheme works on iOS (iMessage) and Android
   const smsLink = document.createElement('a');
-  smsLink.href  = `sms:?body=${encodeURIComponent(body)}`;
+  smsLink.href = `sms:?body=${encodeURIComponent(body)}`;
   smsLink.style.display = 'none';
   document.body.appendChild(smsLink);
   smsLink.click();
