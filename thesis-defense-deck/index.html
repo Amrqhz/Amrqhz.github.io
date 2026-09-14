@@ -336,7 +336,7 @@
       box-shadow: var(--shadow-1);
       cursor: pointer;
       font-family: var(--sans-en);
-      font-size: 12px;
+      font-size: 9px;
       font-weight: 600;
     }
 
@@ -987,6 +987,20 @@
       margin-top: 6px;
     }
 
+    /* ===================== FIGURE / IMAGE PLACEHOLDER ===================== */
+    .figure-slot{ position:relative; border-radius:var(--radius-m); overflow:hidden; background:var(--bg-deep); }
+    .figure-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .img-placeholder{
+      width:100%; height:100%; min-height:90px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:6px; border:1.5px dashed var(--line-strong); border-radius:var(--radius-m); background:var(--bg-deep);
+      color:var(--ink-faint); text-align:center; padding:10px 14px; box-sizing:border-box;
+    }
+    .img-placeholder svg{ width:26px; height:26px; opacity:.6; }
+    .img-placeholder .ph-label{ font-size:11.5px; font-weight:600; color:var(--ink-soft); }
+    .img-placeholder .ph-hint{ font-size:9.5px; font-family:var(--mono); color:var(--ink-faint); }
+    html[dir="rtl"] .img-placeholder .ph-hint{ font-family:var(--sans-fa); }
+    .tool-logo{ width:100%; height:100%; object-fit:contain; }
+
     footer.slide-foot {
       display: flex;
       justify-content: space-between;
@@ -1028,7 +1042,7 @@
       font-size: clamp(30px, 4vw, 56px);
       font-weight: 600;
       margin: 14px 0 6px;
-      max-width: 16ch;
+      max-width: 20ch;
       line-height: 1.12;
     }
 
@@ -1806,147 +1820,107 @@
     /* ---------- Slide 2 — Background: the clinical problem ---------- */
     function slideBgCancer() {
       return `
-  <div class="cols-2">
+  <div class="stack" style="flex:0 0 auto;">
+    <div class="cols-3" style="flex:0 0 auto; height:110px;">
+      ${figureSlot('cml-blood-smear.jpg', 'CML peripheral blood smear (myeloid predominance)', 'اسمیر خون محیطی CML (غلبه میلوئیدی)', {height:110})}
+      ${figureSlot('bone-marrow-cml.jpg', 'CML bone marrow — hypercellular myeloid hyperplasia', 'مغز استخوان CML — هیپرپلازی میلوئیدی', {height:110})}
+      ${figureSlot('leukemia-classification.jpg', 'Hematologic malignancies classification tree', 'درخت طبقه‌بندی بدخیمی‌های خونی', {height:110})}
+    </div>
+  </div>
+  <div class="cols-2" style="margin-top:12px;">
     <div class="stack">
-      <div class="card"><h4>${L("Cancer: a family of diseases", "سرطان: خانواده‌ای از بیماری‌ها")}</h4>
-      <p>${L("Uncontrolled cell growth and invasion arising from accumulated genetic and epigenetic changes — disrupting the cell cycle, apoptosis, differentiation and signaling.", "رشد و تهاجم کنترل‌نشده سلولی ناشی از تجمع تغییرات ژنتیکی و اپی‌ژنتیکی — که چرخه سلولی، آپوپتوز، تمایز و سیگنالینگ را مختل می‌کند.")}</p></div>
-      <div class="card"><h4>${L("Solid tumors vs. hematologic malignancies", "تومورهای جامد در برابر بدخیمی‌های خونی")}</h4>
-      <p>${L("Leukemias, lymphomas and myeloma arise from the bone marrow and lymphatic system and spread systemically, rather than forming a single mass — this thesis focuses on the leukemia branch.", "لوسمی‌ها، لنفوم‌ها و میلوم از مغز استخوان و سیستم لنفاوی منشأ می‌گیرند و به‌جای تشکیل یک توده منفرد، به‌صورت سیستمیک گسترش می‌یابند — تمرکز این پایان‌نامه بر شاخه لوسمی است.")}</p></div>
-      <div class="card"><h4>${L("Chronic vs. acute leukemia", "لوسمی مزمن در برابر حاد")}</h4>
-      <p>${L("Acute leukemias progress rapidly with immature blast cells; chronic leukemias — including CML — involve more mature cells and a slower course.", "لوسمی‌های حاد با سلول‌های بالست نابالغ به‌سرعت پیشرفت می‌کنند؛ لوسمی‌های مزمن — از جمله CML — سلول‌های بالغ‌تر و سیری کندتر دارند.")}</p></div>
+      <div class="card"><h4>${L("Chronic myeloid leukemia (CML)", "لوسمی میلوئید مزمن (CML)")}</h4>
+      <p>${L("A clonal myeloproliferative neoplasm driven by a single genetic lesion. Unlike acute leukemias, CML typically presents in a prolonged chronic phase that is highly responsive to targeted therapy — making it the paradigmatic success story of precision oncology and the ideal model for studying resistance.", "نئوپلاسم میلوپرولیفراتیو کلونال ناشی از یک ضایعه ژنتیکی واحد. برخلاف لوسمی‌های حاد، CML معمولاً در فاز مزمن طولانی ظاهر می‌شود که به درمان هدفمند بسیار پاسخگو است — و آن را به الگوی موفقیت انکولوژی دقیق و مدل ایده‌آل برای مطالعه مقاومت تبدیل کرده است.")}</p></div>
+      <div class="card"><h4>${L("Why CML matters for drug discovery", "چرا CML برای کشف دارو مهم است")}</h4>
+      <p>${L("Because disease biology is defined by one oncoprotein (BCR-ABL), every clinical failure maps cleanly onto a molecular mechanism — gatekeeper mutations, compound mutations, or pharmacokinetic escape. This clarity makes CML the preferred test-bed for novel kinase-inhibitor strategies, including allosteric approaches.", "چون زیست‌شناسی بیماری با یک انکوپروتئین (BCR-ABL) تعریف می‌شود، هر شکست بالینی به‌وضوح به یک مکانیسم مولکولی نگاشت می‌شود — جهش گیت‌کیپر، جهش مرکب یا فرار فارماکوکینتیک. این وضوح CML را به بستر آزمایش ترجیحی برای راهبردهای جدید مهارکننده کیناز، از جمله رویکردهای آلوستریک، تبدیل کرده است.")}</p></div>
     </div>
     <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:14px;">
-      <svg viewBox="0 0 200 110" style="width:100%; height:90px;">
-        <circle cx="60" cy="55" r="26" fill="#DEEAF0" stroke="#2C6E8E" stroke-width="2">
-          <animate attributeName="r" values="26;30;26" dur="3s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="60" cy="55" r="8" fill="#2C6E8E" opacity="0.55"/>
-        <g>
-          <circle cx="140" cy="40" r="16" fill="#F5E3DE" stroke="#B24A3B" stroke-width="2">
-            <animate attributeName="cy" values="55;40;40" dur="2.4s" repeatCount="indefinite"/>
-          </circle>
-          <circle cx="140" cy="70" r="16" fill="#F5E3DE" stroke="#B24A3B" stroke-width="2">
-            <animate attributeName="cy" values="55;70;70" dur="2.4s" repeatCount="indefinite"/>
-          </circle>
-          <circle cx="140" cy="40" r="5" fill="#B24A3B"><animate attributeName="cy" values="55;40;40" dur="2.4s" repeatCount="indefinite"/></circle>
-          <circle cx="140" cy="70" r="5" fill="#B24A3B"><animate attributeName="cy" values="55;70;70" dur="2.4s" repeatCount="indefinite"/></circle>
-        </g>
-        <path d="M90 55h30" stroke="#8A99A6" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <text x="60" y="100" text-anchor="middle" font-size="9" fill="#51616F">${L('normal cell', 'سلول طبیعی')}</text>
-        <text x="140" y="100" text-anchor="middle" font-size="9" fill="#51616F">${L('uncontrolled division', 'تقسیم کنترل‌نشده')}</text>
-      </svg>
-      <div class="stat"><div class="n red">18.1M</div><div class="l">${L("new cancer cases worldwide in 2018; leukemia accounted for ~0.43M (2.4%), ranking 15th", "مورد جدید سرطان در جهان در سال ۲۰۱۸؛ لوسمی حدود ۰.۴۳ میلیون (۲.۴٪) و رتبه ۱۵ را داشت")}</div></div>
+      <div class="stat"><div class="n red">1–2</div><div class="l">${L("new CML cases / 100 000 / year worldwide", "مورد جدید CML به ازای هر ۱۰۰٬۰۰۰ نفر در سال")}</div></div>
       <div style="width:100%; height:1px; background:var(--line);"></div>
-      <div class="stat"><div class="n blue">1–2</div><div class="l">${L("new CML cases per 100,000 people per year — a rare but research-critical disease", "مورد جدید CML به ازای هر ۱۰۰,۰۰۰ نفر در سال — بیماری‌ای نادر اما بسیار مهم پژوهشی")}</div></div>
+      <div class="stat"><div class="n blue">55–60</div><div class="l">${L("median age (years) at diagnosis", "میانگین سن (سال) در زمان تشخیص")}</div></div>
+      <div style="width:100%; height:1px; background:var(--line);"></div>
+      <div class="stat"><div class="n gold">~85 %</div><div class="l">${L("of patients diagnosed in chronic phase — the window where resistance mutations first emerge under TKI pressure", "بیماران تشخیص‌داده‌شده در فاز مزمن — پنجره‌ای که جهش‌های مقاومتی برای نخستین‌بار تحت فشار TKI ظاهر می‌شوند")}</div></div>
     </div>
   </div>`;
     }
 
     function slideBgBcrAbl() {
       return `
-  <div class="cols-2">
+  <div class="cols-3" style="flex:0 0 auto; height:110px;">
+    ${figureSlot('philadelphia-chromosome.jpg', 'Philadelphia chromosome t(9;22) karyotype', 'کاریوتایپ کروموزوم فیلادلفیا t(9;22)', {height:110})}
+    ${figureSlot('bcr-abl-fusion-schematic.jpg', 'BCR-ABL fusion gene schematic', 'شماتیک ژن فیوژن BCR-ABL', {height:110})}
+    ${figureSlot('bcr-abl-kinase-domain.jpg', 'ABL kinase domain — N-lobe / C-lobe / ATP cleft', 'دامنه کینازی ABL — لوب N / لوب C / شکاف ATP', {height:110})}
+  </div>
+  <div class="cols-2" style="margin-top:12px;">
     <div class="stack">
-      <div class="card"><h4>${L("The Philadelphia chromosome (1960)", "کروموزوم فیلادلفیا (۱۹۶۰)")}</h4>
-      <p>${L("A reciprocal t(9;22) translocation fuses the BCR gene (chr. 22) with ABL (chr. 9), producing the BCR-ABL fusion oncogene — CML's molecular hallmark.", "جابجایی متقابل t(9;22) ژن BCR (کروموزوم ۲۲) را با ABL (کروموزوم ۹) ترکیب کرده و ژن فیوژن انکوژنیک BCR-ABL — نشانه مولکولی CML — را ایجاد می‌کند.")}</p></div>
-      <div class="card"><h4>${L("A permanently active kinase", "کینازی که همیشه فعال است")}</h4>
-      <p>${L("The main isoform, p210 BCR-ABL, is a constitutively active non-receptor tyrosine kinase that drives JAK2/STAT, PI3K-AKT-mTOR and MAPK/ERK signaling — sustaining proliferation and blocking apoptosis.", "ایزوفرم اصلی، p210 BCR-ABL، یک تیروزین‌کیناز غیررسپتوری با فعالیت دائمی است که مسیرهای JAK2/STAT، PI3K-AKT-mTOR و MAPK/ERK را فعال نگه می‌دارد — تکثیر را حفظ و آپوپتوز را مسدود می‌کند.")}</p></div>
-      <div class="card"><h4>${L("Three clinical phases", "سه فاز بالینی")}</h4>
-      <p>${L("Chronic → accelerated → blast phase: genetic instability and resistance mutations become more frequent as the disease advances toward the aggressive blast crisis.", "مزمن ← تسریع‌یافته ← بحران بالست: با پیشرفت بیماری به سمت بحران بالست تهاجمی، ناپایداری ژنتیکی و جهش‌های مقاومتی شایع‌تر می‌شوند.")}</p></div>
+      <div class="card"><h4>${L("The Philadelphia chromosome", "کروموزوم فیلادلفیا")}</h4>
+      <p>${L("Reciprocal translocation t(9;22)(q34;q11) fuses BCR (chr. 22) to ABL1 (chr. 9). The resulting p210<sup>BCR-ABL</sup> oncoprotein is both necessary and sufficient for chronic-phase CML — the first cancer defined by a single genetic lesion.", "جابجایی متقابل t(9;22)(q34;q11) ژن BCR (کروموزوم ۲۲) را به ABL1 (کروموزوم ۹) متصل می‌کند. انکوپروتئین حاصل، p210<sup>BCR-ABL</sup>، هم لازم و هم کافی برای CML فاز مزمن است — نخستین سرطانی که با یک ضایعه ژنتیکی واحد تعریف شد.")}</p></div>
+      <div class="card"><h4>${L("Constitutive tyrosine-kinase activity", "فعالیت تیروزین‌کینازی ساختاری")}</h4>
+      <p>${L("Loss of the N-terminal myristoyl autoinhibitory group and oligomerisation via the BCR coiled-coil domain lock the kinase in the active state. Downstream pathways (STAT5, PI3K–AKT, MAPK/ERK) drive proliferation and suppress apoptosis.", "حذف گروه میریستوئیل خودمهاری N-ترمینال و الیگومریزاسیون از طریق دامنه کویلد-کویل BCR، کیناز را در حالت فعال قفل می‌کند. مسیرهای پایین‌دست (STAT5، PI3K–AKT، MAPK/ERK) تکثیر را پیش می‌برند و آپوپتوز را سرکوب می‌کنند.")}</p></div>
     </div>
-    <div class="card" style="display:flex; flex-direction:column; gap:10px; justify-content:center;">
-      <svg viewBox="0 0 220 90" style="width:100%; height:76px;">
-        <rect x="20" y="15" width="18" height="60" rx="8" fill="#DEEAF0" stroke="#2C6E8E" stroke-width="1.6"/>
-        <rect x="20" y="15" width="18" height="22" rx="6" fill="#2C6E8E">
-          <animate attributeName="x" values="20;170;20" dur="4s" repeatCount="indefinite"/>
-        </rect>
-        <text x="29" y="10" text-anchor="middle" font-size="8" fill="#51616F">9 (ABL)</text>
-        <rect x="182" y="15" width="18" height="60" rx="8" fill="#F5E3DE" stroke="#B24A3B" stroke-width="1.6"/>
-        <rect x="182" y="53" width="18" height="22" rx="6" fill="#B24A3B">
-          <animate attributeName="x" values="182;32;182" dur="4s" repeatCount="indefinite"/>
-        </rect>
-        <text x="191" y="10" text-anchor="middle" font-size="8" fill="#51616F">22 (BCR)</text>
-        <path d="M46 26 L174 64" stroke="#8A99A6" stroke-width="1.2" stroke-dasharray="3 3"/>
-        <text x="110" y="45" text-anchor="middle" font-size="8" fill="#8A99A6">t(9;22)</text>
-      </svg>
-      <h4>${L("BCR-ABL domain architecture", "معماری دامنه‌ای BCR-ABL")}</h4>
+    <div class="card" style="display:flex; flex-direction:column; gap:8px; justify-content:center;">
+      <h4>${L("Domain architecture & the druggable defect", "معماری دامنه و نقص قابل‌هدف‌گیری")}</h4>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <span class="pill blue">${L("BCR: coiled-coil", "BCR: کویلد-کویل")}</span>
-        <span class="pill blue">${L("BCR: Ser/Thr kinase (Y177→GRB2)", "BCR: کینازSer/Thr (Y177→GRB2)")}</span>
-        <span class="pill blue">${L("BCR: Rho/GEF", "BCR: Rho/GEF")}</span>
+        <span class="pill blue">${L("BCR coiled-coil (oligomerisation)", "کویلد-کویل BCR (الیگومریزاسیون)")}</span>
+        <span class="pill blue">${L("Y177 → GRB2 docking", "Y177 → اتصال GRB2")}</span>
       </div>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <span class="pill red">${L("ABL: SH1 (kinase) + SH2", "ABL: SH1 (کینازی) + SH2")}</span>
-        <span class="pill red">${L("ABL: proline-rich region", "ABL: ناحیه غنی از پرولین")}</span>
-        <span class="pill red">${L("ABL: DNA / actin-binding", "ABL: اتصال به DNA/اکتین")}</span>
+        <span class="pill red">${L("ABL SH1 kinase domain", "دامنه کینازی SH1 ABL")}</span>
+        <span class="pill red">${L("Myristoyl pocket (C-lobe)", "جیب میریستوئیل (لوب C)")}</span>
+        <span class="pill gold">${L("Gatekeeper Thr315", "گیت‌کیپر Thr315")}</span>
       </div>
-      <p class="body-text" style="margin-top:6px;">${L("Fusing these domains destroys ABL1's normal auto-regulation, producing a kinase that never switches off — the central druggable defect this thesis targets.", "ترکیب این دامنه‌ها تنظیم خودکار طبیعی ABL1 را از بین می‌برد و کینازی تولید می‌کند که هرگز خاموش نمی‌شود — نقص محوری قابل هدف‌گیری داروییِ مورد نظر این پایان‌نامه.")}</p>
+      <p class="body-text" style="margin-top:6px;">${L("Two distinct pockets can be targeted: the ATP-binding cleft (catalytic) and the myristoyl pocket (allosteric). This thesis asks whether anthelmintics can occupy the allosteric site and remain active against catalytic-site mutants such as T315I and Y253H.", "دو جیب مجزا قابل هدف‌گیری‌اند: شکاف اتصال ATP (کاتالیتیک) و جیب میریستوئیل (آلوستریک). این پایان‌نامه می‌پرسد آیا داروهای ضدکرم می‌توانند سایت آلوستریک را اشغال کرده و در برابر جهش‌های سایت کاتالیتیک مانند T315I و Y253H فعال بمانند.")}</p>
     </div>
   </div>`;
     }
 
     function slideBgTKI() {
       return `
-  <div class="cols-2">
+  <div class="cols-3" style="flex:0 0 auto; height:110px;">
+    ${figureSlot('imatinib-atp-pocket.jpg', 'Imatinib bound in the ATP (catalytic) pocket', 'ایماتینیب در جیب ATP (کاتالیتیک)', {height:110})}
+    ${figureSlot('t315i-gatekeeper.jpg', 'T315I gatekeeper mutation blocks ATP-site TKIs', 'جهش گیت‌کیپر T315I مانع TKIهای سایت ATP', {height:110})}
+    ${figureSlot('asciminib-allosteric.jpg', 'Asciminib in the myristoyl (allosteric) pocket', 'آسیمینیب در جیب میریستوئیل (آلوستریک)', {height:110})}
+  </div>
+  <div class="cols-2" style="margin-top:12px;">
     <div class="stack">
-      <div class="card"><h4>${L("Kinase-domain anatomy", "آناتومی دامنه کینازی")}</h4>
-      <p>${L("The N-lobe and C-lobe flank the ATP cleft. The gatekeeper Thr315 sits at the pocket's mouth; the DFG motif switches between active (DFG-in) and inactive (DFG-out) conformations, defining 4 classic TKI binding modes (types I–IV).", "لوب‌های N و C شکاف اتصال ATP را احاطه می‌کنند. گیت‌کیپر Thr315 در دهانه جیب قرار دارد؛ موتیف DFG بین کانفورماسیون فعال (DFG-in) و غیرفعال (DFG-out) جابه‌جا می‌شود و ۴ نوع کلاسیک اتصال TKI (انواع I تا IV) را تعریف می‌کند.")}</p></div>
-      <div class="card"><h4>${L("Four generations of TKIs", "چهار نسل مهارکننده تیروزین‌کیناز")}</h4>
-      <p>${L("1st: imatinib · 2nd: nilotinib, dasatinib, bosutinib · 3rd: ponatinib (covers T315I) · newest: the allosteric class (asciminib) — a fundamentally different, non-ATP-competitive mechanism.", "نسل ۱: ایماتینیب · نسل ۲: نیلوتینیب، داساتینیب، بوسوتینیب · نسل ۳: پوناتینیب (پوشش‌دهنده T315I) · جدیدترین: دسته آلوستریک (آسیمینیب) — مکانیسمی اساساً متفاوت و غیررقابتی با ATP.")}</p></div>
-      <div class="card" style="border-color:var(--red);"><h4 style="color:var(--red-deep);">${L("Resistance mutations", "جهش‌های مقاومتی")}</h4>
-      <p style="font-size:12px;">${L("G250E, Q252H, Y253H, E255K, M351T, F359V and — most critically — the gatekeeper T315I, which blocks nearly all ATP-competitive TKIs.", "G250E، Q252H، Y253H، E255K، M351T، F359V و مهم‌تر از همه، گیت‌کیپر T315I که تقریباً همه TKIهای رقابت‌کننده با ATP را مسدود می‌کند.")}</p></div>
+      <div class="card"><h4>${L("ATP-competitive TKIs & the resistance problem", "TKIهای رقابت‌کننده با ATP و مسئله مقاومت")}</h4>
+      <p>${L("Imatinib, nilotinib, dasatinib, bosutinib and ponatinib all occupy the ATP cleft. Point mutations in the kinase domain — especially the gatekeeper T315I and P-loop mutants (Y253H, E255K/V) — sterically or electronically exclude these inhibitors, driving clinical relapse.", "ایماتینیب، نیلوتینیب، داساتینیب، بوسوتینیب و پوناتینیب همگی شکاف ATP را اشغال می‌کنند. جهش‌های نقطه‌ای در دامنه کینازی — به‌ویژه گیت‌کیپر T315I و جهش‌های حلقه P (Y253H، E255K/V) — این مهارکننده‌ها را به‌صورت فضایی یا الکترونی حذف کرده و عود بالینی را رقم می‌زنند.")}</p></div>
+      <div class="card" style="border-color:var(--red);"><h4 style="color:var(--red-deep);">${L("Key resistance mutations addressed in this thesis", "جهش‌های مقاومتی کلیدی مورد بررسی در این پایان‌نامه")}</h4>
+      <p style="font-size:12px;">${L("<b>T315I</b> — gatekeeper; abolishes binding of almost all ATP-site TKIs.<br><b>Y253H</b> — P-loop; reduces affinity of imatinib and several second-generation agents.<br>Double mutant T315I + Y253H represents a high-resistance clinical scenario.", "<b>T315I</b> — گیت‌کیپر؛ اتصال تقریباً همه TKIهای سایت ATP را از بین می‌برد.<br><b>Y253H</b> — حلقه P؛ میل ترکیبی ایماتینیب و چند عامل نسل دوم را کاهش می‌دهد.<br>جهش دوگانه T315I + Y253H یک سناریوی بالینی با مقاومت بالا را نمایندگی می‌کند.")}</p></div>
     </div>
     <div class="stack">
-      <div class="card" style="display:flex; align-items:center; gap:14px;">
-        <svg viewBox="0 0 100 70" style="width:90px; height:60px; flex-shrink:0;">
-          <circle cx="30" cy="35" r="22" fill="none" stroke="#2C6E8E" stroke-width="2"/>
-          <path d="M20 35 a10 10 0 0 1 20 0" fill="#B24A3B" opacity="0.7">
-            <animate attributeName="opacity" values="0.7;0.15;0.7" dur="2.6s" repeatCount="indefinite"/>
-          </path>
-          <text x="30" y="60" text-anchor="middle" font-size="7" fill="#51616F">ATP</text>
-          <circle cx="75" cy="35" r="22" fill="none" stroke="#B5872F" stroke-width="2"/>
-          <path d="M65 35 a10 10 0 0 1 20 0" fill="#2C6E8E" opacity="0.15">
-            <animate attributeName="opacity" values="0.15;0.7;0.15" dur="2.6s" repeatCount="indefinite"/>
-          </path>
-          <text x="75" y="60" text-anchor="middle" font-size="7" fill="#51616F">${L('myristoyl', 'میریستوئیل')}</text>
-        </svg>
-        <div class="stat"><div class="n blue">83%</div><div class="l">${L("complete cytogenetic response with imatinib in long-term studies", "پاسخ سیتوژنتیک کامل با ایماتینیب در مطالعات درازمدت")}</div></div>
+      <div class="card" style="display:flex; align-items:center; gap:16px;">
+        <div class="stat"><div class="n blue">Asciminib</div><div class="l">${L("first FDA-approved allosteric (STAMP) inhibitor — proof that the myristoyl pocket is clinically druggable", "نخستین مهارکننده آلوستریک (STAMP) تأییدشده FDA — اثبات اینکه جیب میریستوئیل از نظر بالینی قابل هدف‌گیری است")}</div></div>
       </div>
-      <div class="card" style="border-color:var(--gold);"><h4 style="color:#7A5A1E;">${L("Why allosteric targeting matters", "اهمیت هدف‌گیری آلوستریک")}</h4>
-      <p class="body-text">${L("Asciminib binds the myristoyl pocket in the kinase domain's C-lobe — mimicking ABL1's own myristoyl group to restore the autoinhibited state. Because this pocket is structurally distinct from the ATP site, catalytic-site mutations like T315I barely affect it.", "آسیمینیب به جیب میریستوئیل در لوب C دامنه کینازی متصل می‌شود — و با تقلید از گروه میریستوئیل طبیعی ABL1، حالت خودمهاری را بازمی‌گرداند. چون این جیب از نظر ساختاری از سایت ATP مجزاست، جهش‌های سایت کاتالیتیک مانند T315I تقریباً بی‌تأثیرند.")}</p></div>
-      <div class="card"><h4>${L("Dual targeting", "هدف‌گیری دوگانه")}</h4>
-      <p class="body-text">${L("Combining an allosteric inhibitor with an ATP-competitive TKI covers both pockets at once — resistance would require simultaneous mutation of two structurally separate sites, which is far less likely.", "ترکیب یک مهارکننده آلوستریک با یک TKI رقابت‌کننده با ATP، هر دو جیب را همزمان پوشش می‌دهد — مقاومت نیازمند جهش هم‌زمان در دو سایت مجزای ساختاری است که احتمال آن بسیار کمتر است.")}</p></div>
+      <div class="card" style="border-color:var(--gold);"><h4 style="color:#7A5A1E;">${L("Why the allosteric site is the strategic opportunity", "چرا سایت آلوستریک فرصت راهبردی است")}</h4>
+      <p class="body-text">${L("The myristoyl pocket is structurally orthogonal to the ATP site. Mutations that destroy ATP-competitive binding leave the allosteric pocket intact. An anthelmintic that can occupy this pocket would therefore retain activity against the very mutants that defeat current front-line TKIs — the central hypothesis of this work.", "جیب میریستوئیل از نظر ساختاری متعامد با سایت ATP است. جهش‌هایی که اتصال رقابت‌کننده با ATP را از بین می‌برند، جیب آلوستریک را دست‌نخورده باقی می‌گذارند. یک داروی ضدکرم که بتواند این جیب را اشغال کند، بنابراین در برابر همان جهش‌هایی که TKIهای خط اول فعلی را شکست می‌دهند فعال می‌ماند — فرضیه محوری این کار.")}</p></div>
     </div>
   </div>`;
     }
 
     function slideBgRepurposing() {
       return `
-  <div class="cols-2">
+  <div class="cols-3" style="flex:0 0 auto; height:110px;">
+    ${figureSlot('praziquantel-structure.jpg', 'Praziquantel — the central candidate of this thesis', 'پرازیکوانتل — کاندیدای محوری این پایان‌نامه', {height:110})}
+    ${figureSlot('drug-repurposing-funnel.jpg', 'Drug-repurposing advantage over de-novo discovery', 'مزیت بازپروری دارویی نسبت به کشف از صفر', {height:110})}
+    ${figureSlot('anthelmintic-cancer-overlap.jpg', 'Shared pathways between anthelmintics and cancer biology', 'مسیرهای مشترک بین ضدکرم‌ها و زیست‌شناسی سرطان', {height:110})}
+  </div>
+  <div class="cols-2" style="margin-top:12px;">
     <div class="stack">
-      <div class="card" style="display:flex; align-items:center; gap:14px;">
-        <svg viewBox="0 0 70 70" style="width:56px; height:56px; flex-shrink:0;">
-          <g style="transform-origin:35px 35px; animation:mol3d-rotate 6s linear infinite;">
-            <path d="M35 8 A27 27 0 0 1 60 45" fill="none" stroke="#2C6E8E" stroke-width="4" stroke-linecap="round"/>
-            <path d="M35 62 A27 27 0 0 1 10 25" fill="none" stroke="#B5872F" stroke-width="4" stroke-linecap="round"/>
-            <path d="M55 40 l8 6 -9 4" fill="#2C6E8E"/>
-            <path d="M15 30 l-8 -6 9 -4" fill="#B5872F"/>
-          </g>
-        </svg>
-        <div><h4 style="margin-bottom:2px;">${L("Why drug repurposing?", "چرا بازپروری دارویی؟")}</h4></div>
-      </div>
       <div class="card">
-      <p class="body-text">${L("Repurposing screens approved drugs — with known safety, pharmacokinetics and manufacturing — against a new target, cutting the cost and risk of de-novo drug development.", "بازپروری دارویی، داروهای تأییدشده را با پروفایل ایمنی، فارماکوکینتیک و تولید شناخته‌شده، در برابر هدف جدیدی غربال می‌کند و هزینه و ریسک توسعه داروی جدید را کاهش می‌دهد.")}</p>
+      <h4>${L("Why repurpose rather than invent?", "چرا بازپروری به‌جای اختراع؟")}</h4>
+      <p class="body-text">${L("Approved anthelmintics already possess established safety, pharmacokinetics, manufacturing routes and decades of human exposure data. Screening them against BCR-ABL therefore collapses the early risk and cost of de-novo discovery while still allowing a novel target engagement to be discovered.", "داروهای ضدکرم تأییدشده از قبل دارای ایمنی، فارماکوکینتیک، مسیر تولید و دهه‌ها داده مواجهه انسانی تثبیت‌شده هستند. غربالگری آن‌ها علیه BCR-ABL بنابراین ریسک و هزینه اولیه کشف از صفر را کاهش می‌دهد و در عین حال امکان کشف تعامل هدفی جدید را فراهم می‌کند.")}</p>
       <div style="display:flex; gap:16px; margin-top:6px;">
-        <div class="stat"><div class="n red">~10%</div><div class="l">${L("of de-novo drug candidates reach market", "از کاندیداهای داروییِ کاملاً جدید به بازار می‌رسند")}</div></div>
-        <div class="stat"><div class="n green">~30%</div><div class="l">${L("success rate for repurposed drugs", "نرخ موفقیت داروهای بازپروری‌شده")}</div></div>
+        <div class="stat"><div class="n red">~10 %</div><div class="l">${L("de-novo candidates reach market", "کاندیداهای کاملاً جدید به بازار می‌رسند")}</div></div>
+        <div class="stat"><div class="n green">~30 %</div><div class="l">${L("success rate for repurposed agents", "نرخ موفقیت عوامل بازپروری‌شده")}</div></div>
       </div>
       </div>
     </div>
     <div class="stack">
-      <div class="card" style="border-color:var(--blue);"><h4 style="color:var(--blue-deep);">${L("Why anthelmintics specifically?", "چرا داروهای ضدکرم؟")}</h4>
-      <p class="body-text">${L("Benzimidazoles (albendazole, mebendazole) bind β-tubulin and block microtubule formation; niclosamide modulates Wnt/β-catenin, STAT3, NF-κB and mTOR — pathways also central to cancer biology. This dual pharmacology is the rationale for screening the whole class against BCR-ABL.", "بنزیمیدازول‌ها (آلبندازول، مبندازول) به β-توبولین متصل شده و تشکیل میکروتوبول را مسدود می‌کنند؛ نیکلوزامید مسیرهای Wnt/β-catenin، STAT3، NF-κB و mTOR را تعدیل می‌کند — مسیرهایی که در زیست‌شناسی سرطان نیز محوری‌اند. این فارماکولوژی دوگانه، منطق غربالگری کل این دسته دارویی علیه BCR-ABL را شکل می‌دهد.")}</p></div>
-      <div class="card"><h4>${L("This thesis' hypothesis", "فرضیه این پایان‌نامه")}</h4>
-      <p class="body-text">${L("Anthelmintic drugs, as a chemically diverse class with demonstrated anticancer signals in preclinical models, may occupy the BCR-ABL allosteric (myristoyl) pocket and remain effective against catalytic-site-resistant mutants.", "داروهای ضدکرم، به‌عنوان دسته‌ای شیمیایی متنوع با سیگنال‌های ضدسرطانی نشان‌داده‌شده در مدل‌های پیش‌بالینی، ممکن است جیب آلوستریک (میریستوئیل) BCR-ABL را اشغال کرده و در برابر فرم‌های جهش‌یافته مقاوم در سایت کاتالیتیک مؤثر باقی بمانند.")}</p></div>
+      <div class="card" style="border-color:var(--blue);"><h4 style="color:var(--blue-deep);">${L("Why the anthelmintic class?", "چرا دسته داروهای ضدکرم؟")}</h4>
+      <p class="body-text">${L("Benzimidazoles disrupt microtubules; niclosamide modulates STAT3, Wnt and mTOR; pyrvinium inhibits Wnt and mitochondrial respiration; praziquantel itself acts via an allosteric mechanism on parasite TRPM channels. Collectively they display a polypharmacology that repeatedly intersects cancer signalling — providing a rational chemical space in which to search for BCR-ABL allosteric ligands.", "بنزیمیدازول‌ها میکروتوبول‌ها را مختل می‌کنند؛ نیکلوزامید STAT3، Wnt و mTOR را تعدیل می‌کند؛ پیروینیوم Wnt و تنفس میتوکندریایی را مهار می‌کند؛ خود پرازیکوانتل از طریق مکانیسم آلوستریک روی کانال‌های TRPM انگل عمل می‌کند. در مجموع آن‌ها پلی‌فارماکولوژی‌ای نشان می‌دهند که مکرراً با سیگنالینگ سرطان تلاقی می‌کند — فضای شیمیایی منطقی برای جستجوی لیگاندهای آلوستریک BCR-ABL.")}</p></div>
+      <div class="card" style="border-color:var(--red);"><h4 style="color:var(--red-deep);">${L("Central hypothesis of this thesis", "فرضیه محوری این پایان‌نامه")}</h4>
+      <p class="body-text">${L("At least one clinically used anthelmintic can bind the BCR-ABL myristoyl (allosteric) pocket with affinity comparable to or better than the cognate ligand, and this binding is preserved — or even strengthened — in the clinically relevant mutants T315I and Y253H.", "حداقل یک داروی ضدکرم مورد استفاده بالینی می‌تواند با میل ترکیبی قابل‌مقایسه یا بهتر از لیگاند کوگنیت به جیب میریستوئیل (آلوستریک) BCR-ABL متصل شود، و این اتصال در جهش‌های بالینی مرتبط T315I و Y253H حفظ — یا حتی تقویت — می‌شود.")}</p></div>
     </div>
   </div>`;
     }
@@ -1959,17 +1933,22 @@
         { n: "03", en: "DFT Calculations", fa: "محاسبات DFT", d_en: "Gaussian 16 · B3LYP/6-31G(d,p) · electronic reactivity", d_fa: "Gaussian 16 · B3LYP/6-31G(d,p) · واکنش‌پذیری الکترونی", c: "var(--violet)" },
       ];
       const tools = [
-        { ab: "AD4", full: "AutoDock 4.2", c: "#2C6E8E" },
-        { ab: "ADT", full: "AutoDockTools", c: "#2C6E8E" },
-        { ab: "PML", full: "PyMOL", c: "#3C7A5E" },
-        { ab: "DM", full: "DynaMut", c: "#B5872F" },
-        { ab: "GMX", full: "GROMACS", c: "#B5872F" },
-        { ab: "G16", full: "Gaussian 16", c: "#6C5B8C" },
-        { ab: "SA", full: "SwissADME", c: "#3C7A5E" },
-        { ab: "PLIP", full: "PLIP", c: "#B24A3B" },
+        { file:"autodock", ab: "AD4", full: "AutoDock 4.2", c: "#2C6E8E" },
+        { file:"autodocktools", ab: "ADT", full: "AutoDockTools", c: "#2C6E8E" },
+        { file:"pymol", ab: "PML", full: "PyMOL", c: "#3C7A5E" },
+        { file:"dynamut", ab: "DM", full: "DynaMut", c: "#B5872F" },
+        { file:"gromacs", ab: "GMX", full: "GROMACS", c: "#B5872F" },
+        { file:"gaussian", ab: "G16", full: "Gaussian 16", c: "#6C5B8C" },
+        { file:"swissadme", ab: "SA", full: "SwissADME", c: "#3C7A5E" },
+        { file:"plip", ab: "PLIP", full: "PLIP", c: "#B24A3B" },
+      ];
+      const funnelRows = [
+        {n:"112", en:"Receptor–site combinations screened", fa:"ترکیب گیرنده-سایت غربال‌شده", d_en:"14 ligands × 4 receptors × 2 sites, every one docked independently", d_fa:"۱۴ لیگاند × ۴ گیرنده × ۲ سایت، هر یک به‌طور مستقل داک شده", c:"#2C6E8E", w:100},
+        {n:"~5", en:"Top candidates pass the ΔG rule", fa:"کاندیدای برتر که قانون ΔG را رد کردند", d_en:"ΔG ≤ cognate ligand (wild-type) or ΔG_mutant ≤ ΔG_wild", d_fa:"ΔG ≤ لیگاند کوگنیت (نوع وحشی) یا ΔG_mutant ≤ ΔG_wild", c:"#B5872F", w:66},
+        {n:"1", en:"Hit validated by MD + DFT", fa:"یافته تأییدشده با MD و DFT", d_en:"Praziquantel — dynamically stable and electronically consistent", d_fa:"پرازیکوانتل — پایدار دینامیکی و سازگار الکترونی", c:"#B24A3B", w:34},
       ];
       return `
-  <div class="process-row" style="flex:0 0 auto; height:34%;">
+  <div class="process-row" style="flex:0 0 auto; height:32%;">
     ${steps.map((s, i) => `
       ${i > 0 ? `<div class="process-connector"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>` : ""}
       <div class="process-step card" style="border-top:3px solid ${s.c}; padding:12px 14px;">
@@ -1980,27 +1959,28 @@
     `).join("")}
   </div>
   <div class="cols-2" style="flex:1; margin-top:12px;">
-    <div class="card" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
-      <svg viewBox="0 0 260 150" style="width:100%; max-height:150px;">
-        <polygon points="20,10 240,10 190,55 70,55" fill="#DEEAF0" stroke="#2C6E8E" stroke-width="1.5"/>
-        <text x="130" y="35" text-anchor="middle" font-size="12" fill="#1E4F68" font-weight="700">112</text>
-        <text x="130" y="48" text-anchor="middle" font-size="8" fill="#1E4F68">${L('receptor–site combinations', 'ترکیب گیرنده-سایت')}</text>
-        <polygon points="70,60 190,60 160,100 100,100" fill="#F3E9D1" stroke="#B5872F" stroke-width="1.5"/>
-        <text x="130" y="80" text-anchor="middle" font-size="11" fill="#7A5A1E" font-weight="700">${L('~5 top candidates', '~۵ کاندیدای برتر')}</text>
-        <text x="130" y="92" text-anchor="middle" font-size="8" fill="#7A5A1E">${L('pass the ΔG selection rule', 'عبور از قانون انتخاب ΔG')}</text>
-        <polygon points="100,105 160,105 145,140 115,140" fill="#F5E3DE" stroke="#B24A3B" stroke-width="1.5"/>
-        <text x="130" y="124" text-anchor="middle" font-size="10" fill="#8C382C" font-weight="700">1</text>
-        <text x="130" y="135" text-anchor="middle" font-size="7.5" fill="#8C382C">${L('MD + DFT validated', 'تأییدشده با MD + DFT')}</text>
-      </svg>
+    <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:0;">
+      <h4 style="margin-bottom:10px;">${L('The screening funnel','قیف غربالگری')}</h4>
+      ${funnelRows.map((r,i)=>`
+        <div style="display:flex; align-items:center; gap:12px; ${i<funnelRows.length-1?'margin-bottom:4px;':''}">
+          <div style="flex:0 0 130px; height:34px; display:flex; align-items:center; justify-content:center;">
+            <div style="width:${r.w}%; height:100%; background:linear-gradient(90deg, ${r.c}22, ${r.c}55); border:1.5px solid ${r.c}; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+              <span style="font-family:var(--mono); font-weight:700; font-size:13px; color:${r.c}; white-space:nowrap;">${r.n}</span>
+            </div>
+          </div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:11.5px; font-weight:600; color:var(--ink);">${L(r.en,r.fa)}</div>
+            <div style="font-size:10px; color:var(--ink-faint); line-height:1.4;">${L(r.d_en,r.d_fa)}</div>
+          </div>
+        </div>
+        ${i<funnelRows.length-1?`<div style="display:flex; justify-content:center; width:130px; margin:2px 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${r.c}" stroke-width="2"><path d="M12 4v14m0 0l-5-5m5 5l5-5"/></svg></div>`:''}
+      `).join("")}
     </div>
     <div class="card scroll-y">
       <h4>${L('Software & tools used', 'نرم‌افزارها و ابزارهای استفاده‌شده')}</h4>
-      <div class="grid" style="grid-template-columns:repeat(4,1fr); gap:10px; margin-top:8px;">
-        ${tools.map(t => `
-          <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-            <div style="width:44px; height:44px; border-radius:12px; background:${t.c}1A; border:1.5px solid ${t.c}; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:10px; color:${t.c};">${t.ab}</div>
-            <div style="font-size:9px; color:var(--ink-soft); text-align:center;">${t.full}</div>
-          </div>`).join("")}
+      <p style="font-size:10px; color:var(--ink-faint); margin:2px 0 8px;">${L('Drop a logo PNG in ./images/logo-&lt;tool&gt;.png to replace a badge with the real icon.','یک PNG لوگو در ./images/logo-&lt;tool&gt;.png قرار دهید تا نشان با آیکون واقعی جایگزین شود.')}</p>
+      <div class="grid" style="grid-template-columns:repeat(4,1fr); gap:12px;">
+        ${tools.map(t => toolLogoSlot(t.file, t.ab, t.full, t.c)).join("")}
       </div>
     </div>
   </div>`;
@@ -2073,6 +2053,7 @@
           <span class="pill ${r.mutant ? 'gold' : 'blue'}">${r.mutant ? L('Mutant', 'جهش‌یافته') : L('Reference PDB', 'فایل مرجع PDB')}</span>
           <span class="pill">${r.res}</span>
         </div>
+        <div style="margin-top:10px;">${figureSlot('pdb-' + c.k.toLowerCase() + '.png', c.k.replace('_',' ') + ' structure snapshot', 'تصویر ساختار ' + c.k.replace('_',' '), {height:90})}</div>
         <div class="btn small primary" style="margin-top:12px; width:100%; justify-content:center;">${L('Open 3D view', 'مشاهده سه‌بعدی')}</div>
       </div>`;
         }).join("")}
@@ -2111,6 +2092,10 @@
         <div class="spinner"></div><div>${L('Loading structure…', 'در حال بارگذاری ساختار…')}</div>
       </div>
       <div class="mol-container" id="mol3d"></div>
+      <div id="vintro" style="display:none; position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:4; align-items:center; gap:6px; background:rgba(24,37,51,.82); color:#fff; font-size:11px; padding:5px 12px; border-radius:999px;">
+        <span class="spinner" style="width:12px;height:12px;border-width:2px;border-top-color:#fff;border-color:rgba(255,255,255,.35);"></span>
+        ${L('Auto tour — spinning, then allosteric → catalytic','تور خودکار — چرخش، سپس آلوستریک ← کاتالیتیک')}
+      </div>
       <div class="viewer-legend">
         <div class="legend-item"><span class="legend-swatch" style="background:var(--blue);"></span>${L('Allosteric ligand', 'لیگاند آلوستریک')}</div>
         <div class="legend-item"><span class="legend-swatch" style="background:var(--red);"></span>${L('Catalytic ligand', 'لیگاند کاتالیتیک')}</div>
@@ -2212,9 +2197,38 @@
       glviewer.zoomTo();
       glviewer.render();
       glviewer.spin(false);
+      playIntroSequence(receptorKey);
+    }
+    let introTimers = [];
+    function clearIntro(){ introTimers.forEach(t=>clearTimeout(t)); introTimers = []; }
+    function playIntroSequence(receptorKey){
+      clearIntro();
+      if(!glviewer) return;
+      const badge = document.getElementById('vintro');
+      if(badge) badge.style.display = 'flex';
+      glviewer.spin("y", 1);
+      introTimers.push(setTimeout(()=>{
+        glviewer.spin(false);
+        const alloSel = siteSelections["allosteric"];
+        if(alloSel) glviewer.zoomTo(alloSel, 1000); else glviewer.zoomTo();
+        glviewer.render();
+      }, 2400));
+      introTimers.push(setTimeout(()=>{
+        const catSel = siteSelections["catalytic"];
+        if(catSel) glviewer.zoomTo(catSel, 1000); else glviewer.zoomTo();
+        glviewer.render();
+      }, 4600));
+      introTimers.push(setTimeout(()=>{
+        glviewer.zoomTo(undefined, 1000);
+        glviewer.render();
+        if(badge) badge.style.display = 'none';
+      }, 6900));
     }
     function molAction(action) {
       if (!glviewer) return;
+      clearIntro();
+      const badge = document.getElementById('vintro');
+      if(badge) badge.style.display = 'none';
       if (action === "spin") glviewer.spin("y", 1);
       else if (action === "reset") { glviewer.spin(false); glviewer.zoomTo(); glviewer.render(); }
       else if (action === "allosteric" || action === "catalytic") {
@@ -2230,6 +2244,9 @@
     }
     function focusMutation() {
       if (!glviewer || !currentReceptorKey) return;
+      clearIntro();
+      const badge = document.getElementById('vintro');
+      if(badge) badge.style.display = 'none';
       const r = RECEPTORS[currentReceptorKey];
       if (!r.mutation) return;
       glviewer.spin(false);
@@ -2736,21 +2753,41 @@
     <div class="mol3d-spin" style="width:${size}px;height:${size}px;">${atomsHTML}</div>
   </div>`;
     }
-    const CHAPTER_ICONS = {
-      dna: `<svg viewBox="0 0 64 64" width="60" height="60" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 C20 20, 44 20, 44 34 C44 48, 20 48, 20 58"/><path d="M44 6 C44 20, 20 20, 20 34 C20 48, 44 48, 44 58"/><path d="M22 14h20M20 24h24M20 40h24M22 50h20"/></svg>`,
-      flask: `<svg viewBox="0 0 64 64" width="60" height="60" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M26 8h12M28 8v16L16 50a4 4 0 0 0 4 6h24a4 4 0 0 0 4-6L36 24V8"/><path d="M21 38h22"/><circle cx="27" cy="45" r="1.6" fill="#fff"/><circle cx="34" cy="49" r="1.6" fill="#fff"/></svg>`,
-      target: `<svg viewBox="0 0 64 64" width="60" height="60" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="32" cy="32" r="22"/><circle cx="32" cy="32" r="13"/><circle cx="32" cy="32" r="3.4" fill="#fff"/><path d="M32 2v10M32 52v10M2 32h10M52 32h10"/></svg>`,
-      wave: `<svg viewBox="0 0 64 64" width="60" height="60" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 32c6 0 6-16 12-16s6 32 12 32 6-32 12-32 6 16 12 16 6-10 12-10"/></svg>`,
-      atom: `<svg viewBox="0 0 64 64" width="60" height="60" fill="none" stroke="#fff" stroke-width="2.2"><ellipse cx="32" cy="32" rx="26" ry="10"/><ellipse cx="32" cy="32" rx="26" ry="10" transform="rotate(60 32 32)"/><ellipse cx="32" cy="32" rx="26" ry="10" transform="rotate(120 32 32)"/><circle cx="32" cy="32" r="4" fill="#fff"/></svg>`,
-      check: `<svg viewBox="0 0 64 64" width="60" height="60" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="24"/><path d="M22 33l7 7 14-16"/></svg>`,
-    };
+
+    // A real-image slot with a graceful "please add this image" fallback —
+    // used wherever a genuine photo/figure belongs but none is bundled yet.
+    // Looks for the file in ./images/<file>; drop it in and it displays automatically.
+    function figureSlot(file, labelEn, labelFa, opts){
+      opts = opts || {};
+      const h = opts.height || 150;
+      const camera = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>`;
+      return `<div class="figure-slot" style="height:${h}px;">
+        <img src="./images/${file}" alt="${labelEn}"
+             onerror="this.outerHTML = imgPlaceholderHTML('${labelEn.replace(/'/g,"\\'")}','${labelFa.replace(/'/g,"\\'")}','${file}')">
+      </div>`;
+    }
+    function imgPlaceholderHTML(labelEn, labelFa, file){
+      const camera = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>`;
+      return `<div class="img-placeholder">${camera}
+        <div class="ph-label">${L(labelEn,labelFa)}</div>
+        <div class="ph-hint">${L('add','افزودن')} images/${file}</div>
+      </div>`;
+    }
+    // A software logo slot — real logo image if provided, else falls back to a
+    // clean monogram badge instead of a broken-image icon.
+    function toolLogoSlot(file, ab, full, color){
+      return `<div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+        <div style="width:44px; height:44px; border-radius:12px; background:${color}1A; border:1.5px solid ${color}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          <img class="tool-logo" src="./images/logo-${file}.png" alt="${full}"
+               onerror="this.outerHTML='<span style=\\'font-family:var(--mono);font-weight:700;font-size:10px;color:${color};\\'>${ab}</span>'">
+        </div>
+        <div style="font-size:9px; color:var(--ink-soft); text-align:center;">${full}</div>
+      </div>`;
+    }
+
     function slideDivider({ num, en, fa, dEn, dFa, color, icon }) {
       return `
   <div class="divider-slide" style="background:linear-gradient(150deg, ${color} 0%, ${color}CC 100%);">
-    <svg class="div-bg-pattern" viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice">
-      ${Array.from({ length: 10 }).map((_, i) => `<circle cx="${60 + i * 80}" cy="${60 + ((i * 97) % 330)}" r="${18 + ((i * 13) % 20)}" fill="#fff"/>`).join("")}
-    </svg>
-    <div class="div-icon">${CHAPTER_ICONS[icon]}</div>
     <div class="div-num">${L("CHAPTER", "فصل")} ${num}</div>
     <h2>${L(en, fa)}</h2>
     <p>${L(dEn, dFa)}</p>
@@ -2801,6 +2838,7 @@
        ========================================================================= */
     function renderSlide(dir) {
       clearInterval(mdTimer); mdPlaying = false;
+      if(typeof clearIntro === 'function') clearIntro();
       const vp = document.getElementById("slide-viewport");
       const s = SLIDES[currentSlide];
       const el = document.createElement("div");
@@ -2816,6 +2854,8 @@
       document.getElementById("counter-total").textContent =
         SLIDES.length;
       document.getElementById("progress-fill").style.width = ((currentSlide + 1) / SLIDES.length * 100) + "%";
+      const langToggleEl = document.getElementById("lang-toggle");
+      if (langToggleEl) langToggleEl.style.display = (currentSlide === 0) ? "flex" : "none";
       updateLangUI();
       if (s.after) { setTimeout(s.after, 60); }
     }
