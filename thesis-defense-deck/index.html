@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-  <title>Praziquantel &amp; BCR-ABL — Thesis Defense</title>
+  <title>Amrqhz — Thesis Defense</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
@@ -12,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.1.0/3Dmol-min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
   <style>
     /* ===================== DESIGN TOKENS ===================== */
     :root {
@@ -496,6 +497,70 @@
       border-radius: 3px;
     }
 
+    /* ===================== VERTICAL SCROLL MOTION ===================== */
+    .scroll-y {
+      scroll-behavior: smooth;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      position: relative;
+    }
+
+    .scroll-y.scroll-motion {
+      scroll-timeline-name: --slide-scroll;
+      scroll-timeline-axis: block;
+    }
+
+    .scroll-y .scroll-reveal {
+      opacity: 1;
+      transform: none;
+    }
+
+    .scroll-y.has-scroll::before,
+    .scroll-y.has-scroll::after {
+      content: "";
+      position: sticky;
+      display: block;
+      left: 0;
+      right: 0;
+      height: 18px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .scroll-y.has-scroll::before {
+      top: 0;
+      margin-bottom: -18px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, .82), transparent);
+    }
+
+    .scroll-y.has-scroll::after {
+      bottom: 0;
+      margin-top: -18px;
+      background: linear-gradient(to top, rgba(255, 255, 255, .82), transparent);
+    }
+
+    .vertical-scroll-hint {
+      position: absolute;
+      inset-inline-end: 8px;
+      bottom: 8px;
+      z-index: 8;
+      padding: 4px 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .82);
+      color: var(--ink-faint);
+      font: 8px var(--mono);
+      letter-spacing: .08em;
+      pointer-events: none;
+      opacity: .85;
+      transition: opacity .35s ease, transform .35s ease;
+    }
+
+    .vertical-scroll-hint.done {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+
     .btn {
       font-family: var(--f-body);
       font-size: 12.5px;
@@ -687,7 +752,7 @@
 
     .viewer-3d {
       position: relative;
-      background: linear-gradient(180deg, #F8FBFC, #EEF3F6);
+      background: transparent;
       border-radius: var(--radius-m);
       border: 1px solid var(--line);
       overflow: hidden;
@@ -988,18 +1053,93 @@
     }
 
     /* ===================== FIGURE / IMAGE PLACEHOLDER ===================== */
-    .figure-slot{ position:relative; border-radius:var(--radius-m); overflow:hidden; background:var(--bg-deep); }
-    .figure-slot img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .img-placeholder{
-      width:100%; height:100%; min-height:90px; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:6px; border:1.5px dashed var(--line-strong); border-radius:var(--radius-m); background:var(--bg-deep);
-      color:var(--ink-faint); text-align:center; padding:10px 14px; box-sizing:border-box;
+    .figure-slot {
+      position: relative;
+      border-radius: var(--radius-m);
+      overflow: hidden;
+      background: var(--bg-deep);
+      box-shadow: inset 0 0 0 1px rgba(24, 37, 51, .06), var(--shadow-1);
+      isolation: isolate;
     }
-    .img-placeholder svg{ width:26px; height:26px; opacity:.6; }
-    .img-placeholder .ph-label{ font-size:11.5px; font-weight:600; color:var(--ink-soft); }
-    .img-placeholder .ph-hint{ font-size:9.5px; font-family:var(--mono); color:var(--ink-faint); }
-    html[dir="rtl"] .img-placeholder .ph-hint{ font-family:var(--sans-fa); }
-    .tool-logo{ width:100%; height:100%; object-fit:contain; }
+
+    /* soft ambient glow behind the photo, sampled from the same image, for depth without a heavy frame */
+    .figure-slot::before {
+      content: "";
+      position: absolute;
+      inset: -14%;
+      z-index: 0;
+      background-image: var(--fig-img, none);
+      background-size: cover;
+      background-position: center;
+      filter: blur(22px) saturate(1.3) brightness(1.05);
+      opacity: .55;
+      transform: scale(1.08);
+    }
+
+    .figure-slot::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35), inset 0 -30px 40px -20px rgba(24, 37, 51, .28);
+    }
+
+    .figure-slot img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.08) contrast(1.03);
+    }
+
+    .img-placeholder {
+      width: 100%;
+      height: 100%;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1.5px dashed var(--line-strong);
+      border-radius: var(--radius-m);
+      background: var(--bg-deep);
+      color: var(--ink-faint);
+      text-align: center;
+      padding: 10px 14px;
+      box-sizing: border-box;
+    }
+
+    .img-placeholder svg {
+      width: 26px;
+      height: 26px;
+      opacity: .6;
+    }
+
+    .img-placeholder .ph-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink-soft);
+    }
+
+    .img-placeholder .ph-hint {
+      font-size: 9.5px;
+      font-family: var(--mono);
+      color: var(--ink-faint);
+    }
+
+    html[dir="rtl"] .img-placeholder .ph-hint {
+      font-family: var(--sans-fa);
+    }
+
+    .tool-logo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
     footer.slide-foot {
       display: flex;
@@ -1013,6 +1153,410 @@
 
     html[dir="rtl"] footer.slide-foot {
       font-family: var(--sans-fa);
+    }
+
+
+    /* ===================== BACKGROUND STORY SLIDES ===================== */
+    .bg-story,
+    .bg-bcr-layout,
+    .bg-tki-layout,
+    .bg-repurpose-layout {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .bg-story {
+      display: grid;
+      grid-template-columns: 1.28fr .92fr;
+      gap: 22px;
+    }
+
+    .bg-hero-visual,
+    .bg-story-side,
+    .bg-bcr-visual,
+    .bg-repurpose-hero,
+    .bg-repurpose-side {
+      min-height: 0;
+    }
+
+    .bg-hero-visual .figure-slot,
+    .bg-bcr-visual .figure-slot,
+    .bg-repurpose-hero .figure-slot {
+      height: 100% !important;
+      border-radius: 16px;
+      background: #eef3f6;
+    }
+
+    .bg-hero-visual img,
+    .bg-bcr-visual img,
+    .bg-repurpose-hero img {
+      object-fit: contain !important;
+      padding: 10px;
+    }
+
+    .bg-story-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .bg-bigword {
+      font-family: var(--f-display);
+      font-size: clamp(70px, 8vw, 120px);
+      line-height: .78;
+      font-weight: 600;
+      color: var(--blue-deep);
+      letter-spacing: -.06em;
+    }
+
+    .bg-bigword.small {
+      font-size: clamp(44px, 5vw, 72px);
+    }
+
+    .bg-kicker {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .13em;
+      color: var(--ink-faint);
+    }
+
+    html[dir="rtl"] .bg-kicker {
+      font-family: var(--sans-fa);
+      letter-spacing: normal;
+    }
+
+    .bg-headline {
+      font-family: var(--f-display);
+      font-size: clamp(21px, 2vw, 30px);
+      line-height: 1.15;
+      color: var(--ink);
+      max-width: 15ch;
+    }
+
+    .bg-labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 4px;
+    }
+
+    .bg-labels span {
+      border-left: 2px solid var(--blue);
+      padding-left: 8px;
+      font-size: 11px;
+      color: var(--ink-soft);
+    }
+
+    .bg-mini-visual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .bg-mini-visual .figure-slot {
+      border-radius: 9px;
+    }
+
+    .bg-mini-visual img {
+      object-fit: cover !important;
+    }
+
+    .bg-bcr-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .bg-bcr-visual {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .bg-bcr-visual .figure-slot {
+      height: 270px !important;
+    }
+
+    .bg-bcr-visual img {
+      object-fit: contain !important;
+      padding: 8px;
+    }
+
+    .bg-equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-family: var(--mono);
+      font-size: clamp(17px, 2vw, 26px);
+      color: var(--ink);
+    }
+
+    .bg-equation b {
+      color: var(--gold);
+      font-weight: 500;
+    }
+
+    .bg-bcr-bottom {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .bg-bcr-card {
+      border-top: 2px solid var(--line-strong);
+      padding: 12px 4px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bg-bcr-card.featured {
+      border-color: var(--blue);
+    }
+
+    .bg-index {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+    }
+
+    .bg-bcr-card strong {
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .bg-bcr-card span {
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    .bg-tki-layout {
+      display: grid;
+      grid-template-columns: 1fr 150px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .bg-tki-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bg-tki-column .figure-slot {
+      height: 210px !important;
+    }
+
+    .bg-tki-column img {
+      object-fit: contain !important;
+      padding: 8px;
+    }
+
+    .bg-tki-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+    }
+
+    html[dir="rtl"] .bg-tki-label {
+      font-family: var(--sans-fa);
+      letter-spacing: normal;
+    }
+
+    .bg-tki-label.red {
+      color: var(--red-deep);
+    }
+
+    .bg-tki-label.blue {
+      color: var(--blue-deep);
+    }
+
+    .bg-tki-column h3 {
+      margin: 2px 0 0;
+      font-family: var(--f-display);
+      font-size: 23px;
+      font-weight: 600;
+    }
+
+    .bg-mutation {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 18px;
+      color: var(--red-deep);
+    }
+
+    .bg-mutation span {
+      font-family: var(--f-body);
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    .bg-mutation.blue-note {
+      color: var(--blue-deep);
+    }
+
+    .bg-tki-center {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .bg-vs {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+    }
+
+    .bg-resistance-word {
+      font-family: var(--f-display);
+      font-size: 22px;
+      color: var(--red-deep);
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      letter-spacing: .08em;
+    }
+
+    .bg-arrow-line {
+      width: 1px;
+      height: 48px;
+      background: var(--line-strong);
+    }
+
+    .bg-opportunity {
+      font-size: 10px;
+      color: var(--blue-deep);
+      writing-mode: vertical-rl;
+    }
+
+    .bg-repurpose-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .bg-repurpose-hero {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bg-repurpose-hero .figure-slot {
+      height: 330px !important;
+    }
+
+    .bg-hero-caption {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .bg-repurpose-side {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .rep-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .rep-flow div {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .rep-flow b {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+    }
+
+    .rep-flow span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .rep-flow i {
+      font-style: normal;
+      color: var(--line-strong);
+      font-size: 20px;
+    }
+
+    .rep-visuals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .rep-visuals .figure-slot {
+      border-radius: 10px;
+    }
+
+    .rep-visuals img {
+      object-fit: cover !important;
+    }
+
+    .bg-bottom-statement {
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--blue-deep);
+    }
+
+    html[dir="rtl"] .bg-bottom-statement {
+      font-family: var(--sans-fa);
+    }
+
+    @media (max-width:900px) {
+
+      .bg-story,
+      .bg-bcr-visual,
+      .bg-repurpose-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .bg-tki-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .bg-tki-center {
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .bg-resistance-word,
+      .bg-opportunity {
+        writing-mode: horizontal-tb;
+        transform: none;
+      }
+
+      .bg-bcr-bottom {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* title slide */
@@ -1150,6 +1694,189 @@
       position: absolute;
       inset: 0;
       opacity: .12;
+    }
+
+    /* Photographic divider background: a blurred, tinted photo behind the chapter title */
+    .divider-slide .div-bg-photo {
+      position: absolute;
+      inset: -16px;
+      z-index: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(1.8px) saturate(1.15) brightness(1);
+    }
+
+    .divider-slide .div-bg-tint {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(150deg, var(--dv-color) 0%, var(--dv-color) 55%, var(--dv-color) 100%);
+      mix-blend-mode: multiply;
+      opacity: .82;
+    }
+
+    .divider-slide .div-bg-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(120% 85% at 50% 38%, transparent 0%, rgba(8, 12, 17, .42) 100%),
+        linear-gradient(0deg, rgba(8, 12, 17, .32), transparent 46%);
+    }
+
+    .divider-slide .div-bg-grain {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      opacity: .5;
+      mix-blend-mode: overlay;
+      background-image: radial-gradient(1px 1px at 15px 25px, rgba(255, 255, 255, .5) 1px, transparent 0),
+        radial-gradient(1px 1px at 75px 65px, rgba(255, 255, 255, .35) 1px, transparent 0);
+      background-size: 130px 130px;
+    }
+
+    .divider-slide .div-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ===================== TEXT-MASK REVEAL ANIMATION ===================== */
+    .word-mask {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: top;
+    }
+
+    .word-mask .word-inner {
+      display: inline-block;
+      will-change: transform;
+    }
+
+    h1.slide-title .word-mask,
+    .divider-slide h2 .word-mask,
+    .title-slide h1 .word-mask,
+    .bg-headline .word-mask,
+    .bg-bigword .word-mask {
+      padding-bottom: .08em;
+      margin-bottom: -.08em;
+    }
+
+    /* ===================== MUTATION TOUR SLIDE ===================== */
+    .mut-tour-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .mut-tour-panel {
+      position: relative;
+      border-radius: var(--radius-m);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: var(--bg-deep);
+      min-height: 0;
+    }
+
+    .mut-tour-panel .mol-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    .mut-tour-tag {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .88);
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    html[dir="rtl"] .mut-tour-tag {
+      font-family: var(--sans-fa);
+      left: auto;
+      right: 10px;
+    }
+
+    .mut-tour-tag.before .aa-dot {
+      background: var(--blue);
+    }
+
+    .mut-tour-tag.after .aa-dot {
+      background: var(--gold);
+    }
+
+    .mut-tour-tag .aa-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .mut-tour-loading {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--ink-faint);
+      font-size: 11px;
+      background: rgba(248, 251, 252, .85);
+    }
+
+    .mut-tour-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      color: var(--ink-faint);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .aa-props-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .aa-props-table th {
+      text-align: start;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      color: var(--ink-faint);
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    html[dir="rtl"] .aa-props-table th {
+      font-family: var(--sans-fa);
+    }
+
+    .aa-props-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink-soft);
+    }
+
+    .aa-props-table td:first-child {
+      color: var(--ink);
+      font-weight: 600;
     }
 
     /* ===================== 3D ROTATING MOLECULE (CSS-only) ===================== */
@@ -1566,6 +2293,165 @@
         padding: 14px;
       }
     }
+
+    /* ===================== MOTION SYSTEM ===================== */
+    .slide.motion-prep {
+      visibility: visible;
+    }
+
+    .slide [data-motion],
+    .slide .card,
+    .slide .figure-slot,
+    .slide .panel,
+    .slide .metric,
+    .slide .chip,
+    .slide .table-wrap,
+    .slide .chart-wrap,
+    .slide .section-label,
+    .slide .method-step,
+    .slide .bg-story>*,
+    .slide .bg-bcr-card,
+    .slide .bg-tki-column,
+    .slide .bg-tki-center,
+    .slide .rep-flow,
+    .slide .rep-visuals {
+      will-change: transform, opacity;
+    }
+
+    /* Keep motion elegant rather than flashy. */
+    @media (prefers-reduced-motion: reduce) {
+      .slide {
+        transition: none !important;
+      }
+
+      .slide *,
+      .slide::before {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    .scroll-hint {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      pointer-events: none;
+      opacity: .5;
+      font: 9px var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .scroll-hint .mouse {
+      width: 18px;
+      height: 28px;
+      border: 1px solid currentColor;
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .scroll-hint .mouse::after {
+      content: "";
+      position: absolute;
+      width: 2px;
+      height: 5px;
+      border-radius: 2px;
+      background: currentColor;
+      left: 7px;
+      top: 5px;
+    }
+
+    .scroll-hint.hide {
+      opacity: 0;
+    }
+  
+    /* ===================== PATCH: slide 11 — single-viewer mutation tour ===================== */
+    .mut-tour-wrap { grid-template-columns: 1.6fr 1fr; }
+    .mt-controls { right: 10px; flex-wrap: wrap; }
+    html[dir="rtl"] .mt-controls { left: 10px; right: 10px; }
+    .mt-controls .btn { background: rgba(255, 255, 255, .92); }
+    .mt-controls .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* ===================== PATCH: brighter chapter-divider backgrounds ===================== */
+    .divider-slide .div-bg-photo { filter: blur(1.6px) saturate(1.35) brightness(1.3) contrast(1.06); }
+    .divider-slide .div-bg-tint { opacity: .58; }
+    .divider-slide .div-bg-vignette {
+      background:
+        radial-gradient(120% 85% at 50% 38%, transparent 0%, rgba(8, 12, 17, .24) 100%),
+        linear-gradient(0deg, rgba(8, 12, 17, .18), transparent 46%);
+    }
+    .divider-slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      background:
+        radial-gradient(60% 55% at 50% 36%, rgba(255, 255, 255, .32), transparent 70%),
+        linear-gradient(200deg, rgba(255, 255, 255, .16), transparent 42%);
+    }
+    .divider-slide h2, .divider-slide p, .divider-slide .div-num { text-shadow: 0 2px 18px rgba(8, 12, 17, .45); }
+
+    /* ===================== PATCH: slide 7 — PZQ clip fix + 2D structure ===================== */
+    /* the word-mask used to clip the top of the big "PZQ" because of line-height:.78 */
+    .bg-bigword .word-mask { padding: .16em .06em .12em 0; margin: -.16em -.06em -.12em 0; }
+    .bg-hero-caption { position: relative; z-index: 2; }
+    .pzq-2d {
+      position: relative;
+      height: 330px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: radial-gradient(70% 80% at 50% 45%, #ffffff 0%, #eef3f6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      overflow: hidden;
+    }
+    .pzq-2d .rdkit-mol { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+    .pzq-2d .rdkit-mol svg { width: 100%; height: 100%; }
+    .pzq-2d-tag {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-family: var(--mono);
+    }
+    .pzq-2d-tag b { font-family: var(--f-body); font-size: 13px; color: var(--ink); }
+    html[dir="rtl"] .pzq-2d-tag { left: auto; right: 14px; }
+
+    /* ===================== PATCH: slide 5 — scroll-driven tabs ===================== */
+    .bcr-stage { position: relative; height: 270px; }
+    .bcr-img {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.03);
+      transition: opacity .6s ease, transform .8s ease;
+      pointer-events: none;
+    }
+    .bcr-img.on { opacity: 1; transform: none; }
+    .bcr-side { display: flex; flex-direction: column; gap: 14px; }
+    .bcr-eq { opacity: .35; transition: opacity .4s ease, color .4s ease; }
+    .bcr-eq.on { opacity: 1; color: var(--blue-deep); }
+    .bcr-caption { margin: 0; min-height: 5.2em; }
+    .bcr-hint { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--ink-faint); text-transform: uppercase; }
+    html[dir="rtl"] .bcr-hint { font-family: var(--sans-fa); letter-spacing: normal; }
+    .bg-bcr-card { border-top-width: 3px; cursor: pointer; opacity: .5; transition: opacity .4s ease, border-color .4s ease; }
+    .bg-bcr-card:hover { opacity: .85; }
+    .bg-bcr-card.on { border-top-color: var(--blue); opacity: 1; }
+    .bg-bcr-card.on strong { color: var(--blue-deep); }
   </style>
 </head>
 
@@ -1577,6 +2463,10 @@
         <div id="progress-track">
           <div id="progress-fill"></div>
         </div>
+        <!-- <div id="scroll-hint" class="scroll-hint" aria-hidden="true">
+          <span class="mouse"></span>
+          <span>SCROLL</span>
+        </div> -->
         <div id="lang-toggle" onclick="toggleLang()">
           <div class="opt" id="opt-en">EN</div>
           <div class="opt" id="opt-fa">FA</div>
@@ -1820,107 +2710,144 @@
     /* ---------- Slide 2 — Background: the clinical problem ---------- */
     function slideBgCancer() {
       return `
-  <div class="stack" style="flex:0 0 auto;">
-    <div class="cols-3" style="flex:0 0 auto; height:110px;">
-      ${figureSlot('cml-blood-smear.jpg', 'CML peripheral blood smear (myeloid predominance)', 'اسمیر خون محیطی CML (غلبه میلوئیدی)', {height:110})}
-      ${figureSlot('bone-marrow-cml.jpg', 'CML bone marrow — hypercellular myeloid hyperplasia', 'مغز استخوان CML — هیپرپلازی میلوئیدی', {height:110})}
-      ${figureSlot('leukemia-classification.jpg', 'Hematologic malignancies classification tree', 'درخت طبقه‌بندی بدخیمی‌های خونی', {height:110})}
+  <div class="bg-story bg-story-cancer">
+    <div class="bg-hero-visual">
+      ${figureSlot('cml-blood-smear.jpg', 'CML peripheral blood smear', 'اسمیر خون محیطی CML', { height: 330 })}
     </div>
-  </div>
-  <div class="cols-2" style="margin-top:12px;">
-    <div class="stack">
-      <div class="card"><h4>${L("Chronic myeloid leukemia (CML)", "لوسمی میلوئید مزمن (CML)")}</h4>
-      <p>${L("A clonal myeloproliferative neoplasm driven by a single genetic lesion. Unlike acute leukemias, CML typically presents in a prolonged chronic phase that is highly responsive to targeted therapy — making it the paradigmatic success story of precision oncology and the ideal model for studying resistance.", "نئوپلاسم میلوپرولیفراتیو کلونال ناشی از یک ضایعه ژنتیکی واحد. برخلاف لوسمی‌های حاد، CML معمولاً در فاز مزمن طولانی ظاهر می‌شود که به درمان هدفمند بسیار پاسخگو است — و آن را به الگوی موفقیت انکولوژی دقیق و مدل ایده‌آل برای مطالعه مقاومت تبدیل کرده است.")}</p></div>
-      <div class="card"><h4>${L("Why CML matters for drug discovery", "چرا CML برای کشف دارو مهم است")}</h4>
-      <p>${L("Because disease biology is defined by one oncoprotein (BCR-ABL), every clinical failure maps cleanly onto a molecular mechanism — gatekeeper mutations, compound mutations, or pharmacokinetic escape. This clarity makes CML the preferred test-bed for novel kinase-inhibitor strategies, including allosteric approaches.", "چون زیست‌شناسی بیماری با یک انکوپروتئین (BCR-ABL) تعریف می‌شود، هر شکست بالینی به‌وضوح به یک مکانیسم مولکولی نگاشت می‌شود — جهش گیت‌کیپر، جهش مرکب یا فرار فارماکوکینتیک. این وضوح CML را به بستر آزمایش ترجیحی برای راهبردهای جدید مهارکننده کیناز، از جمله رویکردهای آلوستریک، تبدیل کرده است.")}</p></div>
-    </div>
-    <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:14px;">
-      <div class="stat"><div class="n red">1–2</div><div class="l">${L("new CML cases / 100 000 / year worldwide", "مورد جدید CML به ازای هر ۱۰۰٬۰۰۰ نفر در سال")}</div></div>
-      <div style="width:100%; height:1px; background:var(--line);"></div>
-      <div class="stat"><div class="n blue">55–60</div><div class="l">${L("median age (years) at diagnosis", "میانگین سن (سال) در زمان تشخیص")}</div></div>
-      <div style="width:100%; height:1px; background:var(--line);"></div>
-      <div class="stat"><div class="n gold">~85 %</div><div class="l">${L("of patients diagnosed in chronic phase — the window where resistance mutations first emerge under TKI pressure", "بیماران تشخیص‌داده‌شده در فاز مزمن — پنجره‌ای که جهش‌های مقاومتی برای نخستین‌بار تحت فشار TKI ظاهر می‌شوند")}</div></div>
+    <div class="bg-story-side">
+      <div class="bg-bigword">CML</div>
+      <div class="bg-kicker">${L("HEMATOLOGIC MALIGNANCY", "بدخیمی خونی")}</div>
+      <div class="bg-headline">${L("A chronic myeloproliferative disease", "یک بیماری میلوپرولیفراتیو مزمن")}</div>
+      <div class="bg-labels">
+        <span>Myeloid proliferation</span>
+        <span>Chronic phase</span>
+        <span>Targeted therapy</span>
+      </div>
+      <div class="bg-mini-visual">
+        ${figureSlot('bone-marrow-cml.jpg', 'CML bone marrow', 'مغز استخوان CML', { height: 105 })}
+        ${figureSlot('leukemia-classification.jpg', 'Hematologic malignancies', 'بدخیمی‌های خونی', { height: 105 })}
+      </div>
     </div>
   </div>`;
     }
 
+    let bcrStep = 0;
+    const BCR_STEPS = [
+      {
+        img: 'philadelphia-chromosome.jpg',
+        en: 'Philadelphia chromosome t(9;22)', fa: 'کروموزوم فیلادلفیا t(9;22)',
+        capEn: 'A reciprocal translocation swaps material between chromosomes 9 and 22, leaving the shortened chromosome 22 known as the Philadelphia chromosome.',
+        capFa: 'یک جابه‌جایی متقابل، ماده ژنتیکی کروموزوم‌های ۹ و ۲۲ را با هم عوض می‌کند و کروموزوم ۲۲ کوتاه‌شده، یعنی کروموزوم فیلادلفیا، پدید می‌آید.'
+      },
+      {
+        img: 'bcr-abl1-fusion.jpg',
+        en: 'BCR–ABL1 fusion gene', fa: 'ژن همجوشی BCR–ABL1',
+        capEn: 'The breakpoint joins the BCR gene to ABL1, creating the BCR–ABL1 fusion gene and its oncogenic fusion protein.',
+        capFa: 'نقطه شکست ژن BCR را به ABL1 متصل می‌کند و ژن همجوشی BCR–ABL1 و پروتئین انکوژنیک آن پدید می‌آید.'
+      },
+      {
+        img: 'bcr-abl-kinase-structure.jpg',
+        en: 'BCR–ABL1 kinase domain', fa: 'دامنه کینازی BCR–ABL1',
+        capEn: 'The fusion protein is a constitutively active tyrosine kinase; its catalytic (ATP) and allosteric (myristoyl) pockets are the drug targets.',
+        capFa: 'پروتئین همجوشی یک تیروزین‌کیناز دائماً فعال است؛ جیب‌های کاتالیتیک (ATP) و آلوستریک (میریستوئیل) آن اهداف دارویی هستند.'
+      },
+    ];
     function slideBgBcrAbl() {
+      const cards = [
+        [L("Philadelphia chromosome", "کروموزوم فیلادلفیا"), "chr. 9 ↔ chr. 22"],
+        ["BCR–ABL1", L("Oncogenic fusion", "فیوژن انکوژنیک")],
+        [L("Druggable kinase", "کیناز قابل هدف‌گیری"), L("Catalytic + allosteric pockets", "جیب کاتالیتیک + آلوستریک")],
+      ];
       return `
-  <div class="cols-3" style="flex:0 0 auto; height:110px;">
-    ${figureSlot('philadelphia-chromosome.jpg', 'Philadelphia chromosome t(9;22) karyotype', 'کاریوتایپ کروموزوم فیلادلفیا t(9;22)', {height:110})}
-    ${figureSlot('bcr-abl-fusion-schematic.jpg', 'BCR-ABL fusion gene schematic', 'شماتیک ژن فیوژن BCR-ABL', {height:110})}
-    ${figureSlot('bcr-abl-kinase-domain.jpg', 'ABL kinase domain — N-lobe / C-lobe / ATP cleft', 'دامنه کینازی ABL — لوب N / لوب C / شکاف ATP', {height:110})}
-  </div>
-  <div class="cols-2" style="margin-top:12px;">
-    <div class="stack">
-      <div class="card"><h4>${L("The Philadelphia chromosome", "کروموزوم فیلادلفیا")}</h4>
-      <p>${L("Reciprocal translocation t(9;22)(q34;q11) fuses BCR (chr. 22) to ABL1 (chr. 9). The resulting p210<sup>BCR-ABL</sup> oncoprotein is both necessary and sufficient for chronic-phase CML — the first cancer defined by a single genetic lesion.", "جابجایی متقابل t(9;22)(q34;q11) ژن BCR (کروموزوم ۲۲) را به ABL1 (کروموزوم ۹) متصل می‌کند. انکوپروتئین حاصل، p210<sup>BCR-ABL</sup>، هم لازم و هم کافی برای CML فاز مزمن است — نخستین سرطانی که با یک ضایعه ژنتیکی واحد تعریف شد.")}</p></div>
-      <div class="card"><h4>${L("Constitutive tyrosine-kinase activity", "فعالیت تیروزین‌کینازی ساختاری")}</h4>
-      <p>${L("Loss of the N-terminal myristoyl autoinhibitory group and oligomerisation via the BCR coiled-coil domain lock the kinase in the active state. Downstream pathways (STAT5, PI3K–AKT, MAPK/ERK) drive proliferation and suppress apoptosis.", "حذف گروه میریستوئیل خودمهاری N-ترمینال و الیگومریزاسیون از طریق دامنه کویلد-کویل BCR، کیناز را در حالت فعال قفل می‌کند. مسیرهای پایین‌دست (STAT5، PI3K–AKT، MAPK/ERK) تکثیر را پیش می‌برند و آپوپتوز را سرکوب می‌کنند.")}</p></div>
+  <div class="bg-bcr-layout">
+    <div class="bg-bcr-visual">
+      <div class="bcr-stage">
+        ${BCR_STEPS.map((st, i) => `<div class="bcr-img ${i === bcrStep ? 'on' : ''}" data-i="${i}">${figureSlot(st.img, st.en, st.fa, { height: 270 })}</div>`).join("")}
+      </div>
+      <div class="bcr-side">
+        <div class="bg-equation">
+          <span class="bcr-eq ${bcrStep === 0 ? 'on' : ''}" data-i="0">t(9;22)</span><b>→</b><span class="bcr-eq ${bcrStep === 1 ? 'on' : ''}" data-i="1">BCR–ABL1</span><b>→</b><span class="bcr-eq ${bcrStep === 2 ? 'on' : ''}" data-i="2">${L("Kinase activity", "فعالیت کینازی")}</span>
+        </div>
+        <p class="body-text bcr-caption" id="bcr-caption">${L(BCR_STEPS[bcrStep].capEn, BCR_STEPS[bcrStep].capFa)}</p>
+        <div class="bcr-hint">${L("Scroll to continue", "برای ادامه اسکرول کنید")} &#8595;</div>
+      </div>
     </div>
-    <div class="card" style="display:flex; flex-direction:column; gap:8px; justify-content:center;">
-      <h4>${L("Domain architecture & the druggable defect", "معماری دامنه و نقص قابل‌هدف‌گیری")}</h4>
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <span class="pill blue">${L("BCR coiled-coil (oligomerisation)", "کویلد-کویل BCR (الیگومریزاسیون)")}</span>
-        <span class="pill blue">${L("Y177 → GRB2 docking", "Y177 → اتصال GRB2")}</span>
-      </div>
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <span class="pill red">${L("ABL SH1 kinase domain", "دامنه کینازی SH1 ABL")}</span>
-        <span class="pill red">${L("Myristoyl pocket (C-lobe)", "جیب میریستوئیل (لوب C)")}</span>
-        <span class="pill gold">${L("Gatekeeper Thr315", "گیت‌کیپر Thr315")}</span>
-      </div>
-      <p class="body-text" style="margin-top:6px;">${L("Two distinct pockets can be targeted: the ATP-binding cleft (catalytic) and the myristoyl pocket (allosteric). This thesis asks whether anthelmintics can occupy the allosteric site and remain active against catalytic-site mutants such as T315I and Y253H.", "دو جیب مجزا قابل هدف‌گیری‌اند: شکاف اتصال ATP (کاتالیتیک) و جیب میریستوئیل (آلوستریک). این پایان‌نامه می‌پرسد آیا داروهای ضدکرم می‌توانند سایت آلوستریک را اشغال کرده و در برابر جهش‌های سایت کاتالیتیک مانند T315I و Y253H فعال بمانند.")}</p>
+    <div class="bg-bcr-bottom">
+      ${cards.map((c, i) => `
+      <div class="bg-bcr-card ${i === bcrStep ? 'on' : ''}" data-i="${i}" onclick="setBcrStep(${i})">
+        <div class="bg-index">0${i + 1}</div>
+        <strong>${c[0]}</strong>
+        <span>${c[1]}</span>
+      </div>`).join("")}
     </div>
   </div>`;
+    }
+    function setBcrStep(i) {
+      bcrStep = Math.max(0, Math.min(BCR_STEPS.length - 1, i));
+      const root = document.getElementById("slide-viewport");
+      if (!root) return;
+      root.querySelectorAll(".bcr-img, .bcr-eq, .bg-bcr-card").forEach(n => n.classList.toggle("on", +n.dataset.i === bcrStep));
+      const cap = root.querySelector("#bcr-caption");
+      if (cap) {
+        cap.textContent = L(BCR_STEPS[bcrStep].capEn, BCR_STEPS[bcrStep].capFa);
+        if (window.gsap) gsap.fromTo(cap, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: .45, ease: 'power2.out' });
+      }
     }
 
     function slideBgTKI() {
       return `
-  <div class="cols-3" style="flex:0 0 auto; height:110px;">
-    ${figureSlot('imatinib-atp-pocket.jpg', 'Imatinib bound in the ATP (catalytic) pocket', 'ایماتینیب در جیب ATP (کاتالیتیک)', {height:110})}
-    ${figureSlot('t315i-gatekeeper.jpg', 'T315I gatekeeper mutation blocks ATP-site TKIs', 'جهش گیت‌کیپر T315I مانع TKIهای سایت ATP', {height:110})}
-    ${figureSlot('asciminib-allosteric.jpg', 'Asciminib in the myristoyl (allosteric) pocket', 'آسیمینیب در جیب میریستوئیل (آلوستریک)', {height:110})}
-  </div>
-  <div class="cols-2" style="margin-top:12px;">
-    <div class="stack">
-      <div class="card"><h4>${L("ATP-competitive TKIs & the resistance problem", "TKIهای رقابت‌کننده با ATP و مسئله مقاومت")}</h4>
-      <p>${L("Imatinib, nilotinib, dasatinib, bosutinib and ponatinib all occupy the ATP cleft. Point mutations in the kinase domain — especially the gatekeeper T315I and P-loop mutants (Y253H, E255K/V) — sterically or electronically exclude these inhibitors, driving clinical relapse.", "ایماتینیب، نیلوتینیب، داساتینیب، بوسوتینیب و پوناتینیب همگی شکاف ATP را اشغال می‌کنند. جهش‌های نقطه‌ای در دامنه کینازی — به‌ویژه گیت‌کیپر T315I و جهش‌های حلقه P (Y253H، E255K/V) — این مهارکننده‌ها را به‌صورت فضایی یا الکترونی حذف کرده و عود بالینی را رقم می‌زنند.")}</p></div>
-      <div class="card" style="border-color:var(--red);"><h4 style="color:var(--red-deep);">${L("Key resistance mutations addressed in this thesis", "جهش‌های مقاومتی کلیدی مورد بررسی در این پایان‌نامه")}</h4>
-      <p style="font-size:12px;">${L("<b>T315I</b> — gatekeeper; abolishes binding of almost all ATP-site TKIs.<br><b>Y253H</b> — P-loop; reduces affinity of imatinib and several second-generation agents.<br>Double mutant T315I + Y253H represents a high-resistance clinical scenario.", "<b>T315I</b> — گیت‌کیپر؛ اتصال تقریباً همه TKIهای سایت ATP را از بین می‌برد.<br><b>Y253H</b> — حلقه P؛ میل ترکیبی ایماتینیب و چند عامل نسل دوم را کاهش می‌دهد.<br>جهش دوگانه T315I + Y253H یک سناریوی بالینی با مقاومت بالا را نمایندگی می‌کند.")}</p></div>
+  <div class="bg-tki-layout">
+    <div class="bg-tki-column">
+      <div class="bg-tki-label red">${L("CATALYTIC SITE", "سایت کاتالیتیک")}</div>
+      ${figureSlot('imatinib-atp-pocket.jpg', 'Imatinib in ATP pocket', 'ایماتینیب در جیب ATP', { height: 210 })}
+      <h3>ATP-site TKIs</h3>
+      <div class="bg-mutation">${L("T315I", "T315I")} <span>${L("gatekeeper mutation", "جهش گیت‌کیپر")}</span></div>
     </div>
-    <div class="stack">
-      <div class="card" style="display:flex; align-items:center; gap:16px;">
-        <div class="stat"><div class="n blue">Asciminib</div><div class="l">${L("first FDA-approved allosteric (STAMP) inhibitor — proof that the myristoyl pocket is clinically druggable", "نخستین مهارکننده آلوستریک (STAMP) تأییدشده FDA — اثبات اینکه جیب میریستوئیل از نظر بالینی قابل هدف‌گیری است")}</div></div>
-      </div>
-      <div class="card" style="border-color:var(--gold);"><h4 style="color:#7A5A1E;">${L("Why the allosteric site is the strategic opportunity", "چرا سایت آلوستریک فرصت راهبردی است")}</h4>
-      <p class="body-text">${L("The myristoyl pocket is structurally orthogonal to the ATP site. Mutations that destroy ATP-competitive binding leave the allosteric pocket intact. An anthelmintic that can occupy this pocket would therefore retain activity against the very mutants that defeat current front-line TKIs — the central hypothesis of this work.", "جیب میریستوئیل از نظر ساختاری متعامد با سایت ATP است. جهش‌هایی که اتصال رقابت‌کننده با ATP را از بین می‌برند، جیب آلوستریک را دست‌نخورده باقی می‌گذارند. یک داروی ضدکرم که بتواند این جیب را اشغال کند، بنابراین در برابر همان جهش‌هایی که TKIهای خط اول فعلی را شکست می‌دهند فعال می‌ماند — فرضیه محوری این کار.")}</p></div>
+    <div class="bg-tki-center">
+      <div class="bg-vs">VS</div>
+      <div class="bg-resistance-word">${L("RESISTANCE", "مقاومت")}</div>
+      <div class="bg-arrow-line"></div>
+      <div class="bg-opportunity">${L("Allosteric opportunity", "فرصت آلوستریک")}</div>
+    </div>
+    <div class="bg-tki-column">
+      <div class="bg-tki-label blue">${L("ALLOSTERIC SITE", "سایت آلوستریک")}</div>
+      ${figureSlot('asciminib-allosteric.jpg', 'Asciminib in myristoyl pocket', 'آسیمینیب در جیب میریستوئیل', { height: 210 })}
+      <h3>Asciminib</h3>
+      <div class="bg-mutation blue-note">${L("Myristoyl pocket", "جیب میریستوئیل")} <span>${L("orthogonal target", "هدف مستقل")}</span></div>
     </div>
   </div>`;
     }
 
     function slideBgRepurposing() {
+      const pzq = LIGANDS.find(l => l.id === "PZQ");
       return `
-  <div class="cols-3" style="flex:0 0 auto; height:110px;">
-    ${figureSlot('praziquantel-structure.jpg', 'Praziquantel — the central candidate of this thesis', 'پرازیکوانتل — کاندیدای محوری این پایان‌نامه', {height:110})}
-    ${figureSlot('drug-repurposing-funnel.jpg', 'Drug-repurposing advantage over de-novo discovery', 'مزیت بازپروری دارویی نسبت به کشف از صفر', {height:110})}
-    ${figureSlot('anthelmintic-cancer-overlap.jpg', 'Shared pathways between anthelmintics and cancer biology', 'مسیرهای مشترک بین ضدکرم‌ها و زیست‌شناسی سرطان', {height:110})}
-  </div>
-  <div class="cols-2" style="margin-top:12px;">
-    <div class="stack">
-      <div class="card">
-      <h4>${L("Why repurpose rather than invent?", "چرا بازپروری به‌جای اختراع؟")}</h4>
-      <p class="body-text">${L("Approved anthelmintics already possess established safety, pharmacokinetics, manufacturing routes and decades of human exposure data. Screening them against BCR-ABL therefore collapses the early risk and cost of de-novo discovery while still allowing a novel target engagement to be discovered.", "داروهای ضدکرم تأییدشده از قبل دارای ایمنی، فارماکوکینتیک، مسیر تولید و دهه‌ها داده مواجهه انسانی تثبیت‌شده هستند. غربالگری آن‌ها علیه BCR-ABL بنابراین ریسک و هزینه اولیه کشف از صفر را کاهش می‌دهد و در عین حال امکان کشف تعامل هدفی جدید را فراهم می‌کند.")}</p>
-      <div style="display:flex; gap:16px; margin-top:6px;">
-        <div class="stat"><div class="n red">~10 %</div><div class="l">${L("de-novo candidates reach market", "کاندیداهای کاملاً جدید به بازار می‌رسند")}</div></div>
-        <div class="stat"><div class="n green">~30 %</div><div class="l">${L("success rate for repurposed agents", "نرخ موفقیت عوامل بازپروری‌شده")}</div></div>
+  <div class="bg-repurpose-layout">
+    <div class="bg-repurpose-hero">
+      <div class="pzq-2d">
+        <div class="rdkit-mol" data-smiles="${pzq.smiles}" data-w="640" data-h="330"></div>
+        <div class="pzq-2d-tag"><b>${L('Praziquantel', 'پرازیکوانتل')}</b><span>${pzq.formula} · ${pzq.mw} g/mol</span></div>
       </div>
+      <div class="bg-hero-caption">
+        <span class="bg-bigword small">PZQ</span>
+        <div>
+          <div class="bg-kicker">${L("CENTRAL CANDIDATE", "کاندیدای محوری")}</div>
+          <div class="bg-headline">${L("An old drug. A new target.", "یک داروی قدیمی؛ یک هدف جدید.")}</div>
+        </div>
       </div>
     </div>
-    <div class="stack">
-      <div class="card" style="border-color:var(--blue);"><h4 style="color:var(--blue-deep);">${L("Why the anthelmintic class?", "چرا دسته داروهای ضدکرم؟")}</h4>
-      <p class="body-text">${L("Benzimidazoles disrupt microtubules; niclosamide modulates STAT3, Wnt and mTOR; pyrvinium inhibits Wnt and mitochondrial respiration; praziquantel itself acts via an allosteric mechanism on parasite TRPM channels. Collectively they display a polypharmacology that repeatedly intersects cancer signalling — providing a rational chemical space in which to search for BCR-ABL allosteric ligands.", "بنزیمیدازول‌ها میکروتوبول‌ها را مختل می‌کنند؛ نیکلوزامید STAT3، Wnt و mTOR را تعدیل می‌کند؛ پیروینیوم Wnt و تنفس میتوکندریایی را مهار می‌کند؛ خود پرازیکوانتل از طریق مکانیسم آلوستریک روی کانال‌های TRPM انگل عمل می‌کند. در مجموع آن‌ها پلی‌فارماکولوژی‌ای نشان می‌دهند که مکرراً با سیگنالینگ سرطان تلاقی می‌کند — فضای شیمیایی منطقی برای جستجوی لیگاندهای آلوستریک BCR-ABL.")}</p></div>
-      <div class="card" style="border-color:var(--red);"><h4 style="color:var(--red-deep);">${L("Central hypothesis of this thesis", "فرضیه محوری این پایان‌نامه")}</h4>
-      <p class="body-text">${L("At least one clinically used anthelmintic can bind the BCR-ABL myristoyl (allosteric) pocket with affinity comparable to or better than the cognate ligand, and this binding is preserved — or even strengthened — in the clinically relevant mutants T315I and Y253H.", "حداقل یک داروی ضدکرم مورد استفاده بالینی می‌تواند با میل ترکیبی قابل‌مقایسه یا بهتر از لیگاند کوگنیت به جیب میریستوئیل (آلوستریک) BCR-ABL متصل شود، و این اتصال در جهش‌های بالینی مرتبط T315I و Y253H حفظ — یا حتی تقویت — می‌شود.")}</p></div>
+    <div class="bg-repurpose-side">
+      <div class="rep-flow">
+        <div><b>01</b><span>${L("Established drug", "داروی شناخته‌شده")}</span></div>
+        <i>→</i>
+        <div><b>02</b><span>${L("Screening", "غربالگری")}</span></div>
+        <i>→</i>
+        <div><b>03</b><span>${L("New target", "هدف جدید")}</span></div>
+      </div>
+      <div class="rep-visuals">
+        ${figureSlot('drug-repurposing-funnel.jpg', 'Drug repurposing', 'بازپروری دارویی', { height: 145 })}
+        ${figureSlot('anthelmintic-cancer-overlap.jpg', 'Anthelmintic–cancer overlap', 'همپوشانی ضدکرم و سرطان', { height: 145 })}
+      </div>
+      <div class="bg-bottom-statement">${L("Anthelmintics → BCR–ABL screening", "داروهای ضدکرم → غربالگری BCR–ABL")}</div>
     </div>
   </div>`;
     }
@@ -1933,19 +2860,19 @@
         { n: "03", en: "DFT Calculations", fa: "محاسبات DFT", d_en: "Gaussian 16 · B3LYP/6-31G(d,p) · electronic reactivity", d_fa: "Gaussian 16 · B3LYP/6-31G(d,p) · واکنش‌پذیری الکترونی", c: "var(--violet)" },
       ];
       const tools = [
-        { file:"autodock", ab: "AD4", full: "AutoDock 4.2", c: "#2C6E8E" },
-        { file:"autodocktools", ab: "ADT", full: "AutoDockTools", c: "#2C6E8E" },
-        { file:"pymol", ab: "PML", full: "PyMOL", c: "#3C7A5E" },
-        { file:"dynamut", ab: "DM", full: "DynaMut", c: "#B5872F" },
-        { file:"gromacs", ab: "GMX", full: "GROMACS", c: "#B5872F" },
-        { file:"gaussian", ab: "G16", full: "Gaussian 16", c: "#6C5B8C" },
-        { file:"swissadme", ab: "SA", full: "SwissADME", c: "#3C7A5E" },
-        { file:"plip", ab: "PLIP", full: "PLIP", c: "#B24A3B" },
+        { file: "autodock", ab: "AD4", full: "AutoDock 4.2", c: "#2C6E8E" },
+        { file: "autodocktools", ab: "ADT", full: "AutoDockTools", c: "#2C6E8E" },
+        { file: "pymol", ab: "PML", full: "PyMOL", c: "#3C7A5E" },
+        { file: "dynamut", ab: "DM", full: "DynaMut", c: "#B5872F" },
+        { file: "gromacs", ab: "GMX", full: "GROMACS", c: "#B5872F" },
+        { file: "gaussian", ab: "G16", full: "Gaussian 16", c: "#6C5B8C" },
+        { file: "swissadme", ab: "SA", full: "SwissADME", c: "#3C7A5E" },
+        { file: "plip", ab: "PLIP", full: "PLIP", c: "#B24A3B" },
       ];
       const funnelRows = [
-        {n:"112", en:"Receptor–site combinations screened", fa:"ترکیب گیرنده-سایت غربال‌شده", d_en:"14 ligands × 4 receptors × 2 sites, every one docked independently", d_fa:"۱۴ لیگاند × ۴ گیرنده × ۲ سایت، هر یک به‌طور مستقل داک شده", c:"#2C6E8E", w:100},
-        {n:"~5", en:"Top candidates pass the ΔG rule", fa:"کاندیدای برتر که قانون ΔG را رد کردند", d_en:"ΔG ≤ cognate ligand (wild-type) or ΔG_mutant ≤ ΔG_wild", d_fa:"ΔG ≤ لیگاند کوگنیت (نوع وحشی) یا ΔG_mutant ≤ ΔG_wild", c:"#B5872F", w:66},
-        {n:"1", en:"Hit validated by MD + DFT", fa:"یافته تأییدشده با MD و DFT", d_en:"Praziquantel — dynamically stable and electronically consistent", d_fa:"پرازیکوانتل — پایدار دینامیکی و سازگار الکترونی", c:"#B24A3B", w:34},
+        { n: "112", en: "Receptor–site combinations screened", fa: "ترکیب گیرنده-سایت غربال‌شده", d_en: "14 ligands × 4 receptors × 2 sites, every one docked independently", d_fa: "۱۴ لیگاند × ۴ گیرنده × ۲ سایت، هر یک به‌طور مستقل داک شده", c: "#2C6E8E", w: 100 },
+        { n: "~5", en: "Top candidates pass the ΔG rule", fa: "کاندیدای برتر که قانون ΔG را رد کردند", d_en: "ΔG ≤ cognate ligand (wild-type) or ΔG_mutant ≤ ΔG_wild", d_fa: "ΔG ≤ لیگاند کوگنیت (نوع وحشی) یا ΔG_mutant ≤ ΔG_wild", c: "#B5872F", w: 66 },
+        { n: "1", en: "Hit validated by MD + DFT", fa: "یافته تأییدشده با MD و DFT", d_en: "Praziquantel — dynamically stable and electronically consistent", d_fa: "پرازیکوانتل — پایدار دینامیکی و سازگار الکترونی", c: "#B24A3B", w: 34 },
       ];
       return `
   <div class="process-row" style="flex:0 0 auto; height:32%;">
@@ -1960,25 +2887,25 @@
   </div>
   <div class="cols-2" style="flex:1; margin-top:12px;">
     <div class="card" style="display:flex; flex-direction:column; justify-content:center; gap:0;">
-      <h4 style="margin-bottom:10px;">${L('The screening funnel','قیف غربالگری')}</h4>
-      ${funnelRows.map((r,i)=>`
-        <div style="display:flex; align-items:center; gap:12px; ${i<funnelRows.length-1?'margin-bottom:4px;':''}">
+      <h4 style="margin-bottom:10px;">${L('The screening funnel', 'قیف غربالگری')}</h4>
+      ${funnelRows.map((r, i) => `
+        <div style="display:flex; align-items:center; gap:12px; ${i < funnelRows.length - 1 ? 'margin-bottom:4px;' : ''}">
           <div style="flex:0 0 130px; height:34px; display:flex; align-items:center; justify-content:center;">
             <div style="width:${r.w}%; height:100%; background:linear-gradient(90deg, ${r.c}22, ${r.c}55); border:1.5px solid ${r.c}; border-radius:8px; display:flex; align-items:center; justify-content:center;">
               <span style="font-family:var(--mono); font-weight:700; font-size:13px; color:${r.c}; white-space:nowrap;">${r.n}</span>
             </div>
           </div>
           <div style="flex:1; min-width:0;">
-            <div style="font-size:11.5px; font-weight:600; color:var(--ink);">${L(r.en,r.fa)}</div>
-            <div style="font-size:10px; color:var(--ink-faint); line-height:1.4;">${L(r.d_en,r.d_fa)}</div>
+            <div style="font-size:11.5px; font-weight:600; color:var(--ink);">${L(r.en, r.fa)}</div>
+            <div style="font-size:10px; color:var(--ink-faint); line-height:1.4;">${L(r.d_en, r.d_fa)}</div>
           </div>
         </div>
-        ${i<funnelRows.length-1?`<div style="display:flex; justify-content:center; width:130px; margin:2px 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${r.c}" stroke-width="2"><path d="M12 4v14m0 0l-5-5m5 5l5-5"/></svg></div>`:''}
+        ${i < funnelRows.length - 1 ? `<div style="display:flex; justify-content:center; width:130px; margin:2px 0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${r.c}" stroke-width="2"><path d="M12 4v14m0 0l-5-5m5 5l5-5"/></svg></div>` : ''}
       `).join("")}
     </div>
     <div class="card scroll-y">
       <h4>${L('Software & tools used', 'نرم‌افزارها و ابزارهای استفاده‌شده')}</h4>
-      <p style="font-size:10px; color:var(--ink-faint); margin:2px 0 8px;">${L('Drop a logo PNG in ./images/logo-&lt;tool&gt;.png to replace a badge with the real icon.','یک PNG لوگو در ./images/logo-&lt;tool&gt;.png قرار دهید تا نشان با آیکون واقعی جایگزین شود.')}</p>
+      <p style="font-size:10px; color:var(--ink-faint); margin:2px 0 8px;">${L('Drop a logo PNG in ./images/logo-&lt;tool&gt;.png to replace a badge with the real icon.', 'یک PNG لوگو در ./images/logo-&lt;tool&gt;.png قرار دهید تا نشان با آیکون واقعی جایگزین شود.')}</p>
       <div class="grid" style="grid-template-columns:repeat(4,1fr); gap:12px;">
         ${tools.map(t => toolLogoSlot(t.file, t.ab, t.full, t.c)).join("")}
       </div>
@@ -2000,7 +2927,7 @@
         if (el.dataset.done) return;
         try {
           const mol = RDKitMod.get_mol(el.dataset.smiles);
-          let svg = mol.get_svg(220, 160);
+          let svg = mol.get_svg(+el.dataset.w || 220, +el.dataset.h || 160);
           svg = svg.replace(/<rect[^>]*fill=['"]#FFFFFF['"][^>]*\/?>/ig, ""); // strip RDKit's white background rect
           el.innerHTML = svg;
           mol.delete();
@@ -2031,6 +2958,48 @@
     }
     function setLigTab(key) { ligTab = key; renderSlide(); }
 
+    /* ---------- Mutation tour — Tyr253 → His253 in ONE receptor ---------- */
+    function slideMutationTour() {
+      return `
+  <div class="mut-tour-wrap">
+    <div class="mut-tour-panel">
+      <div class="mut-tour-loading" id="mt-load"><div class="spinner"></div><div>${L('Loading 6HD4 + Y253H_6HD4…', 'در حال بارگذاری 6HD4 و Y253H_6HD4…')}</div></div>
+      <div class="mol-container" id="mt-mol"></div>
+      <div class="viewer-legend">
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--blue);"></span>${L('Tyr253 · wild-type', 'تیروزین ۲۵۳ · نوع وحشی')}</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:var(--gold);"></span>${L('His253 · Y253H mutant', 'هیستیدین ۲۵۳ · جهش Y253H')}</div>
+        <div class="legend-item"><span class="legend-swatch" style="background:#D9C9B0;"></span>${L('Same receptor backbone', 'اسکلت یکسان گیرنده')}</div>
+      </div>
+      <div class="viewer-controls mt-controls">
+        <div class="btn small mt-mode" data-mode="wt" onclick="mtShow('wt')">${L('Tyr253 (wild-type)', 'Tyr253 (نوع وحشی)')}</div>
+        <div class="btn small mt-mode" data-mode="mut" onclick="mtShow('mut')">${L('His253 (mutant)', 'His253 (جهش‌یافته)')}</div>
+        <div class="btn small mt-mode primary" data-mode="both" onclick="mtShow('both')">${L('Overlay', 'روی‌هم‌گذاری')}</div>
+        <div class="btn small" id="mt-spin-btn" onclick="mtSpinToggle()">${L('Spin', 'چرخش')}</div>
+        <div class="btn small" onclick="mtResetView()">${L('Reset view', 'بازنشانی نما')}</div>
+      </div>
+    </div>
+    <div class="card scroll-y">
+      <div class="pill gold" style="width:fit-content; margin-bottom:8px;">TYR &#8594; HIS &middot; Y253H &middot; P-loop</div>
+      <h4>${L('What actually changes', 'چه چیزی واقعاً تغییر می‌کند')}</h4>
+      <table class="aa-props-table">
+        <thead><tr><th>${L('Property', 'ویژگی')}</th><th>Tyr253</th><th>His253</th></tr></thead>
+        <tbody>
+          <tr><td>${L('Side chain', 'زنجیره جانبی')}</td><td>${L('phenol ring + –OH', 'حلقه فنل + –OH')}</td><td>${L('imidazole ring', 'حلقه ایمیدازول')}</td></tr>
+          <tr><td>${L('H-bond role', 'نقش پیوند هیدروژنی')}</td><td>${L('donor + acceptor (–OH)', 'دهنده و پذیرنده (–OH)')}</td><td>${L('acceptor / donor, pH-dependent', 'پذیرنده یا دهنده، وابسته به pH')}</td></tr>
+          <tr><td>pKa (${L('side chain', 'زنجیره جانبی')})</td><td>~10.1</td><td>~6.0</td></tr>
+          <tr><td>${L('Charge near physiological pH', 'بار در pH فیزیولوژیک')}</td><td>${L('neutral', 'خنثی')}</td><td>${L('mostly neutral, can protonate', 'عمدتاً خنثی، قابل پروتونه‌شدن')}</td></tr>
+        </tbody>
+      </table>
+      <p class="body-text" style="font-size:11.5px; margin-top:8px;">${L(
+        'Losing the tyrosine hydroxyl removes a hydrogen bond that helps stabilise ATP-competitive inhibitors, while the smaller, titratable imidazole ring of histidine reshapes the local electrostatics of the P-loop.',
+        'از دست رفتن هیدروکسیل تیروزین، پیوند هیدروژنی لازم برای پایداری مهارکننده‌های رقابت‌کننده با ATP را حذف می‌کند، در حالی که حلقه ایمیدازول کوچک‌تر و قابل‌یونیزاسیون هیستیدین، بار الکترواستاتیک موضعی حلقه P را بازآرایی می‌کند.')}</p>
+    </div>
+  </div>
+  <div class="note-flag">${L(
+          'Both residues are shown on the same receptor: 6HD4 and Y253H_6HD4 share one coordinate frame, so the mutant side chain overlays directly on the wild-type one. Residue 272 in the PDB numbering is Y253 in the clinical (BCR-ABL1) numbering.',
+          'هر دو باقیمانده روی یک گیرنده نمایش داده می‌شوند: 6HD4 و Y253H_6HD4 چارچوب مختصاتی یکسانی دارند، بنابراین زنجیره جانبی جهش‌یافته مستقیماً روی نوع وحشی قرار می‌گیرد. باقیمانده ۲۷۲ در شماره‌گذاری PDB معادل Y253 در شماره‌گذاری بالینی (BCR-ABL1) است.')}</div>`;
+    }
+
     /* ---------- Slide 6 — Receptor selection ---------- */
     function slideReceptorSelect() {
       const cards = [
@@ -2053,7 +3022,7 @@
           <span class="pill ${r.mutant ? 'gold' : 'blue'}">${r.mutant ? L('Mutant', 'جهش‌یافته') : L('Reference PDB', 'فایل مرجع PDB')}</span>
           <span class="pill">${r.res}</span>
         </div>
-        <div style="margin-top:10px;">${figureSlot('pdb-' + c.k.toLowerCase() + '.png', c.k.replace('_',' ') + ' structure snapshot', 'تصویر ساختار ' + c.k.replace('_',' '), {height:90})}</div>
+        <div style="margin-top:10px;">${figureSlot('pdb-' + c.k.toLowerCase() + '.png', c.k.replace('_', ' ') + ' structure snapshot', 'تصویر ساختار ' + c.k.replace('_', ' '), { height: 90 })}</div>
         <div class="btn small primary" style="margin-top:12px; width:100%; justify-content:center;">${L('Open 3D view', 'مشاهده سه‌بعدی')}</div>
       </div>`;
         }).join("")}
@@ -2093,8 +3062,6 @@
       </div>
       <div class="mol-container" id="mol3d"></div>
       <div id="vintro" style="display:none; position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:4; align-items:center; gap:6px; background:rgba(24,37,51,.82); color:#fff; font-size:11px; padding:5px 12px; border-radius:999px;">
-        <span class="spinner" style="width:12px;height:12px;border-width:2px;border-top-color:#fff;border-color:rgba(255,255,255,.35);"></span>
-        ${L('Auto tour — spinning, then allosteric → catalytic','تور خودکار — چرخش، سپس آلوستریک ← کاتالیتیک')}
       </div>
       <div class="viewer-legend">
         <div class="legend-item"><span class="legend-swatch" style="background:var(--blue);"></span>${L('Allosteric ligand', 'لیگاند آلوستریک')}</div>
@@ -2136,7 +3103,9 @@
       if (!el) return;
       const loadEl = document.getElementById("vload");
       el.innerHTML = "";
-      glviewer = $3Dmol.createViewer(el, { backgroundColor: "#EEF3F6" });
+      glviewer = $3Dmol.createViewer(el, { backgroundColor: "rgba(0,0,0,0)", antialias: true });
+      // Keep the 3Dmol canvas completely transparent so the slide itself provides the visual background.
+      if (glviewer.setBackgroundColor) glviewer.setBackgroundColor("rgba(0,0,0,0)", 0);
       const url = window.RECEPTORS_PATH + r.file;
       fetch(url).then(res => {
         if (!res.ok) throw new Error("not found");
@@ -2185,6 +3154,16 @@
         // pure licorice (stick-only) representation for the cognate ligand
         glviewer.setStyle(sel, { stick: { colorscheme: site === "allosteric" ? "cyanCarbon" : "redCarbon", radius: 0.24 } });
         siteSelections[site] = sel; // remember for the "go to site" buttons
+
+        // label the ligand directly in the structure with its real name
+        const r0 = RECEPTORS[receptorKey];
+        const ligandName = site === "allosteric" ? L(r0.alloLig_en, r0.alloLig_fa) : L(r0.catLig_en, r0.catLig_fa);
+        glviewer.addLabel(ligandName, {
+          position: { x: cx, y: cy, z: cz },
+          backgroundColor: site === "allosteric" ? "#2C6E8E" : "#B24A3B",
+          backgroundOpacity: 0.85, fontColor: "#fff", fontSize: 11, borderRadius: 4,
+          inFront: true, showBackground: true
+        });
       });
 
       // mutation highlight — licorice + label, no extra spheres
@@ -2200,35 +3179,35 @@
       playIntroSequence(receptorKey);
     }
     let introTimers = [];
-    function clearIntro(){ introTimers.forEach(t=>clearTimeout(t)); introTimers = []; }
-    function playIntroSequence(receptorKey){
+    function clearIntro() { introTimers.forEach(t => clearTimeout(t)); introTimers = []; }
+    function playIntroSequence(receptorKey) {
       clearIntro();
-      if(!glviewer) return;
+      if (!glviewer) return;
       const badge = document.getElementById('vintro');
-      if(badge) badge.style.display = 'flex';
+      if (badge) badge.style.display = 'flex';
       glviewer.spin("y", 1);
-      introTimers.push(setTimeout(()=>{
+      introTimers.push(setTimeout(() => {
         glviewer.spin(false);
         const alloSel = siteSelections["allosteric"];
-        if(alloSel) glviewer.zoomTo(alloSel, 1000); else glviewer.zoomTo();
+        if (alloSel) glviewer.zoomTo(alloSel, 1000); else glviewer.zoomTo();
         glviewer.render();
       }, 2400));
-      introTimers.push(setTimeout(()=>{
+      introTimers.push(setTimeout(() => {
         const catSel = siteSelections["catalytic"];
-        if(catSel) glviewer.zoomTo(catSel, 1000); else glviewer.zoomTo();
+        if (catSel) glviewer.zoomTo(catSel, 1000); else glviewer.zoomTo();
         glviewer.render();
       }, 4600));
-      introTimers.push(setTimeout(()=>{
+      introTimers.push(setTimeout(() => {
         glviewer.zoomTo(undefined, 1000);
         glviewer.render();
-        if(badge) badge.style.display = 'none';
+        if (badge) badge.style.display = 'none';
       }, 6900));
     }
     function molAction(action) {
       if (!glviewer) return;
       clearIntro();
       const badge = document.getElementById('vintro');
-      if(badge) badge.style.display = 'none';
+      if (badge) badge.style.display = 'none';
       if (action === "spin") glviewer.spin("y", 1);
       else if (action === "reset") { glviewer.spin(false); glviewer.zoomTo(); glviewer.render(); }
       else if (action === "allosteric" || action === "catalytic") {
@@ -2246,11 +3225,83 @@
       if (!glviewer || !currentReceptorKey) return;
       clearIntro();
       const badge = document.getElementById('vintro');
-      if(badge) badge.style.display = 'none';
+      if (badge) badge.style.display = 'none';
       const r = RECEPTORS[currentReceptorKey];
       if (!r.mutation) return;
       glviewer.spin(false);
       glviewer.zoomTo({ resi: r.mutation.resi }, 900);
+    }
+
+    /* -------- Mutation tour viewer engine (single viewer, two overlaid models) -------- */
+    let mtViewer = null, mtModels = {}, mtSpinning = false, mtMode = "both";
+    function initMutationTour() {
+      mtSpinning = false; mtMode = "both"; mtModels = {}; mtViewer = null;
+      const el = document.getElementById("mt-mol");
+      if (!el) return;
+      const loadEl = document.getElementById("mt-load");
+      el.innerHTML = "";
+      const viewer = $3Dmol.createViewer(el, { backgroundColor: "rgba(0,0,0,0)", antialias: true });
+      if (viewer.setBackgroundColor) viewer.setBackgroundColor("rgba(0,0,0,0)", 0);
+      mtViewer = viewer;
+      const files = [RECEPTORS["6HD4"].file, RECEPTORS["Y253H_6HD4"].file];
+      Promise.all(files.map(f => fetch(window.RECEPTORS_PATH + f).then(r => {
+        if (!r.ok) throw new Error("not found: " + f);
+        return r.text();
+      }))).then(([wtText, mutText]) => {
+        if (mtViewer !== viewer) return; // slide changed while loading
+        mtModels.wt = viewer.addModel(wtText, "pdb");
+        mtModels.mut = viewer.addModel(mutText, "pdb");
+        mtShow("both");
+        viewer.zoomTo({ resi: 272 }, 0);
+        viewer.zoom(0.4, 0);
+        viewer.render();
+        if (loadEl) loadEl.style.display = "none";
+      }).catch(() => {
+        if (loadEl) loadEl.innerHTML = `<div style="text-align:center; max-width:85%;">
+          <div style="font-size:20px; margin-bottom:6px;">&#9888;</div>
+          ${L('Could not find', 'فایل یافت نشد')} <code style="font-family:var(--mono); background:var(--bg-deep); padding:2px 6px; border-radius:4px;">${window.RECEPTORS_PATH}6HD4.pdb</code> / <code style="font-family:var(--mono); background:var(--bg-deep); padding:2px 6px; border-radius:4px;">${window.RECEPTORS_PATH}Y253H_6HD4.pdb</code><br>
+          <span style="font-size:11px;">${L('Place the PDB files in the receptors folder and reload.', 'فایل‌های PDB را در پوشه receptors قرار داده و صفحه را مجدداً بارگذاری کنید.')}</span></div>`;
+      });
+    }
+    // mode: "wt" (Tyr253 only) · "mut" (His253 only) · "both" (overlay)
+    function mtShow(mode) {
+      mtMode = mode;
+      document.querySelectorAll("#slide-viewport .mt-mode").forEach(b => b.classList.toggle("primary", b.dataset.mode === mode));
+      const v = mtViewer;
+      if (!v || !mtModels.wt || !mtModels.mut) return;
+      const res = { resi: 272 };
+      const cartoon = { color: "#D9C9B0", thickness: 0.3, opacity: 0.85 };
+      v.removeAllLabels();
+      mtModels.wt.setStyle({}, { cartoon: cartoon });   // the one receptor backbone
+      mtModels.mut.setStyle({}, {});                    // mutant model: only its residue is drawn
+      if (mode !== "mut") {
+        mtModels.wt.setStyle(res, { cartoon: cartoon, stick: { colorscheme: "cyanCarbon", radius: 0.28 } });
+        const a = mtModels.wt.selectedAtoms(res);
+        v.addLabel((a.length ? a[0].resn : "TYR") + " 253", { position: res, backgroundColor: "#2C6E8E", backgroundOpacity: 0.9, fontColor: "#fff", fontSize: 12, borderRadius: 4, inFront: true, alignment: "bottomRight" }, { model: mtModels.wt.getID(), resi: 272 });
+      }
+      if (mode !== "wt") {
+        mtModels.mut.setStyle(res, { stick: { colorscheme: "yellowCarbon", radius: 0.28 } });
+        const b = mtModels.mut.selectedAtoms(res);
+        v.addLabel((b.length ? b[0].resn : "HIS") + " 253", { position: res, backgroundColor: "#B5872F", backgroundOpacity: 0.9, fontColor: "#fff", fontSize: 12, borderRadius: 4, inFront: true, alignment: "topLeft" }, { model: mtModels.mut.getID(), resi: 272 });
+      }
+      v.render();
+    }
+    function mtSpinToggle() {
+      if (!mtViewer) return;
+      mtSpinning = !mtSpinning;
+      const btn = document.getElementById("mt-spin-btn");
+      if (btn) btn.textContent = mtSpinning ? L("⏸ Stop spin", "⏸ توقف چرخش") : L("Spin", "چرخش");
+      mtViewer.spin(mtSpinning ? "y" : false, 0.6);
+    }
+    function mtResetView() {
+      if (!mtViewer) return;
+      mtSpinning = false;
+      const btn = document.getElementById("mt-spin-btn");
+      if (btn) btn.textContent = L("Spin", "چرخش");
+      mtViewer.spin(false);
+      mtViewer.zoomTo({ resi: 272 }, 0);
+      mtViewer.zoom(0.4, 0);
+      mtViewer.render();
     }
 
     /* ---------- Slide 11 — Docking protocol ---------- */
@@ -2757,25 +3808,25 @@
     // A real-image slot with a graceful "please add this image" fallback —
     // used wherever a genuine photo/figure belongs but none is bundled yet.
     // Looks for the file in ./images/<file>; drop it in and it displays automatically.
-    function figureSlot(file, labelEn, labelFa, opts){
+    function figureSlot(file, labelEn, labelFa, opts) {
       opts = opts || {};
       const h = opts.height || 150;
       const camera = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>`;
-      return `<div class="figure-slot" style="height:${h}px;">
+      return `<div class="figure-slot" style="height:${h}px; --fig-img:url('./images/${file}');">
         <img src="./images/${file}" alt="${labelEn}"
-             onerror="this.outerHTML = imgPlaceholderHTML('${labelEn.replace(/'/g,"\\'")}','${labelFa.replace(/'/g,"\\'")}','${file}')">
+             onerror="this.parentElement.style.setProperty('--fig-img','none'); this.outerHTML = imgPlaceholderHTML('${labelEn.replace(/'/g, "\\'")}','${labelFa.replace(/'/g, "\\'")}','${file}')">
       </div>`;
     }
-    function imgPlaceholderHTML(labelEn, labelFa, file){
+    function imgPlaceholderHTML(labelEn, labelFa, file) {
       const camera = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>`;
       return `<div class="img-placeholder">${camera}
-        <div class="ph-label">${L(labelEn,labelFa)}</div>
-        <div class="ph-hint">${L('add','افزودن')} images/${file}</div>
+        <div class="ph-label">${L(labelEn, labelFa)}</div>
+        <div class="ph-hint">${L('add', 'افزودن')} images/${file}</div>
       </div>`;
     }
     // A software logo slot — real logo image if provided, else falls back to a
     // clean monogram badge instead of a broken-image icon.
-    function toolLogoSlot(file, ab, full, color){
+    function toolLogoSlot(file, ab, full, color) {
       return `<div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
         <div style="width:44px; height:44px; border-radius:12px; background:${color}1A; border:1.5px solid ${color}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
           <img class="tool-logo" src="./images/logo-${file}.png" alt="${full}"
@@ -2785,45 +3836,52 @@
       </div>`;
     }
 
-    function slideDivider({ num, en, fa, dEn, dFa, color, icon }) {
+    function slideDivider({ num, en, fa, dEn, dFa, color, icon, img }) {
       return `
-  <div class="divider-slide" style="background:linear-gradient(150deg, ${color} 0%, ${color}CC 100%);">
-    <div class="div-num">${L("CHAPTER", "فصل")} ${num}</div>
-    <h2>${L(en, fa)}</h2>
-    <p>${L(dEn, dFa)}</p>
+  <div class="divider-slide" style="--dv-color:${color};">
+    ${img ? `<div class="div-bg-photo" style="background-image:url('./images/${img}')"></div>` : `<div class="div-bg-photo" style="background:linear-gradient(150deg, ${color} 0%, ${color}CC 100%);"></div>`}
+    <div class="div-bg-tint"></div>
+    <div class="div-bg-vignette"></div>
+    <div class="div-bg-grain"></div>
+    <div class="div-content">
+      <div class="div-num">${L("CHAPTER", "فصل")} ${num}</div>
+      <h2>${L(en, fa)}</h2>
+      ${dEn ? `<p>${L(dEn, dFa)}</p>` : ""}
+    </div>
   </div>`;
     }
 
     const SLIDES = [
       { key: "title", sec: "", build: slideTitle, bare: true },
       { key: "agenda", sec: () => L("Overview", "نمای کلی"), build: () => shell({ eyebrow: L("00 · table of context", "۰۰ · فهرست"), title: L("What we'll cover", "آنچه بررسی می‌شود"), body: slideAgenda(), foot: FOOT("02") }) },
-      { key: "div-background", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "01", en: "Background", fa: "پیش‌زمینه", dEn: "CML, the BCR-ABL oncoprotein, TKI resistance, and why anthelmintics are worth screening.", dFa: "CML، انکوپروتئین BCR-ABL، مقاومت به TKI و چرایی ارزش غربالگری داروهای ضدکرم.", color: "#1E4F68", icon: "dna" }) },
+      { key: "div-background", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "01", en: "Background", fa: "پیش‌زمینه", dEn: "CML, the BCR-ABL oncoprotein, TKI resistance, and why anthelmintics are worth screening.", dFa: "CML، انکوپروتئین BCR-ABL، مقاومت به TKI و چرایی ارزش غربالگری داروهای ضدکرم.", color: "#1E4F68", icon: "dna", img: "bg-background.jpg" }) },
       { key: "bg-cancer", sec: () => L("Background", "پیش‌زمینه"), build: () => shell({ eyebrow: L("01 · Background", "۰۱ · پیش‌زمینه"), title: L("Cancer & hematologic malignancies", "سرطان و بدخیمی‌های خونی"), body: slideBgCancer() }) },
-      { key: "bg-bcrabl", sec: () => L("Background", "پیش‌زمینه"), build: () => shell({ eyebrow: L("01 · Background", "۰۱ · پیش‌زمینه"), title: L("CML & the BCR-ABL oncoprotein", "CML و انکوپروتئین BCR-ABL"), body: slideBgBcrAbl() }) },
+      { key: "bg-bcrabl", sec: () => L("Background", "پیش‌زمینه"), build: () => shell({ eyebrow: L("01 · Background", "۰۱ · پیش‌زمینه"), title: L("CML & the BCR-ABL oncoprotein", "CML و انکوپروتئین BCR-ABL"), body: slideBgBcrAbl() }), enter: (dir) => { bcrStep = dir < 0 ? 2 : 0; } },
       { key: "bg-tki", sec: () => L("Background", "پیش‌زمینه"), build: () => shell({ eyebrow: L("01 · Background", "۰۱ · پیش‌زمینه"), title: L("TKIs & the resistance problem", "مهارکننده‌های تیروزین‌کیناز و مسئله مقاومت"), body: slideBgTKI() }) },
-      { key: "bg-repurposing", sec: () => L("Background", "پیش‌زمینه"), build: () => shell({ eyebrow: L("01 · Background", "۰۱ · پیش‌زمینه"), title: L("Drug repurposing & anthelmintics", "بازپروری دارویی و داروهای ضدکرم"), body: slideBgRepurposing() }) },
-      { key: "div-methods", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "02", en: "Materials & Methods", fa: "مواد و روش‌ها", dEn: "The three-stage in-silico pipeline, the 14-compound library, and the four receptor structures.", dFa: "مسیر محاسباتی سه‌مرحله‌ای، کتابخانه ۱۴ ترکیبی و چهار ساختار گیرنده.", color: "#265640", icon: "flask" }) },
+      { key: "bg-repurposing", sec: () => L("Background", "پیش‌زمینه"), build: () => shell({ eyebrow: L("01 · Background", "۰۱ · پیش‌زمینه"), title: L("Drug repurposing & anthelmintics", "بازپروری دارویی و داروهای ضدکرم"), body: slideBgRepurposing() }), after: renderLigandStructures },
+      { key: "div-methods", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "02", en: "Materials & Methods", fa: "مواد و روش‌ها", dEn: "The three-stage in-silico pipeline, the 14-compound library, and the four receptor structures.", dFa: "مسیر محاسباتی سه‌مرحله‌ای، کتابخانه ۱۴ ترکیبی و چهار ساختار گیرنده.", color: "#265640", icon: "flask", img: "bg-methods.jpg" }) },
       { key: "methods", sec: () => L("Methods", "روش‌ها"), build: () => shell({ eyebrow: L("02 · Methods", "۰۲ · روش‌ها"), title: L("A three-stage in-silico pipeline", "مسیر محاسباتی سه‌مرحله‌ای"), body: slideMethodsOverview(), foot: FOOT("05") }) },
       { key: "ligands", sec: () => L("Ligand Library", "کتابخانه لیگاندها"), build: () => shell({ eyebrow: L("02 · Methods", "۰۲ · روش‌ها"), title: L("The 14-compound anthelmintic library", "کتابخانه ۱۴ ترکیبی ضدکرم"), body: slideLigands(), foot: FOOT("06") }), after: renderLigandStructures },
+      { key: "mutation-tour", sec: () => L("Mutation Tour", "تور جهش"), build: () => shell({ eyebrow: L("02 · Methods", "۰۲ · روش‌ها"), title: L("The Y253H mutation, before → after", "جهش Y253H، پیش از آن ← پس از آن"), sub: L("A residue-level tour of the P-loop substitution used to build the mutant receptors.", "یک تور در سطح باقیمانده از جایگزینی حلقه P که برای ساخت گیرنده‌های جهش‌یافته استفاده شد."), body: slideMutationTour() }), after: initMutationTour },
       { key: "receptors", sec: () => L("Receptors", "گیرنده‌ها"), build: () => shell({ eyebrow: L("02 · Methods", "۰۲ · روش‌ها"), title: L("Four BCR-ABL structures", "چهار ساختار BCR-ABL"), body: slideReceptorSelect(), foot: FOOT("07") }) },
       { key: "viewer-6HD4", sec: () => L("Receptors", "گیرنده‌ها"), build: () => shell({ eyebrow: "6HD4", title: L("Wild-type reference: 6HD4", "مرجع نوع وحشی: 6HD4"), body: slideViewer("6HD4"), foot: FOOT("08") }), after: () => initMolViewer("6HD4") },
       { key: "viewer-5MO4", sec: () => L("Receptors", "گیرنده‌ها"), build: () => shell({ eyebrow: "5MO4", title: L("T315I reference crystal: 5MO4", "کریستال مرجع T315I: 5MO4"), body: slideViewer("5MO4"), foot: FOOT("09") }), after: () => initMolViewer("5MO4") },
       { key: "viewer-Y253H_6HD4", sec: () => L("Receptors", "گیرنده‌ها"), build: () => shell({ eyebrow: "Y253H_6HD4", title: L("Modelled mutant: Y253H (6HD4)", "جهش مدل‌سازی‌شده: Y253H (6HD4)"), body: slideViewer("Y253H_6HD4"), foot: FOOT("10") }), after: () => initMolViewer("Y253H_6HD4") },
       { key: "viewer-Y253H_5MO4", sec: () => L("Receptors", "گیرنده‌ها"), build: () => shell({ eyebrow: "Y253H_5MO4", title: L("Double mutant: T315I + Y253H (5MO4)", "جهش دوگانه: T315I + Y253H (5MO4)"), body: slideViewer("Y253H_5MO4"), foot: FOOT("11") }), after: () => initMolViewer("Y253H_5MO4") },
-      { key: "div-docking", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "03", en: "Molecular Docking", fa: "داکینگ مولکولی", dEn: "Screening 112 receptor–site combinations to find the mutant-selective, allosteric hit.", dFa: "غربالگری ۱۱۲ ترکیب گیرنده-سایت برای یافتن هدف انتخابی جهش‌یافته و آلوستریک.", color: "#8C382C", icon: "target" }) },
+      { key: "div-docking", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "03", en: "Molecular Docking", fa: "داکینگ مولکولی", dEn: "Screening 112 receptor–site combinations to find the mutant-selective, allosteric hit.", dFa: "غربالگری ۱۱۲ ترکیب گیرنده-سایت برای یافتن هدف انتخابی جهش‌یافته و آلوستریک.", color: "#8C382C", icon: "target", img: "bg-docking.jpg" }) },
       { key: "dock-protocol", sec: () => L("Docking", "داکینگ"), build: () => shell({ eyebrow: L("03 · Docking", "۰۳ · داکینگ"), title: L("Docking protocol & grid boxes", "پروتکل داکینگ و جعبه‌های گرید"), body: slideDockingProtocol(), foot: FOOT("12") }) },
       { key: "dock-validation", sec: () => L("Docking", "داکینگ"), build: () => shell({ eyebrow: L("03 · Docking", "۰۳ · داکینگ"), title: L("Validation (re-)docking", "اعتبارسنجی (باز)داکینگ"), body: slideValidation(), foot: FOOT("13") }) },
       { key: "dock-heatmap", sec: () => L("Docking", "داکینگ"), build: () => shell({ eyebrow: L("03 · Docking", "۰۳ · داکینگ"), title: L("Full ΔG heatmap — 14 × 8 combinations", "نقشه حرارتی کامل ΔG — ۱۴ × ۸ ترکیب"), body: slideHeatmap(), foot: FOOT("14") }) },
       { key: "dock-selection", sec: () => L("Docking", "داکینگ"), build: () => shell({ eyebrow: L("03 · Docking", "۰۳ · داکینگ"), title: L("Selection criteria", "معیار انتخاب"), body: slideSelectionCriteria(), foot: FOOT("15") }) },
       { key: "dock-finding", sec: () => L("Docking", "داکینگ"), build: () => shell({ eyebrow: L("03 · Docking", "۰۳ · داکینگ"), title: L("The central finding", "یافته محوری"), body: slideCentralFinding(), foot: FOOT("16") }), after: drawFindingChart },
-      { key: "div-md", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "04", en: "Molecular Dynamics", fa: "دینامیک مولکولی", dEn: "Stress-testing the docking hit's stability across a simulated time course.", dFa: "محک‌زدن پایداری یافته داکینگ در طول یک دوره زمانی شبیه‌سازی‌شده.", color: "#8A6B22", icon: "wave" }) },
+      { key: "div-md", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "04", en: "Molecular Dynamics", fa: "دینامیک مولکولی", dEn: "Stress-testing the docking hit's stability across a simulated time course.", dFa: "محک‌زدن پایداری یافته داکینگ در طول یک دوره زمانی شبیه‌سازی‌شده.", color: "#8A6B22", icon: "wave", img: "bg-md.jpg" }) },
       { key: "md-methods", sec: () => L("Molecular Dynamics", "دینامیک مولکولی"), build: () => shell({ eyebrow: L("04 · MD", "۰۴ · دینامیک مولکولی"), title: L("Molecular dynamics setup", "تنظیمات دینامیک مولکولی"), body: slideMdMethods(), foot: FOOT("17") }) },
       { key: "md-trajectory", sec: () => L("Molecular Dynamics", "دینامیک مولکولی"), build: () => shell({ eyebrow: L("04 · MD", "۰۴ · دینامیک مولکولی"), title: L("Live trajectory metrics", "معیارهای زنده تراژکتوری"), body: slideMdTrajectory(), foot: FOOT("18") }), after: () => drawMdCharts() },
       { key: "md-gbsa", sec: () => L("Molecular Dynamics", "دینامیک مولکولی"), build: () => shell({ eyebrow: L("04 · MD", "۰۴ · دینامیک مولکولی"), title: L("MM/GBSA free-energy decomposition", "تجزیه انرژی آزاد MM/GBSA"), body: slideMmgbsa(), foot: FOOT("19") }), after: drawGbsaChart },
-      { key: "div-dft", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "05", en: "DFT Calculations", fa: "محاسبات DFT", dEn: "Asking whether praziquantel is electronically predisposed to this kind of stable binding.", dFa: "بررسی این‌که آیا پرازیکوانتل از نظر الکترونی مستعد چنین اتصال پایداری است یا خیر.", color: "#4A3D68", icon: "atom" }) },
+      { key: "div-dft", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "05", en: "DFT Calculations", fa: "محاسبات DFT", dEn: "Asking whether praziquantel is electronically predisposed to this kind of stable binding.", dFa: "بررسی این‌که آیا پرازیکوانتل از نظر الکترونی مستعد چنین اتصال پایداری است یا خیر.", color: "#4A3D68", icon: "atom", img: "bg-dft.jpg" }) },
       { key: "dft-methods", sec: () => L("DFT", "DFT"), build: () => shell({ eyebrow: L("05 · DFT", "۰۵ · DFT"), title: L("DFT methodology", "روش‌شناسی DFT"), body: slideDftMethods(), foot: FOOT("20") }) },
       { key: "dft-results", sec: () => L("DFT", "DFT"), build: () => shell({ eyebrow: L("05 · DFT", "۰۵ · DFT"), title: L("Electronic reactivity of praziquantel", "واکنش‌پذیری الکترونی پرازیکوانتل"), body: slideDftResults(), foot: FOOT("21") }) },
-      { key: "div-discussion", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "06", en: "Discussion & Conclusion", fa: "بحث و نتیجه‌گیری", dEn: "Bringing docking, MD and DFT together, comparing candidates, and weighing the limitations.", dFa: "جمع‌بندی داکینگ، MD و DFT، مقایسه کاندیداها و بررسی محدودیت‌ها.", color: "#182533", icon: "check" }) },
+      { key: "div-discussion", sec: "", bare: true, divider: true, build: () => slideDivider({ num: "06", en: "Discussion & Conclusion", fa: "بحث و نتیجه‌گیری", dEn: "Bringing docking, MD and DFT together, comparing candidates, and weighing the limitations.", dFa: "جمع‌بندی داکینگ، MD و DFT، مقایسه کاندیداها و بررسی محدودیت‌ها.", color: "#182533", icon: "check", img: "bg-discussion.jpg" }) },
       { key: "convergence", sec: () => L("Synthesis", "جمع‌بندی"), build: () => shell({ eyebrow: L("06 · Synthesis", "۰۶ · جمع‌بندی"), title: L("Three-level convergence", "همگرایی سه‌سطحی"), body: slideConvergence(), foot: FOOT("22") }) },
       { key: "comparison", sec: () => L("Discussion", "بحث"), build: () => shell({ eyebrow: L("07 · Discussion", "۰۷ · بحث"), title: L("Praziquantel vs. other candidates", "پرازیکوانتل در برابر سایر کاندیداها"), body: slideComparison(), foot: FOOT("23") }) },
       { key: "admet", sec: () => L("Discussion", "بحث"), build: () => shell({ eyebrow: L("07 · Discussion", "۰۷ · بحث"), title: L("ADMET & druggability", "ADMET و دارورسانی"), body: slideAdmet(), foot: FOOT("24") }) },
@@ -2836,35 +3894,191 @@
     /* =========================================================================
        RENDER / NAVIGATION ENGINE
        ========================================================================= */
-    function renderSlide(dir) {
+    let motionBusy = false;
+    let firstRender = true;
+
+    /* Wrap each word of a headline in a mask/inner span pair so it can be
+       revealed with a clip-and-rise motion — a lightweight stand-in for
+       GSAP's SplitText plugin using nothing but native DOM + GSAP tweens. */
+    function splitTextMask(el) {
+      if (!el || el.dataset.split) return;
+      const text = el.textContent;
+      if (!text || !text.trim()) return;
+      el.dataset.split = '1';
+      el.innerHTML = text.split(/(\s+)/).map(tok => {
+        if (!tok.trim()) return tok;
+        return `<span class="word-mask"><span class="word-inner">${tok}</span></span>`;
+      }).join('');
+    }
+
+    function animateSlideIn(el, dir = 1) {
+      if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.classList.add('active');
+        return;
+      }
+
+      el.classList.add('motion-prep');
+      el.classList.add('active');
+
+      const rtl = currentLang === 'fa';
+      const sign = (dir >= 0 ? 1 : -1) * (rtl ? -1 : 1);
+
+      // Split headline-level text into word masks before animating.
+      const headlineEls = el.querySelectorAll(
+        'h1.slide-title, .divider-slide h2, .title-slide h1, .bg-headline, .bg-bigword'
+      );
+      headlineEls.forEach(splitTextMask);
+
+      const children = el.querySelectorAll(
+        '.eyebrow, .slide-sub, .slide > .grow, .slide-foot, '
+        + '.title-slide > *, .divider-slide .div-num, .divider-slide p, .bg-story > *, .bg-bcr-layout > *, '
+        + '.bg-bcr-card, .bg-tki-column, .bg-tki-center, .rep-flow, .rep-visuals, '
+        + '.card, .panel, .metric, .chart-wrap, .table-wrap, .method-step, [data-motion]'
+      );
+
+      // First pass: bring the slide itself in with a restrained directional drift.
+      gsap.fromTo(el,
+        { autoAlpha: 0, x: sign * 26, y: 10, scale: .985 },
+        { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: .62, ease: 'power3.out' }
+      );
+
+      // Headline words rise out of their masks in a quick, orchestrated cascade.
+      const words = el.querySelectorAll('.word-mask .word-inner');
+      if (words.length) {
+        gsap.fromTo(words,
+          { yPercent: 108, autoAlpha: 0 },
+          { yPercent: 0, autoAlpha: 1, duration: .68, stagger: .022, delay: .1, ease: 'power4.out' }
+        );
+      }
+
+      // Second pass: stagger the remaining content so the eye gets a clear reading order.
+      if (children.length) {
+        gsap.fromTo(children,
+          { autoAlpha: 0, y: 18, x: sign * 10 },
+          { autoAlpha: 1, y: 0, x: 0, duration: .58, stagger: .045, delay: .16, ease: 'power3.out', clearProps: 'transform,opacity' }
+        );
+      }
+
+      // Hero images / molecular views get a slower, subtle scale reveal.
+      const heroes = el.querySelectorAll('.figure-slot img, .bg-hero-visual img, .bg-bcr-visual img, .rep-hero, .viewer-box, .divider-slide .div-bg-photo');
+      if (heroes.length) {
+        gsap.fromTo(heroes, { scale: 1.09, autoAlpha: .5 }, { scale: 1, autoAlpha: 1, duration: 1.1, delay: .04, ease: 'power2.out', clearProps: 'opacity' });
+      }
+    }
+
+    function prepareVerticalScroll(el) {
+      if (!el) return;
+      const containers = el.querySelectorAll('.scroll-y');
+      if (!containers.length) return;
+
+      containers.forEach((box) => {
+        box.classList.add('scroll-motion');
+
+        const updateState = () => {
+          const canScroll = box.scrollHeight > box.clientHeight + 4;
+          box.classList.toggle('has-scroll', canScroll);
+          const atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 6;
+          const hint = box.querySelector('.vertical-scroll-hint');
+          if (hint) hint.classList.toggle('done', !canScroll || atBottom);
+        };
+
+        // Give long content a subtle entrance as it becomes visible.
+        const items = Array.from(box.children).filter(node =>
+          !node.classList.contains('vertical-scroll-hint')
+        );
+
+        if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          items.forEach((item, i) => {
+            item.classList.add('scroll-reveal');
+            gsap.fromTo(item,
+              { autoAlpha: .45, y: 18 },
+              { autoAlpha: 1, y: 0, duration: .55, delay: Math.min(i * .035, .18), ease: 'power2.out', clearProps: 'transform,opacity' }
+            );
+          });
+        }
+
+        box.addEventListener('scroll', updateState, { passive: true });
+        requestAnimationFrame(updateState);
+
+        if (box.scrollHeight > box.clientHeight + 4 && !box.querySelector('.vertical-scroll-hint')) {
+          const hint = document.createElement('div');
+          hint.className = 'vertical-scroll-hint';
+          hint.textContent = currentLang === 'fa' ? 'SCROLL ↓' : 'SCROLL ↓';
+          box.appendChild(hint);
+          updateState();
+        }
+      });
+    }
+
+    function canConsumeVerticalScroll(target, deltaY) {
+      const box = target && target.closest ? target.closest('.scroll-y') : null;
+      if (!box) return false;
+      const max = box.scrollHeight - box.clientHeight;
+      if (max <= 2) return false;
+      const atTop = box.scrollTop <= 1;
+      const atBottom = box.scrollTop >= max - 1;
+      return deltaY < 0 ? !atTop : !atBottom;
+    }
+
+    function renderSlide(dir = 1) {
       clearInterval(mdTimer); mdPlaying = false;
-      if(typeof clearIntro === 'function') clearIntro();
+      if (typeof clearIntro === 'function') clearIntro();
       const vp = document.getElementById("slide-viewport");
       const s = SLIDES[currentSlide];
+      const old = vp.querySelector('.slide');
       const el = document.createElement("div");
       el.className = "slide" + (s.divider ? " no-pad" : "");
+      if (s.enter) s.enter(dir);
       el.innerHTML = s.build();
-      vp.innerHTML = "";
-      vp.appendChild(el);
-      requestAnimationFrame(() => { el.classList.add("active"); });
-      // chrome
-      document.getElementById("counter-current").textContent =
-        currentSlide + 1;
 
-      document.getElementById("counter-total").textContent =
-        SLIDES.length;
-      document.getElementById("progress-fill").style.width = ((currentSlide + 1) / SLIDES.length * 100) + "%";
-      const langToggleEl = document.getElementById("lang-toggle");
-      if (langToggleEl) langToggleEl.style.display = (currentSlide === 0) ? "flex" : "none";
-      updateLangUI();
-      if (s.after) { setTimeout(s.after, 60); }
+      const commit = () => {
+        vp.innerHTML = "";
+        vp.appendChild(el);
+        animateSlideIn(el, dir);
+        prepareVerticalScroll(el);
+
+        document.getElementById("counter-current").textContent = currentSlide + 1;
+        document.getElementById("counter-total").textContent = SLIDES.length;
+        document.getElementById("progress-fill").style.width = ((currentSlide + 1) / SLIDES.length * 100) + "%";
+        const langToggleEl = document.getElementById("lang-toggle");
+        if (langToggleEl) langToggleEl.style.display = (currentSlide === 0) ? "flex" : "none";
+        updateLangUI();
+        const hint = document.getElementById('scroll-hint');
+        if (hint) hint.classList.toggle('hide', currentSlide > 1);
+        if (s.after) setTimeout(s.after, 90);
+        motionBusy = false;
+        firstRender = false;
+      };
+
+      if (old && window.gsap && !firstRender && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        motionBusy = true;
+        const rtl = currentLang === 'fa';
+        const sign = (dir >= 0 ? 1 : -1) * (rtl ? -1 : 1);
+        gsap.to(old, {
+          autoAlpha: 0,
+          x: sign * -30,
+          y: -5,
+          scale: .985,
+          duration: .34,
+          ease: 'power2.in',
+          onComplete: commit
+        });
+      } else {
+        commit();
+      }
     }
-    function jump(i) { currentSlide = i; renderSlide(); }
+    function jump(i) {
+      if (motionBusy || i === currentSlide) return;
+      const dir = i > currentSlide ? 1 : -1;
+      currentSlide = i;
+      renderSlide(dir);
+    }
     function go(delta) {
+      if (motionBusy) return;
       const next = currentSlide + delta;
       if (next < 0 || next >= SLIDES.length) return;
       currentSlide = next;
-      renderSlide();
+      renderSlide(delta >= 0 ? 1 : -1);
     }
     function toggleLang() {
       currentLang = currentLang === "en" ? "fa" : "en";
@@ -2916,11 +4130,25 @@
     /* mouse wheel (subtle, debounced) */
     let wheelLock = false;
     document.getElementById("stage").addEventListener("wheel", (e) => {
-      if (wheelLock) return;
-      if (Math.abs(e.deltaY) < 30) return;
+      if (Math.abs(e.deltaY) < 10) return;
+
+      // A vertically scrollable slide gets priority. Only when the user reaches
+      // its top/bottom edge does the wheel continue to the previous/next slide.
+      if (canConsumeVerticalScroll(e.target, e.deltaY)) return;
+
+      // Slide 5: the wheel walks through the three tabs before moving to another slide.
+      if (SLIDES[currentSlide].key === "bg-bcrabl" && !motionBusy) {
+        const nxt = bcrStep + (e.deltaY > 0 ? 1 : -1);
+        if (nxt >= 0 && nxt < BCR_STEPS.length) {
+          if (!wheelLock) { wheelLock = true; setBcrStep(nxt); setTimeout(() => wheelLock = false, 650); }
+          return;
+        }
+      }
+
+      if (wheelLock || motionBusy) return;
       wheelLock = true;
       go(e.deltaY > 0 ? 1 : -1);
-      setTimeout(() => wheelLock = false, 650);
+      setTimeout(() => wheelLock = false, 700);
     }, { passive: true });
 
     /* boot */
@@ -3058,10 +4286,6 @@
       }
     }
   </script>
-</body>
-
-</html>
-
 </body>
 
 </html>
