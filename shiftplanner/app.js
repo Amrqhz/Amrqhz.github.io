@@ -1758,7 +1758,7 @@ function exportSms() {
 
 
         lines.push(
-          `${dateFa} (${dayFa}) — ${s.start} تا ${s.end} (${hFa}h)${typeTag}${depTag}`
+          `${dateFa} (${dayFa}) — ${s.start} تا ${s.end} (${hFa}h)`
         );
       });
 
