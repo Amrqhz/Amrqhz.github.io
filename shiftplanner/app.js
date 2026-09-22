@@ -1713,104 +1713,135 @@ function exportJsonBackup() {
   showToast('فایل پشتیبان دانلود شد ✓');
 }
 function exportSms() {
-  const ms = getMonthShifts(financialPharmacyFilter);
+  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all');
 
   if (ms.length === 0) {
     showToast('شیفتی برای ارسال وجود ندارد');
     return;
   }
 
-  const payments = S.loadPayments();
+  const payments   = S.loadPayments();
   const monthLabel = `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
-  const isSingle = financialPharmacyFilter !== 'all';
-  const lines = [];
+  const isSingle   = financialPharmacyFilter !== 'all';
+  const lines      = [];
 
-  // Header
-  lines.push(` گزارش مالی — ${monthLabel}`);
+  // ── Header ──────────────────────────────────────────────
+  lines.push(`گزارش شیفت — ${monthLabel}`);
 
-  if (isSingle) {
-    // Single pharmacy report
-    const pid = financialPharmacyFilter;
-    const pname = pharmacyName(pid);
-    const pkey = S.paymentKey(viewYear, viewMonth, pid);
+  // ── Group shifts by pharmacy ────────────────────────────
+  const byPharmacy = {};
+  ms.forEach((s) => {
+    if (!byPharmacy[s.pharmacyId]) byPharmacy[s.pharmacyId] = [];
+    byPharmacy[s.pharmacyId].push(s);
+  });
+
+  Object.entries(byPharmacy).forEach(([pid, pShifts]) => {
+    const pname  = pharmacyName(pid);
+    const pkey   = S.paymentKey(viewYear, viewMonth, pid);
     const isPaid = !!payments[pkey];
 
-    let dayH = 0, nightH = 0, holidayH = 0, totalInc = 0;
-    ms.forEach((s) => {
+    lines.push('');
+    lines.push(`${pname}`);
+    lines.push('━━━━━━━━━━━━━━');
+
+    // Each shift as a date+time line
+    pShifts.sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start))
+      .forEach((s) => {
+        const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
+        const wi       = J.jalaliWeekday(jy, jm, jd);
+        const dateFa   = `${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}`;
+        const dayFa    = J.PERSIAN_WEEKDAYS[wi];
+        const h        = S.shiftDurationHours(s.start, s.end);
+        const hFa      = J.toPersianDigits(h.toFixed(1));
+
+        // Type indicator
+        let typeTag = '';
+        if (s.isHoliday) typeTag = 'تعطیل:';
+        else {
+          const { nightHours } = S.splitShiftHours(s.start, s.end);
+          if (nightHours > 0) typeTag = 'شب:';
+        }
+
+        // Deputy tag
+        // const depTag = s.deputyId ? `  ${deputyName(s.deputyId)}` : '';
+
+        lines.push(
+          `${dateFa} (${dayFa}) — ${s.start} تا ${s.end} (${hFa}h)${typeTag}${depTag}`
+        );
+      });
+
+    // Pharmacy subtotal
+    const totalH   = pShifts.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
+    const totalInc = pShifts.reduce((sum, s) => sum + calcIncome(s), 0);
+
+    // Breakdown by type
+    let dayH = 0, nightH = 0, holidayH = 0;
+    pShifts.forEach((s) => {
       if (s.isHoliday) {
         holidayH += S.shiftDurationHours(s.start, s.end);
       } else {
         const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-        dayH += dayHours;
+        dayH   += dayHours;
         nightH += nightHours;
       }
-      totalInc += calcIncome(s);
     });
 
-    lines.push(`━━━━━━━━━━━━━━`);
-    lines.push(` ${pname}`);
-    lines.push(`━━━━━━━━━━━━━━`);
-    lines.push(`شیفت‌ها: ${J.toPersianDigits(ms.length)}`);
-    if (dayH > 0) lines.push(` عادی: ${J.toPersianDigits(dayH.toFixed(1))} ساعت`);
-    if (nightH > 0) lines.push(` شب: ${J.toPersianDigits(nightH.toFixed(1))} ساعت`);
-    if (holidayH > 0) lines.push(` تعطیل: ${J.toPersianDigits(holidayH.toFixed(1))} ساعت`);
-    lines.push(` درآمد: ${J.toPersianDigits(Math.round(totalInc).toLocaleString('en'))} تومان`);
-    lines.push(`وضعیت: ${isPaid ? ' دریافت شده' : ' در انتظار دریافت'}`);
+    lines.push('━━━━━━━━━━━━━━');
+    lines.push(`مجموع: ${J.toPersianDigits(pShifts.length)} شیفت | ${J.toPersianDigits(totalH.toFixed(1))} ساعت`);
 
-  } else {
-    // All pharmacies — one block per pharmacy
-    const byPharmacy = {};
-    ms.forEach((s) => {
-      if (!byPharmacy[s.pharmacyId])
-        byPharmacy[s.pharmacyId] = { dayH: 0, nightH: 0, holidayH: 0, income: 0, count: 0 };
-      const d = byPharmacy[s.pharmacyId];
-      d.count++;
-      if (s.isHoliday) {
-        d.holidayH += S.shiftDurationHours(s.start, s.end);
+    const hourParts = [];
+    if (dayH     > 0) hourParts.push(`${J.toPersianDigits(dayH.toFixed(1))}h عادی`);
+    if (nightH   > 0) hourParts.push(`${J.toPersianDigits(nightH.toFixed(1))}h شب`);
+    if (holidayH > 0) hourParts.push(` ${J.toPersianDigits(holidayH.toFixed(1))}h تعطیل`);
+    if (hourParts.length > 0) lines.push(hourParts.join(' | '));
+
+    if (totalInc > 0)
+      lines.push(` درآمد: ${J.toPersianDigits(Math.round(totalInc).toLocaleString('en'))} تومان`);
+
+  });
+
+  // ── Grand total (only when showing all pharmacies) ──────
+  if (!isSingle && Object.keys(byPharmacy).length > 1) {
+    const grandTotal    = ms.reduce((sum, s) => sum + calcIncome(s), 0);
+    const grandH        = ms.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
+    const grandPaid     = Object.entries(byPharmacy).reduce((sum, [pid, pShifts]) => {
+      const pkey = S.paymentKey(viewYear, viewMonth, pid);
+      return sum + (payments[pkey] ? pShifts.reduce((s, x) => s + calcIncome(x), 0) : 0);
+    }, 0);
+    const grandUnpaid   = grandTotal - grandPaid;
+
+    lines.push('');
+    lines.push('━━━━━━━━━━━━━━');
+    lines.push(`جمع کل: ${J.toPersianDigits(ms.length)} شیفت | ${J.toPersianDigits(grandH.toFixed(1))} ساعت`);
+    lines.push(` درآمد کل: ${J.toPersianDigits(Math.round(grandTotal).toLocaleString('en'))} تومان`);
+
+
+  // ── Bank accounts ────────────────────────────────────────
+  const accounts = (settings.bankAccounts || []);
+  if (accounts.length > 0) {
+    lines.push('');
+    lines.push('━━━━━━━━━━━━━━');
+    lines.push('اطلاعات حساب:');
+    accounts.forEach((acc) => {
+      if (acc.type === 'card') {
+        const formatted = acc.number.replace(/(.{4})/g, '$1-').replace(/-$/, '');
+        lines.push(` ${escapeHtml(acc.bankName)}: ${formatted}`);
       } else {
-        const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-        d.dayH += dayHours;
-        d.nightH += nightHours;
+        // SHEBA: group digits and add IR prefix
+        const grouped = acc.number.replace(/(.{4})/g, '$1 ').trimEnd();
+        lines.push(` ${escapeHtml(acc.bankName)}: IR${grouped}`);
       }
-      d.income += calcIncome(s);
     });
-
-    const totalIncome = ms.reduce((sum, s) => sum + calcIncome(s), 0);
-    let paidTotal = 0, unpaidTotal = 0;
-
-    Object.entries(byPharmacy)
-      .sort((a, b) => b[1].income - a[1].income)
-      .forEach(([pid, d]) => {
-        const pkey = S.paymentKey(viewYear, viewMonth, pid);
-        const isPaid = !!payments[pkey];
-        if (isPaid) paidTotal += d.income;
-        else unpaidTotal += d.income;
-
-        lines.push(`━━━━━━━━━━━━━━`);
-        lines.push(` ${pharmacyName(pid)}`);
-        lines.push(`شیفت‌ها: ${J.toPersianDigits(d.count)}`);
-        if (d.dayH > 0) lines.push(` ${J.toPersianDigits(d.dayH.toFixed(1))}h عادی`);
-        if (d.nightH > 0) lines.push(` ${J.toPersianDigits(d.nightH.toFixed(1))}h شب`);
-        if (d.holidayH > 0) lines.push(` ${J.toPersianDigits(d.holidayH.toFixed(1))}h تعطیل`);
-        lines.push(` ${J.toPersianDigits(Math.round(d.income).toLocaleString('en'))} تومان`);
-        lines.push(isPaid ? ' دریافت شده' : ' در انتظار');
-      });
-
-    lines.push(`━━━━━━━━━━━━━━`);
-    lines.push(` جمع کل: ${J.toPersianDigits(Math.round(totalIncome).toLocaleString('en'))} تومان`);
-    lines.push(` دریافتی: ${J.toPersianDigits(Math.round(paidTotal).toLocaleString('en'))} تومان`);
-    lines.push(` مانده: ${J.toPersianDigits(Math.round(unpaidTotal).toLocaleString('en'))} تومان`);
   }
 
-  lines.push(`━━━━━━━━━━━━━━`);
-  lines.push(` دفتر شیفت — @amrqhz`);
+  // ── Footer ───────────────────────────────────────────────
+  lines.push('');
+  lines.push(' دفتر شیفت — @amrqhz');
 
   const body = lines.join('\n');
 
-  // Open native SMS/messaging app with pre-filled body
-  // sms: URI scheme works on iOS (iMessage) and Android
   const smsLink = document.createElement('a');
-  smsLink.href = `sms:?body=${encodeURIComponent(body)}`;
+  smsLink.href  = `sms:?body=${encodeURIComponent(body)}`;
   smsLink.style.display = 'none';
   document.body.appendChild(smsLink);
   smsLink.click();
@@ -2087,4 +2118,4 @@ function showSuccess(message = 'Shared successfully!') {
 
 // Bonus: Make it work even better on mobile
 console.log('%cShare button ready! 🚀', 'color: #fff; font-size: 14px;');
-
+}

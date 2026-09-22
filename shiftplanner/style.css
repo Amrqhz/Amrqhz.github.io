@@ -2893,7 +2893,7 @@ label.linebtn {
     justify-content: space-around;
     align-items: center;
     gap: 1px;
-      margin: 10px 15px;
+    margin: 10px 15px;
   }
 }
 @media (max-width: 400px) {
@@ -2973,4 +2973,109 @@ label.linebtn {
   z-index: 999;
   /* backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px); */
+}
+
+
+/* =====================================================================
+   SUPPORT / حمایت مالی BUTTON
+   ===================================================================== */
+
+.support-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px 16px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fef9c3 0%, #fef3c7 60%, #fde68a 100%);
+  border: 1.5px solid #fcd34d;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: #78350f;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 2px 8px rgba(251,191,36,0.18);
+}
+
+.support-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(251,191,36,0.28);
+  filter: brightness(1.03);
+}
+
+.support-btn:active {
+  transform: scale(0.97);
+}
+
+.support-btn__icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.support-btn__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.support-btn__text strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+}
+
+.support-btn__text small {
+  font-size: 11px;
+  opacity: 0.75;
+  font-family: var(--font-ui);
+  line-height: 1.4;
+}
+
+.support-btn__arrow {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+/* Theme variants */
+[data-theme="lavender"] .support-btn {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border-color: #c4b5fd;
+  color: #4c1d95;
+  box-shadow: 0 2px 8px rgba(139,92,246,0.15);
+}
+[data-theme="lavender"] .support-btn:hover {
+  box-shadow: 0 6px 20px rgba(139,92,246,0.25);
+}
+
+[data-theme="softpink"] .support-btn {
+  background: linear-gradient(135deg, #fdf2f8, #fce7f3);
+  border-color: #f9a8d4;
+  color: #831843;
+  box-shadow: 0 2px 8px rgba(244,114,182,0.15);
+}
+[data-theme="softpink"] .support-btn:hover {
+  box-shadow: 0 6px 20px rgba(244,114,182,0.25);
+}
+
+[data-theme="softblue"] .support-btn {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border-color: #93c5fd;
+  color: #1e3a8a;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.15);
+}
+[data-theme="softblue"] .support-btn:hover {
+  box-shadow: 0 6px 20px rgba(59,130,246,0.25);
+}
+
+[data-theme="floral"] .support-btn {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-color: #86efac;
+  color: #14532d;
+  box-shadow: 0 2px 8px rgba(56,138,80,0.15);
+}
+[data-theme="floral"] .support-btn:hover {
+  box-shadow: 0 6px 20px rgba(56,138,80,0.25);
 }
