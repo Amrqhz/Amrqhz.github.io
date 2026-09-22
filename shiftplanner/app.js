@@ -1712,6 +1712,8 @@ function exportJsonBackup() {
     'application/json');
   showToast('فایل پشتیبان دانلود شد ✓');
 }
+
+
 function exportSms() {
   const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all');
 
@@ -1754,16 +1756,6 @@ function exportSms() {
         const h        = S.shiftDurationHours(s.start, s.end);
         const hFa      = J.toPersianDigits(h.toFixed(1));
 
-        // Type indicator
-        let typeTag = '';
-        if (s.isHoliday) typeTag = 'تعطیل:';
-        else {
-          const { nightHours } = S.splitShiftHours(s.start, s.end);
-          if (nightHours > 0) typeTag = 'شب:';
-        }
-
-        // Deputy tag
-        // const depTag = s.deputyId ? `  ${deputyName(s.deputyId)}` : '';
 
         lines.push(
           `${dateFa} (${dayFa}) — ${s.start} تا ${s.end} (${hFa}h)${typeTag}${depTag}`
@@ -1790,8 +1782,8 @@ function exportSms() {
     lines.push(`مجموع: ${J.toPersianDigits(pShifts.length)} شیفت | ${J.toPersianDigits(totalH.toFixed(1))} ساعت`);
 
     const hourParts = [];
-    if (dayH     > 0) hourParts.push(`${J.toPersianDigits(dayH.toFixed(1))}h عادی`);
-    if (nightH   > 0) hourParts.push(`${J.toPersianDigits(nightH.toFixed(1))}h شب`);
+    if (dayH     > 0) hourParts.push(` ${J.toPersianDigits(dayH.toFixed(1))}h عادی`);
+    if (nightH   > 0) hourParts.push(` ${J.toPersianDigits(nightH.toFixed(1))}h شب`);
     if (holidayH > 0) hourParts.push(` ${J.toPersianDigits(holidayH.toFixed(1))}h تعطیل`);
     if (hourParts.length > 0) lines.push(hourParts.join(' | '));
 
@@ -1812,31 +1804,32 @@ function exportSms() {
 
     lines.push('');
     lines.push('━━━━━━━━━━━━━━');
-    lines.push(`جمع کل: ${J.toPersianDigits(ms.length)} شیفت | ${J.toPersianDigits(grandH.toFixed(1))} ساعت`);
-    lines.push(` درآمد کل: ${J.toPersianDigits(Math.round(grandTotal).toLocaleString('en'))} تومان`);
-
+    lines.push(` جمع کل: ${J.toPersianDigits(ms.length)} شیفت | ${J.toPersianDigits(grandH.toFixed(1))} ساعت`);
+    lines.push(`درآمد کل: ${J.toPersianDigits(Math.round(grandTotal).toLocaleString('en'))} تومان`);
+  }
 
   // ── Bank accounts ────────────────────────────────────────
   const accounts = (settings.bankAccounts || []);
   if (accounts.length > 0) {
     lines.push('');
     lines.push('━━━━━━━━━━━━━━');
-    lines.push('اطلاعات حساب:');
+    lines.push(' اطلاعات حساب:');
     accounts.forEach((acc) => {
       if (acc.type === 'card') {
         const formatted = acc.number.replace(/(.{4})/g, '$1-').replace(/-$/, '');
-        lines.push(` ${escapeHtml(acc.bankName)}: ${formatted}`);
+        lines.push(`${escapeHtml(acc.bankName)}: ${formatted}`);
       } else {
         // SHEBA: group digits and add IR prefix
         const grouped = acc.number.replace(/(.{4})/g, '$1 ').trimEnd();
-        lines.push(` ${escapeHtml(acc.bankName)}: IR${grouped}`);
+        lines.push(`${escapeHtml(acc.bankName)}: IR${grouped}`);
       }
+      if (acc.ownerName) lines.push(` به نام: ${acc.ownerName}`);
     });
   }
 
   // ── Footer ───────────────────────────────────────────────
   lines.push('');
-  lines.push(' دفتر شیفت — @amrqhz');
+  lines.push('دفتر شیفت — @amrqhz');
 
   const body = lines.join('\n');
 
@@ -2118,4 +2111,4 @@ function showSuccess(message = 'Shared successfully!') {
 
 // Bonus: Make it work even better on mobile
 console.log('%cShare button ready! 🚀', 'color: #fff; font-size: 14px;');
-}
+
