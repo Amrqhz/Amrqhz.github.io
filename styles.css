@@ -722,6 +722,9 @@ h6{
     display: flex;
     align-items: center;
     gap: 1.1rem;
+    a{
+        text-decoration: none
+        }
 }
 
 .social-icon {
