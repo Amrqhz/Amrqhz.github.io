@@ -708,3 +708,47 @@ h6{
     .books-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
     .site-nav { gap: 0.75rem; }
 }
+
+/* ===== TERMINAL + SOCIAL ICONS ===== */
+.terminal-row {
+    display: flex;
+    align-items: center;
+    gap: 7rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.social-icons {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    color: var(--text-muted);
+    /* background: var(--surface); */
+    /* border: 1px solid var(--border); */
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+}
+
+.social-icon:hover {
+    color: var(--text);
+    border-color: #c5c9d4;
+    background: #f1f3f7;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.terminal-label {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    margin: 0;
+}
