@@ -18,6 +18,11 @@ let reportPharmacyFilter = 'all';
 let financialPharmacyFilter = 'all';
 let reportDeputyFilter = 'all';
 let financialDeputyFilter = 'all';
+// Independent month state for each report tab (default = current month)
+let summaryYear    = null; // set in init()
+let summaryMonth   = null;
+let financialYear  = null;
+let financialMonth = null;
 let deferredInstallPrompt = null; // PWA beforeinstallprompt event
 
 const todayJ = J.todayJalali();
@@ -41,9 +46,19 @@ function init() {
   bindSettings();
   bindPwaInstall();
 
+  // Init report month states to current month
+  summaryYear    = todayJ.jy;
+  summaryMonth   = todayJ.jm;
+  financialYear  = todayJ.jy;
+  financialMonth = todayJ.jm;
+
+  bindReportMonthPickers();
+
   renderCalendar();
   renderPharmacyList();
   renderPharmacySelect();
+  registerServiceWorker();
+  fetchAnnouncements();
   renderDeputySelect();
   registerServiceWorker();
 }
@@ -68,8 +83,8 @@ function bindNav() {
         v.setAttribute('data-active', 'false'));
       document.getElementById(`view-${target}`).setAttribute('data-active', 'true');
 
-      if (target === 'summary') renderSummary();
-      if (target === 'financial') renderFinancial();
+      if (target === 'summary')    { updateSummaryMonthLabel(); renderSummary(); }
+      if (target === 'financial')  { renderFinancial(); renderTrendChart(); }
       if (target === 'pharmacies') renderPharmacyList();
       if (target === 'deputies') renderDeputyList();
     });
@@ -709,6 +724,63 @@ function bindReportFilter() {
     reportDeputyFilter = e.target.value; renderSummary();
   });
 }
+function bindReportMonthPickers() {
+  // ── Summary tab ──────────────────────────────────────────
+  document.getElementById('summaryPrevMonth').addEventListener('click', () => {
+    summaryMonth--;
+    if (summaryMonth < 1) { summaryMonth = 12; summaryYear--; }
+    updateSummaryMonthLabel();
+    renderSummary();
+  });
+  document.getElementById('summaryNextMonth').addEventListener('click', () => {
+    summaryMonth++;
+    if (summaryMonth > 12) { summaryMonth = 1; summaryYear++; }
+    updateSummaryMonthLabel();
+    renderSummary();
+  });
+  document.getElementById('summaryThisMonth').addEventListener('click', () => {
+    summaryYear  = todayJ.jy;
+    summaryMonth = todayJ.jm;
+    updateSummaryMonthLabel();
+    renderSummary();
+  });
+
+  // ── Financial tab ─────────────────────────────────────────
+  document.getElementById('financialPrevMonth').addEventListener('click', () => {
+    financialMonth--;
+    if (financialMonth < 1) { financialMonth = 12; financialYear--; }
+    updateFinancialMonthLabel();
+    renderFinancial();
+    renderTrendChart();
+  });
+  document.getElementById('financialNextMonth').addEventListener('click', () => {
+    financialMonth++;
+    if (financialMonth > 12) { financialMonth = 1; financialYear++; }
+    updateFinancialMonthLabel();
+    renderFinancial();
+    renderTrendChart();
+  });
+  document.getElementById('financialThisMonth').addEventListener('click', () => {
+    financialYear  = todayJ.jy;
+    financialMonth = todayJ.jm;
+    updateFinancialMonthLabel();
+    renderFinancial();
+    renderTrendChart();
+  });
+
+  updateSummaryMonthLabel();
+  updateFinancialMonthLabel();
+}
+
+function updateSummaryMonthLabel() {
+  const el = document.getElementById('summaryMonthLabel');
+  if (el) el.textContent = `${J.PERSIAN_MONTHS[summaryMonth - 1]} ${J.toPersianDigits(summaryYear)}`;
+}
+
+function updateFinancialMonthLabel() {
+  const el = document.getElementById('financialMonthLabel');
+  if (el) el.textContent = `${J.PERSIAN_MONTHS[financialMonth - 1]} ${J.toPersianDigits(financialYear)}`;
+}
 
 function renderFilterOptions(selectId, currentFilter) {
   const sel = document.getElementById(selectId);
@@ -745,10 +817,12 @@ function deputyName(id) {
   return d ? d.name : '—';
 }
 
-function getMonthShifts(pharmacyFilter, deputyFilter = 'all') {
+function getMonthShifts(pharmacyFilter, deputyFilter = 'all', forYear = null, forMonth = null) {
+  const yr = forYear  !== null ? forYear  : viewYear;
+  const mo = forMonth !== null ? forMonth : viewMonth;
   return shifts.filter((s) => {
     const { jy, jm } = J.parseJalaliKey(s.dateKey);
-    if (jy !== viewYear || jm !== viewMonth) return false;
+    if (jy !== yr || jm !== mo) return false;
     if (pharmacyFilter !== 'all' && s.pharmacyId !== pharmacyFilter) return false;
     if (deputyFilter === 'none' && s.deputyId) return false;
     if (deputyFilter !== 'all' && deputyFilter !== 'none' && s.deputyId !== deputyFilter) return false;
@@ -761,7 +835,7 @@ function getMonthShifts(pharmacyFilter, deputyFilter = 'all') {
 function renderSummary() {
   renderDeputyFilterOptions();
   reportPharmacyFilter = renderFilterOptions('reportPharmacyFilter', reportPharmacyFilter);
-  const ms = getMonthShifts(reportPharmacyFilter, reportDeputyFilter);
+  const ms = getMonthShifts(reportPharmacyFilter, reportDeputyFilter, summaryYear, summaryMonth);
 
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
@@ -782,8 +856,8 @@ function renderSummary() {
   const isSingle = reportPharmacyFilter !== 'all';
 
   const scopeLbl = isSingle
-    ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[viewMonth - 1]}`
-    : J.PERSIAN_MONTHS[viewMonth - 1] + ' ' + J.toPersianDigits(viewYear);
+    ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[summaryMonth-1]}`
+    : J.PERSIAN_MONTHS[summaryMonth-1] + ' ' + J.toPersianDigits(summaryYear);
 
   // Separate holiday hours from night hours for display
   let holidayH = 0;
@@ -1160,7 +1234,7 @@ function formatToman(n) {
 function renderFinancial() {
   renderDeputyFilterOptions();
   financialPharmacyFilter = renderFilterOptions('financialPharmacyFilter', financialPharmacyFilter);
-  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter);
+  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all', financialYear, financialMonth);
 
   const totalIncome = ms.reduce((s, x) => s + calcIncome(x), 0);
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
@@ -1188,7 +1262,7 @@ function renderFinancial() {
     breakdown2[s.pharmacyId] += calcIncome(s);
   });
   const paidIncome = Object.entries(breakdown2).reduce((sum, [pid, inc]) => {
-    const key = S.paymentKey(viewYear, viewMonth, pid);
+    const key = S.paymentKey(financialYear, financialMonth, pid);
     return sum + (payments[key] ? inc : 0);
   }, 0);
   const unpaidIncome = totalIncome - paidIncome;
@@ -1219,7 +1293,7 @@ function renderFinancial() {
   breakdownTbody.innerHTML = bEntries.length === 0
     ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
     : bEntries.map(([pid, d]) => {
-      const pkey = S.paymentKey(viewYear, viewMonth, pid);
+      const pkey = S.paymentKey(financialYear, financialMonth, pid);
       const isPaid = !!payments[pkey];
       return `<tr class="${isPaid ? 'row--paid' : ''}">
           <td>${escapeHtml(pharmacyName(pid))}</td>
@@ -1241,7 +1315,7 @@ function renderFinancial() {
   // Bind payment checkboxes
   breakdownTbody.querySelectorAll('.payment-checkbox').forEach((chk) => {
     chk.addEventListener('change', () => {
-      const pkey = S.paymentKey(viewYear, viewMonth, chk.dataset.pid);
+      const pkey = S.paymentKey(financialYear, financialMonth, chk.dataset.pid);
       const pays = S.loadPayments();
       pays[pkey] = chk.checked;
       S.savePayments(pays);
@@ -1739,7 +1813,7 @@ function exportSms() {
 
   Object.entries(byPharmacy).forEach(([pid, pShifts]) => {
     const pname  = pharmacyName(pid);
-    const pkey   = S.paymentKey(viewYear, viewMonth, pid);
+    const pkey   = S.paymentKey(financialYear, financialMonth, pid);
     const isPaid = !!payments[pkey];
 
     lines.push('');
@@ -1797,7 +1871,7 @@ function exportSms() {
     const grandTotal    = ms.reduce((sum, s) => sum + calcIncome(s), 0);
     const grandH        = ms.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
     const grandPaid     = Object.entries(byPharmacy).reduce((sum, [pid, pShifts]) => {
-      const pkey = S.paymentKey(viewYear, viewMonth, pid);
+      const pkey = S.paymentKey(financialYear, financialMonth, pid);
       return sum + (payments[pkey] ? pShifts.reduce((s, x) => s + calcIncome(x), 0) : 0);
     }, 0);
     const grandUnpaid   = grandTotal - grandPaid;
@@ -2053,6 +2127,195 @@ function showToast(msg) {
 function registerServiceWorker() {
   if ('serviceWorker' in navigator)
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { }));
+}
+/* =================== 3-MONTH TREND CHART =================== */
+
+function renderTrendChart() {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
+
+  // Build data for 3 months ending at financialMonth
+  const months = [];
+  for (let i = 2; i >= 0; i--) {
+    let mo = financialMonth - i;
+    let yr = financialYear;
+    while (mo < 1) { mo += 12; yr--; }
+    const ms      = getMonthShifts('all', 'all', yr, mo);
+    const income  = ms.reduce((sum, s) => sum + calcIncome(s), 0);
+    const hours   = ms.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
+    months.push({ yr, mo, income, hours, label: J.PERSIAN_MONTHS[mo - 1] });
+  }
+
+  // Update sub-label
+  const subEl = document.getElementById('trendChartSub');
+  if (subEl) {
+    const total3 = months.reduce((s, m) => s + m.income, 0);
+    subEl.textContent = total3 > 0
+      ? `جمع ۳ ماه: ${J.toPersianDigits(Math.round(total3).toLocaleString('en'))} تومان`
+      : '';
+  }
+
+  const maxIncome = Math.max(...months.map((m) => m.income), 1);
+
+  const ctx    = canvas.getContext('2d');
+  const W      = canvas.offsetWidth || 320;
+  const H      = 160;
+  canvas.width  = W * (window.devicePixelRatio || 1);
+  canvas.height = H * (window.devicePixelRatio || 1);
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+  // Colors — use CSS vars approximated
+  const isFloral   = document.documentElement.getAttribute('data-theme') === 'floral';
+  const isLavender = document.documentElement.getAttribute('data-theme') === 'lavender';
+  const isPink     = document.documentElement.getAttribute('data-theme') === 'softpink';
+  const isBlue     = document.documentElement.getAttribute('data-theme') === 'softblue';
+
+  const accentColor = isFloral   ? '#388a50'
+                    : isLavender ? '#8b5cf6'
+                    : isPink     ? '#f472b6'
+                    : isBlue     ? '#3b82f6'
+                    : '#0e0e0e';
+
+  const barW    = Math.floor((W - 80) / 3 * 0.55);
+  const gap     = Math.floor((W - 80) / 3);
+  const padL    = 40;
+  const padB    = 36;
+  const padT    = 16;
+  const chartH  = H - padB - padT;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines (3 horizontal)
+  ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+  ctx.lineWidth   = 1;
+  for (let i = 1; i <= 3; i++) {
+    const y = padT + chartH - (chartH / 3) * i;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(W - 10, y);
+    ctx.stroke();
+  }
+
+  // Y axis labels
+  ctx.fillStyle  = 'rgba(0,0,0,0.35)';
+  ctx.font       = '9px sans-serif';
+  ctx.textAlign  = 'right';
+  for (let i = 1; i <= 3; i++) {
+    const val = Math.round(maxIncome / 3 * i);
+    const y   = padT + chartH - (chartH / 3) * i;
+    const lbl = val >= 1000000
+      ? `${(val / 1000000).toFixed(1)}M`
+      : val >= 1000 ? `${(val / 1000).toFixed(0)}K` : String(val);
+    ctx.fillText(lbl, padL - 4, y + 3);
+  }
+
+  // Animate bars
+  let startTime = null;
+  const duration = 700; // ms
+
+  function draw(ts) {
+    if (!startTime) startTime = ts;
+    const progress = Math.min((ts - startTime) / duration, 1);
+    // Ease out cubic
+    const ease = 1 - Math.pow(1 - progress, 3);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Redraw grid
+    ctx.strokeStyle = 'rgba(0,0,0,0.07)';
+    ctx.lineWidth   = 1;
+    for (let i = 1; i <= 3; i++) {
+      const y = padT + chartH - (chartH / 3) * i;
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(W - 10, y);
+      ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.font      = '9px sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 1; i <= 3; i++) {
+      const val = Math.round(maxIncome / 3 * i);
+      const y   = padT + chartH - (chartH / 3) * i;
+      const lbl = val >= 1000000
+        ? `${(val / 1000000).toFixed(1)}M`
+        : val >= 1000 ? `${(val / 1000).toFixed(0)}K` : String(val);
+      ctx.fillText(lbl, padL - 4, y + 3);
+    }
+
+    // Draw bars
+    months.forEach((m, i) => {
+      const barH    = m.income > 0 ? (m.income / maxIncome) * chartH * ease : 0;
+      const x       = padL + i * gap + (gap - barW) / 2;
+      const y       = padT + chartH - barH;
+      const isLast  = i === months.length - 1; // current month = rightmost (most recent)
+
+      // Bar with rounded top
+      const radius = Math.min(8, barW / 2, barH > 0 ? barH : 1);
+      ctx.beginPath();
+      if (barH > radius) {
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + barW - radius, y);
+        ctx.quadraticCurveTo(x + barW, y, x + barW, y + radius);
+        ctx.lineTo(x + barW, y + barH);
+        ctx.lineTo(x, y + barH);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+      } else if (barH > 0) {
+        ctx.rect(x, y, barW, barH);
+      }
+      ctx.closePath();
+
+      // Fill — current month solid, others lighter
+      if (isLast) {
+        ctx.fillStyle = accentColor;
+      } else {
+        ctx.fillStyle = accentColor + '55'; // 33% opacity
+      }
+      ctx.fill();
+
+      // Income value above bar (only if bar tall enough)
+      if (barH > 20 && progress > 0.8) {
+        ctx.fillStyle  = isLast ? accentColor : 'rgba(0,0,0,0.4)';
+        ctx.font       = `bold ${isLast ? 10 : 9}px sans-serif`;
+        ctx.textAlign  = 'center';
+        const dispVal  = m.income >= 1000000
+          ? `${(m.income / 1000000).toFixed(1)}M`
+          : m.income > 0 ? `${Math.round(m.income / 1000)}K` : '';
+        ctx.fillText(dispVal, x + barW / 2, y - 4);
+      }
+
+      // Month label below
+      ctx.fillStyle  = isLast ? accentColor : 'rgba(0,0,0,0.45)';
+      ctx.font       = `${isLast ? 'bold ' : ''}10px sans-serif`;
+      ctx.textAlign  = 'center';
+      ctx.fillText(m.label, x + barW / 2, H - 6);
+
+      // Hours label inside bar bottom
+      if (barH > 35 && progress > 0.9) {
+        ctx.fillStyle = isLast ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.25)';
+        ctx.font      = '8.5px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${m.hours.toFixed(0)}h`, x + barW / 2, y + barH - 6);
+      }
+    });
+
+    if (progress < 1) requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+
+  // Legend
+  const legendEl = document.getElementById('trendChartLegend');
+  if (legendEl) {
+    legendEl.innerHTML = months.map((m, i) => {
+      const isLast = i === months.length - 1;
+      return `<div class="trend-legend-item ${isLast ? 'trend-legend-item--active' : ''}">
+        <span class="trend-legend-dot" style="background:${isLast ? accentColor : accentColor + '55'}"></span>
+        <span>${m.label} ${J.toPersianDigits(m.yr)}: ${m.income > 0 ? J.toPersianDigits(Math.round(m.income / 1000)) + 'K' : '—'}</span>
+      </div>`;
+    }).join('');
+  }
 }
 
 /* =================== BOOT =================== */

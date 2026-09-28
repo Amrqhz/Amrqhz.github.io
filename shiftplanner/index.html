@@ -146,6 +146,24 @@
           <!-- <button class="linebtn" id="exportJsonBtn" type="button">پشتیبان JSON</button> -->
         </div>
       </div>
+      <!-- Month picker -->
+      <div class="month-picker-row">
+        <button class="month-nav-btn" id="summaryPrevMonth" type="button" aria-label="ماه قبل">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M10 5l7 7-7 7" />
+          </svg>
+        </button>
+        <div class="month-picker-label" id="summaryMonthLabel">—</div>
+        <button class="month-nav-btn" id="summaryNextMonth" type="button" aria-label="ماه بعد">
+
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M14 5l-7 7 7 7" />
+          </svg>
+        </button>
+        <button class="month-picker-today" id="summaryThisMonth" type="button">این ماه</button>
+      </div>
 
       <div class="filter-row">
         <label for="reportPharmacyFilter">گزارش برای</label>
@@ -215,7 +233,23 @@
           </button>
         </div>
       </div>
-
+      <!-- Month picker -->
+      <div class="month-picker-row">
+        <button class="month-nav-btn" id="financialPrevMonth" type="button" aria-label="ماه قبل">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M10 5l7 7-7 7" />
+          </svg>
+        </button>
+        <div class="month-picker-label" id="financialMonthLabel">—</div>
+        <button class="month-nav-btn" id="financialNextMonth" type="button" aria-label="ماه بعد">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M14 5l-7 7 7 7" />
+          </svg>
+        </button>
+        <button class="month-picker-today" id="financialThisMonth" type="button">این ماه</button>
+      </div>
       <!-- Rate settings inline -->
       <div class="rate-card">
         <h3 class="rate-card__title">نرخ دستمزد (تومان / ساعت)</h3>
@@ -290,6 +324,18 @@
           </div>
         </div>
       </div>
+      <!-- 3-month trend chart -->
+      <div class="trend-chart-card" id="trendChartCard">
+        <div class="trend-chart-card__head">
+          <span class="trend-chart-card__title">روند درآمد ۳ ماه اخیر</span>
+          <span class="trend-chart-card__sub" id="trendChartSub"></span>
+        </div>
+        <div class="trend-chart-wrap">
+          <canvas id="trendChart" height="160"></canvas>
+        </div>
+        <div class="trend-chart-legend" id="trendChartLegend"></div>
+      </div>
+
 
       <div class="filter-row">
         <label for="financialPharmacyFilter">گزارش برای</label>
@@ -495,8 +541,6 @@
           </div>
         </div>
       </div>
-
-
       <!-- ===== THEME PICKER ===== -->
       <div class="settings-section theme-picker-section">
         <h3 class="settings-item__label">تم رابط کاربری</h3>
@@ -628,7 +672,7 @@
         <h3 class="settings-section__title">درباره</h3>
         <div class="settings-about" style="align-items: center; justify-content: center; text-align: center;">
           <p class="settings-about__name">دفتر شیفت</p>
-          <p class="settings-about__dev">2.1.4 version</p>
+          <p class="settings-about__dev">2.2.0 version</p>
           <p class="settings-about__dev">طراحی و توسعه: امیرحسین قلی‌زاده</p>
           <p class="settings-about__social">سوشال مدیا: <span>@amrqhz</span></p>
           <p style="font-size: 13px;">این برنامه به صورت رایگان توسعه داده شده است.<br> برای اطلاع از اپدیت ها و سایر
