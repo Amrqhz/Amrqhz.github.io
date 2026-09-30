@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
   <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=DM+Mono\:wght\@400;500&family=DM+Sans\:wght\@400;500;600;700&family=Manrope\:wght\@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js" id="3dmol-lib"></script>
@@ -2106,15 +2106,25 @@
     </section>
 
     <section class="section wrap" id="about">
+
       <div class="manifesto">
+
         <div class="eyebrow">The idea</div>
+
         <div>
+
           <blockquote>The molecule is the artwork.<br><em>The script is the recipe.</em></blockquote>
+
           <p>PyMOL Art Gallery is a visual inspiration gallery and styling cookbook. The browser previews are
+
             illustrative 3D views; the copied scripts are the actual PyMOL commands. Presets use common selections where
+
             practical, and comments point out the parts you may want to adapt.</p>
+
         </div>
+
       </div>
+
     </section>
 
     <section class="section submit-section" id="submit">
@@ -2200,6 +2210,7 @@
       </div>
     </section>
 
+
     <section class="cta">
 
       <div class="wrap cta-inner">
@@ -2219,6 +2230,7 @@
     </section>
 
   </main>
+
   <footer class="footer wrap">
     <span>PyMOL ART GALLERY — A VISUAL COOKBOOK FOR MOLECULAR GRAPHICS.</span>
     <span>Created by <a href="https://amrqhz.github.io" target="_blank" rel="noreferrer">Amir H. Gholizadeh</a> · <a
@@ -2274,11 +2286,67 @@
 
   </div>
 
+  <div class="modal" id="submitModal" role="dialog" aria-modal="true" aria-labelledby="submitTitle">
+    <div class="submit-panel">
+      <div class="modal-top">
+        <span class="eyebrow">COMMUNITY / STYLE SUBMISSION</span>
+        <button class="close" id="closeSubmit" type="button" aria-label="Close">×</button>
+      </div>
+      <h2 id="submitTitle">Submit a visual recipe.</h2>
+      <p class="modal-desc">Create a portable style configuration. The gallery stays static: submissions are sent as a
+        GitHub Issue and the JSON file can be attached to it.</p>
+      <div class="submit-grid">
+        <div class="submit-field">
+          <label for="submitName">Style name</label>
+          <input id="submitName" type="text" placeholder="e.g. Helix Contrast">
+        </div>
+        <div class="submit-field">
+          <label for="submitCategory">Category</label>
+          <select id="submitCategory">
+            <option>Protein</option>
+            <option>Ligand</option>
+            <option>Surface</option>
+            <option>Binding Site</option>
+            <option>Interactions</option>
+            <option>Publication</option>
+            <option>Artistic</option>
+          </select>
+        </div>
+        <div class="submit-field full">
+          <label for="submitDesc">Description</label>
+          <input id="submitDesc" type="text" placeholder="What visual problem does this style solve?">
+        </div>
+        <div class="submit-field">
+          <label for="submitAuthor">Author</label>
+          <input id="submitAuthor" type="text" placeholder="Your name or handle">
+        </div>
+        <div class="submit-field">
+          <label for="submitRef">Reference PDB</label>
+          <input id="submitRef" type="text" placeholder="5MO4">
+        </div>
+        <div class="submit-field full">
+          <label for="submitRepo">GitHub repository</label>
+          <input id="submitRepo" type="text" placeholder="owner/repository">
+        </div>
+        <div class="submit-field full">
+          <label for="submitCode">PyMOL commands</label>
+          <textarea id="submitCode" placeholder="# Your reproducible PyMOL commands"></textarea>
+        </div>
+      </div>
+      <div class="submit-actions">
+        <button id="downloadConfig" type="button">Download JSON config</button>
+        <button id="copyConfig" type="button" class="secondary">Copy config</button>
+        <button id="githubSubmit" type="button">Open GitHub submission ↗</button>
+      </div>
+      <p class="submit-note">The browser does not execute the submitted PyMOL code. A maintainer can review the commands
+        before adding a style to the curated collection.</p>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status">Copied to clipboard</div>
 
   <script>
 
-    // REQUIRED: replace this placeholder with the public Web3Forms access key for your submission inbox.
     const PDB_REFERENCES = {
 
       "1HVR": { label: "1HVR · HIV-1 protease", local: "assets/pdb/1hvr.pdb" },
@@ -2966,10 +3034,247 @@ orient
 zoom polymer, 4
 
 # ray 1800, 1400`}
+      ,
 
+      {
+        id: "interaction-map", title: "Interaction Map", category: "Interactions", desc: "A ligand-first binding-site view with nearby residues and restrained dashed contact guides. The browser preview computes close contacts from the loaded coordinates.", tags: ["interactions", "contacts", "residues", "ligand"], best: "Docking poses, binding-site figures, interaction-focused results.", level: "02", preview: "interaction-map", code: `# Interaction map — generic protein/ligand recipe
+hide everything
+show cartoon, polymer
+color gray80, polymer
+
+# Define the ligand and nearby residues
+select lig, organic
+select site, byres (polymer within 3.6 of lig)
+
+show sticks, site and sidechain
+color gray45, site and sidechain
+set stick_radius, 0.13, site
+
+show sticks, lig
+util.cbag lig
+set stick_radius, 0.24, lig
+
+# Putative polar contacts (PyMOL's geometric test)
+# Add hydrogens first if your structure needs them
+h_add polymer
+h_add lig
+distance polar_contacts, lig, site, mode=2
+hide labels, polar_contacts
+set dash_gap, 0.5
+set dash_radius, 0.10
+color yellow, polar_contacts
+
+# Optional residue labels
+label site and name CA, resn+resi
+set label_size, 13
+set label_color, gray30
+
+bg_color white
+set ray_opaque_background, on
+set antialias, 2
+orient lig
+zoom lig, 7
+# ray 1800, 1400`
+      },
+      {
+        id: "hydrogen-bond-focus", title: "Hydrogen-Bond Focus", category: "Interactions", desc: "A compact interaction figure that quiets the fold, highlights the ligand and nearby residues, and renders PyMOL polar-contact dashes.", tags: ["hydrogen-bond", "polar", "labels", "ligand"], best: "Medicinal chemistry figures and ligand-binding explanations.", level: "03", preview: "hydrogen-bond-focus", code: `# Hydrogen-bond / polar-contact focus
+hide everything
+show cartoon, polymer
+color gray85, polymer
+set cartoon_transparency, 0.45, polymer
+
+select lig, organic
+select site, byres (polymer within 3.6 of lig)
+show sticks, site
+color gray35, site
+set stick_radius, 0.14, site
+show sticks, lig
+util.cbag lig
+set stick_radius, 0.25, lig
+
+# PyMOL polar-contact detection
+h_add polymer
+h_add lig
+set h_bond_cutoff_center, 3.6
+distance hbonds, lig, site, mode=2
+hide labels, hbonds
+set dash_gap, 0.55
+set dash_radius, 0.11
+color yellow, hbonds
+
+label site and name CA, resn+resi
+set label_color, gray20
+set label_size, 14
+bg_color white
+set ray_opaque_background, on
+orient lig
+zoom lig, 8
+# ray 1800, 1400`
+      },
+      {
+        id: "residue-annotation", title: "Residue Annotation", category: "Binding Site", desc: "Turns the binding pocket into an annotated structural panel: ligand, side chains and readable residue identifiers share one composition.", tags: ["residue", "annotation", "labels", "pocket"], best: "Mutation context, active-site explanation, thesis figures.", level: "02", preview: "residue-annotation", code: `# Annotated binding-site residues
+hide everything
+show cartoon, polymer
+color gray82, polymer
+set cartoon_transparency, 0.30, polymer
+
+select lig, organic
+select site, byres (polymer within 4.0 of lig)
+show sticks, site
+color gray35, site
+set stick_radius, 0.15, site
+
+show sticks, lig
+util.cbag lig
+set stick_radius, 0.24, lig
+
+# Label one atom per residue to avoid text overload
+label site and name CA, resn+resi
+set label_size, 15
+set label_color, gray15
+set label_outline_color, white
+set label_shadow_mode, 0
+
+bg_color white
+set ray_opaque_background, on
+orient lig
+zoom lig, 8
+# ray 1800, 1400`
+      },
+      {
+        id: "hydrophobic-pocket", title: "Hydrophobic Pocket", category: "Binding Site", desc: "Highlights the ligand environment with muted protein context and a focused set of nearby side chains for hydrophobic-contact analysis.", tags: ["hydrophobic", "pocket", "sticks", "ligand"], best: "Structure-based drug design and docking analysis.", level: "02", preview: "hydrophobic-pocket", code: `# Hydrophobic pocket emphasis
+hide everything
+show cartoon, polymer
+color gray90, polymer
+set cartoon_transparency, 0.42, polymer
+
+select lig, organic
+select site, byres (polymer within 4.0 of lig)
+show sticks, site and sidechain
+color wheat, site and sidechain
+set stick_radius, 0.14, site
+
+show sticks, lig
+util.cbag lig
+set stick_radius, 0.25, lig
+
+# Optional surface shell around the pocket
+show surface, polymer within 5 of lig
+set transparency, 0.72, polymer within 5 of lig
+set surface_color, gray80, polymer within 5 of lig
+
+bg_color white
+set ray_opaque_background, on
+orient lig
+zoom lig, 7
+# ray 1800, 1400`
+      },
+      {
+        id: "mutation-spotlight", title: "Mutation Spotlight", category: "Binding Site", desc: "A residue-centric composition designed for mutation figures: the protein stays quiet while a selected mutation and its neighborhood become the visual subject.", tags: ["mutation", "residue", "T315I", "comparison"], best: "Kinase resistance mutations, structural biology, thesis results.", level: "03", preview: "mutation-spotlight", code: `# Mutation spotlight — edit the residue number if needed
+hide everything
+show cartoon, polymer
+color gray85, polymer
+set cartoon_transparency, 0.35, polymer
+
+# Example for ABL1 T315I
+select mutation, resi 315
+show sticks, mutation
+color red, mutation
+set stick_radius, 0.20, mutation
+
+select neighborhood, byres (polymer within 5 of mutation)
+show sticks, neighborhood
+color gray35, neighborhood
+set stick_radius, 0.12, neighborhood
+
+show sticks, organic
+util.cbag organic
+set stick_radius, 0.23, organic
+
+label mutation and name CA, resn+resi
+set label_color, red
+set label_size, 16
+
+bg_color white
+set ray_opaque_background, on
+orient mutation
+zoom mutation, 6
+# ray 1800, 1400`
+      },
+      {
+        id: "putty-bfactor", title: "B-Factor Putty", category: "Protein", desc: "Uses PyMOL's putty cartoon to make coordinate uncertainty or flexibility visually legible through tube thickness and color. The browser preview approximates the color mapping; PyMOL provides the actual putty geometry.", tags: ["putty", "b-factor", "cartoon", "protein"], best: "Structural quality, flexibility, crystallographic interpretation.", level: "03", preview: "putty-bfactor", code: `# B-factor / putty representation
+hide everything
+show cartoon, polymer
+cartoon putty, polymer
+set cartoon_putty_transform, 0
+set cartoon_putty_radius, 0.25
+spectrum b, blue_white_red, polymer
+set cartoon_smooth_loops, 1
+
+show sticks, organic
+util.cbag organic
+set stick_radius, 0.18, organic
+
+bg_color white
+set ray_opaque_background, on
+orient
+zoom polymer, 4
+# ray 1800, 1400`
+      },
+      {
+        id: "surface-cavity", title: "Cavity + Ligand", category: "Surface", desc: "A surface-led composition exposes cavities and pocket depth while the ligand remains a crisp structural anchor.", tags: ["cavity", "surface", "ligand", "depth"], best: "Pocket architecture and structural explanation.", level: "03", preview: "surface-cavity", code: `# Surface cavity / pocket depth
+hide everything
+show surface, polymer
+set surface_mode, 3
+set surface_cavity_mode, 1
+set surface_color, gray80, polymer
+set transparency, 0.20, polymer
+
+show cartoon, polymer
+color gray60, polymer
+set cartoon_transparency, 0.75, polymer
+
+show sticks, organic
+util.cbag organic
+set stick_radius, 0.25, organic
+
+bg_color white
+set ray_opaque_background, on
+orient organic
+zoom organic, 8
+# ray 1800, 1400`
+      },
+      {
+        id: "protein-ligand-label", title: "Ligand + Residue Labels", category: "Interactions", desc: "A restrained medicinal-chemistry layout combining a prominent ligand, nearby side chains and residue labels without turning the figure into a full interaction diagram.", tags: ["ligand", "labels", "residues", "medchem"], best: "Pose explanation and structure–activity relationship figures.", level: "02", preview: "protein-ligand-label", code: `# Ligand with nearby residue labels
+hide everything
+show cartoon, polymer
+color gray85, polymer
+set cartoon_transparency, 0.28, polymer
+
+select lig, organic
+select site, byres (polymer within 4.0 of lig)
+show sticks, site
+color gray30, site
+set stick_radius, 0.14, site
+
+show sticks, lig
+util.cbag lig
+set stick_radius, 0.27, lig
+
+label site and name CA, resn+resi
+set label_color, gray20
+set label_size, 14
+set label_outline_color, white
+
+bg_color white
+set ray_opaque_background, on
+orient lig
+zoom lig, 8
+# ray 1800, 1400`
+      }
     ];
 
-    const categories = ["All", "Protein", "Ligand", "Surface", "Binding Site", "Publication", "Artistic"];
+    const categories = ["All", "Protein", "Ligand", "Surface", "Binding Site", "Interactions", "Publication", "Artistic"];
 
     const compareIds = ["publication", "pocket", "dark", "minimal", "cinematic"];
 
@@ -2982,49 +3287,74 @@ zoom polymer, 4
     function findStyle(id) { return styles.find(s => s.id === id) || styles[0] }
 
     function styleConfig(id) {
-
       const cfg = {
-
         publication: { cartoon: { color: "#a6aaa6" }, stick: { colorscheme: "Jmol", radius: .19 } },
-
         pocket: { cartoon: { color: "#b8bbb6", opacity: .62 }, stick: { colorscheme: "Jmol", radius: .23 } },
-
         cinematic: { cartoon: { color: "#527c9b" }, stick: { colorscheme: "Jmol", radius: .23 } },
-
         minimal: { cartoon: { color: "#92958f" }, stick: { color: "#4d514d", radius: .17 } },
-
         spectrum: { cartoon: { color: "spectrum" }, stick: { colorscheme: "Jmol", radius: .17 } },
-
         surface: { cartoon: { color: "#c3c5bf", opacity: .5 }, stick: { colorscheme: "Jmol", radius: .23 }, surface: { opacity: .24, color: "#d6d8d0" } },
-
         ligand: { cartoon: { color: "#c5c7c1", opacity: .55 }, stick: { colorscheme: "Jmol", radius: .28 } },
-
         chains: { cartoon: { color: "spectrum" }, stick: { colorscheme: "Jmol", radius: .16 } },
-
         residues: { cartoon: { color: "#c2c4bd", opacity: .8 }, stick: { colorscheme: "Jmol", radius: .2 } },
-
         dark: { cartoon: { color: "#929e9a" }, stick: { colorscheme: "cyanCarbon", radius: .22 } },
-
         layers: { cartoon: { color: "#6689a0", opacity: .8 }, stick: { colorscheme: "Jmol", radius: .18 }, surface: { opacity: .15, color: "#a9d1d9" } },
-
         outline: { cartoon: { color: "#b7b9b3" }, stick: { colorscheme: "Jmol", radius: .17 } },
-
         "bw-outline": { cartoon: { color: "#f2f2ee" }, stick: { colorscheme: "Jmol", radius: .18 } },
-
         "binding-pocket-surface": { cartoon: { color: "#d1d2cc", opacity: .2 }, stick: { colorscheme: "Jmol", radius: .24 }, surface: { opacity: .32, color: "#f0f0ea" } },
-
         qutemol: { cartoon: { color: "#d5d7d1" }, stick: { colorscheme: "Jmol", radius: .2 } },
-
         "wide-perspective": { cartoon: { color: "#9da29c" }, stick: { colorscheme: "Jmol", radius: .19 } },
-
         "ray-transparent-surface": { cartoon: { color: "#b8bbb5", opacity: .45 }, stick: { colorscheme: "Jmol", radius: .22 }, surface: { opacity: .3, color: "#c9cbc5" } },
-
-        "stylized-protein": { cartoon: { color: "#aeb2ab", opacity: .82 }, stick: { colorscheme: "Jmol", radius: .21 }, surface: { opacity: .22, color: "#aeb2ab" } }
-
+        "stylized-protein": { cartoon: { color: "#aeb2ab", opacity: .82 }, stick: { colorscheme: "Jmol", radius: .21 }, surface: { opacity: .22, color: "#aeb2ab" } },
+        "interaction-map": { mode: "interaction", cartoon: { color: "#c5c7c1", opacity: .25 }, stick: { colorscheme: "Jmol", radius: .24 } },
+        "hydrogen-bond-focus": { mode: "hbond", cartoon: { color: "#c5c7c1", opacity: .4 }, stick: { colorscheme: "Jmol", radius: .25 } },
+        "residue-annotation": { mode: "labels", cartoon: { color: "#c5c7c1", opacity: .7 }, stick: { colorscheme: "Jmol", radius: .24 } },
+        "hydrophobic-pocket": { mode: "hydrophobic", cartoon: { color: "#c9cbc5", opacity: .45 }, stick: { colorscheme: "Jmol", radius: .25 } },
+        "mutation-spotlight": { mode: "mutation", cartoon: { color: "#c5c7c1", opacity: .35 }, stick: { colorscheme: "Jmol", radius: .23 } },
+        "putty-bfactor": { mode: "putty", cartoon: { color: "spectrum" }, stick: { colorscheme: "Jmol", radius: .18 } },
+        "surface-cavity": { mode: "cavity", cartoon: { color: "#9fa39d", opacity: .72 }, stick: { colorscheme: "Jmol", radius: .25 }, surface: { opacity: .28, color: "#d2d4ce" } },
+        "protein-ligand-label": { mode: "labels", cartoon: { color: "#c5c7c1", opacity: .35 }, stick: { colorscheme: "Jmol", radius: .27 } }
       };
-
       return cfg[id] || cfg.publication;
+    }
 
+    function ligandSelection() {
+      return { and: [{ hetflag: true }, { not: { resn: ["HOH", "DOD", "WAT", "SO4", "PO4", "CL", "NA", "K", "MG", "CA", "ZN", "MN", "FE"] } }] };
+    }
+
+    function getLigandAtoms(model) {
+      const excluded = new Set(["HOH", "DOD", "WAT", "SO4", "PO4", "CL", "NA", "K", "MG", "CA", "ZN", "MN", "FE"]);
+      return model.selectedAtoms({ hetflag: true }).filter(a => !excluded.has(String(a.resn || "").toUpperCase()));
+    }
+
+    function addContactGuides(viewer, model, kind = "contact") {
+      const lig = getLigandAtoms(model);
+      const prot = model.selectedAtoms({ hetflag: false });
+      if (!lig.length || !prot.length) return [];
+      const residueMap = new Map();
+      for (const la of lig) {
+        let best = null;
+        for (const pa of prot) {
+          const dx = la.x - pa.x, dy = la.y - pa.y, dz = la.z - pa.z;
+          const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          if (d <= 4.0 && (!best || d < best.d)) best = { la, pa, d };
+        }
+        if (best) {
+          const key = `${best.pa.chain || ""}:${best.pa.resn || ""}:${best.pa.resi || ""}`;
+          if (!residueMap.has(key) || best.d < residueMap.get(key).d) residueMap.set(key, best);
+        }
+      }
+      const pairs = [...residueMap.values()].sort((a, b) => a.d - b.d).slice(0, 8);
+      pairs.forEach((p, i) => viewer.addCylinder({ start: { x: p.la.x, y: p.la.y, z: p.la.z }, end: { x: p.pa.x, y: p.pa.y, z: p.pa.z }, radius: .065, dashed: true, color: kind === "hbond" ? "#e6b93d" : "#6c7f8f", fromCap: false, toCap: false }));
+      return pairs;
+    }
+
+    function addResidueLabels(viewer, pairs, color = "#343730") {
+      const seen = new Map();
+      pairs.forEach(p => seen.set(`${p.pa.chain || ""}:${p.pa.resi}`, p.pa));
+      [...seen.values()].slice(0, 6).forEach(a => {
+        viewer.addLabel(`${a.resn || "RES"}${a.resi}`, { position: { x: a.x, y: a.y, z: a.z }, font: 'sans-serif', fontSize: 13, fontColor: color, backgroundColor: 'white', backgroundOpacity: .72, borderThickness: 0, inFront: true });
+      });
     }
 
     function showViewerStatus(el, message, kind = "loading") {
@@ -3080,41 +3410,44 @@ zoom polymer, 4
     }
 
     function styleLoadedViewer(viewer, id, dark, spin) {
-
       const model = viewer.getModel();
-
       const atoms = model.selectedAtoms({});
-
-      const hasLigand = atoms.some(a => a.hetflag && !['HOH', 'DOD'].includes(a.resn));
-
+      const ligSel = ligandSelection();
+      const hasLigand = getLigandAtoms(model).length > 0;
       const cfg = styleConfig(id);
 
       viewer.setStyle({}, {});
-
-      viewer.setStyle({ hetflag: false }, cfg.cartoon ? { cartoon: cfg.cartoon } : { cartoon: { color: "#aaa" } });
-
-      if (hasLigand) {
-
-        // Keep solvent out of the preview while retaining crystallographic hetero groups.
-
-        viewer.setStyle({ hetflag: true, resn: { "!": "HOH" } }, { stick: cfg.stick || { colorscheme: "Jmol", radius: .2 } });
-
-        viewer.setStyle({ hetflag: true, resn: { "!": "DOD" } }, { stick: cfg.stick || { colorscheme: "Jmol", radius: .2 } });
-
-      } else {
-
-        viewer.setStyle({ hetflag: false }, { cartoon: cfg.cartoon || { color: "#aaa" } });
-
-      }
+      viewer.setStyle({ hetflag: false }, { cartoon: cfg.cartoon || { color: "#aaa" } });
+      if (hasLigand) viewer.setStyle(ligSel, { stick: cfg.stick || { colorscheme: "Jmol", radius: .2 } });
 
       if (cfg.surface) viewer.addSurface($3Dmol.SurfaceType.VDW, cfg.surface, { hetflag: false });
 
-      viewer.zoomTo();
+      if (cfg.mode === "interaction" || cfg.mode === "hbond" || cfg.mode === "hydrophobic" || cfg.mode === "labels") {
+        const siteSel = { and: [{ hetflag: false }, { within: { distance: 4.0, sel: ligSel } }] };
+        viewer.setStyle(siteSel, { stick: { colorscheme: "Jmol", radius: cfg.mode === "hydrophobic" ? .15 : .13 } });
+        if (hasLigand) viewer.setStyle(ligSel, { stick: { colorscheme: "Jmol", radius: cfg.mode === "labels" ? .27 : .25 } });
+        const pairs = addContactGuides(viewer, model, cfg.mode === "hbond" ? "hbond" : "contact");
+        if (cfg.mode === "labels" || cfg.mode === "interaction" || cfg.mode === "hbond") addResidueLabels(viewer, pairs, cfg.mode === "hbond" ? "#8b6b13" : "#343730");
+      }
 
+      if (cfg.mode === "mutation") {
+        const mutSel = { resi: 315, hetflag: false };
+        viewer.setStyle(mutSel, { stick: { color: "#b33b35", radius: .2 }, sphere: { color: "#b33b35", scale: .32 } });
+        viewer.addResLabels(mutSel, { font: 'sans-serif', fontSize: 15, fontColor: '#b33b35', backgroundColor: 'white', backgroundOpacity: .78, inFront: true });
+        viewer.setStyle({ and: [{ hetflag: false }, { within: { distance: 5, sel: mutSel } }] }, { stick: { colorscheme: "Jmol", radius: .12 } });
+      }
+
+      if (cfg.mode === "putty") {
+        viewer.setStyle({ hetflag: false }, { cartoon: { colorscheme: { prop: "b", gradient: "roygb" } } });
+      }
+
+      if (cfg.mode === "cavity") {
+        viewer.addSurface($3Dmol.SurfaceType.VDW, { opacity: .30, color: "#d2d4ce" }, { hetflag: false });
+      }
+
+      viewer.zoomTo(hasLigand ? ligSel : {});
       viewer.render();
-
       if (spin) viewer.spin("y", 0.12);
-
     }
 
     function makeViewer(el, id, { dark = false, spin = false } = {}) {
@@ -3273,7 +3606,7 @@ zoom polymer, 4
 
     function showToast(msg) { $("toast").textContent = msg; $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800) }
 
-    $("closeModal").onclick = closeModal; $("modal").onclick = e => { if (e.target === $("modal")) closeModal() }; document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal() });
+    $("closeModal").onclick = closeModal; $("modal").onclick = e => { if (e.target === $("modal")) closeModal() }; document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if ($("submitModal")?.classList.contains("open")) closeSubmit(); else closeModal(); });
 
     $("copyBtn").onclick = async () => { try { await navigator.clipboard.writeText($("modalCode").textContent); $("copyBtn").textContent = "Copied ✓"; showToast("PyMOL commands copied"); setTimeout(() => $("copyBtn").textContent = "Copy PyMOL code ↗", 1600) } catch (e) { const r = document.createRange(); r.selectNodeContents($("modalCode")); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); showToast("Select and copy the highlighted commands") } };
 
@@ -3286,6 +3619,7 @@ zoom polymer, 4
       $("compareControls").querySelectorAll("button").forEach(b => b.onclick = () => { activeCompare = +b.dataset.index; $("compareControls").querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b)); makeViewer($("compareView"), compareIds[activeCompare], { dark: activeCompare === 2 || activeCompare === 4 }) });
 
     }
+
 
     // Web3Forms is intentionally used instead of calling a Telegram bot directly from the browser.
     // Telegram bot tokens must remain private; put any future Telegram integration behind a serverless endpoint.
@@ -3335,6 +3669,7 @@ zoom polymer, 4
     makeViewer($("compareView"), "publication");
 
   </script>
+
 
 </body>
 
