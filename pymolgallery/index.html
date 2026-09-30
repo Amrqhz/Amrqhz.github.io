@@ -13,6 +13,7 @@
   <title>PyMOL Art Gallery — Molecular visualization, curated.</title>
 
   <meta name="description"
+
     content="A curated gallery of molecular visualization styles. Find a look, copy the PyMOL code, render your science.">
 
   <link rel="preconnect" href="https://3dmol.org">
@@ -20,12 +21,15 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
   <link
+
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+
     rel="stylesheet">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js" id="3dmol-lib"></script>
 
   <style>
+
     :root {
 
       --paper: #f3f1eb;
@@ -47,19 +51,22 @@
       --sans: "DM Sans", sans-serif;
 
       --display: "Manrope", sans-serif
+
     }
 
-    * {
+* {
 
       box-sizing: border-box
+
     }
 
-    html {
+html {
 
       scroll-behavior: smooth
+
     }
 
-    body {
+body {
 
       margin: 0;
 
@@ -70,25 +77,29 @@
       font-family: var(--sans);
 
       -webkit-font-smoothing: antialiased
+
     }
 
-    button,
+button,
 
-    input {
+input {
 
       font: inherit
+
     }
 
-    button {
+button {
 
       cursor: pointer
+
     }
 
-    a {
+a {
 
       color: inherit;
 
       text-decoration: none
+
     }
 
     .wrap {
@@ -96,6 +107,7 @@
       width: min(1440px, calc(100% - 64px));
 
       margin: auto
+
     }
 
     .topbar {
@@ -109,6 +121,7 @@
       align-items: center;
 
       justify-content: space-between
+
     }
 
     .brand {
@@ -122,6 +135,7 @@
       font: 700 14px var(--display);
 
       letter-spacing: -.03em
+
     }
 
     .brand-mark {
@@ -139,6 +153,7 @@
       place-items: center;
 
       font: 12px var(--mono)
+
     }
 
     .nav {
@@ -152,11 +167,13 @@
       font-size: 12px;
 
       color: #5f615a
+
     }
 
     .nav a:hover {
 
       color: #111
+
     }
 
     .nav .github {
@@ -168,6 +185,7 @@
       border-radius: 3px;
 
       color: var(--ink)
+
     }
 
     .eyebrow {
@@ -179,6 +197,7 @@
       letter-spacing: .12em;
 
       color: var(--muted)
+
     }
 
     .hero {
@@ -196,6 +215,7 @@
       gap: 3vw;
 
       padding: 55px 0 65px
+
     }
 
     .hero-copy {
@@ -205,6 +225,7 @@
       position: relative;
 
       z-index: 2
+
     }
 
     .hero h1 {
@@ -216,6 +237,7 @@
       margin: 25px 0 27px;
 
       max-width: 650px
+
     }
 
     .hero h1 em {
@@ -225,6 +247,7 @@
       font-weight: 400;
 
       letter-spacing: -.09em
+
     }
 
     .hero p {
@@ -236,6 +259,7 @@
       color: #62645c;
 
       max-width: 390px
+
     }
 
     .actions {
@@ -247,6 +271,7 @@
       margin-top: 32px;
 
       flex-wrap: wrap
+
     }
 
     .btn {
@@ -272,6 +297,7 @@
       border-radius: 2px;
 
       transition: .2s
+
     }
 
     .btn.primary {
@@ -279,16 +305,19 @@
       background: var(--ink);
 
       color: #fff
+
     }
 
     .btn.primary:hover {
 
       background: #41443c
+
     }
 
     .btn.secondary:hover {
 
       background: #e7e6de
+
     }
 
     .hero-meta {
@@ -306,6 +335,7 @@
       text-transform: uppercase;
 
       letter-spacing: .08em
+
     }
 
     .hero-art {
@@ -321,6 +351,7 @@
       overflow: hidden;
 
       border-radius: 2px
+
     }
 
     .hero-art:before {
@@ -336,6 +367,7 @@
       z-index: 1;
 
       pointer-events: none
+
     }
 
     .hero-view {
@@ -343,6 +375,7 @@
       position: absolute;
 
       inset: 0
+
     }
 
     .art-label {
@@ -362,6 +395,7 @@
       color: #696b62;
 
       text-transform: uppercase
+
     }
 
     .art-index {
@@ -377,11 +411,13 @@
       font: 10px var(--mono);
 
       color: #777970
+
     }
 
     .section {
 
       padding: 100px 0
+
     }
 
     .section-head {
@@ -395,6 +431,7 @@
       gap: 30px;
 
       margin-bottom: 38px
+
     }
 
     .section h2 {
@@ -404,6 +441,7 @@
       letter-spacing: -.07em;
 
       margin: 13px 0 0
+
     }
 
     .section-intro {
@@ -415,6 +453,7 @@
       font-size: 13px;
 
       line-height: 1.7
+
     }
 
     .featured {
@@ -424,6 +463,7 @@
       grid-template-columns: 1.25fr 1fr 1fr;
 
       gap: 12px
+
     }
 
     .feature {
@@ -439,11 +479,13 @@
       overflow: hidden;
 
       cursor: pointer
+
     }
 
     .feature:first-child {
 
       min-height: 360px
+
     }
 
     .feature-view {
@@ -451,6 +493,7 @@
       position: absolute;
 
       inset: 0
+
     }
 
     .feature:after {
@@ -464,6 +507,7 @@
       background: linear-gradient(transparent, rgba(0, 0, 0, .72));
 
       pointer-events: none
+
     }
 
     .feature-info {
@@ -483,6 +527,7 @@
       justify-content: space-between;
 
       align-items: end
+
     }
 
     .feature-info h3 {
@@ -492,6 +537,7 @@
       letter-spacing: -.04em;
 
       margin: 0 0 5px
+
     }
 
     .feature-info p {
@@ -505,11 +551,13 @@
       text-transform: uppercase;
 
       letter-spacing: .08em
+
     }
 
     .arrow {
 
       font-size: 20px
+
     }
 
     .compare {
@@ -519,16 +567,19 @@
       color: #f3f1eb;
 
       padding: 90px 0
+
     }
 
     .compare .eyebrow {
 
       color: #a4a79d
+
     }
 
     .compare .section-intro {
 
       color: #a4a79d
+
     }
 
     .compare-stage {
@@ -542,6 +593,7 @@
       align-items: center;
 
       margin-top: 38px
+
     }
 
     .compare-view {
@@ -553,6 +605,7 @@
       position: relative;
 
       overflow: hidden
+
     }
 
     .compare-controls {
@@ -562,6 +615,7 @@
       flex-direction: column;
 
       gap: 0
+
     }
 
     .compare-option {
@@ -587,6 +641,7 @@
       border-left: 0;
 
       border-right: 0
+
     }
 
     .compare-option .num {
@@ -596,6 +651,7 @@
       color: #999d92;
 
       margin-right: 20px
+
     }
 
     .compare-option strong {
@@ -603,6 +659,7 @@
       font: 500 20px var(--display);
 
       letter-spacing: -.04em
+
     }
 
     .compare-option small {
@@ -614,11 +671,13 @@
       color: #a4a79d;
 
       margin-top: 5px
+
     }
 
     .compare-option.active strong {
 
       color: var(--acid)
+
     }
 
     .compare-note {
@@ -628,11 +687,13 @@
       color: #92968b;
 
       margin-top: 18px
+
     }
 
     .gallery {
 
       padding-top: 105px
+
     }
 
     .toolbar {
@@ -648,6 +709,7 @@
       margin: 32px 0 25px;
 
       flex-wrap: wrap
+
     }
 
     .toolbar-right {
@@ -659,6 +721,7 @@
       align-items: center;
 
       flex-wrap: wrap
+
     }
 
     .reference-picker {
@@ -676,6 +739,7 @@
       height: 38px;
 
       background: transparent
+
     }
 
     .reference-picker span {
@@ -685,6 +749,7 @@
       letter-spacing: .08em;
 
       color: var(--muted)
+
     }
 
     .reference-picker select {
@@ -700,6 +765,7 @@
       outline: none;
 
       cursor: pointer
+
     }
 
     .reference-picker select option {
@@ -707,6 +773,7 @@
       color: #20211e;
 
       background: #f3f1eb
+
     }
 
     .filters {
@@ -716,6 +783,7 @@
       gap: 6px;
 
       flex-wrap: wrap
+
     }
 
     .filter {
@@ -733,6 +801,7 @@
       text-transform: uppercase;
 
       color: #62645c
+
     }
 
     .filter.active,
@@ -744,6 +813,7 @@
       border-color: var(--ink);
 
       color: white
+
     }
 
     .search {
@@ -759,11 +829,13 @@
       font-size: 12px;
 
       outline: none
+
     }
 
     .search:focus {
 
       border-color: #777970
+
     }
 
     .grid {
@@ -773,6 +845,7 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
 
       gap: 24px 13px
+
     }
 
     .style-card {
@@ -780,6 +853,7 @@
       min-width: 0;
 
       cursor: pointer
+
     }
 
     .card-art {
@@ -791,6 +865,7 @@
       position: relative;
 
       overflow: hidden
+
     }
 
     .card-view {
@@ -798,6 +873,7 @@
       position: absolute;
 
       inset: 0
+
     }
 
     .card-number {
@@ -813,6 +889,7 @@
       font: 10px var(--mono);
 
       color: #777970
+
     }
 
     .card-open {
@@ -840,6 +917,7 @@
       border-radius: 50%;
 
       transition: .2s
+
     }
 
     .style-card:hover .card-open {
@@ -847,11 +925,13 @@
       background: var(--acid);
 
       transform: rotate(45deg)
+
     }
 
     .card-text {
 
       padding: 15px 2px 5px
+
     }
 
     .card-title-row {
@@ -863,6 +943,7 @@
       gap: 10px;
 
       align-items: baseline
+
     }
 
     .card-title {
@@ -872,6 +953,7 @@
       letter-spacing: -.04em;
 
       margin: 0
+
     }
 
     .card-id {
@@ -879,6 +961,7 @@
       font: 10px var(--mono);
 
       color: #898b82
+
     }
 
     .card-desc {
@@ -892,6 +975,7 @@
       max-width: 370px;
 
       margin: 8px 0 12px
+
     }
 
     .tags {
@@ -901,6 +985,7 @@
       gap: 6px;
 
       flex-wrap: wrap
+
     }
 
     .tag {
@@ -916,6 +1001,7 @@
       border: 1px solid var(--line);
 
       color: #777970
+
     }
 
     .empty {
@@ -927,6 +1013,7 @@
       color: var(--muted);
 
       grid-column: 1/-1
+
     }
 
     .how {
@@ -934,6 +1021,7 @@
       border-top: 1px solid var(--line);
 
       border-bottom: 1px solid var(--line)
+
     }
 
     .steps {
@@ -945,6 +1033,7 @@
       gap: 25px;
 
       margin-top: 48px
+
     }
 
     .step {
@@ -952,6 +1041,7 @@
       border-top: 1px solid var(--line);
 
       padding-top: 17px
+
     }
 
     .step-num {
@@ -959,6 +1049,7 @@
       font: 11px var(--mono);
 
       color: #777970
+
     }
 
     .step h3 {
@@ -968,6 +1059,7 @@
       letter-spacing: -.05em;
 
       margin: 27px 0 10px
+
     }
 
     .step p {
@@ -979,6 +1071,7 @@
       color: #777970;
 
       max-width: 280px
+
     }
 
     .step-symbol {
@@ -988,6 +1081,7 @@
       color: #9b9d94;
 
       margin-top: 25px
+
     }
 
     .manifesto {
@@ -999,6 +1093,7 @@
       gap: 40px;
 
       align-items: start
+
     }
 
     .manifesto blockquote {
@@ -1010,6 +1105,7 @@
       margin: 0;
 
       max-width: 800px
+
     }
 
     .manifesto blockquote em {
@@ -1017,6 +1113,7 @@
       font-family: Georgia, serif;
 
       font-weight: 400
+
     }
 
     .manifesto p {
@@ -1030,6 +1127,7 @@
       max-width: 500px;
 
       margin-top: 25px
+
     }
 
     .cta {
@@ -1037,6 +1135,7 @@
       background: var(--acid);
 
       padding: 65px 0
+
     }
 
     .cta-inner {
@@ -1048,6 +1147,7 @@
       align-items: center;
 
       gap: 25px
+
     }
 
     .cta h2 {
@@ -1057,6 +1157,7 @@
       letter-spacing: -.075em;
 
       margin: 12px 0
+
     }
 
     .cta p {
@@ -1064,6 +1165,7 @@
       font-size: 12px;
 
       color: #4e5540
+
     }
 
     .cta .btn {
@@ -1075,6 +1177,7 @@
       color: white;
 
       white-space: nowrap
+
     }
 
     .footer {
@@ -1090,6 +1193,7 @@
       font: 10px var(--mono);
 
       color: #777970
+
     }
 
     .footer a {
@@ -1097,6 +1201,7 @@
       text-decoration: underline;
 
       text-underline-offset: 3px
+
     }
 
     .modal {
@@ -1118,11 +1223,13 @@
       padding: 28px;
 
       backdrop-filter: blur(8px)
+
     }
 
     .modal.open {
 
       display: flex
+
     }
 
     .modal-panel {
@@ -1140,6 +1247,7 @@
       grid-template-columns: 1.05fr .95fr;
 
       position: relative
+
     }
 
     .modal-visual {
@@ -1149,6 +1257,7 @@
       background: #e5e4dc;
 
       position: relative
+
     }
 
     .modal-view {
@@ -1156,6 +1265,7 @@
       position: absolute;
 
       inset: 0
+
     }
 
     .modal-side {
@@ -1163,6 +1273,7 @@
       padding: 38px;
 
       min-width: 0
+
     }
 
     .modal-top {
@@ -1172,6 +1283,7 @@
       justify-content: space-between;
 
       align-items: center
+
     }
 
     .close {
@@ -1185,6 +1297,7 @@
       height: 36px;
 
       font-size: 20px
+
     }
 
     .modal-side h2 {
@@ -1194,6 +1307,7 @@
       letter-spacing: -.07em;
 
       margin: 28px 0 14px
+
     }
 
     .modal-desc {
@@ -1203,11 +1317,13 @@
       line-height: 1.7;
 
       color: #696b62
+
     }
 
     .bestfor {
 
       margin: 27px 0
+
     }
 
     .bestfor h3,
@@ -1221,6 +1337,7 @@
       letter-spacing: .1em;
 
       color: #777970
+
     }
 
     .bestfor p {
@@ -1228,6 +1345,7 @@
       font-size: 12px;
 
       line-height: 1.8
+
     }
 
     .codebox {
@@ -1235,6 +1353,7 @@
       border: 1px solid var(--line);
 
       background: #eae9e1
+
     }
 
     .code-head {
@@ -1246,9 +1365,10 @@
       padding: 12px 14px;
 
       border-bottom: 1px solid var(--line)
+
     }
 
-    pre {
+pre {
 
       white-space: pre-wrap;
 
@@ -1265,6 +1385,7 @@
       overflow: auto;
 
       color: #343730
+
     }
 
     .copy {
@@ -1286,11 +1407,13 @@
       text-transform: uppercase;
 
       letter-spacing: .08em
+
     }
 
     .copy:hover {
 
       background: #41443c
+
     }
 
     .copy-note {
@@ -1302,6 +1425,7 @@
       line-height: 1.6;
 
       margin-top: 12px
+
     }
 
     .toast {
@@ -1329,6 +1453,7 @@
       pointer-events: none;
 
       transition: .25s
+
     }
 
     .toast.show {
@@ -1336,6 +1461,7 @@
       opacity: 1;
 
       transform: translate(-50%, 0)
+
     }
 
     .tiny {
@@ -1343,6 +1469,7 @@
       font: 10px var(--mono);
 
       color: #777970
+
     }
 
     .viewer-fallback {
@@ -1362,6 +1489,7 @@
       font: 11px var(--mono);
 
       color: #777970
+
     }
 
     .viewer-fallback span {
@@ -1371,6 +1499,7 @@
       max-width: 250px;
 
       line-height: 1.8
+
     }
 
     .viewer-fallback.error {
@@ -1378,6 +1507,7 @@
       background: rgba(243, 241, 235, .78);
 
       color: #8a4d45
+
     }
 
     .viewer-fallback.error span:before {
@@ -1385,6 +1515,7 @@
       content: "!  ";
 
       font-weight: 700
+
     }
 
 
@@ -1393,21 +1524,18 @@
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line)
     }
-
     .submit-layout {
       display: grid;
       grid-template-columns: .8fr 1.2fr;
       gap: 60px;
       align-items: start
     }
-
     .submit-copy h2,
     .developer-copy h2 {
       font: 500 clamp(38px, 5vw, 64px)/1 var(--display);
       letter-spacing: -.07em;
       margin: 14px 0 20px
     }
-
     .submit-copy p,
     .developer-copy p {
       color: var(--muted);
@@ -1415,7 +1543,6 @@
       line-height: 1.75;
       max-width: 520px
     }
-
     .submit-note {
       margin-top: 28px;
       padding-top: 18px;
@@ -1423,182 +1550,99 @@
       font: 10px/1.7 var(--mono);
       color: #777970
     }
-
     .submit-form {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 14px
     }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px
-    }
-
-    .field.full {
-      grid-column: 1 / -1
-    }
-
+    .field { display:flex; flex-direction:column; gap:7px }
+    .field.full { grid-column: 1 / -1 }
     .field label {
       font: 10px var(--mono);
       text-transform: uppercase;
       letter-spacing: .08em;
       color: #66685f
     }
-
     .field input,
     .field textarea,
     .field select {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: #f3f1eb;
-      color: var(--ink);
-      padding: 13px 14px;
-      outline: none;
-      border-radius: 2px;
-      font: 12px var(--sans)
+      width:100%;
+      border:1px solid var(--line);
+      background:#f3f1eb;
+      color:var(--ink);
+      padding:13px 14px;
+      outline:none;
+      border-radius:2px;
+      font:12px var(--sans)
     }
-
-    .field textarea {
-      min-height: 130px;
-      resize: vertical;
-      line-height: 1.6
-    }
-
+    .field textarea { min-height:130px; resize:vertical; line-height:1.6 }
     .field input:focus,
     .field textarea:focus,
-    .field select:focus {
-      border-color: #777970
-    }
-
+    .field select:focus { border-color:#777970 }
     .submit-actions {
-      grid-column: 1 / -1;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 4px
+      grid-column:1 / -1;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-top:4px
     }
-
-    .submit-status {
-      font: 10px var(--mono);
-      color: #777970
-    }
-
-    .submit-status.ok {
-      color: #526d28
-    }
-
-    .submit-status.error {
-      color: #8a3d36
-    }
-
-    .honeypot {
-      position: absolute !important;
-      left: -9999px !important;
-      opacity: 0 !important;
-      pointer-events: none !important
-    }
-
+    .submit-status { font:10px var(--mono); color:#777970 }
+    .submit-status.ok { color:#526d28 }
+    .submit-status.error { color:#8a3d36 }
+    .honeypot { position:absolute !important; left:-9999px !important; opacity:0 !important; pointer-events:none !important }
     .developer {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 60px;
-      align-items: center
+      display:grid;
+      grid-template-columns:1fr 1.2fr;
+      gap:60px;
+      align-items:center
     }
-
     .developer-card {
-      border-top: 1px solid var(--ink);
-      border-bottom: 1px solid var(--line);
-      padding: 22px 0
+      border-top:1px solid var(--ink);
+      border-bottom:1px solid var(--line);
+      padding:22px 0
     }
-
     .developer-name {
-      font: 500 clamp(30px, 4vw, 52px) var(--display);
-      letter-spacing: -.065em;
-      margin: 0 0 10px
+      font:500 clamp(30px, 4vw, 52px) var(--display);
+      letter-spacing:-.065em;
+      margin:0 0 10px
     }
-
-    .developer-role {
-      font: 10px var(--mono);
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      color: #777970
-    }
-
-    .developer-links {
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-      margin-top: 22px
-    }
-
-    .developer-links a {
-      border: 1px solid var(--line);
-      padding: 9px 12px;
-      font: 10px var(--mono);
-      background: transparent
-    }
-
-    .developer-links a:hover {
-      background: var(--ink);
-      color: #fff;
-      border-color: var(--ink)
-    }
-
+    .developer-role { font:10px var(--mono); text-transform:uppercase; letter-spacing:.08em; color:#777970 }
+    .developer-links { display:flex; gap:9px; flex-wrap:wrap; margin-top:22px }
+    .developer-links a { border:1px solid var(--line); padding:9px 12px; font:10px var(--mono); background:transparent }
+    .developer-links a:hover { background:var(--ink); color:#fff; border-color:var(--ink) }
     .footer {
-      min-height: 110px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      font: 9px var(--mono);
-      color: #777970;
-      text-transform: uppercase;
-      letter-spacing: .05em
+      min-height:110px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      font:9px var(--mono);
+      color:#777970;
+      text-transform:uppercase;
+      letter-spacing:.05em
     }
-
-    .footer a {
-      color: var(--ink)
-    }
-
-    .footer a:hover {
-      text-decoration: underline
-    }
+    .footer a { color:var(--ink) }
+    .footer a:hover { text-decoration:underline }
 
     @media(max-width:900px) {
 
       .wrap {
 
         width: min(100% - 36px, 700px)
+
       }
 
       .nav {
 
         gap: 15px
+
       }
 
-      .submit-layout,
-      .developer {
-        grid-template-columns: 1fr
-      }
-
-      .submit-form {
-        grid-template-columns: 1fr
-      }
-
-      .field.full,
-      .submit-actions {
-        grid-column: auto
-      }
-
-      .footer {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 25px 0
-      }
+      .submit-layout, .developer { grid-template-columns: 1fr }
+      .submit-form { grid-template-columns: 1fr }
+      .field.full, .submit-actions { grid-column: auto }
+      .footer { flex-direction: column; align-items: flex-start; justify-content: center; padding: 25px 0 }
 
       .hero {
 
@@ -1607,21 +1651,25 @@
         padding-top: 50px;
 
         gap: 30px
+
       }
 
       .hero h1 {
 
         max-width: 650px
+
       }
 
       .hero-art {
 
         height: 430px
+
       }
 
       .featured {
 
         grid-template-columns: 1fr 1fr
+
       }
 
       .feature:first-child {
@@ -1629,51 +1677,61 @@
         grid-column: 1/-1;
 
         min-height: 330px
+
       }
 
       .compare-stage {
 
         grid-template-columns: 1fr
+
       }
 
       .compare-view {
 
         height: 350px
+
       }
 
       .grid {
 
         grid-template-columns: repeat(2, minmax(0, 1fr))
+
       }
 
       .modal-panel {
 
         grid-template-columns: 1fr
+
       }
 
       .modal-visual {
 
         min-height: 350px
+
       }
 
       .modal-side {
 
         padding: 28px
+
       }
 
       .modal {
 
         padding: 14px
+
       }
 
       .manifesto {
 
         grid-template-columns: 1fr
+
       }
 
       .section {
 
         padding: 75px 0
+
       }
 
     }
@@ -1683,16 +1741,19 @@
       .wrap {
 
         width: calc(100% - 30px)
+
       }
 
       .topbar {
 
         height: 64px
+
       }
 
       .nav a:not(.github) {
 
         display: none
+
       }
 
       .hero {
@@ -1700,16 +1761,19 @@
         padding: 38px 0 45px;
 
         min-height: 0
+
       }
 
       .hero h1 {
 
         font-size: 58px
+
       }
 
       .hero-art {
 
         height: 330px
+
       }
 
       .hero-meta {
@@ -1719,21 +1783,25 @@
         flex-wrap: wrap;
 
         margin-top: 35px
+
       }
 
       .section-head {
 
         display: block
+
       }
 
       .section-intro {
 
         margin-top: 18px
+
       }
 
       .featured {
 
         grid-template-columns: 1fr
+
       }
 
       .feature,
@@ -1743,31 +1811,37 @@
         min-height: 300px;
 
         grid-column: auto
+
       }
 
       .grid {
 
         grid-template-columns: 1fr
+
       }
 
       .card-art {
 
         height: 300px
+
       }
 
       .toolbar {
 
         align-items: stretch
+
       }
 
       .filters {
 
         order: 2
+
       }
 
       .search {
 
         width: 100%
+
       }
 
       .steps {
@@ -1775,81 +1849,95 @@
         grid-template-columns: 1fr;
 
         gap: 30px
+
       }
 
       .step h3 {
 
         margin-top: 18px
+
       }
 
       .step-symbol {
 
         margin-top: 12px
+
       }
 
       .compare {
 
         padding: 70px 0
+
       }
 
       .compare-view {
 
         height: 300px
+
       }
 
       .compare-option strong {
 
         font-size: 17px
+
       }
 
       .cta-inner {
 
         display: block
+
       }
 
       .cta .btn {
 
         margin-top: 20px
+
       }
 
       .footer {
 
         flex-direction: column
+
       }
 
       .modal-visual {
 
         min-height: 270px
+
       }
 
       .modal-side {
 
         padding: 22px
+
       }
 
       .modal-side h2 {
 
         margin-top: 22px
+
       }
 
     }
 
     @media(prefers-reduced-motion:reduce) {
 
-      *,
+*,
 
-      *:before,
+*:before,
 
-      *:after {
+*:after {
 
         scroll-behavior: auto !important;
 
         animation: none !important;
 
         transition: none !important
+
       }
 
     }
+
   </style>
 
 </head>
@@ -1862,9 +1950,9 @@
 
           Gallery</span></span></a>
 
-    <nav class="nav"><a href="#gallery">Gallery</a><a href="#how">How it works</a><a href="#about">About</a><a
-        href="#submit">Submit</a><a class="github" href="https://github.com/amrqhz" target="_blank"
-        rel="noreferrer">GitHub ↗</a></nav>
+    <nav class="nav"><a href="#gallery">Gallery</a><a href="#how">How it works</a><a href="#about">About</a><a href="#submit">Submit</a><a
+
+        class="github" href="https://github.com/amrqhz" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
 
   </header>
 
@@ -1883,6 +1971,7 @@
           own structure.</p>
 
         <div class="actions"><a class="btn primary" href="#gallery">Explore the gallery <span>↘</span></a><a
+
             class="btn secondary" href="#how">How it works</a></div>
 
         <div class="hero-meta"><span>01 / Browse styles</span><span>02 / Copy commands</span><span>03 / Render in
@@ -2038,6 +2127,7 @@
         <div class="filters" id="filters"></div>
 
         <div class="toolbar-right"><label class="reference-picker"><span>REFERENCE PDB</span><select
+
               id="referenceSelect" aria-label="Reference PDB">
 
               <option value="5MO4">5MO4 · BCR-ABL T315I</option>
@@ -2045,6 +2135,7 @@
               <option value="1HVR">1HVR · HIV-1 protease</option>
 
             </select></label><input class="search" id="search" type="search" placeholder="Search styles..."
+
             aria-label="Search styles"></div>
 
       </div>
@@ -2110,9 +2201,7 @@
         <div class="eyebrow">The idea</div>
         <div>
           <blockquote>The molecule is the artwork.<br><em>The script is the recipe.</em></blockquote>
-          <p>PyMOL Art Gallery is a visual inspiration gallery and styling cookbook. The browser previews are
-            illustrative 3D views; the copied scripts are the actual PyMOL commands. Presets use common selections where
-            practical, and comments point out the parts you may want to adapt.</p>
+          <p>PyMOL Art Gallery is a visual inspiration gallery and styling cookbook. The browser previews are illustrative 3D views; the copied scripts are the actual PyMOL commands. Presets use common selections where practical, and comments point out the parts you may want to adapt.</p>
         </div>
       </div>
     </section>
@@ -2122,13 +2211,11 @@
         <div class="submit-copy">
           <div class="eyebrow">Open collection / Submit a style</div>
           <h2>Have a look<br>worth sharing?</h2>
-          <p>Send a PyMOL visualization recipe to the gallery. Keep it focused: a useful style, a short explanation, and
-            the commands someone else can copy and adapt.</p>
-          <div class="submit-note">Submissions are reviewed before they become part of the public collection. No file
-            upload is required.</div>
+          <p>Send a PyMOL visualization recipe to the gallery. Keep it focused: a useful style, a short explanation, and the commands someone else can copy and adapt.</p>
+          <div class="submit-note">Submissions are reviewed before they become part of the public collection. No file upload is required.</div>
         </div>
         <form class="submit-form" id="submitForm" action="https://api.web3forms.com/submit" method="POST">
-          <input type="hidden" name="access_key" id="web3formsKey" value="4446eb46-0d20-4ff6-909a-f653694e1065">
+          <input type="hidden" name="access_key" id="web3formsKey" value="YOUR_WEB3FORMS_ACCESS_KEY">
           <input type="hidden" name="subject" value="PyMOL Art Gallery — New style submission">
           <input type="hidden" name="from_name" value="PyMOL Art Gallery">
           <input type="checkbox" name="botcheck" class="honeypot" tabindex="-1" autocomplete="off">
@@ -2147,24 +2234,16 @@
           <div class="field">
             <label for="submitCategory">Category</label>
             <select id="submitCategory" name="category">
-              <option>Protein</option>
-              <option>Ligand</option>
-              <option>Surface</option>
-              <option>Binding Site</option>
-              <option>Publication</option>
-              <option>Artistic</option>
+              <option>Protein</option><option>Ligand</option><option>Surface</option><option>Binding Site</option><option>Publication</option><option>Artistic</option>
             </select>
           </div>
           <div class="field full">
             <label for="submitDescription">Description</label>
-            <textarea id="submitDescription" name="description" required
-              placeholder="What does the style emphasize, and when is it useful?"></textarea>
+            <textarea id="submitDescription" name="description" required placeholder="What does the style emphasize, and when is it useful?"></textarea>
           </div>
           <div class="field full">
             <label for="submitCode">PyMOL commands</label>
-            <textarea id="submitCode" name="pymol_code" required spellcheck="false"
-              placeholder="# Paste the commands here&#10;hide everything&#10;show cartoon, polymer&#10;..."
-              style="font-family:var(--mono);font-size:11px"></textarea>
+            <textarea id="submitCode" name="pymol_code" required spellcheck="false" placeholder="# Paste the commands here&#10;hide everything&#10;show cartoon, polymer&#10;..." style="font-family:var(--mono);font-size:11px"></textarea>
           </div>
           <div class="field full">
             <label for="submitReference">Optional reference / PDB</label>
@@ -2183,11 +2262,8 @@
         <div class="developer-copy">
           <div class="eyebrow">The person behind the gallery</div>
           <h2>Science, but<br>make it visible.</h2>
-          <p>PyMOL Art Gallery grew from an interest in the space between pharmacy, structural biology, computational
-            drug discovery, and scientific software — where the way a result is visualized can shape how easily it is
-            understood.</p>
-          <p>My work spans molecular docking, molecular dynamics, DFT, drug repurposing, and small tools built for
-            pharmacists and researchers.</p>
+          <p>PyMOL Art Gallery grew from an interest in the space between pharmacy, structural biology, computational drug discovery, and scientific software — where the way a result is visualized can shape how easily it is understood.</p>
+          <p>My work spans molecular docking, molecular dynamics, DFT, drug repurposing, and small tools built for pharmacists and researchers.</p>
         </div>
         <div class="developer-card">
           <div class="developer-name">Amir H. Gholizadeh</div>
@@ -2218,12 +2294,9 @@
 
     </section>
 
-  </main>
-  <footer class="footer wrap">
+  </main>  <footer class="footer wrap">
     <span>PyMOL ART GALLERY — A VISUAL COOKBOOK FOR MOLECULAR GRAPHICS.</span>
-    <span>Created by <a href="https://amrqhz.github.io" target="_blank" rel="noreferrer">Amir H. Gholizadeh</a> · <a
-        href="https://pymolwiki.org/" target="_blank" rel="noreferrer">PyMOL Wiki</a> · <a href="https://3dmol.org/"
-        target="_blank" rel="noreferrer">3Dmol.js</a></span>
+    <span>Created by <a href="https://amrqhz.github.io" target="_blank" rel="noreferrer">Amir H. Gholizadeh</a> · <a href="https://pymolwiki.org/" target="_blank" rel="noreferrer">PyMOL Wiki</a> · <a href="https://3dmol.org/" target="_blank" rel="noreferrer">3Dmol.js</a></span>
   </footer>
 
   <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -2239,6 +2312,7 @@
       <div class="modal-side">
 
         <div class="modal-top"><span class="eyebrow" id="modalCategory">STYLE / 001</span><button class="close"
+
             id="closeModal" aria-label="Close">×</button></div>
 
         <h2 id="modalTitle"></h2>
@@ -2265,8 +2339,7 @@
 
         <p class="copy-note">Paste into the PyMOL command line or run as a .pml script. Selections such as
 
-          <code>organic</code> may need adjusting for your structure. Browser preview is not a PyMOL render.
-        </p>
+          <code>organic</code> may need adjusting for your structure. Browser preview is not a PyMOL render.</p>
 
       </div>
 
@@ -3095,7 +3168,7 @@ zoom polymer, 4
 
       if (hasLigand) {
 
-        // Keep solvent out of the preview while retaining crystallographic hetero groups.
+// Keep solvent out of the preview while retaining crystallographic hetero groups.
 
         viewer.setStyle({ hetflag: true, resn: { "!": "HOH" } }, { stick: cfg.stick || { colorscheme: "Jmol", radius: .2 } });
 
