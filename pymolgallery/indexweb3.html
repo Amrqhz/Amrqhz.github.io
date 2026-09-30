@@ -1,0 +1,3341 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <meta name="theme-color" content="#f3f1eb">
+
+  <title>PyMOL Art Gallery — Molecular visualization, curated.</title>
+
+  <meta name="description"
+    content="A curated gallery of molecular visualization styles. Find a look, copy the PyMOL code, render your science.">
+
+  <link rel="preconnect" href="https://3dmol.org">
+
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js" id="3dmol-lib"></script>
+
+  <style>
+    :root {
+
+      --paper: #f3f1eb;
+
+      --ink: #20211e;
+
+      --muted: #777970;
+
+      --line: #d9d8d0;
+
+      --acid: #d8ff54;
+
+      --panel: #e9e8e0;
+
+      --dark: #171a19;
+
+      --mono: "DM Mono", monospace;
+
+      --sans: "DM Sans", sans-serif;
+
+      --display: "Manrope", sans-serif
+    }
+
+    * {
+
+      box-sizing: border-box
+    }
+
+    html {
+
+      scroll-behavior: smooth
+    }
+
+    body {
+
+      margin: 0;
+
+      background: var(--paper);
+
+      color: var(--ink);
+
+      font-family: var(--sans);
+
+      -webkit-font-smoothing: antialiased
+    }
+
+    button,
+
+    input {
+
+      font: inherit
+    }
+
+    button {
+
+      cursor: pointer
+    }
+
+    a {
+
+      color: inherit;
+
+      text-decoration: none
+    }
+
+    .wrap {
+
+      width: min(1440px, calc(100% - 64px));
+
+      margin: auto
+    }
+
+    .topbar {
+
+      height: 76px;
+
+      border-bottom: 1px solid var(--line);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between
+    }
+
+    .brand {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 12px;
+
+      font: 700 14px var(--display);
+
+      letter-spacing: -.03em
+    }
+
+    .brand-mark {
+
+      width: 27px;
+
+      height: 27px;
+
+      border: 1px solid var(--ink);
+
+      border-radius: 50%;
+
+      display: grid;
+
+      place-items: center;
+
+      font: 12px var(--mono)
+    }
+
+    .nav {
+
+      display: flex;
+
+      gap: 30px;
+
+      align-items: center;
+
+      font-size: 12px;
+
+      color: #5f615a
+    }
+
+    .nav a:hover {
+
+      color: #111
+    }
+
+    .nav .github {
+
+      border: 1px solid var(--line);
+
+      padding: 10px 13px;
+
+      border-radius: 3px;
+
+      color: var(--ink)
+    }
+
+    .eyebrow {
+
+      font: 11px var(--mono);
+
+      text-transform: uppercase;
+
+      letter-spacing: .12em;
+
+      color: var(--muted)
+    }
+
+    .hero {
+
+      display: grid;
+
+      grid-template-columns: .9fr 1.1fr;
+
+      min-height: 650px;
+
+      border-bottom: 1px solid var(--line);
+
+      align-items: center;
+
+      gap: 3vw;
+
+      padding: 55px 0 65px
+    }
+
+    .hero-copy {
+
+      padding: 22px 0;
+
+      position: relative;
+
+      z-index: 2
+    }
+
+    .hero h1 {
+
+      font: 500 clamp(54px, 7.2vw, 108px)/.96 var(--display);
+
+      letter-spacing: -.085em;
+
+      margin: 25px 0 27px;
+
+      max-width: 650px
+    }
+
+    .hero h1 em {
+
+      font-family: Georgia, serif;
+
+      font-weight: 400;
+
+      letter-spacing: -.09em
+    }
+
+    .hero p {
+
+      font-size: 15px;
+
+      line-height: 1.75;
+
+      color: #62645c;
+
+      max-width: 390px
+    }
+
+    .actions {
+
+      display: flex;
+
+      gap: 10px;
+
+      margin-top: 32px;
+
+      flex-wrap: wrap
+    }
+
+    .btn {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 12px;
+
+      padding: 15px 18px;
+
+      border: 1px solid var(--ink);
+
+      font-size: 12px;
+
+      font-weight: 600;
+
+      background: transparent;
+
+      border-radius: 2px;
+
+      transition: .2s
+    }
+
+    .btn.primary {
+
+      background: var(--ink);
+
+      color: #fff
+    }
+
+    .btn.primary:hover {
+
+      background: #41443c
+    }
+
+    .btn.secondary:hover {
+
+      background: #e7e6de
+    }
+
+    .hero-meta {
+
+      display: flex;
+
+      gap: 25px;
+
+      margin-top: 55px;
+
+      font: 10px var(--mono);
+
+      color: #777970;
+
+      text-transform: uppercase;
+
+      letter-spacing: .08em
+    }
+
+    .hero-art {
+
+      position: relative;
+
+      min-width: 0;
+
+      height: 540px;
+
+      background: #e6e5dd;
+
+      overflow: hidden;
+
+      border-radius: 2px
+    }
+
+    .hero-art:before {
+
+      content: "";
+
+      position: absolute;
+
+      inset: 0;
+
+      background: linear-gradient(135deg, transparent 45%, rgba(255, 255, 255, .35));
+
+      z-index: 1;
+
+      pointer-events: none
+    }
+
+    .hero-view {
+
+      position: absolute;
+
+      inset: 0
+    }
+
+    .art-label {
+
+      position: absolute;
+
+      z-index: 2;
+
+      left: 22px;
+
+      bottom: 20px;
+
+      font: 10px var(--mono);
+
+      letter-spacing: .08em;
+
+      color: #696b62;
+
+      text-transform: uppercase
+    }
+
+    .art-index {
+
+      position: absolute;
+
+      z-index: 2;
+
+      right: 22px;
+
+      top: 20px;
+
+      font: 10px var(--mono);
+
+      color: #777970
+    }
+
+    .section {
+
+      padding: 100px 0
+    }
+
+    .section-head {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: end;
+
+      gap: 30px;
+
+      margin-bottom: 38px
+    }
+
+    .section h2 {
+
+      font: 500 clamp(35px, 5vw, 62px)/1.05 var(--display);
+
+      letter-spacing: -.07em;
+
+      margin: 13px 0 0
+    }
+
+    .section-intro {
+
+      max-width: 350px;
+
+      color: var(--muted);
+
+      font-size: 13px;
+
+      line-height: 1.7
+    }
+
+    .featured {
+
+      display: grid;
+
+      grid-template-columns: 1.25fr 1fr 1fr;
+
+      gap: 12px
+    }
+
+    .feature {
+
+      position: relative;
+
+      min-height: 280px;
+
+      background: var(--dark);
+
+      color: #fff;
+
+      overflow: hidden;
+
+      cursor: pointer
+    }
+
+    .feature:first-child {
+
+      min-height: 360px
+    }
+
+    .feature-view {
+
+      position: absolute;
+
+      inset: 0
+    }
+
+    .feature:after {
+
+      content: "";
+
+      position: absolute;
+
+      inset: 45% 0 0;
+
+      background: linear-gradient(transparent, rgba(0, 0, 0, .72));
+
+      pointer-events: none
+    }
+
+    .feature-info {
+
+      position: absolute;
+
+      z-index: 2;
+
+      left: 20px;
+
+      right: 20px;
+
+      bottom: 19px;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: end
+    }
+
+    .feature-info h3 {
+
+      font: 500 20px var(--display);
+
+      letter-spacing: -.04em;
+
+      margin: 0 0 5px
+    }
+
+    .feature-info p {
+
+      font: 10px var(--mono);
+
+      color: #c0c2ba;
+
+      margin: 0;
+
+      text-transform: uppercase;
+
+      letter-spacing: .08em
+    }
+
+    .arrow {
+
+      font-size: 20px
+    }
+
+    .compare {
+
+      background: #202320;
+
+      color: #f3f1eb;
+
+      padding: 90px 0
+    }
+
+    .compare .eyebrow {
+
+      color: #a4a79d
+    }
+
+    .compare .section-intro {
+
+      color: #a4a79d
+    }
+
+    .compare-stage {
+
+      display: grid;
+
+      grid-template-columns: 1.1fr .9fr;
+
+      gap: 35px;
+
+      align-items: center;
+
+      margin-top: 38px
+    }
+
+    .compare-view {
+
+      height: 430px;
+
+      background: #151816;
+
+      position: relative;
+
+      overflow: hidden
+    }
+
+    .compare-controls {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 0
+    }
+
+    .compare-option {
+
+      padding: 22px 0;
+
+      border-bottom: 1px solid #41443d;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      text-align: left;
+
+      background: none;
+
+      color: #f3f1eb;
+
+      border-top: 0;
+
+      border-left: 0;
+
+      border-right: 0
+    }
+
+    .compare-option .num {
+
+      font: 10px var(--mono);
+
+      color: #999d92;
+
+      margin-right: 20px
+    }
+
+    .compare-option strong {
+
+      font: 500 20px var(--display);
+
+      letter-spacing: -.04em
+    }
+
+    .compare-option small {
+
+      display: block;
+
+      font-size: 11px;
+
+      color: #a4a79d;
+
+      margin-top: 5px
+    }
+
+    .compare-option.active strong {
+
+      color: var(--acid)
+    }
+
+    .compare-note {
+
+      font: 10px var(--mono);
+
+      color: #92968b;
+
+      margin-top: 18px
+    }
+
+    .gallery {
+
+      padding-top: 105px
+    }
+
+    .toolbar {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 20px;
+
+      align-items: center;
+
+      margin: 32px 0 25px;
+
+      flex-wrap: wrap
+    }
+
+    .toolbar-right {
+
+      display: flex;
+
+      gap: 9px;
+
+      align-items: center;
+
+      flex-wrap: wrap
+    }
+
+    .reference-picker {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      border: 1px solid var(--line);
+
+      padding: 0 10px;
+
+      height: 38px;
+
+      background: transparent
+    }
+
+    .reference-picker span {
+
+      font: 9px var(--mono);
+
+      letter-spacing: .08em;
+
+      color: var(--muted)
+    }
+
+    .reference-picker select {
+
+      border: 0;
+
+      background: transparent;
+
+      color: var(--ink);
+
+      font: 11px var(--mono);
+
+      outline: none;
+
+      cursor: pointer
+    }
+
+    .reference-picker select option {
+
+      color: #20211e;
+
+      background: #f3f1eb
+    }
+
+    .filters {
+
+      display: flex;
+
+      gap: 6px;
+
+      flex-wrap: wrap
+    }
+
+    .filter {
+
+      border: 1px solid var(--line);
+
+      background: transparent;
+
+      padding: 9px 12px;
+
+      border-radius: 2px;
+
+      font: 10px var(--mono);
+
+      text-transform: uppercase;
+
+      color: #62645c
+    }
+
+    .filter.active,
+
+    .filter:hover {
+
+      background: var(--ink);
+
+      border-color: var(--ink);
+
+      color: white
+    }
+
+    .search {
+
+      border: 1px solid var(--line);
+
+      background: transparent;
+
+      padding: 11px 13px;
+
+      width: 230px;
+
+      font-size: 12px;
+
+      outline: none
+    }
+
+    .search:focus {
+
+      border-color: #777970
+    }
+
+    .grid {
+
+      display: grid;
+
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+
+      gap: 24px 13px
+    }
+
+    .style-card {
+
+      min-width: 0;
+
+      cursor: pointer
+    }
+
+    .card-art {
+
+      height: 270px;
+
+      background: #e7e6de;
+
+      position: relative;
+
+      overflow: hidden
+    }
+
+    .card-view {
+
+      position: absolute;
+
+      inset: 0
+    }
+
+    .card-number {
+
+      position: absolute;
+
+      top: 13px;
+
+      left: 14px;
+
+      z-index: 2;
+
+      font: 10px var(--mono);
+
+      color: #777970
+    }
+
+    .card-open {
+
+      position: absolute;
+
+      right: 12px;
+
+      bottom: 12px;
+
+      z-index: 2;
+
+      width: 34px;
+
+      height: 34px;
+
+      border: 1px solid rgba(30, 32, 29, .2);
+
+      background: rgba(243, 241, 235, .8);
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 50%;
+
+      transition: .2s
+    }
+
+    .style-card:hover .card-open {
+
+      background: var(--acid);
+
+      transform: rotate(45deg)
+    }
+
+    .card-text {
+
+      padding: 15px 2px 5px
+    }
+
+    .card-title-row {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      align-items: baseline
+    }
+
+    .card-title {
+
+      font: 500 19px var(--display);
+
+      letter-spacing: -.04em;
+
+      margin: 0
+    }
+
+    .card-id {
+
+      font: 10px var(--mono);
+
+      color: #898b82
+    }
+
+    .card-desc {
+
+      font-size: 12px;
+
+      line-height: 1.6;
+
+      color: #777970;
+
+      max-width: 370px;
+
+      margin: 8px 0 12px
+    }
+
+    .tags {
+
+      display: flex;
+
+      gap: 6px;
+
+      flex-wrap: wrap
+    }
+
+    .tag {
+
+      font: 9px var(--mono);
+
+      text-transform: uppercase;
+
+      letter-spacing: .05em;
+
+      padding: 5px 7px;
+
+      border: 1px solid var(--line);
+
+      color: #777970
+    }
+
+    .empty {
+
+      padding: 55px;
+
+      text-align: center;
+
+      color: var(--muted);
+
+      grid-column: 1/-1
+    }
+
+    .how {
+
+      border-top: 1px solid var(--line);
+
+      border-bottom: 1px solid var(--line)
+    }
+
+    .steps {
+
+      display: grid;
+
+      grid-template-columns: repeat(3, 1fr);
+
+      gap: 25px;
+
+      margin-top: 48px
+    }
+
+    .step {
+
+      border-top: 1px solid var(--line);
+
+      padding-top: 17px
+    }
+
+    .step-num {
+
+      font: 11px var(--mono);
+
+      color: #777970
+    }
+
+    .step h3 {
+
+      font: 500 25px var(--display);
+
+      letter-spacing: -.05em;
+
+      margin: 27px 0 10px
+    }
+
+    .step p {
+
+      font-size: 13px;
+
+      line-height: 1.7;
+
+      color: #777970;
+
+      max-width: 280px
+    }
+
+    .step-symbol {
+
+      font: 34px var(--mono);
+
+      color: #9b9d94;
+
+      margin-top: 25px
+    }
+
+    .manifesto {
+
+      display: grid;
+
+      grid-template-columns: .6fr 1.4fr;
+
+      gap: 40px;
+
+      align-items: start
+    }
+
+    .manifesto blockquote {
+
+      font: 500 clamp(30px, 4vw, 54px)/1.15 var(--display);
+
+      letter-spacing: -.065em;
+
+      margin: 0;
+
+      max-width: 800px
+    }
+
+    .manifesto blockquote em {
+
+      font-family: Georgia, serif;
+
+      font-weight: 400
+    }
+
+    .manifesto p {
+
+      font-size: 12px;
+
+      line-height: 1.8;
+
+      color: var(--muted);
+
+      max-width: 500px;
+
+      margin-top: 25px
+    }
+
+    .cta {
+
+      background: var(--acid);
+
+      padding: 65px 0
+    }
+
+    .cta-inner {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 25px
+    }
+
+    .cta h2 {
+
+      font: 500 clamp(36px, 5vw, 66px)/1 var(--display);
+
+      letter-spacing: -.075em;
+
+      margin: 12px 0
+    }
+
+    .cta p {
+
+      font-size: 12px;
+
+      color: #4e5540
+    }
+
+    .cta .btn {
+
+      border-color: #20211e;
+
+      background: #20211e;
+
+      color: white;
+
+      white-space: nowrap
+    }
+
+    .footer {
+
+      padding: 25px 0;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 20px;
+
+      font: 10px var(--mono);
+
+      color: #777970
+    }
+
+    .footer a {
+
+      text-decoration: underline;
+
+      text-underline-offset: 3px
+    }
+
+    .modal {
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 20;
+
+      background: rgba(18, 20, 18, .72);
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 28px;
+
+      backdrop-filter: blur(8px)
+    }
+
+    .modal.open {
+
+      display: flex
+    }
+
+    .modal-panel {
+
+      width: min(1200px, 100%);
+
+      max-height: min(850px, 94vh);
+
+      overflow: auto;
+
+      background: var(--paper);
+
+      display: grid;
+
+      grid-template-columns: 1.05fr .95fr;
+
+      position: relative
+    }
+
+    .modal-visual {
+
+      min-height: 600px;
+
+      background: #e5e4dc;
+
+      position: relative
+    }
+
+    .modal-view {
+
+      position: absolute;
+
+      inset: 0
+    }
+
+    .modal-side {
+
+      padding: 38px;
+
+      min-width: 0
+    }
+
+    .modal-top {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center
+    }
+
+    .close {
+
+      border: 1px solid var(--line);
+
+      background: transparent;
+
+      width: 36px;
+
+      height: 36px;
+
+      font-size: 20px
+    }
+
+    .modal-side h2 {
+
+      font: 500 clamp(32px, 4vw, 50px)/1 var(--display);
+
+      letter-spacing: -.07em;
+
+      margin: 28px 0 14px
+    }
+
+    .modal-desc {
+
+      font-size: 13px;
+
+      line-height: 1.7;
+
+      color: #696b62
+    }
+
+    .bestfor {
+
+      margin: 27px 0
+    }
+
+    .bestfor h3,
+
+    .code-head {
+
+      font: 10px var(--mono);
+
+      text-transform: uppercase;
+
+      letter-spacing: .1em;
+
+      color: #777970
+    }
+
+    .bestfor p {
+
+      font-size: 12px;
+
+      line-height: 1.8
+    }
+
+    .codebox {
+
+      border: 1px solid var(--line);
+
+      background: #eae9e1
+    }
+
+    .code-head {
+
+      display: flex;
+
+      justify-content: space-between;
+
+      padding: 12px 14px;
+
+      border-bottom: 1px solid var(--line)
+    }
+
+    pre {
+
+      white-space: pre-wrap;
+
+      overflow-wrap: anywhere;
+
+      margin: 0;
+
+      padding: 17px 15px;
+
+      font: 11px/1.75 var(--mono);
+
+      max-height: 250px;
+
+      overflow: auto;
+
+      color: #343730
+    }
+
+    .copy {
+
+      width: 100%;
+
+      margin-top: 10px;
+
+      background: var(--ink);
+
+      color: white;
+
+      border: 0;
+
+      padding: 15px;
+
+      font: 11px var(--mono);
+
+      text-transform: uppercase;
+
+      letter-spacing: .08em
+    }
+
+    .copy:hover {
+
+      background: #41443c
+    }
+
+    .copy-note {
+
+      font-size: 10px;
+
+      color: #777970;
+
+      line-height: 1.6;
+
+      margin-top: 12px
+    }
+
+    .toast {
+
+      position: fixed;
+
+      bottom: 22px;
+
+      left: 50%;
+
+      transform: translate(-50%, 20px);
+
+      background: var(--acid);
+
+      color: var(--ink);
+
+      padding: 13px 18px;
+
+      font: 11px var(--mono);
+
+      z-index: 30;
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      transition: .25s
+    }
+
+    .toast.show {
+
+      opacity: 1;
+
+      transform: translate(-50%, 0)
+    }
+
+    .tiny {
+
+      font: 10px var(--mono);
+
+      color: #777970
+    }
+
+    .viewer-fallback {
+
+      position: absolute;
+
+      inset: 0;
+
+      display: grid;
+
+      place-items: center;
+
+      text-align: center;
+
+      padding: 25px;
+
+      font: 11px var(--mono);
+
+      color: #777970
+    }
+
+    .viewer-fallback span {
+
+      display: block;
+
+      max-width: 250px;
+
+      line-height: 1.8
+    }
+
+    .viewer-fallback.error {
+
+      background: rgba(243, 241, 235, .78);
+
+      color: #8a4d45
+    }
+
+    .viewer-fallback.error span:before {
+
+      content: "!  ";
+
+      font-weight: 700
+    }
+
+
+    .submit-section {
+      background: #e8e7df;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line)
+    }
+
+    .submit-layout {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 60px;
+      align-items: start
+    }
+
+    .submit-copy h2,
+    .developer-copy h2 {
+      font: 500 clamp(38px, 5vw, 64px)/1 var(--display);
+      letter-spacing: -.07em;
+      margin: 14px 0 20px
+    }
+
+    .submit-copy p,
+    .developer-copy p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.75;
+      max-width: 520px
+    }
+
+    .submit-note {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      font: 10px/1.7 var(--mono);
+      color: #777970
+    }
+
+    .submit-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px
+    }
+
+    .field.full {
+      grid-column: 1 / -1
+    }
+
+    .field label {
+      font: 10px var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #66685f
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #f3f1eb;
+      color: var(--ink);
+      padding: 13px 14px;
+      outline: none;
+      border-radius: 2px;
+      font: 12px var(--sans)
+    }
+
+    .field textarea {
+      min-height: 130px;
+      resize: vertical;
+      line-height: 1.6
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #777970
+    }
+
+    .submit-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 4px
+    }
+
+    .submit-status {
+      font: 10px var(--mono);
+      color: #777970
+    }
+
+    .submit-status.ok {
+      color: #526d28
+    }
+
+    .submit-status.error {
+      color: #8a3d36
+    }
+
+    .honeypot {
+      position: absolute !important;
+      left: -9999px !important;
+      opacity: 0 !important;
+      pointer-events: none !important
+    }
+
+    .developer {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 60px;
+      align-items: center
+    }
+
+    .developer-card {
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--line);
+      padding: 22px 0
+    }
+
+    .developer-name {
+      font: 500 clamp(30px, 4vw, 52px) var(--display);
+      letter-spacing: -.065em;
+      margin: 0 0 10px
+    }
+
+    .developer-role {
+      font: 10px var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #777970
+    }
+
+    .developer-links {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 22px
+    }
+
+    .developer-links a {
+      border: 1px solid var(--line);
+      padding: 9px 12px;
+      font: 10px var(--mono);
+      background: transparent
+    }
+
+    .developer-links a:hover {
+      background: var(--ink);
+      color: #fff;
+      border-color: var(--ink)
+    }
+
+    .footer {
+      min-height: 110px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      font: 9px var(--mono);
+      color: #777970;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .footer a {
+      color: var(--ink)
+    }
+
+    .footer a:hover {
+      text-decoration: underline
+    }
+
+    @media(max-width:900px) {
+
+      .wrap {
+
+        width: min(100% - 36px, 700px)
+      }
+
+      .nav {
+
+        gap: 15px
+      }
+
+      .submit-layout,
+      .developer {
+        grid-template-columns: 1fr
+      }
+
+      .submit-form {
+        grid-template-columns: 1fr
+      }
+
+      .field.full,
+      .submit-actions {
+        grid-column: auto
+      }
+
+      .footer {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 25px 0
+      }
+
+      .hero {
+
+        grid-template-columns: 1fr;
+
+        padding-top: 50px;
+
+        gap: 30px
+      }
+
+      .hero h1 {
+
+        max-width: 650px
+      }
+
+      .hero-art {
+
+        height: 430px
+      }
+
+      .featured {
+
+        grid-template-columns: 1fr 1fr
+      }
+
+      .feature:first-child {
+
+        grid-column: 1/-1;
+
+        min-height: 330px
+      }
+
+      .compare-stage {
+
+        grid-template-columns: 1fr
+      }
+
+      .compare-view {
+
+        height: 350px
+      }
+
+      .grid {
+
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+      }
+
+      .modal-panel {
+
+        grid-template-columns: 1fr
+      }
+
+      .modal-visual {
+
+        min-height: 350px
+      }
+
+      .modal-side {
+
+        padding: 28px
+      }
+
+      .modal {
+
+        padding: 14px
+      }
+
+      .manifesto {
+
+        grid-template-columns: 1fr
+      }
+
+      .section {
+
+        padding: 75px 0
+      }
+
+    }
+
+    @media(max-width:560px) {
+
+      .wrap {
+
+        width: calc(100% - 30px)
+      }
+
+      .topbar {
+
+        height: 64px
+      }
+
+      .nav a:not(.github) {
+
+        display: none
+      }
+
+      .hero {
+
+        padding: 38px 0 45px;
+
+        min-height: 0
+      }
+
+      .hero h1 {
+
+        font-size: 58px
+      }
+
+      .hero-art {
+
+        height: 330px
+      }
+
+      .hero-meta {
+
+        gap: 13px;
+
+        flex-wrap: wrap;
+
+        margin-top: 35px
+      }
+
+      .section-head {
+
+        display: block
+      }
+
+      .section-intro {
+
+        margin-top: 18px
+      }
+
+      .featured {
+
+        grid-template-columns: 1fr
+      }
+
+      .feature,
+
+      .feature:first-child {
+
+        min-height: 300px;
+
+        grid-column: auto
+      }
+
+      .grid {
+
+        grid-template-columns: 1fr
+      }
+
+      .card-art {
+
+        height: 300px
+      }
+
+      .toolbar {
+
+        align-items: stretch
+      }
+
+      .filters {
+
+        order: 2
+      }
+
+      .search {
+
+        width: 100%
+      }
+
+      .steps {
+
+        grid-template-columns: 1fr;
+
+        gap: 30px
+      }
+
+      .step h3 {
+
+        margin-top: 18px
+      }
+
+      .step-symbol {
+
+        margin-top: 12px
+      }
+
+      .compare {
+
+        padding: 70px 0
+      }
+
+      .compare-view {
+
+        height: 300px
+      }
+
+      .compare-option strong {
+
+        font-size: 17px
+      }
+
+      .cta-inner {
+
+        display: block
+      }
+
+      .cta .btn {
+
+        margin-top: 20px
+      }
+
+      .footer {
+
+        flex-direction: column
+      }
+
+      .modal-visual {
+
+        min-height: 270px
+      }
+
+      .modal-side {
+
+        padding: 22px
+      }
+
+      .modal-side h2 {
+
+        margin-top: 22px
+      }
+
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      *,
+
+      *:before,
+
+      *:after {
+
+        scroll-behavior: auto !important;
+
+        animation: none !important;
+
+        transition: none !important
+      }
+
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <header class="topbar wrap">
+
+    <a class="brand" href="#"><span class="brand-mark">P.</span><span>PyMOL <span style="font-weight:400">Art
+
+          Gallery</span></span></a>
+
+    <nav class="nav"><a href="#gallery">Gallery</a><a href="#how">How it works</a><a href="#about">About</a><a
+        href="#submit">Submit</a><a class="github" href="https://github.com/amrqhz" target="_blank"
+        rel="noreferrer">GitHub ↗</a></nav>
+
+  </header>
+
+  <main>
+
+    <section class="hero wrap">
+
+      <div class="hero-copy">
+
+        <div class="eyebrow">A visual cookbook for molecular graphics / 001—026</div>
+
+        <h1>Make your<br>PyMOL <em>beautiful.</em></h1>
+
+        <p>A curated gallery of molecular visualization styles. Find a look, copy the PyMOL code, and bring it to your
+
+          own structure.</p>
+
+        <div class="actions"><a class="btn primary" href="#gallery">Explore the gallery <span>↘</span></a><a
+            class="btn secondary" href="#how">How it works</a></div>
+
+        <div class="hero-meta"><span>01 / Browse styles</span><span>02 / Copy commands</span><span>03 / Render in
+
+            PyMOL</span></div>
+
+      </div>
+
+      <div class="hero-art">
+
+        <div id="heroView" class="hero-view"></div>
+
+        <div class="art-index" id="heroPdbLabel">MOLECULAR STUDY / 1HVR</div>
+
+        <div class="art-label">Protein · ligand · structure as image</div>
+
+      </div>
+
+    </section>
+
+    <section class="section wrap">
+
+      <div class="section-head">
+
+        <div>
+
+          <div class="eyebrow">Curated selection / 01</div>
+
+          <h2>Start with a point<br>of view.</h2>
+
+        </div>
+
+        <p class="section-intro">A few visual directions to set the tone: publication clarity, binding-site focus, and a
+
+          little cinematic drama.</p>
+
+      </div>
+
+      <div class="featured">
+
+        <article class="feature" data-style="publication">
+
+          <div id="feature0" class="feature-view"></div>
+
+          <div class="feature-info">
+
+            <div>
+
+              <h3>Publication</h3>
+
+              <p>Clarity over decoration</p>
+
+            </div><span class="arrow">↗</span>
+
+          </div>
+
+        </article>
+
+        <article class="feature" data-style="pocket">
+
+          <div id="feature1" class="feature-view"></div>
+
+          <div class="feature-info">
+
+            <div>
+
+              <h3>Binding site</h3>
+
+              <p>Zoom into the chemistry</p>
+
+            </div><span class="arrow">↗</span>
+
+          </div>
+
+        </article>
+
+        <article class="feature" data-style="cinematic">
+
+          <div id="feature2" class="feature-view"></div>
+
+          <div class="feature-info">
+
+            <div>
+
+              <h3>Cinematic</h3>
+
+              <p>Structure as sculpture</p>
+
+            </div><span class="arrow">↗</span>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+    <section class="compare">
+
+      <div class="wrap">
+
+        <div class="section-head">
+
+          <div>
+
+            <div class="eyebrow">One structure / many readings</div>
+
+            <h2>Same molecule.<br>Different language.</h2>
+
+          </div>
+
+          <p class="section-intro">Switch the visual treatment while keeping the molecular example consistent. The
+
+            structure stays; the story changes.</p>
+
+        </div>
+
+        <div class="compare-stage">
+
+          <div class="compare-view" id="compareView"></div>
+
+          <div class="compare-controls" id="compareControls"></div>
+
+        </div>
+
+        <div class="compare-note">BROWSER PREVIEW IS A VISUAL REFERENCE — NOT A PYМOL RENDER.</div>
+
+      </div>
+
+    </section>
+
+    <section class="section gallery wrap" id="gallery">
+
+      <div class="section-head">
+
+        <div>
+
+          <div class="eyebrow">The collection / 001—012</div>
+
+          <h2>Find your style.</h2>
+
+        </div>
+
+        <p class="section-intro">Browse reusable presets for protein structure, ligand emphasis, binding-site analysis,
+
+          and scientific figures.</p>
+
+      </div>
+
+      <div class="toolbar">
+
+        <div class="filters" id="filters"></div>
+
+        <div class="toolbar-right"><label class="reference-picker"><span>REFERENCE PDB</span><select
+              id="referenceSelect" aria-label="Reference PDB">
+
+              <option value="5MO4">5MO4 · BCR-ABL T315I</option>
+
+              <option value="1HVR">1HVR · HIV-1 protease</option>
+
+            </select></label><input class="search" id="search" type="search" placeholder="Search styles..."
+            aria-label="Search styles"></div>
+
+      </div>
+
+      <div class="grid" id="galleryGrid"></div>
+
+    </section>
+
+    <section class="section how" id="how">
+
+      <div class="wrap">
+
+        <div class="eyebrow">A simple workflow / no editor, no upload</div>
+
+        <h2>From inspiration<br>to your structure.</h2>
+
+        <div class="steps">
+
+          <div class="step">
+
+            <div class="step-num">01 / FIND</div>
+
+            <h3>Explore</h3>
+
+            <p>Find a visual treatment that suits the scientific point you want to communicate.</p>
+
+            <div class="step-symbol">⌕</div>
+
+          </div>
+
+          <div class="step">
+
+            <div class="step-num">02 / COPY</div>
+
+            <h3>Take the recipe</h3>
+
+            <p>Copy the plain PyMOL commands. Adjust the ligand or residue selection if your structure needs it.</p>
+
+            <div class="step-symbol">⎘</div>
+
+          </div>
+
+          <div class="step">
+
+            <div class="step-num">03 / RENDER</div>
+
+            <h3>Make it yours</h3>
+
+            <p>Paste into PyMOL, orient your molecule, and render a figure for your paper, thesis, or talk.</p>
+
+            <div class="step-symbol">↗</div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="section wrap" id="about">
+      <div class="manifesto">
+        <div class="eyebrow">The idea</div>
+        <div>
+          <blockquote>The molecule is the artwork.<br><em>The script is the recipe.</em></blockquote>
+          <p>PyMOL Art Gallery is a visual inspiration gallery and styling cookbook. The browser previews are
+            illustrative 3D views; the copied scripts are the actual PyMOL commands. Presets use common selections where
+            practical, and comments point out the parts you may want to adapt.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section submit-section" id="submit">
+      <div class="wrap submit-layout">
+        <div class="submit-copy">
+          <div class="eyebrow">Open collection / Submit a style</div>
+          <h2>Have a look<br>worth sharing?</h2>
+          <p>Send a PyMOL visualization recipe to the gallery. Keep it focused: a useful style, a short explanation, and
+            the commands someone else can copy and adapt.</p>
+          <div class="submit-note">Submissions are reviewed before they become part of the public collection. No file
+            upload is required.</div>
+        </div>
+        <form class="submit-form" id="submitForm" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" id="web3formsKey" value="4446eb46-0d20-4ff6-909a-f653694e1065">
+          <input type="hidden" name="subject" value="PyMOL Art Gallery — New style submission">
+          <input type="hidden" name="from_name" value="PyMOL Art Gallery">
+          <input type="checkbox" name="botcheck" class="honeypot" tabindex="-1" autocomplete="off">
+          <div class="field">
+            <label for="submitName">Name</label>
+            <input id="submitName" name="name" required placeholder="Your name">
+          </div>
+          <div class="field">
+            <label for="submitEmail">Email</label>
+            <input id="submitEmail" name="email" type="email" required placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="submitTitle">Style name</label>
+            <input id="submitTitle" name="style_name" required placeholder="e.g. Soft Pocket Highlight">
+          </div>
+          <div class="field">
+            <label for="submitCategory">Category</label>
+            <select id="submitCategory" name="category">
+              <option>Protein</option>
+              <option>Ligand</option>
+              <option>Surface</option>
+              <option>Binding Site</option>
+              <option>Publication</option>
+              <option>Artistic</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="submitDescription">Description</label>
+            <textarea id="submitDescription" name="description" required
+              placeholder="What does the style emphasize, and when is it useful?"></textarea>
+          </div>
+          <div class="field full">
+            <label for="submitCode">PyMOL commands</label>
+            <textarea id="submitCode" name="pymol_code" required spellcheck="false"
+              placeholder="# Paste the commands here&#10;hide everything&#10;show cartoon, polymer&#10;..."
+              style="font-family:var(--mono);font-size:11px"></textarea>
+          </div>
+          <div class="field full">
+            <label for="submitReference">Optional reference / PDB</label>
+            <input id="submitReference" name="reference" placeholder="PDB ID, paper, or leave blank">
+          </div>
+          <div class="submit-actions">
+            <button class="btn primary" type="submit">Send submission ↗</button>
+            <span class="submit-status" id="submitStatus">The form is delivered through Web3Forms.</span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section wrap" id="developer">
+      <div class="developer">
+        <div class="developer-copy">
+          <div class="eyebrow">The person behind the gallery</div>
+          <h2>Science, but<br>make it visible.</h2>
+          <p>PyMOL Art Gallery grew from an interest in the space between pharmacy, structural biology, computational
+            drug discovery, and scientific software — where the way a result is visualized can shape how easily it is
+            understood.</p>
+          <p>My work spans molecular docking, molecular dynamics, DFT, drug repurposing, and small tools built for
+            pharmacists and researchers.</p>
+        </div>
+        <div class="developer-card">
+          <div class="developer-name">Amir H. Gholizadeh</div>
+          <div class="developer-role">PharmD · Computational Drug Discovery · Scientific Visualization</div>
+          <div class="developer-links">
+            <a href="https://github.com/amrqhz" target="_blank" rel="noreferrer">GitHub ↗</a>
+            <a href="https://amrqhz.github.io" target="_blank" rel="noreferrer">Portfolio ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+
+      <div class="wrap cta-inner">
+
+        <div>
+
+          <div class="eyebrow">Your next figure starts here</div>
+
+          <h2>Make structure<br>look like science.</h2>
+
+          <p>Find a style. Copy the script. Render your science.</p>
+
+        </div><a class="btn" href="#gallery">Browse all styles ↗</a>
+
+      </div>
+
+    </section>
+
+  </main>
+  <footer class="footer wrap">
+    <span>PyMOL ART GALLERY — A VISUAL COOKBOOK FOR MOLECULAR GRAPHICS.</span>
+    <span>Created by <a href="https://amrqhz.github.io" target="_blank" rel="noreferrer">Amir H. Gholizadeh</a> · <a
+        href="https://pymolwiki.org/" target="_blank" rel="noreferrer">PyMOL Wiki</a> · <a href="https://3dmol.org/"
+        target="_blank" rel="noreferrer">3Dmol.js</a></span>
+  </footer>
+
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <div class="modal-panel">
+
+      <div class="modal-visual">
+
+        <div class="modal-view" id="modalView"></div>
+
+      </div>
+
+      <div class="modal-side">
+
+        <div class="modal-top"><span class="eyebrow" id="modalCategory">STYLE / 001</span><button class="close"
+            id="closeModal" aria-label="Close">×</button></div>
+
+        <h2 id="modalTitle"></h2>
+
+        <p class="modal-desc" id="modalDesc"></p>
+
+        <div class="tags" id="modalTags"></div>
+
+        <div class="bestfor">
+
+          <h3>Best for</h3>
+
+          <p id="modalBest"></p>
+
+        </div>
+
+        <div class="codebox">
+
+          <div class="code-head"><span>PyMOL / COMMANDS</span><span>PY</span></div>
+
+          <pre id="modalCode"></pre>
+
+        </div><button class="copy" id="copyBtn">Copy PyMOL code ↗</button>
+
+        <p class="copy-note">Paste into the PyMOL command line or run as a .pml script. Selections such as
+
+          <code>organic</code> may need adjusting for your structure. Browser preview is not a PyMOL render.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast" role="status">Copied to clipboard</div>
+
+  <script>
+
+    // REQUIRED: replace this placeholder with the public Web3Forms access key for your submission inbox.
+    const PDB_REFERENCES = {
+
+      "1HVR": { label: "1HVR · HIV-1 protease", local: "assets/pdb/1hvr.pdb" },
+
+      "5MO4": { label: "5MO4 · BCR-ABL T315I", local: "assets/pdb/5mo4.pdb" }
+
+    };
+
+    let currentPDB = "5MO4";
+
+    const styles = [
+
+      {
+
+        id: "publication", title: "Publication Cartoon", category: "Publication", desc: "A clean, restrained protein cartoon with a clearly separated ligand. Designed to survive the scale and contrast demands of a journal figure.", tags: ["cartoon", "ligand", "publication"], best: "Papers, thesis figures, conference slides.", level: "01", preview: "publication", code: `# Publication-ready protein–ligand overview
+
+hide everything
+
+show cartoon, polymer
+
+color gray70, polymer
+
+set cartoon_fancy_helices, 1
+
+set cartoon_smooth_loops, 1
+
+# Highlight organic ligands (adjust selection if needed)
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.18, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+set ray_trace_mode, 1
+
+orient
+
+zoom polymer, 5
+
+# Optional high-quality render:
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "pocket", title: "Binding-Site Focus", category: "Binding Site", desc: "A quiet protein backdrop and emphasized ligand draw attention toward the pocket without hiding its structural context.", tags: ["pocket", "ligand", "focus"], best: "Docking figures, ligand poses, structure-based design.", level: "02", preview: "pocket", code: `# Binding-site focus
+
+hide everything
+
+show cartoon, polymer
+
+color gray80, polymer
+
+set cartoon_transparency, 0.28, polymer
+
+# Ligand and nearby residues
+
+show sticks, organic
+
+color tv_orange, organic
+
+set stick_radius, 0.2, organic
+
+select pocket, byres (polymer within 4.0 of organic)
+
+show sticks, pocket and sidechain
+
+color gray50, pocket and sidechain
+
+set stick_radius, 0.12, pocket
+
+bg_color white
+
+set ray_opaque_background, on
+
+orient organic
+
+zoom organic, 8
+
+# Optional: ray 1800, 1400`},
+
+      {
+
+        id: "cinematic", title: "Cinematic Molecular", category: "Artistic", desc: "Deep background, cool protein tones, and a warm ligand accent create a dramatic molecular portrait while retaining readable structure.", tags: ["dark", "cartoon", "artistic"], best: "Talk covers, visual abstracts, portfolio figures.", level: "03", preview: "cinematic", code: `# Cinematic molecular portrait
+
+hide everything
+
+show cartoon, polymer
+
+color marine, polymer
+
+set cartoon_fancy_helices, 1
+
+set cartoon_smooth_loops, 1
+
+show sticks, organic
+
+color orange, organic
+
+set stick_radius, 0.22, organic
+
+bg_color black
+
+set ray_opaque_background, on
+
+set ambient, 0.35
+
+set direct, 0.7
+
+set specular, 0.25
+
+set shininess, 35
+
+set antialias, 2
+
+set ray_trace_mode, 0
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "minimal", title: "Minimal Monochrome", category: "Protein", desc: "A single tonal language strips away decoration and emphasizes topology, fold, and silhouette.", tags: ["monochrome", "cartoon", "minimal"], best: "Methods figures, structural overviews, multi-panel comparisons.", level: "01", preview: "minimal", code: `# Minimal monochrome
+
+hide everything
+
+show cartoon, polymer
+
+color gray50, polymer
+
+set cartoon_smooth_loops, 1
+
+set cartoon_flat_sheets, 1
+
+# Keep ligand visible but understated
+
+show sticks, organic
+
+color gray20, organic
+
+set stick_radius, 0.16, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient
+
+zoom polymer, 4
+
+# ray 1600, 1200`},
+
+      {
+
+        id: "spectrum", title: "N-to-C Spectrum", category: "Protein", desc: "A continuous color progression helps distinguish the path of a chain and gives large folds a readable sense of direction.", tags: ["spectrum", "cartoon", "chain"], best: "Protein fold introductions, structural biology presentations.", level: "01", preview: "spectrum", code: `# Chain progression
+
+hide everything
+
+show cartoon, polymer
+
+spectrum count, rainbow, polymer
+
+set cartoon_fancy_helices, 1
+
+set cartoon_smooth_loops, 1
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.17, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "surface", title: "Ghost Surface", category: "Surface", desc: "A translucent surface reveals pocket shape while the ligand remains visually prominent. Use transparency to preserve context.", tags: ["surface", "transparency", "ligand"], best: "Pocket geometry, docking results, ligand-binding presentations.", level: "02", preview: "surface", code: `# Ghost surface + ligand
+
+hide everything
+
+show surface, polymer
+
+color gray80, polymer
+
+set transparency, 0.38, polymer
+
+show cartoon, polymer
+
+color gray70, polymer
+
+set cartoon_transparency, 0.55, polymer
+
+show sticks, organic
+
+color tv_orange, organic
+
+set stick_radius, 0.2, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient organic
+
+zoom organic, 9
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "ligand-hero", title: "Ligand Hero", category: "Ligand", desc: "A strong ligand-first composition uses a muted protein cartoon as a frame for the small molecule.", tags: ["ligand", "sticks", "focus"], best: "Pose comparison, medicinal chemistry, ligand identity.", level: "01", preview: "ligand", code: `# Put the ligand first
+
+hide everything
+
+show cartoon, polymer
+
+color gray80, polymer
+
+set cartoon_transparency, 0.18, polymer
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.28, organic
+
+show spheres, organic and name C*
+
+set sphere_scale, 0.22, organic and name C*
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient organic
+
+zoom organic, 8
+
+# ray 1600, 1200`},
+
+      {
+
+        id: "chain-colors", title: "Chain Separation", category: "Protein", desc: "Color chains independently to clarify subunit organization and distinguish molecular partners.", tags: ["chains", "cartoon", "comparison"], best: "Oligomers, protein complexes, assembly figures.", level: "01", preview: "chains", code: `# Distinguish polymer chains
+
+hide everything
+
+show cartoon, polymer
+
+util.cbc polymer
+
+set cartoon_smooth_loops, 1
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.16, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "active-residues", title: "Residue Highlight", category: "Binding Site", desc: "Keep the global fold quiet while marking residues around a ligand as a local structural feature.", tags: ["residues", "pocket", "annotation"], best: "Binding-site analysis, mutation context, interaction figures.", level: "02", preview: "residues", code: `# Highlight residues around a ligand
+
+hide everything
+
+show cartoon, polymer
+
+color gray80, polymer
+
+select site, byres (polymer within 4.0 of organic)
+
+show sticks, site and sidechain
+
+color teal, site and sidechain
+
+set stick_radius, 0.15, site
+
+show sticks, organic
+
+color tv_orange, organic
+
+set stick_radius, 0.22, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+orient organic
+
+zoom organic, 8
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "dark-science", title: "Dark Scientific", category: "Publication", desc: "A charcoal field and restrained cool palette provide strong separation for screen-based talks and dark slide decks.", tags: ["dark", "contrast", "presentation"], best: "Presentations, talks, dark-background figure panels.", level: "02", preview: "dark", code: `# Dark scientific figure
+
+hide everything
+
+show cartoon, polymer
+
+color gray70, polymer
+
+set cartoon_fancy_helices, 1
+
+show sticks, organic
+
+color cyan, organic
+
+set stick_radius, 0.2, organic
+
+bg_color gray10
+
+set ray_opaque_background, on
+
+set ambient, 0.4
+
+set antialias, 2
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "surface-cartoon", title: "Surface + Cartoon", category: "Surface", desc: "Layer a semi-transparent molecular surface over a cartoon to balance exterior shape with internal fold context.", tags: ["surface", "cartoon", "layers"], best: "Protein architecture, structural overview, graphical abstracts.", level: "03", preview: "layers", code: `# Surface and cartoon layers
+
+hide everything
+
+show surface, polymer
+
+color lightblue, polymer
+
+set transparency, 0.55, polymer
+
+show cartoon, polymer
+
+color marine, polymer
+
+set cartoon_transparency, 0.08, polymer
+
+show sticks, organic
+
+color orange, organic
+
+set stick_radius, 0.18, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "outline", title: "Ink Outline", category: "Publication", desc: "Ray-traced outlines add a crisp graphic edge to a simple cartoon, useful when a figure needs strong visual separation.", tags: ["outline", "ray-trace", "figure"], best: "Teaching diagrams, presentation figures, simplified structural panels.", level: "03", preview: "outline", code: `# Crisp outline rendering
+
+hide everything
+
+show cartoon, polymer
+
+color gray70, polymer
+
+set cartoon_fancy_helices, 1
+
+set cartoon_flat_sheets, 1
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.17, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+set ray_trace_mode, 1
+
+set ray_trace_color, black
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "bw-outline", title: "B&W Depth Outline", category: "Artistic", desc: "A high-contrast black-and-white treatment with ray-traced outlines and depth gives the structure an illustrated, graphic quality.", tags: ["black-white", "outline", "depth"], best: "Graphical abstracts, teaching figures, cover-style molecular illustrations.", level: "04", preview: "bw-outline", code: `# Black-and-white depth outline
+
+hide everything
+
+show cartoon, polymer
+
+color white, polymer
+
+set cartoon_fancy_helices, 1
+
+set cartoon_smooth_loops, 1
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.18, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set ray_trace_mode, 2
+
+set ray_trace_color, black
+
+set ambient, 0.35
+
+set ray_shadows, on
+
+set antialias, 2
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "binding-pocket-surface", title: "Carved Binding Pocket", category: "Binding Site", desc: "Carve a local protein surface around the ligand to expose the geometry of a binding pocket while keeping the ligand readable.", tags: ["surface", "pocket", "carve"], best: "Docking figures, binding-site geometry, structure-based drug design.", level: "04", preview: "binding-pocket-surface", code: `# Carved binding-pocket surface
+
+hide everything
+
+extract lig, organic
+
+extract prot, polymer
+
+set surface_carve_cutoff, 4.5
+
+set surface_carve_selection, lig
+
+set surface_carve_normal_cutoff, -0.1
+
+show surface, prot within 8 of lig
+
+set two_sided_lighting, on
+
+set transparency, 0.5
+
+set surface_color, white
+
+set surface_type, 2
+
+show sticks, lig
+
+util.cbag lig
+
+set stick_radius, 0.22, lig
+
+unset ray_shadows
+
+bg_color white
+
+orient lig
+
+zoom lig, 7
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "qutemol", title: "QuteMol-Inspired", category: "Artistic", desc: "A sphere-based molecular treatment with controlled specular lighting and reflections for a modern, software-rendered aesthetic.", tags: ["spheres", "lighting", "modern"], best: "Visual abstracts, covers, portfolio images, molecule-focused artwork.", level: "04", preview: "qutemol", code: `# QuteMol-inspired molecular rendering
+
+hide everything
+
+remove solvent
+
+as spheres, polymer
+
+util.cbaw polymer
+
+set light_count, 8
+
+set spec_count, 1
+
+set shininess, 10
+
+set specular, 0.25
+
+set ambient, 0
+
+set direct, 0
+
+set reflect, 1.5
+
+set ray_shadow_decay_factor, 0.1
+
+set ray_shadow_decay_range, 2
+
+unset depth_cue
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.18, organic
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "wide-perspective", title: "Wide-Angle Perspective", category: "Publication", desc: "Use a wider field of view and a deliberately framed local region to create a more dimensional structural composition.", tags: ["perspective", "field-of-view", "composition"], best: "Structural context panels, close-up figures, presentation visuals.", level: "04", preview: "wide-perspective", code: `# Wide-angle structural perspective
+
+hide everything
+
+show cartoon, polymer
+
+color gray70, polymer
+
+set cartoon_fancy_helices, 1
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.19, organic
+
+set field_of_view, 60
+
+bg_color white
+
+set ray_opaque_background, on
+
+set antialias, 2
+
+orient organic
+
+zoom polymer within 6 of organic, 3
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "ray-transparent-surface", title: "Ray-Normal Transparency", category: "Surface", desc: "A transparent molecular surface uses normal-based ray settings to emphasize depth and surface orientation around a ligand.", tags: ["transparency", "surface", "ray-trace"], best: "Pocket visualization, structural explanation, layered scientific figures.", level: "04", preview: "ray-transparent-surface", code: `# Ray-normal-based surface transparency
+
+hide everything
+
+show surface, polymer
+
+set surface_color, gray70
+
+set surface_mode, 3
+
+set transparency_mode, 1
+
+set transparency, 0.5
+
+set ray_transparency_oblique, on
+
+set ray_transparency_oblique_power, 8
+
+set ray_transparency_contrast, 7
+
+show sticks, organic
+
+util.cbag organic
+
+set stick_radius, 0.22, organic
+
+bg_color white
+
+unset ray_shadows
+
+set antialias, 2
+
+orient organic
+
+zoom organic, 8
+
+# ray 1800, 1400`},
+
+      {
+
+        id: "stylized-protein", title: "Stylized Protein Render", category: "Artistic", desc: "A deliberately sculptural protein treatment combining directional lighting, ambient shading, transparency and a controlled field of view.", tags: ["stylized", "lighting", "surface"], best: "Covers, graphical abstracts, visual identity, presentation openers.", level: "04", preview: "stylized-protein", code: `# Stylized protein render
+
+hide everything
+
+show cartoon, polymer
+
+color gray70, polymer
+
+set cartoon_fancy_helices, 1
+
+show surface, polymer
+
+set surface_color, gray70, polymer
+
+set transparency, 0.32, polymer
+
+show sticks, organic
+
+color tv_orange, organic
+
+set stick_radius, 0.2, organic
+
+set field_of_view, 50
+
+set ambient, 0.28
+
+set direct, 0.7
+
+set specular, 0.25
+
+set shininess, 30
+
+set ray_shadows, on
+
+set ray_trace_mode, 1
+
+set antialias, 2
+
+bg_color white
+
+set ray_opaque_background, on
+
+orient
+
+zoom polymer, 4
+
+# ray 1800, 1400`}
+
+    ];
+
+    const categories = ["All", "Protein", "Ligand", "Surface", "Binding Site", "Publication", "Artistic"];
+
+    const compareIds = ["publication", "pocket", "dark", "minimal", "cinematic"];
+
+    const compareLabels = [["Publication", "Neutral cartoon + ligand"], ["Binding site", "Quiet fold, focused pocket"], ["Dark scientific", "High contrast for slides"], ["Minimal", "Monochrome structure"], ["Cinematic", "Molecular portrait"]];
+
+    let currentCategory = "All", viewers = new Map(), activeCompare = 0, toastTimer;
+
+    const $ = id => document.getElementById(id);
+
+    function findStyle(id) { return styles.find(s => s.id === id) || styles[0] }
+
+    function styleConfig(id) {
+
+      const cfg = {
+
+        publication: { cartoon: { color: "#a6aaa6" }, stick: { colorscheme: "Jmol", radius: .19 } },
+
+        pocket: { cartoon: { color: "#b8bbb6", opacity: .62 }, stick: { colorscheme: "Jmol", radius: .23 } },
+
+        cinematic: { cartoon: { color: "#527c9b" }, stick: { colorscheme: "Jmol", radius: .23 } },
+
+        minimal: { cartoon: { color: "#92958f" }, stick: { color: "#4d514d", radius: .17 } },
+
+        spectrum: { cartoon: { color: "spectrum" }, stick: { colorscheme: "Jmol", radius: .17 } },
+
+        surface: { cartoon: { color: "#c3c5bf", opacity: .5 }, stick: { colorscheme: "Jmol", radius: .23 }, surface: { opacity: .24, color: "#d6d8d0" } },
+
+        ligand: { cartoon: { color: "#c5c7c1", opacity: .55 }, stick: { colorscheme: "Jmol", radius: .28 } },
+
+        chains: { cartoon: { color: "spectrum" }, stick: { colorscheme: "Jmol", radius: .16 } },
+
+        residues: { cartoon: { color: "#c2c4bd", opacity: .8 }, stick: { colorscheme: "Jmol", radius: .2 } },
+
+        dark: { cartoon: { color: "#929e9a" }, stick: { colorscheme: "cyanCarbon", radius: .22 } },
+
+        layers: { cartoon: { color: "#6689a0", opacity: .8 }, stick: { colorscheme: "Jmol", radius: .18 }, surface: { opacity: .15, color: "#a9d1d9" } },
+
+        outline: { cartoon: { color: "#b7b9b3" }, stick: { colorscheme: "Jmol", radius: .17 } },
+
+        "bw-outline": { cartoon: { color: "#f2f2ee" }, stick: { colorscheme: "Jmol", radius: .18 } },
+
+        "binding-pocket-surface": { cartoon: { color: "#d1d2cc", opacity: .2 }, stick: { colorscheme: "Jmol", radius: .24 }, surface: { opacity: .32, color: "#f0f0ea" } },
+
+        qutemol: { cartoon: { color: "#d5d7d1" }, stick: { colorscheme: "Jmol", radius: .2 } },
+
+        "wide-perspective": { cartoon: { color: "#9da29c" }, stick: { colorscheme: "Jmol", radius: .19 } },
+
+        "ray-transparent-surface": { cartoon: { color: "#b8bbb5", opacity: .45 }, stick: { colorscheme: "Jmol", radius: .22 }, surface: { opacity: .3, color: "#c9cbc5" } },
+
+        "stylized-protein": { cartoon: { color: "#aeb2ab", opacity: .82 }, stick: { colorscheme: "Jmol", radius: .21 }, surface: { opacity: .22, color: "#aeb2ab" } }
+
+      };
+
+      return cfg[id] || cfg.publication;
+
+    }
+
+    function showViewerStatus(el, message, kind = "loading") {
+
+      const old = el.querySelector(".viewer-fallback");
+
+      const fallback = old || document.createElement("div");
+
+      fallback.className = `viewer-fallback ${kind}`;
+
+      fallback.innerHTML = `<span>${message}</span>`;
+
+      if (!old) el.appendChild(fallback);
+
+      return fallback;
+
+    }
+
+    async function loadPDB(viewer) {
+
+      const sources = [
+
+        { url: PDB_REFERENCES[currentPDB].local, label: "local gallery asset" },
+
+        { url: `https://files.rcsb.org/download/${currentPDB}.pdb`, label: "RCSB PDB" }
+
+      ];
+
+      let lastError = null;
+
+      for (const source of sources) {
+
+        try {
+
+          const response = await fetch(source.url, { cache: "force-cache" });
+
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const data = await response.text();
+
+          if (!data.includes("ATOM") && !data.includes("HETATM")) throw new Error("No atom records found");
+
+          viewer.addModel(data, "pdb");
+
+          return source.label;
+
+        } catch (error) { lastError = error; }
+
+      }
+
+      throw lastError || new Error("No PDB source available");
+
+    }
+
+    function styleLoadedViewer(viewer, id, dark, spin) {
+
+      const model = viewer.getModel();
+
+      const atoms = model.selectedAtoms({});
+
+      const hasLigand = atoms.some(a => a.hetflag && !['HOH', 'DOD'].includes(a.resn));
+
+      const cfg = styleConfig(id);
+
+      viewer.setStyle({}, {});
+
+      viewer.setStyle({ hetflag: false }, cfg.cartoon ? { cartoon: cfg.cartoon } : { cartoon: { color: "#aaa" } });
+
+      if (hasLigand) {
+
+        // Keep solvent out of the preview while retaining crystallographic hetero groups.
+
+        viewer.setStyle({ hetflag: true, resn: { "!": "HOH" } }, { stick: cfg.stick || { colorscheme: "Jmol", radius: .2 } });
+
+        viewer.setStyle({ hetflag: true, resn: { "!": "DOD" } }, { stick: cfg.stick || { colorscheme: "Jmol", radius: .2 } });
+
+      } else {
+
+        viewer.setStyle({ hetflag: false }, { cartoon: cfg.cartoon || { color: "#aaa" } });
+
+      }
+
+      if (cfg.surface) viewer.addSurface($3Dmol.SurfaceType.VDW, cfg.surface, { hetflag: false });
+
+      viewer.zoomTo();
+
+      viewer.render();
+
+      if (spin) viewer.spin("y", 0.12);
+
+    }
+
+    function makeViewer(el, id, { dark = false, spin = false } = {}) {
+
+      if (!el) return;
+
+      if (viewers.has(el)) { try { viewers.get(el).clear() } catch (e) { } }
+
+      el.innerHTML = "";
+
+      if (!window.$3Dmol) {
+
+        showViewerStatus(el, "3Dmol.js could not be loaded.<br>Check your internet connection or CDN access.", "error");
+
+        return;
+
+      }
+
+      let viewer;
+
+      try {
+
+        viewer = $3Dmol.createViewer(el, { backgroundColor: dark ? "#171a19" : "#e7e6de", antialias: true });
+
+        viewers.set(el, viewer);
+
+      } catch (error) {
+
+        showViewerStatus(el, "WebGL could not be initialized.<br>Try enabling hardware acceleration in your browser.", "error");
+
+        return;
+
+      }
+
+      const fallback = showViewerStatus(el, `Loading molecular structure…<br>${currentPDB}`);
+
+      loadPDB(viewer).then(source => {
+
+        try {
+
+          styleLoadedViewer(viewer, id, dark, spin);
+
+          fallback.remove();
+
+          el.dataset.source = source;
+
+        } catch (error) {
+
+          console.error("PyMOL Art Gallery viewer styling error", error);
+
+          showViewerStatus(el, "Preview could not be rendered.<br>Open the style to copy its PyMOL commands.", "error");
+
+        }
+
+      }).catch(error => {
+
+        console.error("PyMOL Art Gallery PDB loading error", error);
+
+        showViewerStatus(el, `Could not load ${currentPDB}.pdb.<br>Run the local asset setup script or check your connection.`, "error");
+
+      });
+
+      return viewer;
+
+    }
+
+    function clearAllViewers() {
+
+      viewers.forEach(v => { try { v.spin(false); v.clear() } catch (e) { } });
+
+      viewers.clear();
+
+    }
+
+    function updateReferenceUI() {
+
+      const label = PDB_REFERENCES[currentPDB].label;
+
+      const heroLabel = $("heroPdbLabel");
+
+      if (heroLabel) heroLabel.textContent = `MOLECULAR STUDY / ${currentPDB}`;
+
+      const select = $("referenceSelect");
+
+      if (select) select.value = currentPDB;
+
+      const note = document.querySelector(".compare-note");
+
+      if (note) note.textContent = `BROWSER PREVIEW · ${label.toUpperCase()} · VISUAL REFERENCE, NOT A PYMOL RENDER.`;
+
+    }
+
+    function setReference(pdb) {
+
+      if (!PDB_REFERENCES[pdb] || pdb === currentPDB) return;
+
+      currentPDB = pdb;
+
+      clearAllViewers();
+
+      updateReferenceUI();
+
+      renderGallery();
+
+      makeViewer($("heroView"), "spectrum", { spin: true });
+
+      ["feature0", "feature1", "feature2"].forEach((id, i) => makeViewer($(id), ["publication", "pocket", "cinematic"][i], { dark: i === 2 }));
+
+      makeViewer($("compareView"), compareIds[activeCompare], { dark: activeCompare === 2 || activeCompare === 4 });
+
+    }
+
+    function renderFilters() {
+
+      $("filters").innerHTML = categories.map(c => `<button class="filter ${c === currentCategory ? "active" : ""}" data-cat="${c}">${c}</button>`).join("");
+
+      $("filters").querySelectorAll("button").forEach(b => b.onclick = () => { currentCategory = b.dataset.cat; renderFilters(); renderGallery() });
+
+    }
+
+    function renderGallery() {
+
+      const q = $("search").value.trim().toLowerCase();
+
+      const list = styles.filter(s => (currentCategory === "All" || s.category === currentCategory) && (!q || [s.title, s.desc, s.category, ...s.tags].join(" ").toLowerCase().includes(q)));
+
+      $("galleryGrid").innerHTML = list.length ? list.map((s, i) => `<article class="style-card" data-id="${s.id}" tabindex="0" role="button" aria-label="Open ${s.title}"><div class="card-art"><div class="card-view" id="card-${s.id}"></div><span class="card-number">${s.level} / ${String(styles.indexOf(s) + 1).padStart(3, "0")}</span><span class="card-open">↗</span></div><div class="card-text"><div class="card-title-row"><h3 class="card-title">${s.title}</h3><span class="card-id">${s.category.toUpperCase()}</span></div><p class="card-desc">${s.desc}</p><div class="tags">${s.tags.map(t => `<span class="tag">${t}</span>`).join("")}</div></div></article>`).join("") : `<div class="empty">No styles match that search. Try another term.</div>`;
+
+      list.forEach(s => { const el = $("card-" + s.id); if (el) observeViewer(el, s.preview) });
+
+      document.querySelectorAll(".style-card").forEach(c => { c.onclick = () => openStyle(c.dataset.id); c.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openStyle(c.dataset.id) } } });
+
+    }
+
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { const el = entry.target; observer.unobserve(el); makeViewer(el, el.dataset.preview || "publication") } }), { rootMargin: "180px" });
+
+    function observeViewer(el, id) { el.dataset.preview = id; observer.observe(el) }
+
+    function openStyle(id) {
+
+      const s = findStyle(id); $("modalCategory").textContent = `${s.category.toUpperCase()} / ${s.level}`;
+
+      $("modalTitle").textContent = s.title; $("modalDesc").textContent = s.desc; $("modalBest").textContent = s.best;
+
+      $("modalTags").innerHTML = s.tags.map(t => `<span class="tag">${t}</span>`).join(""); $("modalCode").textContent = s.code;
+
+      $("modal").classList.add("open"); document.body.style.overflow = "hidden";
+
+      makeViewer($("modalView"), s.preview, { dark: s.preview === "dark" || s.preview === "cinematic" });
+
+      $("closeModal").focus();
+
+    }
+
+    function closeModal() { $("modal").classList.remove("open"); document.body.style.overflow = ""; const v = viewers.get($("modalView")); if (v) { try { v.spin(false); v.clear() } catch (e) { } viewers.delete($("modalView")) } }
+
+    function showToast(msg) { $("toast").textContent = msg; $("toast").classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 1800) }
+
+    $("closeModal").onclick = closeModal; $("modal").onclick = e => { if (e.target === $("modal")) closeModal() }; document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal() });
+
+    $("copyBtn").onclick = async () => { try { await navigator.clipboard.writeText($("modalCode").textContent); $("copyBtn").textContent = "Copied ✓"; showToast("PyMOL commands copied"); setTimeout(() => $("copyBtn").textContent = "Copy PyMOL code ↗", 1600) } catch (e) { const r = document.createRange(); r.selectNodeContents($("modalCode")); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); showToast("Select and copy the highlighted commands") } };
+
+    $("search").addEventListener("input", renderGallery);
+
+    function setupCompare() {
+
+      $("compareControls").innerHTML = compareLabels.map((a, i) => `<button class="compare-option ${i === 0 ? "active" : ""}" data-index="${i}"><span><span class="num">0${i + 1}</span><strong>${a[0]}</strong><small>${a[1]}</small></span><span>↗</span></button>`).join("");
+
+      $("compareControls").querySelectorAll("button").forEach(b => b.onclick = () => { activeCompare = +b.dataset.index; $("compareControls").querySelectorAll("button").forEach(x => x.classList.toggle("active", x === b)); makeViewer($("compareView"), compareIds[activeCompare], { dark: activeCompare === 2 || activeCompare === 4 }) });
+
+    }
+
+    // Web3Forms is intentionally used instead of calling a Telegram bot directly from the browser.
+    // Telegram bot tokens must remain private; put any future Telegram integration behind a serverless endpoint.
+    const WEB3FORMS_CONFIGURED = "YOUR_WEB3FORMS_ACCESS_KEY" !== "YOUR_WEB3FORMS_ACCESS_KEY";
+    const submitForm = $("submitForm");
+    const submitStatus = $("submitStatus");
+    submitForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!WEB3FORMS_CONFIGURED) {
+        submitStatus.textContent = "Add your Web3Forms access key in the HTML first.";
+        submitStatus.className = "submit-status error";
+        return;
+      }
+      const button = submitForm.querySelector("button[type=submit]");
+      button.disabled = true;
+      button.textContent = "Sending…";
+      submitStatus.textContent = "Sending submission…";
+      submitStatus.className = "submit-status";
+      try {
+        const response = await fetch(submitForm.action, { method: "POST", body: new FormData(submitForm), headers: { Accept: "application/json" } });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Submission failed");
+        submitForm.reset();
+        submitStatus.textContent = "Submitted — thank you. It will be reviewed before publication.";
+        submitStatus.className = "submit-status ok";
+      } catch (error) {
+        submitStatus.textContent = error.message || "Submission failed. Please try again.";
+        submitStatus.className = "submit-status error";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Send submission ↗";
+      }
+    });
+
+    renderFilters(); renderGallery(); setupCompare();
+
+    updateReferenceUI();
+
+    $("referenceSelect").addEventListener("change", e => setReference(e.target.value));
+
+    makeViewer($("heroView"), "spectrum", { spin: true });
+
+    ["feature0", "feature1", "feature2"].forEach((id, i) => makeViewer($(id), ["publication", "pocket", "cinematic"][i], { dark: i === 2 }));
+
+    document.querySelectorAll(".feature").forEach(el => el.onclick = () => openStyle(el.dataset.style));
+
+    makeViewer($("compareView"), "publication");
+
+  </script>
+
+</body>
+
+</html>
