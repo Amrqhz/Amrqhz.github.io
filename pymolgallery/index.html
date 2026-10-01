@@ -3623,7 +3623,7 @@ zoom lig, 8
 
     // Web3Forms is intentionally used instead of calling a Telegram bot directly from the browser.
     // Telegram bot tokens must remain private; put any future Telegram integration behind a serverless endpoint.
-    const WEB3FORMS_CONFIGURED = "4446eb46-0d20-4ff6-909a-f653694e1065" !== "4446eb46-0d20-4ff6-909a-f653694e1065";
+    const WEB3FORMS_CONFIGURED = Boolean($("web3formsKey")?.value?.trim());
     const submitForm = $("submitForm");
     const submitStatus = $("submitStatus");
     submitForm.addEventListener("submit", async (event) => {
