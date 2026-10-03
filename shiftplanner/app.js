@@ -189,10 +189,24 @@ function renderCalendar() {
       const wrap = document.createElement('div');
       wrap.className = 'daycell__ticks';
       dayShifts.slice(0, 2).forEach((s) => {
-        const special = isSpecialShift(s);
-        const tick = document.createElement('div');
-        tick.className = 'shift-tick' + (special ? ' shift-tick--special' : '');
-        tick.innerHTML = `<span class="shift-tick__time">${s.start}</span><span class="shift-tick__name">${escapeHtml(pharmacyName(s.pharmacyId))}</span>`;
+        const special    = isSpecialShift(s);
+        const depColor   = deputyColorById(s.deputyId);
+        const tick       = document.createElement('div');
+
+        tick.className   = 'shift-tick' + (special && !depColor ? ' shift-tick--special' : '');
+
+        if (depColor) {
+          // Deputy shift — colored left border + tinted background
+          tick.style.borderRight  = `3px solid ${depColor}`;
+          tick.style.background   = `${depColor}22`; // ~13% opacity tint
+          tick.style.color        = depColor;
+        }
+
+        tick.innerHTML = `
+          <span class="shift-tick__time" style="${depColor ? `color:${depColor};opacity:0.75` : ''}">${s.start}</span>
+          <span class="shift-tick__name">${escapeHtml(pharmacyName(s.pharmacyId))}</span>
+          ${depColor ? `<span class="shift-tick__dep-dot" style="background:${depColor}" title="${escapeHtml(deputyName(s.deputyId))}"></span>` : ''}`;
+
         wrap.appendChild(tick);
       });
       if (dayShifts.length > 2) {
@@ -611,7 +625,7 @@ function bindDeputyForm() {
     const pi = document.getElementById('deputyPhoneInput');
     const name = ni.value.trim();
     if (!name) return;
-    deputies.push({ id: S.uid(), name, phone: pi.value.trim() });
+    deputies.push({ id: S.uid(), name, phone: pi.value.trim(), colorIndex: deputies.length });
     S.saveDeputies(deputies);
     ni.value = ''; pi.value = '';
     renderDeputyList();
@@ -632,15 +646,19 @@ function renderDeputyList() {
   }
 
   list.innerHTML = '';
-  deputies.forEach((d) => {
+  deputies.forEach((d, idx) => {
     const shiftCount = shifts.filter((s) => s.deputyId === d.id).length;
     const li = document.createElement('li');
     li.className = 'pharmacy-item';
+        const color = S.deputyColor(d.colorIndex ?? idx);
     li.innerHTML = `
-      <div>
-        <div class="pharmacy-item__name">${escapeHtml(d.name)}</div>
-        ${d.phone ? `<div class="pharmacy-item__addr">📞 ${escapeHtml(d.phone)}</div>` : ''}
-        <div class="pharmacy-item__addr">${J.toPersianDigits(shiftCount)} شیفت واگذار شده</div>
+      <div class="deputy-item-left">
+        <div class="deputy-color-swatch" style="background:${color}; width: 10px; height:10px; border-raidus:50px "></div>
+        <div>
+          <div class="pharmacy-item__name">${escapeHtml(d.name)}</div>
+          ${d.phone ? `<div class="pharmacy-item__addr">📞 ${escapeHtml(d.phone)}</div>` : ''}
+          <div class="pharmacy-item__addr">${J.toPersianDigits(shiftCount)} شیفت واگذار شده</div>
+        </div>
       </div>
       <div class="pharmacy-item__actions">
         <button class="pharmacy-item__edit deputy-view-btn" data-id="${d.id}">گزارش</button>
@@ -808,13 +826,38 @@ function renderDeputySelect() {
   if (!sel) return;
   const prev = sel.value;
   sel.innerHTML = `<option value="">— بدون قائم مقام</option>
-    ${deputies.map((d) => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('')}`;
+    ${deputies.map((d, i) => {
+      const color = S.deputyColor(d.colorIndex ?? i);
+      return `<option value="${d.id}" data-color="${color}">${escapeHtml(d.name)}</option>`;
+    }).join('')}`;
   if (prev && deputies.some((d) => d.id === prev)) sel.value = prev;
+
+  // Color the select border to match chosen deputy
+  const updateSelectColor = () => {
+    const chosen = deputies.find((d) => d.id === sel.value);
+    if (chosen) {
+      const color = S.deputyColor(chosen.colorIndex ?? 0);
+      sel.style.borderBottom = `2px solid ${color}`;
+      sel.style.color        = color;
+    } else {
+      sel.style.borderBottom = '';
+      sel.style.color        = '';
+    }
+  };
+  sel.removeEventListener('change', sel._colorHandler);
+  sel._colorHandler = updateSelectColor;
+  sel.addEventListener('change', updateSelectColor);
+  updateSelectColor();
 }
 function deputyName(id) {
   if (!id) return '—';
   const d = deputies.find((x) => x.id === id);
   return d ? d.name : '—';
+}
+function deputyColorById(id) {
+  if (!id) return null;
+  const d = deputies.find((x) => x.id === id);
+  return d != null ? S.deputyColor(d.colorIndex ?? 0) : null;
 }
 
 function getMonthShifts(pharmacyFilter, deputyFilter = 'all', forYear = null, forMonth = null) {

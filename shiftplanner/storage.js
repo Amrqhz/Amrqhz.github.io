@@ -16,6 +16,34 @@ const STORAGE_KEYS = {
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
+
+/** 20 distinct colors for deputies — cycles if more than 20 */
+const DEPUTY_COLORS = [
+  '#f97316', // orange
+  '#06b6d4', // cyan
+  '#8b5cf6', // violet
+  '#ec4899', // pink
+  '#10b981', // emerald
+  '#f59e0b', // amber
+  '#3b82f6', // blue
+  '#ef4444', // red
+  '#84cc16', // lime
+  '#a855f7', // purple
+  '#14b8a6', // teal
+  '#f43f5e', // rose
+  '#22c55e', // green
+  '#6366f1', // indigo
+  '#fb923c', // light orange
+  '#0ea5e9', // sky
+  '#d946ef', // fuchsia
+  '#eab308', // yellow
+  '#64748b', // slate
+  '#78716c', // stone
+];
+
+function deputyColor(index) {
+  return DEPUTY_COLORS[index % DEPUTY_COLORS.length];
+}
 /** Convert Persian (۰-۹) and Arabic-Indic (٠-٩) digits to Latin (0-9) */
 function toLatinDigits(str) {
   return String(str)
@@ -44,11 +72,11 @@ const DEFAULT_SETTINGS = {
   rateSpecial: 0,
   bankAccounts: [],
   profile: {
-    fullName:      '',
+    fullName: '',
     licenseNumber: '',
-    phone:         '',
-    role:          'داروساز',
-    email:         '',
+    phone: '',
+    role: 'داروساز',
+    email: '',
     signatureNote: '',
   },
 };
@@ -62,7 +90,7 @@ function saveSettings(obj) {
 }
 function loadDeputies() {
   try { return JSON.parse(localStorage.getItem('shiftplanner.deputies.v1') || '[]'); }
-  catch(e) { return []; }
+  catch (e) { return []; }
 }
 function saveDeputies(list) {
   localStorage.setItem('shiftplanner.deputies.v1', JSON.stringify(list));
@@ -87,13 +115,13 @@ function isNightShift(start, end) {
   const [sh, sm] = start.split(':').map(Number);
   const [eh, em] = end.split(':').map(Number);
   let startMin = sh * 60 + sm;
-  let endMin   = eh * 60 + em;
+  let endMin = eh * 60 + em;
   if (endMin <= startMin) endMin += 24 * 60; // overnight
 
   const NIGHT_START = 22 * 60; // 22:00
-  const NIGHT_END   = 32 * 60; // 08:00 next day = 24+8 = 32*60
-  const DAY_START   =  8 * 60; // 08:00
-  const DAY_END     = 22 * 60; // 22:00
+  const NIGHT_END = 32 * 60; // 08:00 next day = 24+8 = 32*60
+  const DAY_START = 8 * 60; // 08:00
+  const DAY_END = 22 * 60; // 22:00
 
   // Normalise endMin into the overnight window if needed
   const normEnd = endMin <= startMin ? endMin + 24 * 60 : endMin;
@@ -116,14 +144,14 @@ function splitShiftHours(start, end) {
   const [sh, sm] = start.split(':').map(Number);
   const [eh, em] = end.split(':').map(Number);
   let startMin = sh * 60 + sm;
-  let endMin   = eh * 60 + em;
+  let endMin = eh * 60 + em;
   if (endMin <= startMin) endMin += 24 * 60; // handle overnight
 
-  const DAY_START   =  8 * 60; //  8:00  = 480
-  const DAY_END     = 22 * 60; // 22:00  = 1320
-  const NIGHT_END   = 32 * 60; // 08:00 next day = 1920
+  const DAY_START = 8 * 60; //  8:00  = 480
+  const DAY_END = 22 * 60; // 22:00  = 1320
+  const NIGHT_END = 32 * 60; // 08:00 next day = 1920
 
-  let dayMinutes   = 0;
+  let dayMinutes = 0;
   let nightMinutes = 0;
 
   // Walk through each minute block:
@@ -133,24 +161,24 @@ function splitShiftHours(start, end) {
   // Segment 4: 24:00–32:00  (night, next day early = 00:00–08:00)
 
   const segments = [
-    { from:  0,   to: DAY_START, isDay: false },
-    { from: DAY_START, to: DAY_END,   isDay: true  },
-    { from: DAY_END,   to: 24 * 60,   isDay: false },
-    { from: 24 * 60,   to: NIGHT_END, isDay: false },
+    { from: 0, to: DAY_START, isDay: false },
+    { from: DAY_START, to: DAY_END, isDay: true },
+    { from: DAY_END, to: 24 * 60, isDay: false },
+    { from: 24 * 60, to: NIGHT_END, isDay: false },
   ];
 
   segments.forEach(({ from, to, isDay }) => {
     const overlapStart = Math.max(startMin, from);
-    const overlapEnd   = Math.min(endMin,   to);
+    const overlapEnd = Math.min(endMin, to);
     if (overlapEnd > overlapStart) {
       const mins = overlapEnd - overlapStart;
-      if (isDay) dayMinutes   += mins;
-      else        nightMinutes += mins;
+      if (isDay) dayMinutes += mins;
+      else nightMinutes += mins;
     }
   });
 
   return {
-    dayHours:   dayMinutes   / 60,
+    dayHours: dayMinutes / 60,
     nightHours: nightMinutes / 60,
   };
 }
@@ -194,6 +222,7 @@ window.Store = {
   uid,
   shiftDurationHours, formatHours,
   isNightShift, isFridayHoliday,
-  splitShiftHours, toLatinDigits, 
-  loadDeputies, saveDeputies,    
+  splitShiftHours, toLatinDigits,
+  loadDeputies, saveDeputies,
+  deputyColor,
 };
