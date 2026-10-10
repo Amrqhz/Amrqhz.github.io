@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/2.0.1/3Dmol-min.js"></script>
+    <script src="showcase.js"></script>
+
+    
     <style>
         * {
             margin: 0;
@@ -535,10 +538,10 @@
                         </select>
                     </div>
 
-                    <div class="control-group">
+                    <!-- <div class="control-group">
                         <label for="pdb-code">PDB file code</label>
                         <input type="text" id="pdb-code" readonly style="padding: 0.75rem;font-weight: 600; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); color: var(--text-secondary);">
-                    </div>
+                    </div> -->
 
                     <div class="control-group">
                         <label for="ligand-select">Ligand Selection</label>
@@ -548,10 +551,10 @@
                         <p class="hint-text">Select Receptor First! You can choose up to 2 ligands.</p>
                     </div>
                 </div>
-                <div class="row">
+                <!-- <div class="row">
                     <button id="snapshot-btn" class="btn small">Snapshot</button>
                     <button id="spin-btn" class="btn ghost small">Spin</button>
-                </div>
+                </div> -->
                 <div class="viewer-container">
                     <div id="viewer-3d"></div>
                     <div class="info-overlay">
@@ -633,7 +636,7 @@
         </section>
 
         <!-- DFT Section -->
-        <section id="dft" class="section">
+        <!-- <section id="dft" class="section">
             <div class="section-card">
                 <h2 class="section-title">DFT ANALYSIS</h2>
                 
@@ -689,10 +692,10 @@
                     </div>
                 </div>
             </div>
-        </section>
-        <div class="bottom-logo">
+        </section> -->
+        <!-- <div class="bottom-logo">
             <p class="small">trust the process</p>
-        </div>
+        </div> -->
     </div>
 
    <!-- Replace your existing <script> ... </script> with this script -->
@@ -1104,6 +1107,7 @@
     window.toggleTheme = toggleTheme; // keep global name to preserve existing HTML onclick if used
     });
     </script>
+        <script src="mutations.js"></script>
 
 
 

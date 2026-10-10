@@ -1,0 +1,53 @@
+MODEL       35
+USER    Run = 35
+USER    Cluster Rank = 1
+USER    Number of conformations in this cluster = 32
+USER  
+USER    RMSD from reference structure       = 5.686 A
+USER  
+USER    Estimated Free Energy of Binding    =   -6.04 kcal/mol  [=(1)+(2)+(3)-(4)]
+USER    Estimated Inhibition Constant, Ki   =   37.58 uM (micromolar)  [Temperature = 298.15 K]
+USER    
+USER    (1) Final Intermolecular Energy     =   -8.12 kcal/mol
+USER        vdW + Hbond + desolv Energy     =   -7.99 kcal/mol
+USER        Electrostatic Energy            =   -0.13 kcal/mol
+USER    (2) Final Total Internal Energy     =   -0.94 kcal/mol
+USER    (3) Torsional Free Energy           =   +2.09 kcal/mol
+USER    (4) Unbound System's Energy  [=(2)] =   -0.94 kcal/mol
+USER    
+USER    
+USER  
+USER    DPF = r.dpf
+USER    NEWDPF move	l.pdbqt
+USER    NEWDPF about	17.552800 15.810900 55.132600
+USER    NEWDPF tran0	9.119638 19.709114 49.961817
+USER    NEWDPF axisangle0	-0.433459 -0.845736 -0.311197 -149.219332
+USER    NEWDPF quaternion0	-0.417915 -0.815408 -0.300037 -0.265393
+USER    NEWDPF dihe0	142.81 
+USER  
+USER                              x       y       z    vdW   Elec        q     RMS 
+ATOM      1  O   UNL     1       8.720  12.771  52.630 -0.13 +0.08    -0.275     5.686
+ATOM      2  C   UNL     1       9.420  13.558  53.272 -0.19 -0.12    +0.219     5.686
+ATOM      3  N   UNL     1       8.929  14.792  53.687 -0.08 +0.23    -0.290     5.686
+ATOM      4  C   UNL     1       7.528  15.097  53.368 -0.20 -0.12    +0.203     5.686
+ATOM      5  C   UNL     1       7.440  15.664  51.943 -0.22 -0.15    +0.233     5.686
+ATOM      6  O   UNL     1       6.415  15.576  51.272 -0.32 +0.14    -0.274     5.686
+ATOM      7  N   UNL     1       8.584  16.331  51.491 -0.23 +0.21    -0.291     5.686
+ATOM      8  C   UNL     1       9.058  15.882  50.194 -0.48 -0.05    +0.113     5.686
+ATOM      9  C   UNL     1      10.071  16.807  49.543 -0.55 -0.02    +0.054     5.686
+ATOM     10  C   UNL     1      11.126  17.278  50.503 -0.41 +0.02    -0.041     5.686
+ATOM     11  C   UNL     1      12.372  17.694  50.014 -0.39 -0.00    +0.004     5.686
+ATOM     12  C   UNL     1      13.349  18.191  50.877 -0.50 -0.00    +0.000     5.686
+ATOM     13  C   UNL     1      13.089  18.296  52.237 -0.50 -0.00    +0.000     5.686
+ATOM     14  C   UNL     1      11.846  17.904  52.731 -0.39 -0.01    +0.006     5.686
+ATOM     15  C   UNL     1      10.861  17.367  51.877 -0.45 +0.02    -0.022     5.686
+ATOM     16  C   UNL     1       9.540  16.890  52.466 -0.42 -0.11    +0.124     5.686
+ATOM     17  C   UNL     1       9.779  15.969  53.701 -0.22 -0.17    +0.135     5.686
+ATOM     18  C   UNL     1      10.860  13.175  53.663 -0.35 -0.05    +0.075     5.686
+ATOM     19  C   UNL     1      11.202  13.850  55.008 -0.32 -0.01    +0.013     5.686
+ATOM     20  C   UNL     1      12.662  14.250  55.195 -0.36 -0.00    +0.001     5.686
+ATOM     21  C   UNL     1      13.231  14.888  53.940 -0.41 -0.00    +0.000     5.686
+ATOM     22  C   UNL     1      13.195  13.876  52.809 -0.46 -0.00    +0.001     5.686
+ATOM     23  C   UNL     1      11.763  13.509  52.460 -0.41 -0.01    +0.013     5.686
+TER
+ENDMDL
