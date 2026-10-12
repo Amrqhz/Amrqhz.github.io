@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PharmaBench — Computational Pharmacopoeia Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,600&family=Spectral+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:       #0A0A0A;
+    --ink-soft:  #2A2A2A;
+    --rule:      #C8C8C6;
+    --rule-light:#E4E4E2;
+    --muted:     #6B6B69;
+    --paper:     #F7F6F3;
+    --surface:   #FAFAF8;
+    --white:     #FFFFFF;
+    --panel:     #111111;
+    --panel-rule:#282828;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Spectral', Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ---------- LAYOUT SHELL ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar {
+    grid-column: 1 / -1;
+    background: var(--ink);
+    color: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 52px;
+    border-bottom: 1px solid var(--panel-rule);
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .brand-wordmark {
+    font-family: 'Spectral SC', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    color: var(--surface);
+  }
+
+  .brand-edition {
+    font-size: 0.7rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .topbar-nav {
+    display: flex;
+    gap: 0;
+    list-style: none;
+  }
+
+  .topbar-nav a {
+    display: block;
+    padding: 0 16px;
+    height: 52px;
+    line-height: 52px;
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    border-left: 1px solid var(--panel-rule);
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .topbar-nav a:hover, .topbar-nav a.active {
+    color: var(--surface);
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* ---------- SIDEBAR ---------- */
+  .sidebar {
+    background: var(--white);
+    border-right: 1px solid var(--rule);
+    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-section-label {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 16px 20px 6px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--ink-soft);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.12s;
+    text-decoration: none;
+  }
+
+  .sidebar-item:hover {
+    background: var(--paper);
+    color: var(--ink);
+    border-left-color: var(--rule);
+  }
+
+  .sidebar-item.active {
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: 600;
+    border-left-color: var(--ink);
+  }
+
+  .sidebar-item .item-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-left: auto;
+    letter-spacing: 0.04em;
+  }
+
+  .sidebar-divider {
+    height: 1px;
+    background: var(--rule-light);
+    margin: 10px 0;
+  }
+
+  /* ---------- MAIN CONTENT ---------- */
+  .main {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- VIEWS ---------- */
+  .view { display: none; flex-direction: column; height: 100%; }
+  .view.active { display: flex; }
+
+  /* ---------- DASHBOARD VIEW ---------- */
+  .dashboard-header {
+    border-bottom: 1px solid var(--rule);
+    padding: 36px 40px 28px;
+    background: var(--white);
+  }
+
+  .dashboard-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .dashboard-title {
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .dashboard-title em {
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .dashboard-subtitle {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.55;
+  }
+
+  .dashboard-body {
+    padding: 32px 40px;
+    flex: 1;
+  }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 32px;
+  }
+
+  .module-card {
+    background: var(--white);
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: background 0.12s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 160px;
+  }
+
+  .module-card:hover { background: var(--paper); }
+
+  .module-card-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .module-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.25;
+    flex: 1;
+  }
+
+  .module-card-desc {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .module-card-action {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border-top: 1px solid var(--rule-light);
+    padding-top: 10px;
+    margin-top: auto;
+  }
+
+  /* ---------- PHARMACOPOEIA REFERENCE STRIP ---------- */
+  .ref-strip {
+    background: var(--panel);
+    color: var(--surface);
+    padding: 20px 40px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    border-top: 1px solid var(--panel-rule);
+  }
+
+  .ref-strip-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .ref-items {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .ref-item {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.12s;
+  }
+
+  .ref-item:hover { color: var(--surface); }
+
+  .ref-item strong {
+    font-weight: 600;
+    color: var(--surface);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* ---------- MONOGRAPH VIEW (analysis) ---------- */
+  .mono-header {
+    background: var(--white);
+    border-bottom: 2px solid var(--ink);
+    padding: 28px 40px 20px;
+  }
+
+  .mono-breadcrumb {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    cursor: pointer;
+  }
+
+  .mono-breadcrumb:hover { color: var(--ink); }
+
+  .mono-compound-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .mono-compound-name {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .mono-compound-formula {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .mono-meta-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule-light);
+  }
+
+  .mono-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mono-meta-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .mono-meta-value {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ---------- MONOGRAPH BODY ---------- */
+  .mono-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    flex: 1;
+  }
+
+  .mono-section {
+    background: var(--white);
+    padding: 24px 28px;
+  }
+
+  .mono-section.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .mono-section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .mono-section-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .mono-section-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  /* ---------- STAT TABLE ---------- */
+  .stat-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .stat-table tr {
+    border-bottom: 1px solid var(--rule-light);
+  }
+
+  .stat-table tr:last-child { border-bottom: none; }
+
+  .stat-table td {
+    padding: 7px 0;
+    font-size: 0.78rem;
+  }
+
+  .stat-table td:first-child {
+    color: var(--muted);
+    font-weight: 300;
+    font-style: italic;
+    width: 55%;
+  }
+
+  .stat-table td:last-child {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    font-size: 0.76rem;
+    text-align: right;
+  }
+
+  .stat-pass { color: #1A7A3A; }
+  .stat-warn { color: #8A6000; }
+  .stat-fail { color: #8A1A1A; }
+
+  /* ---------- PROGRESS BAR ---------- */
+  .progress-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .progress-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+  }
+
+  .progress-label-row span:first-child { color: var(--muted); font-style: italic; }
+  .progress-label-row span:last-child { font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.7rem; }
+
+  .progress-track {
+    height: 4px;
+    background: var(--rule-light);
+    border-radius: 0;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--ink);
+    transition: width 0.6s ease;
+  }
+
+  .progress-fill.warn { background: #8A6000; }
+  .progress-fill.fail { background: #8A1A1A; }
+
+  /* ---------- SPEC BOX ---------- */
+  .spec-box {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+  }
+
+  .spec-box-title {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .spec-box-value {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--ink);
+  }
+
+  .spec-box-limits {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ---------- DISSOLUTION PROFILE ---------- */
+  .dissolution-chart {
+    position: relative;
+    height: 160px;
+    border-bottom: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+    margin-top: 8px;
+  }
+
+  .dissolution-chart svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .chart-axis-label {
+    position: absolute;
+    font-size: 0.58rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .chart-axis-label.x { bottom: -18px; right: 0; }
+  .chart-axis-label.y { left: -20px; top: 0; writing-mode: vertical-rl; transform: rotate(180deg); }
+
+  /* ---------- INPUT FORM ---------- */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .form-input {
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 0.85rem;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    color: var(--ink);
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color 0.12s;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  .form-input:focus { border-color: var(--ink); }
+
+  .form-select {
+    font-family: 'Spectral', Georgia, serif;
+    font-size: 0.85rem;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    color: var(--ink);
+    padding: 9px 12px;
+    outline: none;
+    border-radius: 0;
+    appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B6B69' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+
+  .form-select:focus { border-color: var(--ink); }
+
+  .btn-primary {
+    font-family: 'Spectral SC', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    background: var(--ink);
+    color: var(--surface);
+    border: none;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: background 0.12s;
+    border-radius: 0;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { background: var(--ink-soft); }
+
+  .btn-secondary {
+    font-family: 'Spectral SC', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    font-weight: 400;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.12s;
+    border-radius: 0;
+    text-transform: uppercase;
+  }
+
+  .btn-secondary:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* ---------- INPUT VIEW ---------- */
+  .input-view {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 1px;
+    background: var(--rule);
+    flex: 1;
+  }
+
+  .input-panel {
+    background: var(--white);
+    padding: 28px 28px;
+    overflow-y: auto;
+  }
+
+  .input-panel-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .preview-panel {
+    background: var(--paper);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ---------- COMPARE VIEW ---------- */
+  .compare-table-wrap {
+    overflow-x: auto;
+    padding: 0 40px 40px;
+    flex: 1;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    margin-top: 28px;
+  }
+
+  .compare-table th {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 8px 16px;
+    text-align: left;
+    border-bottom: 2px solid var(--ink);
+    white-space: nowrap;
+  }
+
+  .compare-table th:first-child { color: var(--ink); font-style: italic; }
+
+  .compare-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--rule-light);
+    vertical-align: top;
+  }
+
+  .compare-table td:first-child {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 300;
+    white-space: nowrap;
+    width: 200px;
+  }
+
+  .compare-table td:not(:first-child) {
+    font-family: 'Courier New', monospace;
+    font-size: 0.76rem;
+    font-weight: 600;
+  }
+
+  .compare-table tr:hover td { background: rgba(0,0,0,0.02); }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.58rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border: 1px solid;
+  }
+
+  .badge-pass { color: #1A7A3A; border-color: #1A7A3A; background: rgba(26,122,58,0.05); }
+  .badge-warn { color: #8A6000; border-color: #8A6000; background: rgba(138,96,0,0.05); }
+  .badge-fail { color: #8A1A1A; border-color: #8A1A1A; background: rgba(138,26,26,0.05); }
+
+  /* ---------- PHARMACOPOEIAS ---------- */
+  .pharm-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 28px;
+  }
+
+  .pharm-card {
+    background: var(--white);
+    padding: 20px 18px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+
+  .pharm-card:hover { background: var(--paper); }
+
+  .pharm-code {
+    font-family: 'Spectral SC', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.06em;
+  }
+
+  .pharm-name {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 4px;
+  }
+
+  .pharm-count {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem;
+    color: var(--rule);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule-light);
+  }
+
+  /* ---------- LOADING STATE ---------- */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(250,250,248,0.92);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .loading-overlay.show { display: flex; }
+
+  .loading-text {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .loading-bar-track {
+    width: 240px;
+    height: 2px;
+    background: var(--rule-light);
+  }
+
+  .loading-bar-fill {
+    height: 100%;
+    background: var(--ink);
+    animation: load-anim 1.8s ease-in-out infinite;
+  }
+
+  @keyframes load-anim {
+    0% { width: 0%; }
+    60% { width: 90%; }
+    100% { width: 100%; }
+  }
+
+  /* ---------- TOOLTIP ---------- */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 0.65rem;
+    padding: 4px 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    margin-bottom: 4px;
+    font-style: normal;
+    font-family: 'Courier New', monospace;
+    z-index: 10;
+  }
+
+  /* ---------- AI RESPONSE BOX ---------- */
+  .ai-response {
+    background: var(--panel);
+    color: #C8C8C6;
+    padding: 20px 24px;
+    font-size: 0.8rem;
+    font-weight: 300;
+    line-height: 1.7;
+    border-left: 2px solid var(--muted);
+    display: none;
+  }
+
+  .ai-response.show { display: block; }
+
+  .ai-response-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-style: normal;
+    font-family: 'Courier New', monospace;
+  }
+
+  .ai-response p { margin-bottom: 8px; }
+  .ai-response p:last-child { margin-bottom: 0; }
+
+  .ai-thinking {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 0.75rem;
+  }
+
+  /* ---------- SCATTER CHART ---------- */
+  .scatter-wrap {
+    position: relative;
+    height: 200px;
+    border: 1px solid var(--rule);
+    background: var(--white);
+    margin-top: 8px;
+  }
+
+  .scatter-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* ---------- NOTIFICATION ---------- */
+  .notification {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: var(--surface);
+    padding: 12px 20px;
+    font-size: 0.76rem;
+    font-style: italic;
+    max-width: 320px;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.25s;
+    z-index: 200;
+  }
+
+  .notification.show { transform: translateY(0); opacity: 1; }
+
+  /* ---------- RESPONSIVE TWEAKS ---------- */
+  @media (max-width: 900px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .module-grid { grid-template-columns: 1fr; }
+    .pharm-grid { grid-template-columns: 1fr 1fr; }
+    .mono-body { grid-template-columns: 1fr; }
+    .input-view { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-bar-track"><div class="loading-bar-fill"></div></div>
+  <div class="loading-text" id="loadingText">Running pharmacopoeial calculations...</div>
+</div>
+
+<div class="notification" id="notification"></div>
+
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-wordmark">PharmaBench</span>
+      <span class="brand-edition">Computational Pharmacopoeia Platform &mdash; v2.1</span>
+    </div>
+    <nav>
+      <ul class="topbar-nav">
+        <li><a href="#" class="active" onclick="showView('dashboard', this)">Overview</a></li>
+        <li><a href="#" onclick="showView('analyze', this)">Compound Analysis</a></li>
+        <li><a href="#" onclick="showView('formulation', this)">Formulation</a></li>
+        <li><a href="#" onclick="showView('compare', this)">Compare</a></li>
+        <li><a href="#" onclick="showView('pharmacopoeias', this)">Pharmacopoeias</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Tests</div>
+    <a class="sidebar-item active" href="#" onclick="openTest('dissolution', event)">
+      Dissolution <span class="item-code">USP &lt;711&gt;</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('disintegration', event)">
+      Disintegration <span class="item-code">USP &lt;701&gt;</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('hardness', event)">
+      Hardness / Friability <span class="item-code">USP &lt;1217&gt;</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('content', event)">
+      Content Uniformity <span class="item-code">USP &lt;905&gt;</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('particle', event)">
+      Particle Size <span class="item-code">USP &lt;429&gt;</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('viscosity', event)">
+      Viscosity <span class="item-code">USP &lt;911&gt;</span>
+    </a>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Pharmacokinetics</div>
+    <a class="sidebar-item" href="#" onclick="openTest('absorption', event)">
+      Absorption Model <span class="item-code">PK-A</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('bioavail', event)">
+      Bioavailability <span class="item-code">PK-B</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('halflife', event)">
+      Half-Life &amp; C<sub>max</sub> <span class="item-code">PK-C</span>
+    </a>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Physicochemical</div>
+    <a class="sidebar-item" href="#" onclick="openTest('solubility', event)">
+      Solubility Profile <span class="item-code">PC-1</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('stability', event)">
+      Stability Study <span class="item-code">ICH Q1A</span>
+    </a>
+    <a class="sidebar-item" href="#" onclick="openTest('permeability', event)">
+      Permeability (PAMPA) <span class="item-code">PC-3</span>
+    </a>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Sessions</div>
+    <a class="sidebar-item" href="#" onclick="showView('library', event)">
+      Compound Library
+    </a>
+    <a class="sidebar-item" href="#" onclick="showView('reports', event)">
+      Saved Reports
+    </a>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- DASHBOARD VIEW -->
+    <div class="view active" id="view-dashboard">
+      <div class="dashboard-header">
+        <div class="dashboard-eyebrow">Computational Laboratory</div>
+        <h1 class="dashboard-title">In silico pharmacopoeial<br><em>testing and formulation analysis</em></h1>
+        <p class="dashboard-subtitle">
+          Model pharmaceutical compound behavior against USP, EP, and BP standards without wet lab testing. Designed for students and researchers in pharmaceutical sciences.
+        </p>
+      </div>
+
+      <div class="dashboard-body">
+        <div class="module-grid">
+          <div class="module-card" onclick="showView('analyze', null)">
+            <div class="module-card-code">MODULE 01 &mdash; COMPOUND</div>
+            <div class="module-card-title">Active Pharmaceutical Ingredient Analysis</div>
+            <div class="module-card-desc">Physicochemical properties, solubility, stability, and pKa profiling from structure input.</div>
+            <div class="module-card-action">Open analysis</div>
+          </div>
+          <div class="module-card" onclick="showView('formulation', null)">
+            <div class="module-card-code">MODULE 02 &mdash; FORMULATION</div>
+            <div class="module-card-title">Dosage Form Modeling</div>
+            <div class="module-card-desc">Tablets, capsules, suspensions, and topicals. Predict dissolution, disintegration, and content uniformity.</div>
+            <div class="module-card-action">Model formulation</div>
+          </div>
+          <div class="module-card" onclick="showView('compare', null)">
+            <div class="module-card-code">MODULE 03 &mdash; COMPARE</div>
+            <div class="module-card-title">Comparative Pharmacopoeia Testing</div>
+            <div class="module-card-desc">Side-by-side monograph comparison across USP, EP, and BP for the same compound or formulation.</div>
+            <div class="module-card-action">Run comparison</div>
+          </div>
+          <div class="module-card" onclick="openTest('dissolution', null)">
+            <div class="module-card-code">TEST &mdash; USP &lt;711&gt;</div>
+            <div class="module-card-title">Dissolution Profile Simulation</div>
+            <div class="module-card-desc">Simulate paddle and basket apparatus. Weibull, Higuchi, and zero-order release models.</div>
+            <div class="module-card-action">Run dissolution test</div>
+          </div>
+          <div class="module-card" onclick="openTest('content', null)">
+            <div class="module-card-code">TEST &mdash; USP &lt;905&gt;</div>
+            <div class="module-card-title">Content Uniformity (AV Method)</div>
+            <div class="module-card-desc">Acceptance Value calculation per Stage 1 and 2 criteria. Monte Carlo sampling simulation.</div>
+            <div class="module-card-action">Run uniformity test</div>
+          </div>
+          <div class="module-card" onclick="showView('pharmacopoeias', null)">
+            <div class="module-card-code">REFERENCE</div>
+            <div class="module-card-title">Pharmacopoeia Reference Library</div>
+            <div class="module-card-desc">Browse USP, EP 11.0, BP 2024, IP, and JP monographs with computational test parameters.</div>
+            <div class="module-card-action">Browse library</div>
+          </div>
+        </div>
+
+        <div class="ref-strip" style="margin: 0 -40px; padding: 16px 40px;">
+          <div class="ref-strip-label">Standards in scope</div>
+          <div class="ref-items">
+            <div class="ref-item"><strong>USP 47</strong> United States</div>
+            <div class="ref-item"><strong>EP 11.0</strong> European</div>
+            <div class="ref-item"><strong>BP 2024</strong> British</div>
+            <div class="ref-item"><strong>IP 2022</strong> Indian</div>
+            <div class="ref-item"><strong>JP XVIII</strong> Japanese</div>
+            <div class="ref-item"><strong>ICH Q1A&ndash;Q6</strong> Guidelines</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYZE VIEW -->
+    <div class="view" id="view-analyze">
+      <div class="mono-header">
+        <div class="mono-breadcrumb" onclick="showView('dashboard', null)">Overview / Compound Analysis</div>
+        <div class="mono-compound-row">
+          <div class="mono-compound-name" id="analyzeCompoundName">Ibuprofen</div>
+          <div class="mono-compound-formula" id="analyzeFormula">C&#8321;&#8323;H&#8321;&#8328;O&#8322; &mdash; MW 206.28 g/mol</div>
+        </div>
+        <div class="mono-meta-row">
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">CAS Number</div>
+            <div class="mono-meta-value" id="analyzeCAS">15687-27-1</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">ATC Code</div>
+            <div class="mono-meta-value" id="analyzeATC">M01AE01</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">BCS Class</div>
+            <div class="mono-meta-value" id="analyzeBCS">II</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">pKa</div>
+            <div class="mono-meta-value" id="analyzePKA">4.91</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">logP</div>
+            <div class="mono-meta-value" id="analyzeLogP">3.97</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">Standard</div>
+            <div class="mono-meta-value">USP &lt;905&gt; / EP 2.9.40</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mono-body">
+        <div class="mono-section">
+          <div class="mono-section-header">
+            <span class="mono-section-code">SEC. 1</span>
+            <span class="mono-section-title">Physicochemical Properties</span>
+          </div>
+          <table class="stat-table">
+            <tr><td>Molecular weight</td><td>206.28 g/mol</td></tr>
+            <tr><td>Aqueous solubility (pH 7.4)</td><td class="stat-warn" data-tip="Below 1 mg/mL threshold">0.021 mg/mL</td></tr>
+            <tr><td>Melting point</td><td>75&ndash;78 &deg;C</td></tr>
+            <tr><td>Protein binding</td><td>99.0 %</td></tr>
+            <tr><td>H-bond donors</td><td>1</td></tr>
+            <tr><td>H-bond acceptors</td><td>2</td></tr>
+            <tr><td>Polar surface area</td><td>37.30 &Aring;&sup2;</td></tr>
+            <tr><td>Rotatable bonds</td><td>4</td></tr>
+            <tr><td>Lipinski violations</td><td class="stat-pass">0</td></tr>
+          </table>
+        </div>
+
+        <div class="mono-section">
+          <div class="mono-section-header">
+            <span class="mono-section-code">SEC. 2</span>
+            <span class="mono-section-title">Solubility vs pH Profile</span>
+          </div>
+          <div class="dissolution-chart" style="height:200px;">
+            <svg viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+              <!-- Grid lines -->
+              <line x1="0" y1="40" x2="340" y2="40" stroke="#E4E4E2" stroke-width="0.5"/>
+              <line x1="0" y1="80" x2="340" y2="80" stroke="#E4E4E2" stroke-width="0.5"/>
+              <line x1="0" y1="120" x2="340" y2="120" stroke="#E4E4E2" stroke-width="0.5"/>
+              <!-- Solubility curve (log scale approximation) -->
+              <polyline points="0,150 40,148 80,142 120,128 160,100 200,72 240,44 280,24 320,18 340,16"
+                fill="none" stroke="#0A0A0A" stroke-width="1.5"/>
+              <!-- pKa marker -->
+              <line x1="170" y1="0" x2="170" y2="160" stroke="#C8C8C6" stroke-width="0.8" stroke-dasharray="3,3"/>
+              <text x="172" y="14" font-size="8" fill="#6B6B69" font-family="'Courier New', monospace">pKa 4.91</text>
+              <!-- X axis labels -->
+              <text x="0" y="158" font-size="7" fill="#6B6B69" font-family="Spectral, serif" font-style="italic">pH 1</text>
+              <text x="155" y="158" font-size="7" fill="#6B6B69" font-family="Spectral, serif" font-style="italic">pH 5</text>
+              <text x="310" y="158" font-size="7" fill="#6B6B69" font-family="Spectral, serif" font-style="italic">pH 9</text>
+            </svg>
+          </div>
+          <div style="font-size:0.68rem; color:var(--muted); margin-top:20px; font-style:italic;">
+            Solubility increases sharply above pKa due to ionization of carboxylic group. Gastric absorption favored at low pH.
+          </div>
+        </div>
+
+        <div class="mono-section">
+          <div class="mono-section-header">
+            <span class="mono-section-code">SEC. 3</span>
+            <span class="mono-section-title">ADME Predictions</span>
+          </div>
+          <div class="progress-row">
+            <div class="progress-label-row"><span>Oral bioavailability</span><span>87 %</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:87%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-label-row"><span>GI absorption</span><span>HIGH</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:90%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-label-row"><span>CNS penetration</span><span>LOW</span></div>
+            <div class="progress-track"><div class="progress-fill warn" style="width:15%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-label-row"><span>P-gp substrate</span><span>NO</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:5%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-label-row"><span>CYP2C9 inhibitor</span><span>YES</span></div>
+            <div class="progress-track"><div class="progress-fill warn" style="width:75%"></div></div>
+          </div>
+          <div class="progress-row">
+            <div class="progress-label-row"><span>hERG liability</span><span>LOW</span></div>
+            <div class="progress-track"><div class="progress-fill" style="width:12%"></div></div>
+          </div>
+        </div>
+
+        <div class="mono-section">
+          <div class="mono-section-header">
+            <span class="mono-section-code">SEC. 4</span>
+            <span class="mono-section-title">Pharmacopoeial Compliance</span>
+          </div>
+          <table class="stat-table">
+            <tr><td>Identification (IR)</td><td class="stat-pass">CONFORMS</td></tr>
+            <tr><td>Assay (HPLC)</td><td class="stat-pass">98.6 % (limit: 98.0&ndash;102.0 %)</td></tr>
+            <tr><td>Related substances</td><td class="stat-pass">0.12 % (limit: &le;0.5 %)</td></tr>
+            <tr><td>Water content (KF)</td><td class="stat-pass">0.08 % (limit: &le;0.2 %)</td></tr>
+            <tr><td>Heavy metals</td><td class="stat-pass">&lt;10 ppm</td></tr>
+            <tr><td>Residual solvents</td><td class="stat-pass">CONFORMS (ICH Q3C)</td></tr>
+            <tr><td>Microbial limits</td><td class="stat-pass">CONFORMS</td></tr>
+            <tr><td>Overall verdict</td><td class="stat-pass">COMPLIANT &mdash; USP 47</td></tr>
+          </table>
+        </div>
+
+        <div class="mono-section full-width">
+          <div class="mono-section-header">
+            <span class="mono-section-code">SEC. 5</span>
+            <span class="mono-section-title">AI Pharmacopoeia Interpretation</span>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;">
+            <textarea class="form-input" id="apiQuery" placeholder="Ask about this compound... e.g., What excipients are compatible with ibuprofen for tablet formulation? What are the USP dissolution acceptance criteria?" style="flex:1;min-width:280px;resize:vertical;min-height:72px;font-family:'Spectral',Georgia,serif;"></textarea>
+            <button class="btn-primary" onclick="callPharmAPI()">Analyse</button>
+          </div>
+          <div class="ai-response" id="aiResponse">
+            <div class="ai-response-label">PharmaBench AI / Pharmacopoeia Module</div>
+            <div id="aiResponseText"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORMULATION VIEW -->
+    <div class="view" id="view-formulation">
+      <div class="mono-header">
+        <div class="mono-breadcrumb" onclick="showView('dashboard', null)">Overview / Formulation Modeling</div>
+        <div class="mono-compound-row">
+          <div class="mono-compound-name">Dosage Form Simulation</div>
+        </div>
+        <div class="mono-meta-row">
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">Active module</div>
+            <div class="mono-meta-value">TABLET &mdash; IMMEDIATE RELEASE</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">Apparatus</div>
+            <div class="mono-meta-value">USP II (Paddle)</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">Medium</div>
+            <div class="mono-meta-value">0.1N HCl / pH 6.8 PBS</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-view">
+        <div class="input-panel">
+          <div class="input-panel-title">Formulation Parameters</div>
+
+          <div class="form-group">
+            <label class="form-label">Dosage Form</label>
+            <select class="form-select" id="formType" onchange="updateFormulation()">
+              <option value="tablet-ir">Tablet &mdash; Immediate Release</option>
+              <option value="tablet-er">Tablet &mdash; Extended Release</option>
+              <option value="capsule">Hard Gelatin Capsule</option>
+              <option value="suspension">Oral Suspension</option>
+              <option value="cream">Semi-solid (Cream/Gel)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Active Pharmaceutical Ingredient</label>
+            <input class="form-input" id="apiName" value="Ibuprofen" placeholder="Compound name or CAS">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Label Claim (mg)</label>
+            <input class="form-input" id="labelClaim" type="number" value="400" min="1">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Pharmacopoeial Standard</label>
+            <select class="form-select" id="pharmStd">
+              <option>USP 47</option>
+              <option>EP 11.0</option>
+              <option>BP 2024</option>
+              <option>IP 2022</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Dissolution Model</label>
+            <select class="form-select" id="dissModel" onchange="updateFormulation()">
+              <option value="weibull">Weibull</option>
+              <option value="higuchi">Higuchi</option>
+              <option value="zero">Zero-Order</option>
+              <option value="first">First-Order</option>
+              <option value="kp">Korsmeyer-Peppas</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Binder (%)</label>
+            <input class="form-input" type="number" id="binder" value="5" min="0" max="20" oninput="updateFormulation()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Disintegrant (%)</label>
+            <input class="form-input" type="number" id="disintegrant" value="8" min="0" max="25" oninput="updateFormulation()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Lubricant (%)</label>
+            <input class="form-input" type="number" id="lubricant" value="1" min="0" max="5" oninput="updateFormulation()">
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button class="btn-primary" onclick="runFormulationSim()">Run Simulation</button>
+            <button class="btn-secondary" onclick="resetFormulation()">Reset</button>
+          </div>
+        </div>
+
+        <div class="preview-panel" id="formulationPreview">
+          <div class="mono-section-header">
+            <span class="mono-section-code">SIM</span>
+            <span class="mono-section-title">Dissolution Profile &mdash; <span id="simModelLabel">Weibull</span></span>
+          </div>
+
+          <div class="dissolution-chart" style="height:220px;">
+            <svg id="dissolutionSVG" viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg">
+              <!-- Grid -->
+              <line x1="40" y1="0" x2="40" y2="160" stroke="#E4E4E2" stroke-width="0.5"/>
+              <line x1="40" y1="160" x2="500" y2="160" stroke="#E4E4E2" stroke-width="0.5"/>
+              <line x1="40" y1="40" x2="500" y2="40" stroke="#E4E4E2" stroke-width="0.5"/>
+              <line x1="40" y1="80" x2="500" y2="80" stroke="#E4E4E2" stroke-width="0.5"/>
+              <line x1="40" y1="120" x2="500" y2="120" stroke="#E4E4E2" stroke-width="0.5"/>
+              <!-- Y axis labels -->
+              <text x="2" y="164" font-size="7" fill="#6B6B69" font-family="monospace">0</text>
+              <text x="2" y="124" font-size="7" fill="#6B6B69" font-family="monospace">25</text>
+              <text x="2" y="84" font-size="7" fill="#6B6B69" font-family="monospace">50</text>
+              <text x="2" y="44" font-size="7" fill="#6B6B69" font-family="monospace">75</text>
+              <text x="2" y="14" font-size="7" fill="#6B6B69" font-family="monospace">100</text>
+              <!-- X labels -->
+              <text x="40" y="174" font-size="7" fill="#6B6B69" font-family="monospace">0</text>
+              <text x="150" y="174" font-size="7" fill="#6B6B69" font-family="monospace">15 min</text>
+              <text x="270" y="174" font-size="7" fill="#6B6B69" font-family="monospace">30 min</text>
+              <text x="390" y="174" font-size="7" fill="#6B6B69" font-family="monospace">45 min</text>
+              <!-- Q-limit line (USP: NLT 75% at 45 min) -->
+              <line x1="390" y1="0" x2="390" y2="160" stroke="#C8C8C6" stroke-width="0.8" stroke-dasharray="4,3"/>
+              <line x1="40" y1="40" x2="500" y2="40" stroke="#C8C8C6" stroke-width="0.8" stroke-dasharray="4,3"/>
+              <text x="392" y="35" font-size="7" fill="#6B6B69" font-family="monospace">Q=75%</text>
+              <!-- Dissolution curve -->
+              <polyline id="dissolutionCurve"
+                points="40,160 100,140 150,112 200,84 240,62 280,48 320,38 360,34 400,32 440,31 480,31"
+                fill="none" stroke="#0A0A0A" stroke-width="1.8"/>
+              <!-- Data points -->
+              <circle cx="40" cy="160" r="3" fill="#0A0A0A"/>
+              <circle cx="150" cy="112" r="3" fill="#0A0A0A"/>
+              <circle cx="270" cy="52" r="3" fill="#0A0A0A"/>
+              <circle cx="390" cy="33" r="3" fill="#1A7A3A"/>
+            </svg>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+            <div class="spec-box">
+              <div class="spec-box-title">Q45 (Dissolved at 45 min)</div>
+              <div class="spec-box-value" id="q45value">82.4 %</div>
+              <div class="spec-box-limits">Acceptance limit: NLT 75 % (Stage 1)</div>
+            </div>
+            <div class="spec-box">
+              <div class="spec-box-title">Disintegration Time</div>
+              <div class="spec-box-value" id="disintValue">4 min 12 s</div>
+              <div class="spec-box-limits">USP &lt;701&gt; limit: NMT 30 min</div>
+            </div>
+            <div class="spec-box">
+              <div class="spec-box-title">t&#8325;&#8320; (50 % release)</div>
+              <div class="spec-box-value" id="t50value">18.3 min</div>
+              <div class="spec-box-limits">Model parameter</div>
+            </div>
+            <div class="spec-box">
+              <div class="spec-box-title">Overall Result</div>
+              <div class="spec-box-value stat-pass" id="overallResult">PASS &mdash; Stage 1</div>
+              <div class="spec-box-limits">USP &lt;711&gt; acceptance criteria met</div>
+            </div>
+          </div>
+
+          <div class="ai-response show" id="formulationInterpretation" style="margin-top:8px;">
+            <div class="ai-response-label">Formulation Note</div>
+            <div id="formulationNote">
+              <p>The Weibull model fits well for immediate-release ibuprofen tablets. The Q45 of 82.4% exceeds the USP Stage 1 acceptance value of Q=75%, indicating adequate dissolution. Disintegration at 4:12 is well within limits.</p>
+              <p>With 8% disintegrant (sodium starch glycolate typical), consider reducing to 5% to avoid over-wetting. Current lubricant level is acceptable for tablet ejection without excessive hydrophobicity effects on dissolution.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARE VIEW -->
+    <div class="view" id="view-compare">
+      <div class="mono-header">
+        <div class="mono-breadcrumb" onclick="showView('dashboard', null)">Overview / Comparative Testing</div>
+        <div class="mono-compound-row">
+          <div class="mono-compound-name">Pharmacopoeia Cross-Reference</div>
+          <button class="btn-secondary" onclick="runCompareAI()">AI Interpretation</button>
+        </div>
+        <div class="mono-meta-row">
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">Compound</div>
+            <div class="mono-meta-value">Ibuprofen Tablets 400 mg</div>
+          </div>
+          <div class="mono-meta-item">
+            <div class="mono-meta-label">Pharmacopoeias</div>
+            <div class="mono-meta-value">USP / EP / BP</div>
+          </div>
+        </div>
+      </div>
+      <div class="compare-table-wrap">
+        <div class="ai-response" id="compareAI" style="margin-bottom:16px;">
+          <div class="ai-response-label">Comparative Analysis / AI Summary</div>
+          <div id="compareAIText"></div>
+        </div>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>USP 47</th>
+              <th>EP 11.0</th>
+              <th>BP 2024</th>
+              <th>IP 2022</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Assay method</td>
+              <td>HPLC</td>
+              <td>HPLC</td>
+              <td>HPLC</td>
+              <td>UV-Vis</td>
+            </tr>
+            <tr>
+              <td>Assay limits</td>
+              <td><span class="badge badge-pass">PASS</span> 95.0&ndash;105.0 %</td>
+              <td><span class="badge badge-pass">PASS</span> 95.0&ndash;105.0 %</td>
+              <td><span class="badge badge-pass">PASS</span> 95.0&ndash;105.0 %</td>
+              <td><span class="badge badge-pass">PASS</span> 93.0&ndash;107.0 %</td>
+            </tr>
+            <tr>
+              <td>Dissolution apparatus</td>
+              <td>Paddle (II)</td>
+              <td>Paddle (II)</td>
+              <td>Paddle (II)</td>
+              <td>Basket (I)</td>
+            </tr>
+            <tr>
+              <td>Dissolution medium</td>
+              <td>pH 7.2 PBS</td>
+              <td>pH 7.2 PBS</td>
+              <td>pH 7.2 PBS</td>
+              <td>pH 6.8 PBS</td>
+            </tr>
+            <tr>
+              <td>Speed (rpm)</td>
+              <td>50</td>
+              <td>50</td>
+              <td>50</td>
+              <td>100</td>
+            </tr>
+            <tr>
+              <td>Time point</td>
+              <td>45 min</td>
+              <td>45 min</td>
+              <td>45 min</td>
+              <td>30 min</td>
+            </tr>
+            <tr>
+              <td>Acceptance (Q)</td>
+              <td>NLT 80 %</td>
+              <td>NLT 80 %</td>
+              <td>NLT 80 %</td>
+              <td>NLT 70 %</td>
+            </tr>
+            <tr>
+              <td>Uniformity test</td>
+              <td>USP &lt;905&gt; AV</td>
+              <td>EP 2.9.40</td>
+              <td>EP 2.9.40</td>
+              <td>Mass variation</td>
+            </tr>
+            <tr>
+              <td>AV Stage 1 limit</td>
+              <td>&le; 15.0</td>
+              <td>&le; 15.0</td>
+              <td>&le; 15.0</td>
+              <td>N/A</td>
+            </tr>
+            <tr>
+              <td>Related substances</td>
+              <td>&le; 0.5 % each</td>
+              <td>&le; 0.2 % each</td>
+              <td>&le; 0.2 % each</td>
+              <td>&le; 1.0 % total</td>
+            </tr>
+            <tr>
+              <td>Disintegration</td>
+              <td>NMT 30 min</td>
+              <td>NMT 15 min</td>
+              <td>NMT 15 min</td>
+              <td>NMT 30 min</td>
+            </tr>
+            <tr>
+              <td>Residual solvents</td>
+              <td>ICH Q3C</td>
+              <td>ICH Q3C</td>
+              <td>ICH Q3C</td>
+              <td>ICH Q3C</td>
+            </tr>
+            <tr>
+              <td>Microbial limits</td>
+              <td>USP &lt;1111&gt;</td>
+              <td>EP 5.1.4</td>
+              <td>BP App XIV B</td>
+              <td>IP 2.2.10</td>
+            </tr>
+            <tr>
+              <td>Packaging</td>
+              <td>Tight container</td>
+              <td>Protected from light</td>
+              <td>Protected from light</td>
+              <td>Well-closed container</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PHARMACOPOEIAS VIEW -->
+    <div class="view" id="view-pharmacopoeias">
+      <div class="mono-header">
+        <div class="mono-breadcrumb" onclick="showView('dashboard', null)">Overview / Reference Library</div>
+        <div class="mono-compound-row">
+          <div class="mono-compound-name">Pharmacopoeia Library</div>
+        </div>
+      </div>
+      <div style="padding:32px 40px;flex:1;overflow-y:auto;">
+        <div class="pharm-grid">
+          <div class="pharm-card">
+            <div class="pharm-code">USP</div>
+            <div class="pharm-name">United States Pharmacopeia<br>Edition 47, 2024</div>
+            <div class="pharm-count">5,400+ monographs &mdash; General Chapters &lt;1&gt;&ndash;&lt;2040&gt;</div>
+          </div>
+          <div class="pharm-card">
+            <div class="pharm-code">EP</div>
+            <div class="pharm-name">European Pharmacopoeia<br>11th Edition, 2023</div>
+            <div class="pharm-count">2,500+ monographs &mdash; Methods 2.1&ndash;5.26</div>
+          </div>
+          <div class="pharm-card">
+            <div class="pharm-code">BP</div>
+            <div class="pharm-name">British Pharmacopoeia<br>2024 Edition</div>
+            <div class="pharm-count">3,000+ monographs &mdash; Appendices II&ndash;XIX</div>
+          </div>
+          <div class="pharm-card">
+            <div class="pharm-code">JP</div>
+            <div class="pharm-name">Japanese Pharmacopoeia<br>XVIII, 2021</div>
+            <div class="pharm-count">1,700+ monographs &mdash; General Rules 1&ndash;31</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div class="input-panel-title" style="padding:0;border-bottom:1px solid var(--rule);padding-bottom:10px;margin-bottom:16px;">Search Test Methods</div>
+          <div style="display:flex;gap:10px;">
+            <input class="form-input" id="pharmSearch" placeholder="Search by test name, chapter number, or compound..." style="flex:1;">
+            <button class="btn-primary" onclick="searchPharm()">Search</button>
+          </div>
+        </div>
+
+        <div id="pharmResults">
+          <div class="ai-response show">
+            <div class="ai-response-label">Quick Reference</div>
+            <div>
+              <p><strong style="font-family:'Courier New',monospace;font-size:0.78rem;">USP &lt;711&gt;</strong> Dissolution &mdash; Covers Apparatus 1 (basket), 2 (paddle), 3 (reciprocating cylinder), 4 (flow-through cell), 5, 6, 7. Acceptance Table 1 and 2.</p>
+              <p><strong style="font-family:'Courier New',monospace;font-size:0.78rem;">USP &lt;905&gt;</strong> Uniformity of Dosage Units &mdash; Content Uniformity (CU) and Mass Variation (MV) via Acceptance Value (AV) method with Stage 1 and 2 criteria.</p>
+              <p><strong style="font-family:'Courier New',monospace;font-size:0.78rem;">EP 2.9.3</strong> Dissolution Test for Solid Dosage Forms &mdash; Equivalent to USP &lt;711&gt; with minor differences in acceptance criteria harmonization.</p>
+              <p><strong style="font-family:'Courier New',monospace;font-size:0.78rem;">ICH Q1A(R2)</strong> Stability Testing of New Drug Substances and Drug Products &mdash; Long-term 25&deg;C/60% RH, intermediate 30&deg;C/65% RH, accelerated 40&deg;C/75% RH.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY VIEW -->
+    <div class="view" id="view-library">
+      <div class="mono-header">
+        <div class="mono-breadcrumb" onclick="showView('dashboard', null)">Overview / Compound Library</div>
+        <div class="mono-compound-row">
+          <div class="mono-compound-name">Compound Library</div>
+          <button class="btn-secondary">Add Compound</button>
+        </div>
+      </div>
+      <div style="padding:32px 40px;flex:1;overflow-y:auto;">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Compound</th>
+              <th>Formula</th>
+              <th>BCS Class</th>
+              <th>MW</th>
+              <th>logP</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="libraryBody">
+            <tr>
+              <td style="font-weight:600;color:var(--ink);font-style:normal;cursor:pointer;" onclick="showView('analyze', null)">Ibuprofen</td>
+              <td>C&#8321;&#8323;H&#8321;&#8328;O&#8322;</td>
+              <td>II</td>
+              <td>206.28</td>
+              <td>3.97</td>
+              <td><span class="badge badge-pass">Analyzed</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--ink);font-style:normal;cursor:pointer;">Metformin HCl</td>
+              <td>C&#8324;H&#8321;&#8321;N&#8325;&#183;HCl</td>
+              <td>III</td>
+              <td>165.62</td>
+              <td>-1.43</td>
+              <td><span class="badge badge-pass">Analyzed</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--ink);font-style:normal;cursor:pointer;">Atorvastatin</td>
+              <td>C&#8323;&#8323;H&#8324;&#8325;FN&#8322;O&#8325;</td>
+              <td>II</td>
+              <td>558.64</td>
+              <td>6.36</td>
+              <td><span class="badge badge-warn">Pending</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--ink);font-style:normal;cursor:pointer;">Amoxicillin</td>
+              <td>C&#8321;&#8326;H&#8321;&#9313;N&#8323;O&#8325;S</td>
+              <td>I</td>
+              <td>365.40</td>
+              <td>0.87</td>
+              <td><span class="badge badge-pass">Analyzed</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--ink);font-style:normal;cursor:pointer;">Paracetamol</td>
+              <td>C&#8328;H&#9313;NO&#8322;</td>
+              <td>I</td>
+              <td>151.16</td>
+              <td>0.46</td>
+              <td><span class="badge badge-pass">Analyzed</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;color:var(--ink);font-style:normal;cursor:pointer;">Niclosamide</td>
+              <td>C&#8321;&#8323;H&#8328;Cl&#8322;N&#8322;O&#8324;</td>
+              <td>II</td>
+              <td>327.12</td>
+              <td>4.36</td>
+              <td><span class="badge badge-warn">In progress</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REPORTS VIEW -->
+    <div class="view" id="view-reports">
+      <div class="mono-header">
+        <div class="mono-breadcrumb" onclick="showView('dashboard', null)">Overview / Saved Reports</div>
+        <div class="mono-compound-row">
+          <div class="mono-compound-name">Saved Reports</div>
+          <button class="btn-secondary">Export All</button>
+        </div>
+      </div>
+      <div style="padding:32px 40px;flex:1;">
+        <div class="ai-response show">
+          <div class="ai-response-label">Reports</div>
+          <div>No saved reports yet. Run a simulation or analysis and save the results to view them here.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ---- VIEW ROUTING ----
+function showView(name, triggerEl) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById('view-' + name);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.topbar-nav a').forEach(a => a.classList.remove('active'));
+  if (triggerEl) triggerEl.classList.add('active');
+}
+
+function openTest(testName, evt) {
+  if (evt) evt.preventDefault();
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (evt && evt.target) evt.target.closest('.sidebar-item').classList.add('active');
+
+  showView('analyze', null);
+  showNotification('Loaded: ' + testName.charAt(0).toUpperCase() + testName.slice(1) + ' module');
+}
+
+// ---- FORMULATION ----
+function updateFormulation() {
+  const model = document.getElementById('dissModel').value;
+  const labels = { weibull: 'Weibull', higuchi: 'Higuchi', zero: 'Zero-Order', first: 'First-Order', kp: 'Korsmeyer-Peppas' };
+  document.getElementById('simModelLabel').textContent = labels[model] || model;
+
+  const disint = parseFloat(document.getElementById('disintegrant').value) || 8;
+  const q45 = Math.min(99, 60 + disint * 3.1 + Math.random() * 5).toFixed(1);
+  const disintTime = Math.max(1, 12 - disint * 0.5).toFixed(0);
+  const t50 = (20 - disint * 0.3).toFixed(1);
+
+  document.getElementById('q45value').textContent = q45 + ' %';
+  document.getElementById('disintValue').textContent = disintTime + ' min ' + Math.floor(Math.random()*59) + ' s';
+  document.getElementById('t50value').textContent = t50 + ' min';
+
+  const pass = parseFloat(q45) >= 75;
+  const el = document.getElementById('overallResult');
+  el.textContent = pass ? 'PASS \u2014 Stage 1' : 'FAIL \u2014 Review Stage 2';
+  el.className = 'spec-box-value ' + (pass ? 'stat-pass' : 'stat-fail');
+}
+
+function runFormulationSim() {
+  showLoading('Running dissolution simulation...');
+  setTimeout(() => {
+    hideLoading();
+    updateFormulation();
+    showNotification('Simulation complete. Results updated.');
+  }, 1800);
+}
+
+function resetFormulation() {
+  document.getElementById('binder').value = 5;
+  document.getElementById('disintegrant').value = 8;
+  document.getElementById('lubricant').value = 1;
+  document.getElementById('dissModel').value = 'weibull';
+  updateFormulation();
+}
+
+// ---- AI API ----
+async function callPharmAPI() {
+  const query = document.getElementById('apiQuery').value.trim();
+  if (!query) { showNotification('Enter a question first.'); return; }
+
+  const responseEl = document.getElementById('aiResponse');
+  const textEl = document.getElementById('aiResponseText');
+  responseEl.classList.add('show');
+  textEl.innerHTML = '<div class="ai-thinking">Consulting pharmacopoeial database...</div>';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: `You are PharmaBench AI, an expert in pharmaceutical sciences, pharmacopoeia standards (USP, EP, BP, IP, JP), formulation science, and drug analysis. 
+You provide concise, accurate, technically rigorous responses grounded in official pharmacopoeial requirements.
+Respond in 2-4 short paragraphs. Use specific chapter references (e.g. USP <711>, EP 2.9.3) where applicable. 
+No markdown, no bullet lists. Plain flowing prose only. Be precise and academic in tone.`,
+        messages: [{ role: 'user', content: `Context: Ibuprofen API, BCS Class II, MW 206.28 g/mol, logP 3.97, pKa 4.91. Question: ${query}` }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text || '').join('') || 'No response.';
+    const paragraphs = text.split(/\n+/).filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+    textEl.innerHTML = paragraphs;
+  } catch (e) {
+    textEl.innerHTML = '<p>Unable to connect to analysis engine. Check network and try again.</p>';
+  }
+}
+
+async function runCompareAI() {
+  const textEl = document.getElementById('compareAIText');
+  const box = document.getElementById('compareAI');
+  box.classList.add('show');
+  textEl.innerHTML = '<div class="ai-thinking">Comparing pharmacopoeial requirements...</div>';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 800,
+        system: `You are PharmaBench AI. Provide a concise comparative interpretation of pharmacopoeial differences for the given compound and dosage form. Reference specific chapters. No markdown, no lists. 2-3 paragraphs. Academic tone.`,
+        messages: [{ role: 'user', content: 'Summarize the key differences between USP 47, EP 11.0, BP 2024, and IP 2022 requirements for Ibuprofen Tablets 400 mg, focusing on dissolution, assay, and uniformity testing.' }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text || '').join('') || '';
+    textEl.innerHTML = text.split(/\n+/).filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+  } catch (e) {
+    textEl.innerHTML = '<p>Unable to retrieve comparison. Try again.</p>';
+  }
+}
+
+async function searchPharm() {
+  const query = document.getElementById('pharmSearch').value.trim();
+  if (!query) return;
+  const resultsEl = document.getElementById('pharmResults');
+  resultsEl.innerHTML = '<div class="ai-response show"><div class="ai-response-label">Searching...</div><div class="ai-thinking">Querying pharmacopoeia database...</div></div>';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 800,
+        system: `You are a pharmacopoeia reference expert. Provide a concise, accurate explanation of the requested test method or monograph section, citing exact chapter numbers and acceptance criteria. No markdown. 2-4 short paragraphs.`,
+        messages: [{ role: 'user', content: query }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text || '').join('') || '';
+    resultsEl.innerHTML = `<div class="ai-response show"><div class="ai-response-label">Reference Result</div><div>${text.split(/\n+/).filter(p => p.trim()).map(p => `<p>${p}</p>`).join('')}</div></div>`;
+  } catch (e) {
+    resultsEl.innerHTML = '<div class="ai-response show"><div class="ai-response-label">Error</div><div><p>Unable to retrieve results. Please try again.</p></div></div>';
+  }
+}
+
+// ---- UTILITIES ----
+function showLoading(msg) {
+  document.getElementById('loadingText').textContent = msg || 'Processing...';
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+function showNotification(msg) {
+  const el = document.getElementById('notification');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Init
+updateFormulation();
+</script>
+</body>
+</html>
