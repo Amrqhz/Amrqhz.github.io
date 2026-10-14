@@ -19,6 +19,11 @@ let financialPharmacyFilter = 'all';
 let reportDeputyFilter = 'all';
 let financialDeputyFilter = 'all';
 let deferredInstallPrompt = null; // PWA beforeinstallprompt event
+// Independent month state for each report tab (default = current month)
+let summaryYear    = null; // set in init()
+let summaryMonth   = null;
+let financialYear  = null;
+let financialMonth = null;
 
 const todayJ = J.todayJalali();
 
@@ -40,6 +45,13 @@ function init() {
   bindFinancialView();
   bindSettings();
   bindPwaInstall();
+  // Init report month states to current month
+  summaryYear    = todayJ.jy;
+  summaryMonth   = todayJ.jm;
+  financialYear  = todayJ.jy;
+  financialMonth = todayJ.jm;
+
+  bindReportMonthPickers();
 
   renderCalendar();
   renderPharmacyList();
@@ -68,8 +80,8 @@ function bindNav() {
         v.setAttribute('data-active', 'false'));
       document.getElementById(`view-${target}`).setAttribute('data-active', 'true');
 
-      if (target === 'summary') renderSummary();
-      if (target === 'financial') renderFinancial();
+      if (target === 'summary')    { updateSummaryMonthLabel(); renderSummary(); }
+      if (target === 'financial')  { renderFinancial(); renderTrendChart(); }
       if (target === 'pharmacies') renderPharmacyList();
       if (target === 'deputies') renderDeputyList();
     });
@@ -698,7 +710,63 @@ function renderPharmacySelect() {
   sel.innerHTML = pharmacies.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
   if (prev && pharmacies.some((p) => p.id === prev)) sel.value = prev;
 }
+function bindReportMonthPickers() {
+  // ── Summary tab ──────────────────────────────────────────
+  document.getElementById('summaryPrevMonth').addEventListener('click', () => {
+    summaryMonth--;
+    if (summaryMonth < 1) { summaryMonth = 12; summaryYear--; }
+    updateSummaryMonthLabel();
+    renderSummary();
+  });
+  document.getElementById('summaryNextMonth').addEventListener('click', () => {
+    summaryMonth++;
+    if (summaryMonth > 12) { summaryMonth = 1; summaryYear++; }
+    updateSummaryMonthLabel();
+    renderSummary();
+  });
+  document.getElementById('summaryThisMonth').addEventListener('click', () => {
+    summaryYear  = todayJ.jy;
+    summaryMonth = todayJ.jm;
+    updateSummaryMonthLabel();
+    renderSummary();
+  });
 
+  // ── Financial tab ─────────────────────────────────────────
+  document.getElementById('financialPrevMonth').addEventListener('click', () => {
+    financialMonth--;
+    if (financialMonth < 1) { financialMonth = 12; financialYear--; }
+    updateFinancialMonthLabel();
+    renderFinancial();
+    renderTrendChart();
+  });
+  document.getElementById('financialNextMonth').addEventListener('click', () => {
+    financialMonth++;
+    if (financialMonth > 12) { financialMonth = 1; financialYear++; }
+    updateFinancialMonthLabel();
+    renderFinancial();
+    renderTrendChart();
+  });
+  document.getElementById('financialThisMonth').addEventListener('click', () => {
+    financialYear  = todayJ.jy;
+    financialMonth = todayJ.jm;
+    updateFinancialMonthLabel();
+    renderFinancial();
+    renderTrendChart();
+  });
+
+  updateSummaryMonthLabel();
+  updateFinancialMonthLabel();
+}
+
+function updateSummaryMonthLabel() {
+  const el = document.getElementById('summaryMonthLabel');
+  if (el) el.textContent = `${J.PERSIAN_MONTHS[summaryMonth - 1]} ${J.toPersianDigits(summaryYear)}`;
+}
+
+function updateFinancialMonthLabel() {
+  const el = document.getElementById('financialMonthLabel');
+  if (el) el.textContent = `${J.PERSIAN_MONTHS[financialMonth - 1]} ${J.toPersianDigits(financialYear)}`;
+}
 /* =================== SHARED FILTER HELPERS =================== */
 
 function bindReportFilter() {
@@ -745,10 +813,12 @@ function deputyName(id) {
   return d ? d.name : '—';
 }
 
-function getMonthShifts(pharmacyFilter, deputyFilter = 'all') {
+function getMonthShifts(pharmacyFilter, deputyFilter = 'all', forYear = null, forMonth = null) {
+  const yr = forYear  !== null ? forYear  : viewYear;
+  const mo = forMonth !== null ? forMonth : viewMonth;
   return shifts.filter((s) => {
     const { jy, jm } = J.parseJalaliKey(s.dateKey);
-    if (jy !== viewYear || jm !== viewMonth) return false;
+    if (jy !== yr || jm !== mo) return false;
     if (pharmacyFilter !== 'all' && s.pharmacyId !== pharmacyFilter) return false;
     if (deputyFilter === 'none' && s.deputyId) return false;
     if (deputyFilter !== 'all' && deputyFilter !== 'none' && s.deputyId !== deputyFilter) return false;
@@ -761,7 +831,7 @@ function getMonthShifts(pharmacyFilter, deputyFilter = 'all') {
 function renderSummary() {
   renderDeputyFilterOptions();
   reportPharmacyFilter = renderFilterOptions('reportPharmacyFilter', reportPharmacyFilter);
-  const ms = getMonthShifts(reportPharmacyFilter, reportDeputyFilter);
+  const ms = getMonthShifts(reportPharmacyFilter, reportDeputyFilter, summaryYear, summaryMonth);
 
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
@@ -782,8 +852,8 @@ function renderSummary() {
   const isSingle = reportPharmacyFilter !== 'all';
 
   const scopeLbl = isSingle
-    ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[viewMonth - 1]}`
-    : J.PERSIAN_MONTHS[viewMonth - 1] + ' ' + J.toPersianDigits(viewYear);
+    ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[summaryMonth-1]}`
+    : J.PERSIAN_MONTHS[summaryMonth-1] + ' ' + J.toPersianDigits(summaryYear);
 
   // Separate holiday hours from night hours for display
   let holidayH = 0;
@@ -1188,7 +1258,7 @@ function renderFinancial() {
     breakdown2[s.pharmacyId] += calcIncome(s);
   });
   const paidIncome = Object.entries(breakdown2).reduce((sum, [pid, inc]) => {
-    const key = S.paymentKey(viewYear, viewMonth, pid);
+    const key = S.paymentKey(financialYear, financialMonth, pid);
     return sum + (payments[key] ? inc : 0);
   }, 0);
   const unpaidIncome = totalIncome - paidIncome;
@@ -1219,7 +1289,7 @@ function renderFinancial() {
   breakdownTbody.innerHTML = bEntries.length === 0
     ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
     : bEntries.map(([pid, d]) => {
-      const pkey = S.paymentKey(viewYear, viewMonth, pid);
+      const pkey = S.paymentKey(financialYear, financialMonth,pid);
       const isPaid = !!payments[pkey];
       return `<tr class="${isPaid ? 'row--paid' : ''}">
           <td>${escapeHtml(pharmacyName(pid))}</td>
@@ -1241,7 +1311,7 @@ function renderFinancial() {
   // Bind payment checkboxes
   breakdownTbody.querySelectorAll('.payment-checkbox').forEach((chk) => {
     chk.addEventListener('change', () => {
-      const pkey = S.paymentKey(viewYear, viewMonth, chk.dataset.pid);
+      const pkey = S.paymentKey(financialYear, financialMonth, chk.dataset.pid);
       const pays = S.loadPayments();
       pays[pkey] = chk.checked;
       S.savePayments(pays);
@@ -1715,7 +1785,7 @@ function exportJsonBackup() {
 
 
 function exportSms() {
-  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all');
+  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all', financialYear, financialMonth);
 
   if (ms.length === 0) {
     showToast('شیفتی برای ارسال وجود ندارد');
