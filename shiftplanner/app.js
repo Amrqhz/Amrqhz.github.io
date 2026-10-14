@@ -1230,7 +1230,7 @@ function formatToman(n) {
 function renderFinancial() {
   renderDeputyFilterOptions();
   financialPharmacyFilter = renderFilterOptions('financialPharmacyFilter', financialPharmacyFilter);
-  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter);
+  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all', financialYear, financialMonth);
 
   const totalIncome = ms.reduce((s, x) => s + calcIncome(x), 0);
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
