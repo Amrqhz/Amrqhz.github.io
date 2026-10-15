@@ -66,6 +66,8 @@
           <p class="drug-strength" id="drugStrength"></p>
         </div>
 
+        <div id="g6pdNotice" hidden></div>
+
         <div class="indication-row" id="indicationRow" hidden>
           <span class="field-label">مورد مصرف</span>
           <div class="chip-group" id="indicationChips"></div>
@@ -189,7 +191,7 @@
           <img class="app-id-icon" src="icons/icon-192.png" alt="" />
           <div>
             <p class="app-id-name">QuickPharm</p>
-            <p class="app-id-version">نسخه 3٫۰ · حافظه دوم داروساز</p>
+            <p class="app-id-version">نسخه 4٫۰ · حافظه دوم داروساز</p>
           </div>
         </div>
 
@@ -214,6 +216,8 @@
           <ul class="feature-list">
             <li><span class="feature-dot"></span>محاسبه‌گر دوز وزنی و سنی اطفال، با بیش از ۸۰ فرآورده</li>
             <li><span class="feature-dot"></span>مرجع کامل داروهای ترکیبی (ساختنی) با ترکیبات، روش ساخت و نکات بالینی</li>
+            <li><span class="feature-dot"></span>بررسی ایمنی داروها در کمبود G6PD </li>
+            <li><span class="feature-dot"></span> بخش آموزشی (بیماری‌های پوست, OTC therapy)</li>
             <li><span class="feature-dot"></span>کاملاً آفلاین و قابل نصب — بدون نیاز به اینترنت پس از اولین بار</li>
             <li><span class="feature-dot"></span>در حال توسعه مداوم؛ فرمول‌ها و بخش‌های تازه به‌مرور اضافه می‌شوند</li>
           </ul>
@@ -227,20 +231,100 @@
             </div> -->
             <div style="text-align: center">
               <p class="dev-name">طراحی و توسعه: امیرحسین قلی‌زاده</p>
-              <p class="dev-role">دانشجوی داروسازی (PharmD) و توسعه‌دهنده وب</p>
+              <p class="dev-role"> داروساز (PharmD) و توسعه‌دهنده وب</p>
               <p class="doc-text" style="text-align: center; margin-top: 1rem; font-size: 11px;">این برنامه به صورت رایگان توسعه داده شده است.
 برای اطلاع از اپدیت ها و سایر برنامه ها میتوانید از طریق کانال تلگرام به ایدی @amrqhz_projects اقدام کنید.
 مرسی از حمایت های شما</p>
             </div>
           </div>
-          <a class="settings-link" href="https://amrqhz.github.io" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-            <span>amrqhz.github.io</span>
-          </a>
+          <div class="settings-links-row">
+            <a class="settings-link" href="https://amrqhz.github.io" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              <span>amrqhz.github.io</span>
+            </a>
+            <a class="settings-link" href="https://t.me/amrqhz" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              <span>amrqhz</span>
+            </a>
+            <a class="settings-link" href="https://t.me/amrqhz_projects" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+              <span>openpharmacy channel</span>
+            </a>
+          </div>
         </div>
 
         <p class="settings-footer">ساخته‌شده برای داروسازانی که وقت ورق‌زدن دفترچه ندارند.</p>
       </div>
+    </section>
+
+
+    <!-- ====================== G6PD VIEW ====================== -->
+    <section class="view" id="view-g6pd" data-view="g6pd" hidden>
+      <div class="search-block">
+        <label class="field-label" for="g6pdSearch">بررسی دارو یا ماده در کمبود G6PD</label>
+        <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="g6pdSearch" type="text" inputmode="search" autocomplete="off" placeholder="مثلاً «کوتریموکسازول» یا «پریماکین» یا «باقلا»…" />
+          <button class="clear-btn" id="clearG6pdSearch" type="button" hidden aria-label="پاک کردن">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="chip-group category-filter" id="g6pdFilter"></div>
+      </div>
+
+      <button class="info-toggle" id="g6pdInfoToggle" type="button" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>کمبود G6PD چیست و چه چیزهایی باید به بیمار گفت؟</span>
+      </button>
+      <div class="g6pd-info" id="g6pdInfo" hidden></div>
+
+      <ul class="results-list g6pd-list" id="g6pdList"></ul>
+      <p class="empty-hint" id="g6pdEmpty" hidden>موردی یافت نشد — نام انگلیسی یا فارسی دیگری را امتحان کنید.</p>
+      <p class="reference-note" id="g6pdDisclaimer"></p>
+    </section>
+
+    <!-- ====================== LEARN VIEW ====================== -->
+    <section class="view" id="view-learn" data-view="learn" hidden>
+
+      <div id="learnRoot">
+        <p class="learn-intro">یک موضوع را انتخاب کنید. درس‌ها کوتاه و کاربردی‌اند: معرفی بیماری، اتیولوژی، تصاویر و درمان.</p>
+        <ul class="results-list learn-cats" id="learnCategories"></ul>
+      </div>
+
+      <div id="learnCategory" hidden>
+        <div class="learn-head">
+          <button class="round-btn" id="learnBackToRoot" type="button" aria-label="بازگشت">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div>
+            <h2 class="learn-title" id="learnCatTitle"></h2>
+            <p class="learn-sub" id="learnCatSub"></p>
+          </div>
+        </div>
+        <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="learnSearch" type="text" inputmode="search" autocomplete="off" placeholder="جست‌وجو در فهرست…" />
+        </div>
+        <p class="toc-label">فهرست مطالب</p>
+        <ul class="results-list learn-topics" id="learnTopics"></ul>
+        <p class="empty-hint" id="learnEmpty" hidden>موردی یافت نشد.</p>
+      </div>
+
+      <div id="learnDisease" hidden>
+        <div class="learn-head">
+          <button class="round-btn" id="learnBackToCat" type="button" aria-label="بازگشت به فهرست">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div>
+            <h2 class="learn-title" id="dzNameFa"></h2>
+            <p class="learn-sub mono" id="dzNameEn"></p>
+          </div>
+        </div>
+        <div class="chip-group dz-tags" id="dzTags"></div>
+        <div class="chip-group dz-nav" id="dzNav"></div>
+        <div id="dzBody"></div>
+      </div>
+
     </section>
 
   </main>
@@ -254,8 +338,26 @@
       <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.34a2 2 0 0 1-.4 1.2L4.42 17.6A2 2 0 0 0 6 21h12a2 2 0 0 0 1.58-3.4l-5.18-7.06a2 2 0 0 1-.4-1.2V3"/><path d="M7 15h10"/></svg></span>
       <span>داروهای ساختنی</span>
     </button>
+    <button class="nav-btn" data-nav="g6pd" type="button">
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg></span>
+      <span>G6PD</span>
+    </button>
+    <button class="nav-btn" data-nav="learn" type="button">
+      <span class="nav-icon-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+      <span>آموزش</span>
+    </button>
   </nav>
 
+</div>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-btn lb-close" id="lbClose" type="button" aria-label="بستن"><svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <button class="lb-btn lb-prev" id="lbPrev" type="button" aria-label="قبلی"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>
+  <button class="lb-btn lb-next" id="lbNext" type="button" aria-label="بعدی"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <figure class="lb-figure">
+    <img id="lbImg" alt="" />
+    <figcaption id="lbCaption"></figcaption>
+  </figure>
 </div>
 
 <div class="toast" id="toast"></div>

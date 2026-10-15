@@ -4,6 +4,9 @@ import { ALIASES } from "./aliases.js";
 import { COMPOUNDS, CATEGORIES } from "./compounds-data.js";
 import { getFormIcon } from "./compound-icons.js";
 import { estimateWeightKg } from "./weight-estimate.js";
+import { initG6pd, findG6pdMatch, focusG6pd } from "./g6pd.js";
+import { initLearn } from "./learn.js";
+import { G6PD_RISK } from "./g6pd-data.js";
 
 /* ---------------------------------------------------------- search index */
 
@@ -165,6 +168,7 @@ function selectDrug(drug) {
     el.indicationRow.hidden = true;
   }
 
+  renderG6pdNotice(drug);
   el.selectedPanel.hidden = false;
   el.resultBlock.hidden = true;
   el.promptHint.hidden = false;
@@ -596,3 +600,34 @@ cEl.back.addEventListener("click", () => {
 });
 
 renderCompoundList();
+
+
+/* =========================================================================
+   G6PD notice in the calculator + new tabs
+   ========================================================================= */
+
+function renderG6pdNotice(drug) {
+  const box = document.getElementById("g6pdNotice");
+  box.innerHTML = "";
+  const m = findG6pdMatch(drug.name);
+  if (!m || m.risk === "safe") {
+    box.hidden = true;
+    return;
+  }
+  const f = flag(m.risk === "avoid" ? "brick" : "amber", `G6PD — ${G6PD_RISK[m.risk].short}: ${m.note}`);
+  const link = document.createElement("button");
+  link.type = "button";
+  link.className = "flag-link";
+  link.textContent = "مشاهده در بخش G6PD";
+  link.addEventListener("click", () => {
+    switchView("g6pd");
+    focusG6pd(m);
+  });
+  f.lastElementChild.appendChild(document.createElement("br"));
+  f.lastElementChild.appendChild(link);
+  box.appendChild(f);
+  box.hidden = false;
+}
+
+initG6pd();
+initLearn();

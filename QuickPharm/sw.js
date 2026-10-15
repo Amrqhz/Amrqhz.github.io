@@ -1,4 +1,4 @@
-const CACHE = "quickpharm-v1";
+const CACHE = "quickpharm-v3";
 const SHELL = [
   "./",
   "./index.html",
@@ -11,6 +11,11 @@ const SHELL = [
   "./js/compounds-data.js",
   "./js/compound-icons.js",
   "./js/icons.js",
+  "./js/g6pd.js",
+  "./js/g6pd-data.js",
+  "./js/learn.js",
+  "./js/learn-data.js",
+  "./js/weight-estimate.js",
   "./manifest.webmanifest",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
