@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts - Amir Hossein Gholizadeh</title>
+    <link rel="icon" href="../l.png" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,400&family=Satisfy&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="post.css">
+    <style>
+        .list { max-width: 680px; margin: 0 auto; }
+        .list h1 { font-size: 2rem; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+        .list .sub { color: var(--text-muted); margin-bottom: 2rem; }
+        .filter {
+            display: flex; align-items: center; gap: 0.6rem;
+            font-family: var(--mono); font-size: 0.78rem; color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        .filter a { color: var(--accent); }
+        .item {
+            display: block; padding: 1.4rem 0; border-top: 1px solid var(--border);
+            color: inherit;
+        }
+        .item:last-child { border-bottom: 1px solid var(--border); }
+        .item:hover { text-decoration: none; }
+        .item:hover .item-title { color: var(--accent); }
+        .item-top { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 0.5rem;
+            font-family: var(--mono); font-size: 0.72rem; color: var(--text-faint); }
+        .item-cat { color: var(--accent); }
+        .item-title { font-size: 1.2rem; font-weight: 500; line-height: 1.35; margin-bottom: 0.4rem; transition: color 0.2s; }
+        .item-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.7rem; }
+        .empty { color: var(--text-muted); padding: 2rem 0; }
+    </style>
+</head>
+
+<body>
+    <div class="site-wrapper">
+
+        <header class="site-header">
+            <a href="../index.html" class="logo-mark">Amir Hossein</a>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="site-nav">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="site-nav" id="site-nav">
+                <a href="../index.html#about" class="nav-link">about me</a>
+                <a href="../index.html#Featured" class="nav-link">projects</a>
+                <a href="./" class="nav-link active">posts</a>
+                <a href="../index.html#papers" class="nav-link">papers</a>
+                <a href="../index.html#library" class="nav-link">library</a>
+                <a href="../index.html#resume" class="nav-link">resume</a>
+                <a href="../index.html#social" class="nav-link">contact</a>
+            </nav>
+        </header>
+
+        <main class="site-main">
+            <section class="list">
+                <h1>Posts</h1>
+                <p class="sub">Notes on computational chemistry, drug discovery and the tools I build.</p>
+                <div class="filter" id="filter" hidden></div>
+                <div id="items"><p class="empty">Loading…</p></div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="footer-links">
+                <a href="https://github.com/amrqhz" target="_blank" rel="noopener">github</a>
+                <a href="https://t.me/amrqhz" target="_blank" rel="noopener">telegram</a>
+                <a href="https://twitter.com/amrqhz" target="_blank" rel="noopener">twitter / x</a>
+                <a href="https://linkedin.com/in/amirhossein-gholizadeh" target="_blank" rel="noopener">linkedin</a>
+                <a href="mailto:gholizadeh.amir.h@gmail.com">email</a>
+            </div>
+            <p>amrqhz.github.io · amir hossein gholizadeh · tehran</p>
+            <h6>AmirHossein Gholizadeh</h6>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            // menu toggle
+            const mb = document.querySelector('.menu-toggle'), nav = document.getElementById('site-nav');
+            mb.addEventListener('click', () => {
+                const o = nav.classList.toggle('open');
+                mb.classList.toggle('active', o);
+                mb.setAttribute('aria-expanded', String(o));
+            });
+
+            const POST_PAGE = './post.html';
+            const params = new URLSearchParams(location.search);
+            const fCat = params.get('category');
+            const fTag = params.get('tag');
+
+            function parseFM(text) {
+                const m = text.match(/^---\s*\r?\n([\s\S]*?)\r?\n---/);
+                const meta = {};
+                if (!m) return meta;
+                m[1].split(/\r?\n/).forEach((line) => {
+                    const i = line.indexOf(':');
+                    if (i === -1) return;
+                    const k = line.slice(0, i).trim().toLowerCase();
+                    let v = line.slice(i + 1).trim().replace(/^["']|["']$/g, '');
+                    if (k === 'tags') v = v.replace(/^\[|\]$/g, '').split(',')
+                        .map((t) => t.trim().replace(/^#/, '')).filter(Boolean);
+                    meta[k] = v;
+                });
+                return meta;
+            }
+
+            const fmt = (s) => {
+                const d = new Date(s + 'T00:00:00');
+                return isNaN(d) ? (s || '') : d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            };
+
+            const box = document.getElementById('items');
+
+            fetch('post.json')
+                .then((r) => r.json())
+                .then((slugs) => Promise.all(slugs.map((slug) =>
+                    fetch('posts/' + slug + '.md').then((r) => r.ok ? r.text() : '').then((t) => ({ slug, meta: parseFM(t) }))
+                )))
+                .then((posts) => {
+                    posts.sort((a, b) => (b.meta.date || '').localeCompare(a.meta.date || ''));
+                    let shown = posts;
+                    if (fCat) shown = shown.filter((p) => p.meta.category === fCat);
+                    if (fTag) shown = shown.filter((p) => (p.meta.tags || []).includes(fTag));
+
+                    if (fCat || fTag) {
+                        const f = document.getElementById('filter');
+                        f.hidden = false;
+                        f.innerHTML = 'showing: ' + (fCat ? fCat : '#' + fTag) + ' · <a href="./">clear</a>';
+                    }
+
+                    if (!shown.length) { box.innerHTML = '<p class="empty">No posts yet.</p>'; return; }
+
+                    box.innerHTML = '';
+                    shown.forEach(({ slug, meta }) => {
+                        const a = document.createElement('a');
+                        a.className = 'item';
+                        a.href = `${POST_PAGE}?p=${encodeURIComponent(slug)}`;
+
+                        const top = document.createElement('div');
+                        top.className = 'item-top';
+                        const cat = document.createElement('span');
+                        cat.className = 'item-cat';
+                        cat.textContent = meta.category || '';
+                        const date = document.createElement('span');
+                        date.textContent = fmt(meta.date);
+                        top.append(cat, date);
+
+                        const title = document.createElement('div');
+                        title.className = 'item-title';
+                        title.textContent = meta.title || slug;
+                        a.append(top, title);
+
+                        if (meta.description) {
+                            const d = document.createElement('p');
+                            d.className = 'item-desc';
+                            d.textContent = meta.description;
+                            a.appendChild(d);
+                        }
+
+                        const tags = document.createElement('div');
+                        tags.className = 'post-tags';
+                        (meta.tags || []).forEach((t) => {
+                            const s = document.createElement('span');
+                            s.className = 'post-tag';
+                            s.textContent = '#' + t;
+                            tags.appendChild(s);
+                        });
+                        a.appendChild(tags);
+                        box.appendChild(a);
+                    });
+                })
+                .catch(() => {
+                    box.innerHTML = '<p class="empty">Could not load post.json. Check that it exists next to this page.</p>';
+                });
+        })();
+    </script>
+</body>
+
+</html>

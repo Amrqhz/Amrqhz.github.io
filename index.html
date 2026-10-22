@@ -32,8 +32,9 @@
 
             <nav class="site-nav" id="site-nav">
                 <a href="#about" class="nav-link">about me</a>
-                <a href="#papers" class="nav-link">papers</a>
                 <a href="#Featured" class="nav-link">projects</a>
+                <a href="./posts" class="nav-link">posts</a>                
+                <a href="#papers" class="nav-link">papers</a>                
                 <a href="#library" class="nav-link">library</a>
                 <a href="#resume" class="nav-link">resume</a>
                 <a href="#social" class="nav-link">contact</a>
@@ -48,9 +49,9 @@
                     <p class="terminal-label">$ whoami</p>
                     <h1 class="hero-name">Amir H. Gholizadeh</h1>
                     <div class="tag-row">
-                        <span class="tag-pill">computational biology</span>
+                        <span class="tag-pill">computational biology&chemistry</span>
                         <span class="tag-pill">drug discovery</span>
-                        <span class="tag-pill">medicinal chemistry</span>
+                        <span class="tag-pill">medicinal chemistry and biotechnology</span>
                     </div>
                     <div class="hero-bio">
                         <p>
@@ -80,7 +81,7 @@
                                 data analysis workflows.
                             </p>
                             <p>
-                                I'm now preparing to apply for a PhD program in Medicinal Chemistry,
+                                I'm now preparing to apply for a PhD program,
                                 aiming to further develop computational and experimental strategies for
                                 drug discovery, particularly in targeting cancer and neglected diseases.
                             </p>
@@ -106,16 +107,16 @@
                         <span class="info-key">degree</span>
                         <span class="info-val">PharmD graduate</span>
                     </div>
-                    <div class="info-row">
+                    <!-- <div class="info-row">
                         <span class="info-key">focus</span>
                         <span class="info-val">molecular docking · MD simulations · DFT · drug repurposing</span>
-                    </div>
+                    </div> -->
                     <div class="info-row">
                         <span class="info-key">thesis</span>
-                        <span class="info-val">anthelmintic drug repurposing for CML <span
-                                style="margin-left: 0.5rem; margin-right: 0.5rem;">|</span> <span><a
-                                    href="amrqhz.github.io/thesisresultshow/thesis-v.html">discover the results here
-                                    !</a></span></span>
+                        <span class="info-val">anthelmintic drug repurposing for CML 
+                            <span style="margin-left: 0.5rem; margin-right: 0.5rem;">|</span> 
+                            <span><a href="amrqhz.github.io/thesisresultshow/thesis-v.html">discover more.</a></span>
+                        </span>
                     </div>
                     <div class="info-row">
                         <span class="info-key">github</span>
@@ -133,8 +134,7 @@
                     </div>
                     <div class="info-row">
                         <span class="info-key">email</span>
-                        <span class="info-val"><a
-                                href="mailto:gholizadeh.amir.h@gmail.com">gholizadeh.amir.h@gmail.com</a></span>
+                        <span class="info-val"><a href="mailto:gholizadeh.amir.h@gmail.com">gholizadeh.amir.h@gmail.com</a></span>
                     </div>
                 </div>
             </section>
@@ -155,34 +155,7 @@
                 </div>
             </section>
 
-            <!-- PAPERS -->
-            <section id="papers" class="papers-section">
-                <p class="section-label">PAPERS</p>
-                <h2 class="section-title">Research papers</h2>
-                <p class="section-subtitle">Research papers, preprints, and computational studies in medicinal
-                    chemistry, drug repurposing, and computational biology.</p>
 
-                <div class="papers-list">
-                    <article class="paper-item">
-                        <div class="paper-tag">
-                            <span>Biology</span>
-                        </div>
-                        <h3>Drug Repurposing of Anthelmintic Drugs for Chronic Myeloid Leukemia (CML)</h3>
-                        <p class="paper-meta">PharmD Thesis · Molecular Docking · MD Simulations · DFT</p>
-                        <p class="paper-description">
-                            Investigating the potential of anthelmintic drugs as alternative therapies for CML using in
-                            silico
-                            approaches, including molecular docking, molecular dynamics simulations, and density
-                            functional theory
-                            to evaluate binding mechanisms and stability.
-                        </p>
-                        <div class="paper-links">
-                            <a href="path/to/thesis.pdf" target="_blank">PDF →</a>
-                            <a href="./work/papers">Abstract →</a>
-                        </div>
-                    </article>
-                </div>
-            </section>
 
             <section id="Featured" class="projects-section">
                 <p class="section-label">TOOLS &amp; PLATFORMS</p>
@@ -190,6 +163,16 @@
                 <p class="section-subtitle">Projects I've coded, with repo and notes.</p>
 
                 <div class="projects-grid">
+                    <div class="project-card">
+                        <div class="project-header">
+                            <h3 class="project-title">Pymol Gallery</h3>
+                            <div class="project-icon"><img src="" alt="PG"></div>
+                        </div>
+                        <p class="project-desc">select style that you loved, copy and paste in pymol and boom. you have it for yourself. congrats.</p>
+                        <div class="project-links">
+                            <a href="./pymolgallery/index.html">view project →</a>
+                        </div>
+                    </div>
                     <div class="project-card">
                         <div class="project-header">
                             <h3 class="project-title">thesis slides</h3>
@@ -280,7 +263,7 @@
                         </div>
                     </div>
 
-                    <div class="project-card">
+                    <!-- <div class="project-card">
                         <div class="project-header">
                             <h3 class="project-title">Quick Dose</h3>
                             <div class="project-icon"><img src="assets/g48.png" alt="Quick Dose"></div>
@@ -290,7 +273,7 @@
                         <div class="project-links">
                             <a href="./quickdose/index.html">launch app →</a>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="project-card">
                         <div class="project-header">
@@ -342,6 +325,35 @@
                     </div>
 
                 </div>
+            </section>
+
+
+                        <!-- PAPERS -->
+            <section id="papers" class="papers-section">
+                <p class="section-label">PAPERS</p>
+                <h2 class="section-title">Research papers</h2>
+                <p class="section-subtitle">Research papers, preprints.</p>
+
+                <!-- <div class="papers-list">
+                    <article class="paper-item">
+                        <div class="paper-tag">
+                            <span>Biology</span>
+                        </div>
+                        <h3>Drug Repurposing of Anthelmintic Drugs for Chronic Myeloid Leukemia (CML)</h3>
+                        <p class="paper-meta">PharmD Thesis · Molecular Docking · MD Simulations · DFT</p>
+                        <p class="paper-description">
+                            Investigating the potential of anthelmintic drugs as alternative therapies for CML using in
+                            silico
+                            approaches, including molecular docking, molecular dynamics simulations, and density
+                            functional theory
+                            to evaluate binding mechanisms and stability.
+                        </p>
+                        <div class="paper-links">
+                            <a href="path/to/thesis.pdf" target="_blank">PDF →</a>
+                            <a href="./work/papers">Abstract →</a>
+                        </div>
+                    </article>
+                </div> -->
             </section>
             <!-- LIBRARY -->
             <section class="library-section" id="library">
