@@ -11,7 +11,23 @@ let pharmacies = S.loadPharmacies();
 let shifts = S.loadShifts();
 let settings = S.loadSettings();
 let deputies = S.loadDeputies();
+const FALLBACK_RATES = { day: 540000, night: 610000, holiday: 610000 };
 
+function ensureDefaultRates() {
+  const d = settings.defaultRates;
+  if (d && typeof d === 'object') {
+    ['day', 'night', 'holiday'].forEach((k) => { if (!(d[k] > 0)) d[k] = FALLBACK_RATES[k]; });
+    return;
+  }
+  // migrate old global rates so past income stays the same
+  settings.defaultRates = {
+    day:     settings.rateNormal  > 0 ? settings.rateNormal  : FALLBACK_RATES.day,
+    night:   settings.rateSpecial > 0 ? settings.rateSpecial : FALLBACK_RATES.night,
+    holiday: settings.rateSpecial > 0 ? settings.rateSpecial : FALLBACK_RATES.holiday,
+  };
+  S.saveSettings(settings);
+}
+ensureDefaultRates();
 let viewYear, viewMonth;
 let selectedDateKey = null;
 let reportPharmacyFilter = 'all';
@@ -20,10 +36,10 @@ let reportDeputyFilter = 'all';
 let financialDeputyFilter = 'all';
 let deferredInstallPrompt = null; // PWA beforeinstallprompt event
 // Independent month state for each report tab (default = current month)
-let summaryYear    = null; // set in init()
-let summaryMonth   = null;
-let financialYear  = null;
-let financialMonth = null;
+// let summaryYear    = null; // set in init()
+// let summaryMonth   = null;
+// let financialYear  = null;
+// let financialMonth = null;
 
 const todayJ = J.todayJalali();
 
@@ -45,13 +61,8 @@ function init() {
   bindFinancialView();
   bindSettings();
   bindPwaInstall();
-  // Init report month states to current month
-  summaryYear    = todayJ.jy;
-  summaryMonth   = todayJ.jm;
-  financialYear  = todayJ.jy;
-  financialMonth = todayJ.jm;
-
   bindReportMonthPickers();
+  bindDeleteMonth();
 
   renderCalendar();
   renderPharmacyList();
@@ -59,7 +70,6 @@ function init() {
   renderDeputySelect();
   registerServiceWorker();
 }
-
 /* =================== NAVIGATION =================== */
 
 function bindNav() {
@@ -296,6 +306,97 @@ function renderExistingShiftsForDay() {
 
 /* =================== SHIFT FORM =================== */
 
+/* ============ MULTI-DAY SHIFT ============ */
+let multiDaySelected = new Set();   // extra day numbers (besides the day whose sheet is open)
+let holidayManual = false;          // true only if the user really touched the holiday checkbox
+
+function multiDayContext() {
+  const { jy, jm, jd } = J.parseJalaliKey(selectedDateKey);
+  return { jy, jm, baseDay: jd, monthLen: J.jalaliMonthLength(jy, jm) };
+}
+
+function renderMultiDayGrid() {
+  if (!selectedDateKey) return;
+  const { jy, jm, baseDay, monthLen } = multiDayContext();
+  const firstWd = J.jalaliWeekday(jy, jm, 1);
+
+  document.getElementById('multiDayWeekHead').innerHTML =
+    J.PERSIAN_WEEKDAYS_SHORT.map((d) => `<span>${d}</span>`).join('');
+
+  let html = '';
+  for (let i = 0; i < firstWd; i++) html += '<span class="md-empty"></span>';
+  for (let d = 1; d <= monthLen; d++) {
+    const isBase = d === baseDay;
+    const selected = isBase || multiDaySelected.has(d);
+    const friday = J.jalaliWeekday(jy, jm, d) === 6;
+    html += `<button type="button" class="md-cell${selected ? ' is-selected' : ''}${isBase ? ' is-base' : ''}${friday ? ' is-friday' : ''}" data-day="${d}"${isBase ? ' disabled' : ''}>${J.toPersianDigits(d)}</button>`;
+  }
+  document.getElementById('multiDayGrid').innerHTML = html;
+
+  document.getElementById('multiDayCount').textContent =
+    `${J.toPersianDigits(1 + multiDaySelected.size)} روز انتخاب شده`;
+}
+
+function bindMultiDay() {
+  const toggle = document.getElementById('multiDayToggle');
+  if (!toggle) return;
+
+  const quick = document.getElementById('multiDayQuick');
+  quick.innerHTML = J.PERSIAN_WEEKDAYS
+    .map((name, i) => `<button type="button" class="md-wd" data-wd="${i}">${name}</button>`).join('');
+
+  toggle.addEventListener('change', () => {
+    document.getElementById('multiDayPanel').style.display = toggle.checked ? '' : 'none';
+    if (toggle.checked) renderMultiDayGrid();
+    else multiDaySelected.clear();
+  });
+
+  document.getElementById('multiDayGrid').addEventListener('click', (e) => {
+    const btn = e.target.closest('.md-cell[data-day]');
+    if (!btn || btn.disabled) return;
+    const d = Number(btn.dataset.day);
+    if (multiDaySelected.has(d)) multiDaySelected.delete(d); else multiDaySelected.add(d);
+    renderMultiDayGrid();
+  });
+
+  quick.addEventListener('click', (e) => {
+    const btn = e.target.closest('.md-wd');
+    if (!btn || !selectedDateKey) return;
+    const wd = Number(btn.dataset.wd);
+    const { jy, jm, baseDay, monthLen } = multiDayContext();
+    const days = [];
+    for (let d = 1; d <= monthLen; d++) {
+      if (d !== baseDay && J.jalaliWeekday(jy, jm, d) === wd) days.push(d);
+    }
+    const allOn = days.length > 0 && days.every((d) => multiDaySelected.has(d));
+    days.forEach((d) => (allOn ? multiDaySelected.delete(d) : multiDaySelected.add(d)));
+    renderMultiDayGrid();
+  });
+
+  document.getElementById('multiDayAll').addEventListener('click', () => {
+    if (!selectedDateKey) return;
+    const { baseDay, monthLen } = multiDayContext();
+    for (let d = 1; d <= monthLen; d++) if (d !== baseDay) multiDaySelected.add(d);
+    renderMultiDayGrid();
+  });
+
+  document.getElementById('multiDayClear').addEventListener('click', () => {
+    multiDaySelected.clear();
+    renderMultiDayGrid();
+  });
+}
+
+function resetMultiDay() {
+  multiDaySelected.clear();
+  const block = document.getElementById('multiDayBlock');
+  const toggle = document.getElementById('multiDayToggle');
+  const panel = document.getElementById('multiDayPanel');
+  if (block) block.style.display = '';
+  if (toggle) toggle.checked = false;
+  if (panel) panel.style.display = 'none';
+}
+
+/* ============ SHIFT FORM ============ */
 function bindShiftForm() {
   document.getElementById('shiftForm').addEventListener('submit', (e) => { e.preventDefault(); saveShiftFromForm(); });
   document.getElementById('cancelShiftEdit').addEventListener('click', resetShiftForm);
@@ -307,14 +408,112 @@ function bindShiftForm() {
     updateShiftTypeBadge();
     updateDurationPreview();
   });
-  document.getElementById('shiftIsHoliday').addEventListener('change', updateShiftTypeBadge);
+  document.getElementById('shiftIsHoliday').addEventListener('change', () => {
+    holidayManual = true;
+    updateShiftTypeBadge();
+  });
 
-  // Bind each chip
   document.querySelectorAll('.dur-chip').forEach((chip) => {
     chip.addEventListener('click', () => applyDurationChip(Number(chip.dataset.hours)));
   });
+
+  bindInlinePharmacy();
+  bindMultiDay();
 }
 
+function resetShiftForm() {
+  document.getElementById('shiftEditId').value = '';
+  document.getElementById('shiftStart').value = '';
+  document.getElementById('shiftEnd').value = '';
+  document.getElementById('shiftDeputySelect').value = '';
+  document.getElementById('shiftNote').value = '';
+  document.getElementById('shiftIsHoliday').checked = false;
+  holidayManual = false;
+
+  const suggestEl = document.getElementById('durationSuggestions');
+  if (suggestEl) {
+    suggestEl.style.display = 'none';
+    suggestEl.classList.remove('duration-suggestions--visible');
+  }
+  document.querySelectorAll('.dur-chip').forEach((c) => c.classList.remove('dur-chip--selected'));
+  const previewEl = document.getElementById('durationPreview');
+  if (previewEl) previewEl.textContent = '';
+
+  document.getElementById('saveShiftBtn').textContent = 'ثبت شیفت';
+  document.getElementById('cancelShiftEdit').hidden = true;
+  document.getElementById('shiftCustomRate').value = '';
+
+  closeInlinePharmacy(false);
+  resetMultiDay();
+  updateShiftTypeBadge();
+}
+
+function saveShiftFromForm() {
+  const editId     = document.getElementById('shiftEditId').value;
+  const pharmacyId = document.getElementById('shiftPharmacySelect').value;
+  const start      = document.getElementById('shiftStart').value;
+  const end        = document.getElementById('shiftEnd').value;
+  const note       = document.getElementById('shiftNote').value.trim();
+  const holidayChk = document.getElementById('shiftIsHoliday').checked;
+  const deputyId   = document.getElementById('shiftDeputySelect').value || null;
+
+  if (!pharmacyId || pharmacyId === NEW_PHARMACY_VALUE) {
+    showToast('داروخانه را انتخاب کنید یا داروخانه جدید اضافه کنید');
+    return;
+  }
+  if (!start || !end) { showToast('ساعت شروع و پایان را وارد کنید'); return; }
+
+  const customRateRaw = S.toLatinDigits(document.getElementById('shiftCustomRate').value).trim();
+  const customRate = customRateRaw !== '' ? (parseFloat(customRateRaw) || 0) : null;
+
+  const isNight = S.isNightShift(start, end);
+  const base = J.parseJalaliKey(selectedDateKey);
+
+  // Friday is always a holiday. A manual "holiday" tick applies to the base day,
+  // and to the extra days only if the user really ticked it themselves.
+  const holidayFor = (day, isBase) =>
+    S.isFridayHoliday(J.jalaliWeekday(base.jy, base.jm, day)) ||
+    (isBase ? holidayChk : (holidayManual && holidayChk));
+
+  if (editId) {
+    const s = shifts.find((x) => x.id === editId);
+    if (s) Object.assign(s, {
+      pharmacyId, start, end, note, isNight,
+      isHoliday: holidayFor(base.jd, true), customRate, deputyId,
+    });
+    showToast('شیفت به‌روزرسانی شد');
+  } else {
+    const multiOn = !!document.getElementById('multiDayToggle')?.checked;
+    const days = [base.jd];
+    if (multiOn) multiDaySelected.forEach((d) => { if (d !== base.jd) days.push(d); });
+    days.sort((a, b) => a - b);
+
+    let added = 0;
+    let skipped = 0;
+    days.forEach((day) => {
+      const isBase = day === base.jd;
+      const dateKey = J.jalaliKey(base.jy, base.jm, day);
+      const duplicate = !isBase && shifts.some((x) =>
+        x.dateKey === dateKey && x.pharmacyId === pharmacyId && x.start === start && x.end === end);
+      if (duplicate) { skipped++; return; }
+
+      shifts.push({
+        id: S.uid(), dateKey, pharmacyId, start, end, note, isNight,
+        isHoliday: holidayFor(day, isBase), customRate, deputyId,
+      });
+      added++;
+    });
+
+    showToast(added > 1
+      ? `${J.toPersianDigits(added)} شیفت ثبت شد${skipped ? ` (${J.toPersianDigits(skipped)} تکراری رد شد)` : ''}`
+      : 'شیفت ثبت شد');
+  }
+
+  S.saveShifts(shifts);
+  resetShiftForm();
+  renderExistingShiftsForDay();
+  renderCalendar();
+}
 function updateShiftTypeBadge() {
   const start = document.getElementById('shiftStart').value;
   const end = document.getElementById('shiftEnd').value;
@@ -414,27 +613,7 @@ function addHoursToTime(timeStr, hours) {
   return `${String(wrappedH).padStart(2, '0')}:${String(wrappedM).padStart(2, '0')}`;
 }
 
-function resetShiftForm() {
-  document.getElementById('shiftEditId').value = '';
-  document.getElementById('shiftStart').value = '';
-  document.getElementById('shiftEnd').value = '';
-  document.getElementById('shiftDeputySelect').value = '';
-  document.getElementById('shiftNote').value = '';
-  document.getElementById('shiftIsHoliday').checked = false;
-  // Hide duration suggestions
-  const suggestEl = document.getElementById('durationSuggestions');
-  if (suggestEl) {
-    suggestEl.style.display = 'none';
-    suggestEl.classList.remove('duration-suggestions--visible');
-  }
-  document.querySelectorAll('.dur-chip').forEach((c) => c.classList.remove('dur-chip--selected'));
-  const previewEl = document.getElementById('durationPreview');
-  if (previewEl) previewEl.textContent = '';
-  document.getElementById('saveShiftBtn').textContent = 'ثبت شیفت';
-  document.getElementById('cancelShiftEdit').hidden = true;
-  document.getElementById('shiftCustomRate').value = '';
-  updateShiftTypeBadge();
-}
+
 
 function loadShiftIntoForm(id) {
   const s = shifts.find((x) => x.id === id);
@@ -451,45 +630,11 @@ function loadShiftIntoForm(id) {
   updateShiftTypeBadge();
   document.getElementById('shiftPharmacySelect').focus();
   document.getElementById('shiftCustomRate').value = s.customRate != null ? s.customRate : '';
+    document.getElementById('multiDayBlock').style.display = 'none';
+  closeInlinePharmacy(false);
 }
 
-function saveShiftFromForm() {
-  if (pharmacies.length === 0) { showToast('ابتدا یک داروخانه اضافه کنید'); return; }
-  const editId = document.getElementById('shiftEditId').value;
-  const pharmacyId = document.getElementById('shiftPharmacySelect').value;
-  const start = document.getElementById('shiftStart').value;
-  const end = document.getElementById('shiftEnd').value;
-  const note = document.getElementById('shiftNote').value.trim();
-  const isHoliday = document.getElementById('shiftIsHoliday').checked;
-  const deputyId = document.getElementById('shiftDeputySelect').value || null;
-  if (!start || !end) { showToast('ساعت شروع و پایان را وارد کنید'); return; }
 
-  const customRateRaw = S.toLatinDigits(document.getElementById('shiftCustomRate').value);
-  const customRate = customRateRaw !== '' ? (parseFloat(customRateRaw) || 0) : null;
-
-  const isNight = S.isNightShift(start, end);
-  const { jy, jm, jd } = J.parseJalaliKey(selectedDateKey);
-  const fridayHol = S.isFridayHoliday(J.jalaliWeekday(jy, jm, jd));
-
-  if (editId) {
-    const s = shifts.find((x) => x.id === editId);
-    if (s) Object.assign(s, {
-      pharmacyId, start, end, note, isNight,
-      isHoliday: isHoliday || fridayHol, customRate, deputyId
-    });
-    showToast('شیفت به‌روزرسانی شد');
-  } else {
-    shifts.push({
-      id: S.uid(), dateKey: selectedDateKey, pharmacyId, start, end, note,
-      isNight, isHoliday: isHoliday || fridayHol, customRate, deputyId
-    });
-    showToast('شیفت ثبت شد');
-  }
-  S.saveShifts(shifts);
-  resetShiftForm();
-  renderExistingShiftsForDay();
-  renderCalendar();
-}
 
 function deleteShift(id) {
   shifts = shifts.filter((x) => x.id !== id);
@@ -501,17 +646,93 @@ function deleteShift(id) {
 
 /* =================== PHARMACIES =================== */
 
+/* ============ RATE HELPERS ============ */
+function parseRate(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  const n = parseFloat(S.toLatinDigits(el.value).trim());
+  return n > 0 ? n : null;
+}
+function readRateInputs(prefix) {
+  return { day: parseRate(prefix + 'Day'), night: parseRate(prefix + 'Night'), holiday: parseRate(prefix + 'Holiday') };
+}
+function writeRateInputs(prefix, rates) {
+  const r = rates || {};
+  [['Day', 'day'], ['Night', 'night'], ['Holiday', 'holiday']].forEach(([suffix, key]) => {
+    const el = document.getElementById(prefix + suffix);
+    if (el) el.value = r[key] > 0 ? r[key] : '';
+  });
+}
+function bindRateInputs(prefix) {
+  ['Day', 'Night', 'Holiday'].forEach((s) => bindLatinInput(prefix + s));
+}
+function refreshRatePlaceholders() {
+  const d = settings.defaultRates || FALLBACK_RATES;
+  ['newPharmRate', 'editPharmRate', 'inlineRate'].forEach((prefix) => {
+    [['Day', 'day'], ['Night', 'night'], ['Holiday', 'holiday']].forEach(([suffix, key]) => {
+      const el = document.getElementById(prefix + suffix);
+      if (el) el.placeholder = `پیش‌فرض: ${Math.round(d[key]).toLocaleString('en')}`;
+    });
+  });
+}
+
+function renderDefaultRatesCard() {
+  const d = settings.defaultRates || FALLBACK_RATES;
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  set('defRateDay', d.day);
+  set('defRateNight', d.night);
+  set('defRateHoliday', d.holiday);
+  refreshRatePlaceholders();
+}
+
+function bindDefaultRates() {
+  ['defRateDay', 'defRateNight', 'defRateHoliday'].forEach(bindLatinInput);
+
+  document.getElementById('saveDefaultRatesBtn').addEventListener('click', () => {
+    const read = (id, fallback) => {
+      const n = parseFloat(S.toLatinDigits(document.getElementById(id).value));
+      return n > 0 ? n : fallback;
+    };
+    settings.defaultRates = {
+      day:     read('defRateDay',     FALLBACK_RATES.day),
+      night:   read('defRateNight',   FALLBACK_RATES.night),
+      holiday: read('defRateHoliday', FALLBACK_RATES.holiday),
+    };
+    S.saveSettings(settings);
+    renderDefaultRatesCard();
+    renderPharmacyList();
+    showToast('نرخ‌های پیش‌فرض ذخیره شد ✓');
+  });
+
+  document.getElementById('resetDefaultRatesBtn').addEventListener('click', () => {
+    settings.defaultRates = { ...FALLBACK_RATES };
+    S.saveSettings(settings);
+    renderDefaultRatesCard();
+    renderPharmacyList();
+    showToast('نرخ‌ها به مقدار اولیه برگشت');
+  });
+
+  renderDefaultRatesCard();
+}
+
+/* ============ PHARMACY TAB ============ */
 function bindPharmacyForm() {
+  bindRateInputs('newPharmRate');
+  bindRateInputs('editPharmRate');
+  bindDefaultRates();
+
   document.getElementById('pharmacyForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const ni = document.getElementById('pharmacyNameInput');
     const ai = document.getElementById('pharmacyAddrInput');
     const name = ni.value.trim();
     if (!name) return;
-    pharmacies.push({ id: S.uid(), name, address: ai.value.trim() });
+    pharmacies.push({ id: S.uid(), name, address: ai.value.trim(), rates: readRateInputs('newPharmRate') });
     S.savePharmacies(pharmacies);
     ni.value = ''; ai.value = '';
-    renderPharmacyList(); renderPharmacySelect();
+    writeRateInputs('newPharmRate', null);
+    renderPharmacyList();
+    renderPharmacySelect();
     showToast('داروخانه اضافه شد');
   });
   bindPharmacyEdit();
@@ -524,7 +745,6 @@ function bindPharmacyEdit() {
     const id = document.getElementById('editPharmacyId').value;
     const newName = document.getElementById('editPharmacyName').value.trim();
     const newAddr = document.getElementById('editPharmacyAddr').value.trim();
-
     if (!newName) { showToast('نام داروخانه نمی‌تواند خالی باشد'); return; }
 
     const p = pharmacies.find((x) => x.id === id);
@@ -532,12 +752,13 @@ function bindPharmacyEdit() {
 
     p.name = newName;
     p.address = newAddr;
+    p.rates = readRateInputs('editPharmRate');
     S.savePharmacies(pharmacies);
 
     closePharmacyEdit();
     renderPharmacyList();
     renderPharmacySelect();
-    renderCalendar();   // refresh calendar chips which show pharmacy names
+    renderCalendar();
     showToast('داروخانه ویرایش شد ✓');
   });
 }
@@ -545,14 +766,14 @@ function bindPharmacyEdit() {
 function openPharmacyEdit(id) {
   const p = pharmacies.find((x) => x.id === id);
   if (!p) return;
-
   document.getElementById('editPharmacyId').value = p.id;
   document.getElementById('editPharmacyName').value = p.name;
   document.getElementById('editPharmacyAddr').value = p.address || '';
+  writeRateInputs('editPharmRate', p.rates);
+  refreshRatePlaceholders();
 
   const form = document.getElementById('pharmacyEditForm');
   form.style.display = '';
-  // Smooth scroll to edit form
   form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   document.getElementById('editPharmacyName').focus();
 }
@@ -562,12 +783,26 @@ function closePharmacyEdit() {
   document.getElementById('editPharmacyId').value = '';
   document.getElementById('editPharmacyName').value = '';
   document.getElementById('editPharmacyAddr').value = '';
+  writeRateInputs('editPharmRate', null);
+}
+
+function pharmacyRatesHtml(p) {
+  const d = settings.defaultRates || FALLBACK_RATES;
+  const r = p.rates || {};
+  const part = (icon, key) => {
+    const own = r[key] > 0;
+    const v = own ? r[key] : d[key];
+    return `${icon} ${J.toPersianDigits(Math.round(v).toLocaleString('en'))}` +
+           (own ? '' : '<span class="rate-default-tag"> (پیش‌فرض)</span>');
+  };
+  return `${part('☀️', 'day')} · ${part('🌙', 'night')} · ${part('🗓️', 'holiday')}`;
 }
 
 function renderPharmacyList() {
   const list = document.getElementById('pharmacyList');
   if (pharmacies.length === 0) {
-    list.innerHTML = '<li class="pharmacy-empty">هنوز داروخانه‌ای ثبت نشده است.</li>'; return;
+    list.innerHTML = '<li class="pharmacy-empty">هنوز داروخانه‌ای ثبت نشده است.</li>';
+    return;
   }
   list.innerHTML = '';
   pharmacies.forEach((p) => {
@@ -579,6 +814,7 @@ function renderPharmacyList() {
         <div class="pharmacy-item__name">${escapeHtml(p.name)}</div>
         ${p.address ? `<div class="pharmacy-item__addr">${escapeHtml(p.address)}</div>` : ''}
         <div class="pharmacy-item__addr">${J.toPersianDigits(cnt)} شیفت</div>
+        <div class="pharmacy-item__rates">${pharmacyRatesHtml(p)}</div>
       </div>
       <div class="pharmacy-item__actions">
         <button class="pharmacy-item__edit" data-id="${p.id}">ویرایش</button>
@@ -588,6 +824,88 @@ function renderPharmacyList() {
   });
   list.querySelectorAll('.pharmacy-item__del').forEach((b) => b.addEventListener('click', () => deletePharmacy(b.dataset.id)));
   list.querySelectorAll('.pharmacy-item__edit').forEach((b) => b.addEventListener('click', () => openPharmacyEdit(b.dataset.id)));
+}
+
+/* ============ PHARMACY DROPDOWN + INLINE "ADD PHARMACY" ============ */
+const NEW_PHARMACY_VALUE = '__new__';
+let lastPharmacyValue = '';
+
+function renderPharmacySelect() {
+  const sel = document.getElementById('shiftPharmacySelect');
+  const prev = (sel.value && sel.value !== NEW_PHARMACY_VALUE) ? sel.value : lastPharmacyValue;
+
+  const options = pharmacies.length === 0
+    ? '<option value="">— ابتدا یک داروخانه اضافه کنید</option>'
+    : pharmacies.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+
+  sel.innerHTML = options + `<option value="${NEW_PHARMACY_VALUE}">＋ افزودن داروخانه جدید…</option>`;
+
+  if (prev && pharmacies.some((p) => p.id === prev)) sel.value = prev;
+  else sel.value = pharmacies.length ? pharmacies[0].id : '';
+  lastPharmacyValue = sel.value;
+}
+
+function bindInlinePharmacy() {
+  const sel = document.getElementById('shiftPharmacySelect');
+  sel.addEventListener('change', () => {
+    if (sel.value === NEW_PHARMACY_VALUE) {
+      openInlinePharmacy();
+    } else {
+      lastPharmacyValue = sel.value;
+      closeInlinePharmacy(false);
+    }
+  });
+
+  bindRateInputs('inlineRate');
+  document.getElementById('inlinePharmSave').addEventListener('click', saveInlinePharmacy);
+  document.getElementById('inlinePharmCancel').addEventListener('click', () => closeInlinePharmacy(true));
+
+  // Enter inside these fields must NOT submit the whole shift form
+  ['inlinePharmName', 'inlinePharmAddr', 'inlineRateDay', 'inlineRateNight', 'inlineRateHoliday'].forEach((id) => {
+    document.getElementById(id).addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); saveInlinePharmacy(); }
+    });
+  });
+}
+
+function openInlinePharmacy() {
+  refreshRatePlaceholders();
+  document.getElementById('inlinePharmacyForm').style.display = '';
+  document.getElementById('inlinePharmName').focus();
+}
+
+function closeInlinePharmacy(restoreSelection) {
+  const form = document.getElementById('inlinePharmacyForm');
+  if (!form) return;
+  form.style.display = 'none';
+  document.getElementById('inlinePharmName').value = '';
+  document.getElementById('inlinePharmAddr').value = '';
+  writeRateInputs('inlineRate', null);
+  if (restoreSelection) {
+    const sel = document.getElementById('shiftPharmacySelect');
+    sel.value = pharmacies.some((p) => p.id === lastPharmacyValue) ? lastPharmacyValue : (pharmacies[0] ? pharmacies[0].id : '');
+  }
+}
+
+function saveInlinePharmacy() {
+  const name = document.getElementById('inlinePharmName').value.trim();
+  if (!name) { showToast('نام داروخانه را وارد کنید'); return; }
+
+  const pharmacy = {
+    id: S.uid(),
+    name,
+    address: document.getElementById('inlinePharmAddr').value.trim(),
+    rates: readRateInputs('inlineRate'),
+  };
+  pharmacies.push(pharmacy);
+  S.savePharmacies(pharmacies);
+
+  renderPharmacyList();
+  renderPharmacySelect();
+  document.getElementById('shiftPharmacySelect').value = pharmacy.id;
+  lastPharmacyValue = pharmacy.id;
+  closeInlinePharmacy(false);
+  showToast(`داروخانه «${name}» اضافه و انتخاب شد ✓`);
 }
 
 function deletePharmacy(id) {
@@ -704,12 +1022,7 @@ function renderDeputyReport(deputyId) {
     }).join('');
 }
 
-function renderPharmacySelect() {
-  const sel = document.getElementById('shiftPharmacySelect');
-  const prev = sel.value;
-  sel.innerHTML = pharmacies.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-  if (prev && pharmacies.some((p) => p.id === prev)) sel.value = prev;
-}
+
 function bindReportMonthPickers() {
   // ── Summary tab ──────────────────────────────────────────
   document.getElementById('summaryPrevMonth').addEventListener('click', () => {
@@ -831,7 +1144,7 @@ function getMonthShifts(pharmacyFilter, deputyFilter = 'all', forYear = null, fo
 function renderSummary() {
   renderDeputyFilterOptions();
   reportPharmacyFilter = renderFilterOptions('reportPharmacyFilter', reportPharmacyFilter);
-  const ms = getMonthShifts(reportPharmacyFilter, reportDeputyFilter, summaryYear, summaryMonth);
+  const ms = getMonthShifts(reportPharmacyFilter, reportDeputyFilter, viewYear, viewMonth);
 
   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
@@ -852,8 +1165,8 @@ function renderSummary() {
   const isSingle = reportPharmacyFilter !== 'all';
 
   const scopeLbl = isSingle
-    ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[summaryMonth-1]}`
-    : J.PERSIAN_MONTHS[summaryMonth-1] + ' ' + J.toPersianDigits(summaryYear);
+    ? `${escapeHtml(pharmacyName(reportPharmacyFilter))} — ${J.PERSIAN_MONTHS[viewMonth-1]}`
+    : J.PERSIAN_MONTHS[viewMonth-1] + ' ' + J.toPersianDigits(viewYear);
 
   // Separate holiday hours from night hours for display
   let holidayH = 0;
@@ -926,6 +1239,116 @@ function renderSummary() {
     .querySelectorAll('.rowdelete').forEach((b) => b.addEventListener('click', () => { deleteShift(b.dataset.id); renderSummary(); }));
 }
 
+/* ============ MONTH SYNC + NAV ============ */
+function setViewMonth(y, m) {
+  viewYear = y;
+  viewMonth = m;
+  refreshMonthViews();
+}
+
+function shiftViewMonth(delta) {
+  let m = viewMonth + delta;
+  let y = viewYear;
+  while (m < 1)  { m += 12; y--; }
+  while (m > 12) { m -= 12; y++; }
+  setViewMonth(y, m);
+}
+
+function refreshMonthViews() {
+  updateReportMonthLabels();
+  renderCalendar();
+  const active = document.querySelector('.view[data-active="true"]');
+  if (!active) return;
+  if (active.id === 'view-summary')   renderSummary();
+  if (active.id === 'view-financial') renderFinancial();
+}
+
+function updateReportMonthLabels() {
+  const text = `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
+  ['summaryMonthLabel', 'financialMonthLabel'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+}
+
+function bindMonthControls() {
+  document.getElementById('prevMonth').addEventListener('click', () => shiftViewMonth(-1));
+  document.getElementById('nextMonth').addEventListener('click', () => shiftViewMonth(1));
+  document.getElementById('gotoToday').addEventListener('click', () => setViewMonth(todayJ.jy, todayJ.jm));
+}
+
+function bindReportMonthPickers() {
+  ['summary', 'financial'].forEach((p) => {
+    document.getElementById(`${p}PrevMonth`).addEventListener('click', () => shiftViewMonth(-1));
+    document.getElementById(`${p}NextMonth`).addEventListener('click', () => shiftViewMonth(1));
+    document.getElementById(`${p}ThisMonth`).addEventListener('click', () => setViewMonth(todayJ.jy, todayJ.jm));
+  });
+  updateReportMonthLabels();
+}
+
+function switchView(target) {
+  document.querySelectorAll('.navbtn, .bottom-nav__btn').forEach((b) =>
+    b.classList.toggle('is-active', b.dataset.view === target));
+  document.querySelectorAll('.view').forEach((v) =>
+    v.setAttribute('data-active', String(v.id === `view-${target}`)));
+
+  updateReportMonthLabels();
+  if (target === 'summary')    renderSummary();
+  if (target === 'financial')  renderFinancial();
+  if (target === 'pharmacies') { renderPharmacyList(); renderDefaultRatesCard(); }
+  if (target === 'deputies')   renderDeputyList();
+}
+
+function bindNav() {
+  document.querySelectorAll('.navbtn, .bottom-nav__btn').forEach((btn) => {
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
+}
+
+function openDaySheetForEdit(jy, jm, jd, shiftId) {
+  switchView('calendar');
+  setViewMonth(jy, jm);
+  openDaySheet(jy, jm, jd);
+  setTimeout(() => loadShiftIntoForm(shiftId), 60);
+}
+
+/* ============ DELETE A WHOLE MONTH ============ */
+function bindDeleteMonth() {
+  const btn = document.getElementById('deleteMonthBtn');
+  if (btn) btn.addEventListener('click', deleteMonthShifts);
+}
+
+function deleteMonthShifts() {
+  const inMonth = (s) => {
+    const { jy, jm } = J.parseJalaliKey(s.dateKey);
+    return jy === viewYear && jm === viewMonth;
+  };
+  const count = shifts.filter(inMonth).length;
+  const label = `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
+
+  if (count === 0) { showToast(`در ${label} شیفتی ثبت نشده است`); return; }
+
+  const ok = confirm(
+    `⚠️ ${J.toPersianDigits(count)} شیفت ماه ${label} (همه داروخانه‌ها) حذف می‌شود.\n\n` +
+    `این کار قابل بازگشت نیست. ادامه می‌دهید؟`
+  );
+  if (!ok) return;
+
+  shifts = shifts.filter((s) => !inMonth(s));
+  S.saveShifts(shifts);
+
+  // also clear "paid" flags of that month
+  const pays = S.loadPayments();
+  const prefix = S.paymentKey(viewYear, viewMonth, '');
+  Object.keys(pays).forEach((k) => { if (k.startsWith(prefix)) delete pays[k]; });
+  S.savePayments(pays);
+
+  refreshMonthViews();
+  renderPharmacyList();
+  renderDeputyList();
+  showToast(`${J.toPersianDigits(count)} شیفت حذف شد`);
+}
+
 /** Sanitize an input field — converts Persian/Arabic digits to Latin on every keystroke */
 function bindLatinInput(inputId) {
   const el = document.getElementById(inputId);
@@ -940,30 +1363,30 @@ function bindLatinInput(inputId) {
 }
 /* =================== FINANCIAL VIEW =================== */
 
-function bindFinancialView() {
-  document.getElementById('rateNormal').value = settings.rateNormal || '';
-  document.getElementById('rateSpecial').value = settings.rateSpecial || '';
-  document.getElementById('financialDeputyFilter')?.addEventListener('change', (e) => {
-    financialDeputyFilter = e.target.value; renderFinancial();
-  });
-  document.getElementById('saveRatesBtn').addEventListener('click', () => {
-    settings.rateNormal = parseFloat(S.toLatinDigits(document.getElementById('rateNormal').value)) || 0;
-    settings.rateSpecial = parseFloat(S.toLatinDigits(document.getElementById('rateSpecial').value)) || 0;
-    S.saveSettings(settings);
-    renderFinancial();
-    showToast('نرخ‌ها ذخیره شد');
-  });
+// function bindFinancialView() {
+//   document.getElementById('rateNormal').value = settings.rateNormal || '';
+//   document.getElementById('rateSpecial').value = settings.rateSpecial || '';
+//   document.getElementById('financialDeputyFilter')?.addEventListener('change', (e) => {
+//     financialDeputyFilter = e.target.value; renderFinancial();
+//   });
+//   document.getElementById('saveRatesBtn').addEventListener('click', () => {
+//     settings.rateNormal = parseFloat(S.toLatinDigits(document.getElementById('rateNormal').value)) || 0;
+//     settings.rateSpecial = parseFloat(S.toLatinDigits(document.getElementById('rateSpecial').value)) || 0;
+//     S.saveSettings(settings);
+//     renderFinancial();
+//     showToast('نرخ‌ها ذخیره شد');
+//   });
 
-  document.getElementById('financialPharmacyFilter').addEventListener('change', (e) => {
-    financialPharmacyFilter = e.target.value; renderFinancial();
-  });
+//   document.getElementById('financialPharmacyFilter').addEventListener('change', (e) => {
+//     financialPharmacyFilter = e.target.value; renderFinancial();
+//   });
 
-  bindBankAccounts();
-  // Accept Persian/Arabic digit input on all number fields
-  bindLatinInput('rateNormal');
-  bindLatinInput('rateSpecial');
-  bindLatinInput('shiftCustomRate');
-}
+//   bindBankAccounts();
+//   // Accept Persian/Arabic digit input on all number fields
+//   bindLatinInput('rateNormal');
+//   bindLatinInput('rateSpecial');
+//   bindLatinInput('shiftCustomRate');
+// }
 
 /* =================== BANK ACCOUNTS =================== */
 
@@ -1180,17 +1603,17 @@ function bankAccountsPdfBlock() {
  * - Non-holiday: split into day/night, each multiplied by its rate
  * - customRate overrides BOTH rates if set
  */
-function calcIncome(shift) {
-  if (shift.customRate != null) {
-    // Custom rate applies to total hours regardless of day/night split
-    return S.shiftDurationHours(shift.start, shift.end) * shift.customRate;
-  }
-  if (shift.isHoliday) {
-    return S.shiftDurationHours(shift.start, shift.end) * settings.rateSpecial;
-  }
-  const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
-  return (dayHours * settings.rateNormal) + (nightHours * settings.rateSpecial);
-}
+// function calcIncome(shift) {
+//   if (shift.customRate != null) {
+//     // Custom rate applies to total hours regardless of day/night split
+//     return S.shiftDurationHours(shift.start, shift.end) * shift.customRate;
+//   }
+//   if (shift.isHoliday) {
+//     return S.shiftDurationHours(shift.start, shift.end) * settings.rateSpecial;
+//   }
+//   const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
+//   return (dayHours * settings.rateNormal) + (nightHours * settings.rateSpecial);
+// }
 
 /**
  * Returns a human-readable rate summary for the financial table.
@@ -1203,192 +1626,225 @@ function effectiveRate(shift) {
   return settings.rateNormal;
 }
 
+function ratesForShift(shift) {
+  const def = settings.defaultRates || FALLBACK_RATES;
+  const ph  = pharmacies.find((p) => p.id === shift.pharmacyId);
+  const own = (ph && ph.rates) || {};
+  const pick = (k) => (own[k] > 0 ? own[k] : (def[k] > 0 ? def[k] : FALLBACK_RATES[k]));
+  return { day: pick('day'), night: pick('night'), holiday: pick('holiday') };
+}
+
+function incomeParts(shift) {
+  const hours = S.shiftDurationHours(shift.start, shift.end);
+  if (shift.customRate != null) return { normal: hours * shift.customRate, special: 0 };
+  const r = ratesForShift(shift);
+  if (shift.isHoliday) return { normal: 0, special: hours * r.holiday };
+  const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
+  return { normal: dayHours * r.day, special: nightHours * r.night };
+}
+
+function calcIncome(shift) {
+  const p = incomeParts(shift);
+  return p.normal + p.special;
+}
+
+function rateSource(shift) {
+  if (shift.customRate != null) return 'اختصاصی شیفت';
+  const ph = pharmacies.find((p) => p.id === shift.pharmacyId);
+  const own = (ph && ph.rates) || {};
+  return (own.day > 0 || own.night > 0 || own.holiday > 0) ? 'نرخ داروخانه' : 'پیش‌فرض';
+}
+
+function rateLabel(shift) {
+  if (shift.customRate != null) return String(Math.round(shift.customRate));
+  const r = ratesForShift(shift);
+  if (shift.isHoliday) return String(Math.round(r.holiday));
+  const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
+  if (dayHours > 0 && nightHours > 0) return `${Math.round(r.day)} / ${Math.round(r.night)}`;
+  return String(Math.round(nightHours > 0 ? r.night : r.day));
+}
+
+function shiftTypeLabel(s) {
+  if (s.isHoliday) return 'تعطیل';
+  const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+  if (dayHours > 0 && nightHours > 0) return 'عادی + شب';
+  return nightHours > 0 ? 'شب' : 'عادی';
+}
+
+function incomeBreakdown(shift) {
+  const f = (n) => Math.round(n).toLocaleString('en');
+  const hours = S.shiftDurationHours(shift.start, shift.end);
+  if (shift.customRate != null) return `${hours.toFixed(1)}h × ${f(shift.customRate)}`;
+  const r = ratesForShift(shift);
+  if (shift.isHoliday) return `${hours.toFixed(1)}h × ${f(r.holiday)} (تعطیل)`;
+  const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
+  const parts = [];
+  if (dayHours > 0)   parts.push(`${dayHours.toFixed(1)}h × ${f(r.day)}`);
+  if (nightHours > 0) parts.push(`${nightHours.toFixed(1)}h × ${f(r.night)} (شب)`);
+  return parts.join(' + ');
+}
 /**
  * Returns a display string explaining how income was calculated for this shift.
  */
-function incomeBreakdown(shift) {
-  if (shift.customRate != null) {
-    const h = S.shiftDurationHours(shift.start, shift.end);
-    return `${h.toFixed(1)}h × ${shift.customRate.toLocaleString()}`;
-  }
-  if (shift.isHoliday) {
-    const h = S.shiftDurationHours(shift.start, shift.end);
-    return `${h.toFixed(1)}h × ${settings.rateSpecial.toLocaleString()} (تعطیل)`;
-  }
-  const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
-  const parts = [];
-  if (dayHours > 0) parts.push(`${dayHours.toFixed(1)}h عادی`);
-  if (nightHours > 0) parts.push(`${nightHours.toFixed(1)}h شب`);
-  return parts.join(' + ');
-}
+// function incomeBreakdown(shift) {
+//   if (shift.customRate != null) {
+//     const h = S.shiftDurationHours(shift.start, shift.end);
+//     return `${h.toFixed(1)}h × ${shift.customRate.toLocaleString()}`;
+//   }
+//   if (shift.isHoliday) {
+//     const h = S.shiftDurationHours(shift.start, shift.end);
+//     return `${h.toFixed(1)}h × ${settings.rateSpecial.toLocaleString()} (تعطیل)`;
+//   }
+//   const { dayHours, nightHours } = S.splitShiftHours(shift.start, shift.end);
+//   const parts = [];
+//   if (dayHours > 0) parts.push(`${dayHours.toFixed(1)}h عادی`);
+//   if (nightHours > 0) parts.push(`${nightHours.toFixed(1)}h شب`);
+//   return parts.join(' + ');
+// }
 
 function formatToman(n) {
   if (n === 0) return '—';
   return J.toPersianDigits(Math.round(n).toLocaleString('en')) + ' تومان';
 }
+function bindFinancialView() {
+  document.getElementById('financialDeputyFilter')?.addEventListener('change', (e) => {
+    financialDeputyFilter = e.target.value; renderFinancial();
+  });
+  document.getElementById('financialPharmacyFilter').addEventListener('change', (e) => {
+    financialPharmacyFilter = e.target.value; renderFinancial();
+  });
+  bindBankAccounts();
+  bindLatinInput('shiftCustomRate');
+}
 
 function renderFinancial() {
   renderDeputyFilterOptions();
   financialPharmacyFilter = renderFilterOptions('financialPharmacyFilter', financialPharmacyFilter);
-  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all', financialYear, financialMonth);
+  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all');
 
-  const totalIncome = ms.reduce((s, x) => s + calcIncome(x), 0);
-  const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
+  const totalIncome  = ms.reduce((s, x) => s + calcIncome(x), 0);
+  const normalIncome = ms.reduce((s, x) => s + incomeParts(x).normal, 0);
+  const specIncome   = ms.reduce((s, x) => s + incomeParts(x).special, 0);
 
-  // Split income correctly: holiday → special, others → split by hour
-  let normalIncome = 0;
-  let specIncome = 0;
-  ms.forEach((x) => {
-    if (x.customRate != null) {
-      // Custom rate: count income as normal (it's a user-defined rate)
-      normalIncome += calcIncome(x);
-    } else if (x.isHoliday) {
-      specIncome += calcIncome(x);
-    } else {
-      const { dayHours, nightHours } = S.splitShiftHours(x.start, x.end);
-      normalIncome += dayHours * settings.rateNormal;
-      specIncome += nightHours * settings.rateSpecial;
-    }
-  });
-  // Payment tracking
-  const payments = S.loadPayments();
-  const breakdown2 = {};
+  // per-pharmacy totals
+  const byPharmacy = {};
   ms.forEach((s) => {
-    if (!breakdown2[s.pharmacyId]) breakdown2[s.pharmacyId] = 0;
-    breakdown2[s.pharmacyId] += calcIncome(s);
+    const b = byPharmacy[s.pharmacyId] || (byPharmacy[s.pharmacyId] = { dayH: 0, nightH: 0, holidayH: 0, income: 0 });
+    if (s.isHoliday) {
+      b.holidayH += S.shiftDurationHours(s.start, s.end);
+    } else {
+      const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+      b.dayH += dayHours;
+      b.nightH += nightHours;
+    }
+    b.income += calcIncome(s);
   });
-  const paidIncome = Object.entries(breakdown2).reduce((sum, [pid, inc]) => {
-    const key = S.paymentKey(financialYear, financialMonth, pid);
-    return sum + (payments[key] ? inc : 0);
-  }, 0);
+
+  // payments
+  const payments = S.loadPayments();
+  const isPaidFor = (pid) => !!payments[S.paymentKey(viewYear, viewMonth, pid)];
+  const paidIncome = Object.entries(byPharmacy).reduce((sum, [pid, b]) => sum + (isPaidFor(pid) ? b.income : 0), 0);
   const unpaidIncome = totalIncome - paidIncome;
 
   document.getElementById('financialStatGrid').innerHTML = `
     <div class="statcard"><span class="statcard__value">${J.toPersianDigits(ms.length)}</span><span class="statcard__label">تعداد شیفت</span></div>
     <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(totalIncome)}</span><span class="statcard__label">درآمد کل ماه</span></div>
-     <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(normalIncome)}</span><span class="statcard__label">درآمد شیفت عادی</span></div>
+    <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(normalIncome)}</span><span class="statcard__label">درآمد شیفت عادی</span></div>
     <div class="statcard statcard--special"><span class="statcard__value" style="font-size:15px">${formatToman(specIncome)}</span><span class="statcard__label">درآمد شب/تعطیل</span></div>
-    
     <div class="statcard statcard--paid"><span class="statcard__value" style="font-size:15px">${formatToman(paidIncome)}</span><span class="statcard__label">دریافت شده</span></div>
     <div class="statcard statcard--unpaid"><span class="statcard__value" style="font-size:15px">${formatToman(unpaidIncome)}</span><span class="statcard__label">در انتظار دریافت</span></div>`;
-  // breakdown by pharmacy
-  const breakdown = {};
-  ms.forEach((s) => {
-    if (!breakdown[s.pharmacyId]) breakdown[s.pharmacyId] = { dayH: 0, nightH: 0, holidayH: 0, income: 0 };
-    if (s.isHoliday) {
-      breakdown[s.pharmacyId].holidayH += S.shiftDurationHours(s.start, s.end);
-    } else {
-      const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-      breakdown[s.pharmacyId].dayH += dayHours;
-      breakdown[s.pharmacyId].nightH += nightHours;
-    }
-    breakdown[s.pharmacyId].income += calcIncome(s);
-  });
-  const bEntries = Object.entries(breakdown).sort((a, b) => b[1].income - a[1].income);
+
+  // pharmacy breakdown table
+  const bEntries = Object.entries(byPharmacy).sort((a, b) => b[1].income - a[1].income);
   const breakdownTbody = document.querySelector('#financialBreakdownTable tbody');
   breakdownTbody.innerHTML = bEntries.length === 0
     ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
     : bEntries.map(([pid, d]) => {
-      const pkey = S.paymentKey(financialYear, financialMonth,pid);
-      const isPaid = !!payments[pkey];
-      return `<tr class="${isPaid ? 'row--paid' : ''}">
+      const paid = isPaidFor(pid);
+      return `<tr class="${paid ? 'row--paid' : ''}">
           <td>${escapeHtml(pharmacyName(pid))}</td>
           <td>${J.toPersianDigits(d.dayH.toFixed(1))}</td>
           <td class="cell--special">${J.toPersianDigits(d.nightH.toFixed(1))}</td>
           <td class="cell--holiday">${J.toPersianDigits(d.holidayH.toFixed(1))}</td>
           <td class="num">${formatToman(d.income)}</td>
           <td class="payment-cell">
-            <label class="payment-check" title="${isPaid ? 'پرداخت شده' : 'در انتظار پرداخت'}">
-              <input type="checkbox" class="payment-checkbox"
-                     data-pid="${pid}" ${isPaid ? 'checked' : ''}>
+            <label class="payment-check" title="${paid ? 'پرداخت شده' : 'در انتظار پرداخت'}">
+              <input type="checkbox" class="payment-checkbox" data-pid="${pid}" ${paid ? 'checked' : ''}>
               <span class="payment-check__box"></span>
-              <span class="payment-check__label">${isPaid ? 'پرداخت شده' : 'در انتظار'}</span>
+              <span class="payment-check__label">${paid ? 'پرداخت شده' : 'در انتظار'}</span>
             </label>
           </td>
         </tr>`;
     }).join('');
 
-  // Bind payment checkboxes
   breakdownTbody.querySelectorAll('.payment-checkbox').forEach((chk) => {
     chk.addEventListener('change', () => {
-      const pkey = S.paymentKey(financialYear, financialMonth, chk.dataset.pid);
       const pays = S.loadPayments();
-      pays[pkey] = chk.checked;
+      pays[S.paymentKey(viewYear, viewMonth, chk.dataset.pid)] = chk.checked;
       S.savePayments(pays);
       showToast(chk.checked ? '✅ پرداخت ثبت شد' : 'پرداخت لغو شد');
-      renderFinancial(); // refresh to update totals
+      renderFinancial();
     });
   });
-  // shift detail list
-  // shift detail list — with rate column, custom rate badge, edit button
-  const tbody = document.querySelector('#financialShiftsTable tbody');
-  if (ms.length === 0) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="10">شیفتی ثبت نشده</td></tr>';
-    return;
-  }
 
-  tbody.innerHTML = ms.map((s) => {
-    const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
-    const wi = J.jalaliWeekday(jy, jm, jd);
-    const h = S.shiftDurationHours(s.start, s.end);
-    const income = calcIncome(s);
-    const sp = isSpecialShift(s);
-
-    // Shift type icon
-    let typeIcon;
-    if (s.isHoliday) typeIcon = '🗓️';
-    else if (s.customRate != null) typeIcon = '⭐';
-    else {
-      const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-      if (dayHours > 0 && nightHours > 0) typeIcon = '☀️🌙';
-      else if (nightHours > 0) typeIcon = '🌙';
-      else typeIcon = '☀️';
-    }
-
-    // Breakdown column
-    const breakdown = incomeBreakdown(s);
-    const hasCustomRate = s.customRate != null;
-    const breakdownDisplay = hasCustomRate
-      ? `${breakdown} <span class="custom-rate-active">اختصاصی</span>`
-      : breakdown;
-
-    return `<tr class="${sp ? 'row--special' : ''}" data-shift-id="${s.id}">
-      <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}</td>
-      <td>${J.PERSIAN_WEEKDAYS[wi]}</td>
-      <td>${typeIcon}</td>
-      <td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>
-      <td class="num">${s.start}</td>
-      <td class="num">${s.end}</td>
-      <td class="num">${J.toPersianDigits(h.toFixed(1))}</td>
-      <td class="num rate-cell breakdown-cell">${breakdownDisplay}</td>
-      <td class="num">${formatToman(income)}</td>
-     <td class="deputy-cell">${s.deputyId ? `<span class="deputy-badge"> ${escapeHtml(deputyName(s.deputyId))}</span>` : ''}</td>
-      <td><button class="rowedit" data-id="${s.id}" data-datekey="${s.dateKey}" type="button">ویرایش</button></td>
-    </tr>`;
-  }).join('');
-  // Deputy breakdown — show what's owed to each deputy this month
-  const deputyBreakdown = {};
+  // deputy breakdown
+  const depMap = {};
   ms.forEach((s) => {
     if (!s.deputyId) return;
-    if (!deputyBreakdown[s.deputyId]) deputyBreakdown[s.deputyId] = { count: 0, hours: 0, income: 0 };
-    deputyBreakdown[s.deputyId].count++;
-    deputyBreakdown[s.deputyId].hours += S.shiftDurationHours(s.start, s.end);
-    deputyBreakdown[s.deputyId].income += calcIncome(s);
+    const d = depMap[s.deputyId] || (depMap[s.deputyId] = { count: 0, hours: 0, income: 0 });
+    d.count++;
+    d.hours += S.shiftDurationHours(s.start, s.end);
+    d.income += calcIncome(s);
   });
-  const depEntries = Object.entries(deputyBreakdown);
+  const depEntries = Object.entries(depMap).sort((a, b) => b[1].income - a[1].income);
   const depTitleEl = document.getElementById('deputyBreakdownTitle');
   const depWrapEl = document.getElementById('deputyBreakdownWrap');
-  if (depTitleEl) depTitleEl.style.display = depEntries.length > 0 ? '' : 'none';
-  if (depWrapEl) depWrapEl.style.display = depEntries.length > 0 ? '' : 'none';
-  if (depEntries.length > 0) {
-    document.querySelector('#deputyBreakdownTable tbody').innerHTML =
-      depEntries.sort((a, b) => b[1].income - a[1].income).map(([did, d]) => `<tr>
+  if (depTitleEl) depTitleEl.style.display = depEntries.length ? '' : 'none';
+  if (depWrapEl) depWrapEl.style.display = depEntries.length ? '' : 'none';
+  if (depEntries.length) {
+    document.querySelector('#deputyBreakdownTable tbody').innerHTML = depEntries.map(([did, d]) => `<tr>
         <td>${escapeHtml(deputyName(did))}</td>
         <td>${J.toPersianDigits(d.count)}</td>
         <td>${J.toPersianDigits(d.hours.toFixed(1))}</td>
         <td class="num">${formatToman(d.income)}</td>
       </tr>`).join('');
   }
+
+  // shift details
+  const tbody = document.querySelector('#financialShiftsTable tbody');
+  tbody.innerHTML = ms.length === 0
+    ? '<tr class="empty-row"><td colspan="11">شیفتی ثبت نشده</td></tr>'
+    : ms.map((s) => {
+      const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
+      const wi = J.jalaliWeekday(jy, jm, jd);
+      const h = S.shiftDurationHours(s.start, s.end);
+      const src = rateSource(s);
+
+      let typeIcon;
+      if (s.isHoliday) typeIcon = '🗓️';
+      else {
+        const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+        typeIcon = (dayHours > 0 && nightHours > 0) ? '☀️🌙' : (nightHours > 0 ? '🌙' : '☀️');
+      }
+      const srcTag = src === 'اختصاصی شیفت'
+        ? '<span class="custom-rate-active">اختصاصی</span>'
+        : (src === 'نرخ داروخانه' ? '<span class="rate-src">داروخانه</span>' : '');
+
+      return `<tr class="${isSpecialShift(s) ? 'row--special' : ''}" data-shift-id="${s.id}">
+        <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}</td>
+        <td>${J.PERSIAN_WEEKDAYS[wi]}</td>
+        <td>${s.customRate != null ? '⭐' : typeIcon}</td>
+        <td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>
+        <td class="num">${s.start}</td>
+        <td class="num">${s.end}</td>
+        <td class="num">${J.toPersianDigits(h.toFixed(1))}</td>
+        <td class="num rate-cell breakdown-cell">${incomeBreakdown(s)} ${srcTag}</td>
+        <td class="num">${formatToman(calcIncome(s))}</td>
+        <td class="deputy-cell">${s.deputyId ? `<span class="deputy-badge">${escapeHtml(deputyName(s.deputyId))}</span>` : ''}</td>
+        <td><button class="rowedit" data-id="${s.id}" data-datekey="${s.dateKey}" type="button">ویرایش</button></td>
+      </tr>`;
+    }).join('');
+
   tbody.querySelectorAll('.rowedit').forEach((btn) => {
     btn.addEventListener('click', () => {
       const { jy, jm, jd } = J.parseJalaliKey(btn.dataset.datekey);
@@ -1396,6 +1852,176 @@ function renderFinancial() {
     });
   });
 }
+
+// function renderFinancial() {
+//   renderDeputyFilterOptions();
+//   financialPharmacyFilter = renderFilterOptions('financialPharmacyFilter', financialPharmacyFilter);
+//   const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all', financialYear, financialMonth);
+
+//   const totalIncome = ms.reduce((s, x) => s + calcIncome(x), 0);
+//   const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
+
+//   // Split income correctly: holiday → special, others → split by hour
+//   let normalIncome = 0;
+//   let specIncome = 0;
+//   ms.forEach((x) => {
+//     if (x.customRate != null) {
+//       // Custom rate: count income as normal (it's a user-defined rate)
+//       normalIncome += calcIncome(x);
+//     } else if (x.isHoliday) {
+//       specIncome += calcIncome(x);
+//     } else {
+//       const { dayHours, nightHours } = S.splitShiftHours(x.start, x.end);
+//       normalIncome += dayHours * settings.rateNormal;
+//       specIncome += nightHours * settings.rateSpecial;
+//     }
+//   });
+//   // Payment tracking
+//   const payments = S.loadPayments();
+//   const breakdown2 = {};
+//   ms.forEach((s) => {
+//     if (!breakdown2[s.pharmacyId]) breakdown2[s.pharmacyId] = 0;
+//     breakdown2[s.pharmacyId] += calcIncome(s);
+//   });
+//   const paidIncome = Object.entries(breakdown2).reduce((sum, [pid, inc]) => {
+//     const key = S.paymentKey(financialYear, financialMonth, pid);
+//     return sum + (payments[key] ? inc : 0);
+//   }, 0);
+//   const unpaidIncome = totalIncome - paidIncome;
+
+//   document.getElementById('financialStatGrid').innerHTML = `
+//     <div class="statcard"><span class="statcard__value">${J.toPersianDigits(ms.length)}</span><span class="statcard__label">تعداد شیفت</span></div>
+//     <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(totalIncome)}</span><span class="statcard__label">درآمد کل ماه</span></div>
+//      <div class="statcard"><span class="statcard__value" style="font-size:15px">${formatToman(normalIncome)}</span><span class="statcard__label">درآمد شیفت عادی</span></div>
+//     <div class="statcard statcard--special"><span class="statcard__value" style="font-size:15px">${formatToman(specIncome)}</span><span class="statcard__label">درآمد شب/تعطیل</span></div>
+    
+//     <div class="statcard statcard--paid"><span class="statcard__value" style="font-size:15px">${formatToman(paidIncome)}</span><span class="statcard__label">دریافت شده</span></div>
+//     <div class="statcard statcard--unpaid"><span class="statcard__value" style="font-size:15px">${formatToman(unpaidIncome)}</span><span class="statcard__label">در انتظار دریافت</span></div>`;
+//   // breakdown by pharmacy
+//   const breakdown = {};
+//   ms.forEach((s) => {
+//     if (!breakdown[s.pharmacyId]) breakdown[s.pharmacyId] = { dayH: 0, nightH: 0, holidayH: 0, income: 0 };
+//     if (s.isHoliday) {
+//       breakdown[s.pharmacyId].holidayH += S.shiftDurationHours(s.start, s.end);
+//     } else {
+//       const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+//       breakdown[s.pharmacyId].dayH += dayHours;
+//       breakdown[s.pharmacyId].nightH += nightHours;
+//     }
+//     breakdown[s.pharmacyId].income += calcIncome(s);
+//   });
+//   const bEntries = Object.entries(breakdown).sort((a, b) => b[1].income - a[1].income);
+//   const breakdownTbody = document.querySelector('#financialBreakdownTable tbody');
+//   breakdownTbody.innerHTML = bEntries.length === 0
+//     ? '<tr class="empty-row"><td colspan="6">شیفتی ثبت نشده</td></tr>'
+//     : bEntries.map(([pid, d]) => {
+//       const pkey = S.paymentKey(financialYear, financialMonth,pid);
+//       const isPaid = !!payments[pkey];
+//       return `<tr class="${isPaid ? 'row--paid' : ''}">
+//           <td>${escapeHtml(pharmacyName(pid))}</td>
+//           <td>${J.toPersianDigits(d.dayH.toFixed(1))}</td>
+//           <td class="cell--special">${J.toPersianDigits(d.nightH.toFixed(1))}</td>
+//           <td class="cell--holiday">${J.toPersianDigits(d.holidayH.toFixed(1))}</td>
+//           <td class="num">${formatToman(d.income)}</td>
+//           <td class="payment-cell">
+//             <label class="payment-check" title="${isPaid ? 'پرداخت شده' : 'در انتظار پرداخت'}">
+//               <input type="checkbox" class="payment-checkbox"
+//                      data-pid="${pid}" ${isPaid ? 'checked' : ''}>
+//               <span class="payment-check__box"></span>
+//               <span class="payment-check__label">${isPaid ? 'پرداخت شده' : 'در انتظار'}</span>
+//             </label>
+//           </td>
+//         </tr>`;
+//     }).join('');
+
+//   // Bind payment checkboxes
+//   breakdownTbody.querySelectorAll('.payment-checkbox').forEach((chk) => {
+//     chk.addEventListener('change', () => {
+//       const pkey = S.paymentKey(financialYear, financialMonth, chk.dataset.pid);
+//       const pays = S.loadPayments();
+//       pays[pkey] = chk.checked;
+//       S.savePayments(pays);
+//       showToast(chk.checked ? '✅ پرداخت ثبت شد' : 'پرداخت لغو شد');
+//       renderFinancial(); // refresh to update totals
+//     });
+//   });
+//   // shift detail list
+//   // shift detail list — with rate column, custom rate badge, edit button
+//   const tbody = document.querySelector('#financialShiftsTable tbody');
+//   if (ms.length === 0) {
+//     tbody.innerHTML = '<tr class="empty-row"><td colspan="10">شیفتی ثبت نشده</td></tr>';
+//     return;
+//   }
+
+//   tbody.innerHTML = ms.map((s) => {
+//     const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
+//     const wi = J.jalaliWeekday(jy, jm, jd);
+//     const h = S.shiftDurationHours(s.start, s.end);
+//     const income = calcIncome(s);
+//     const sp = isSpecialShift(s);
+
+//     // Shift type icon
+//     let typeIcon;
+//     if (s.isHoliday) typeIcon = '🗓️';
+//     else if (s.customRate != null) typeIcon = '⭐';
+//     else {
+//       const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
+//       if (dayHours > 0 && nightHours > 0) typeIcon = '☀️🌙';
+//       else if (nightHours > 0) typeIcon = '🌙';
+//       else typeIcon = '☀️';
+//     }
+
+//     // Breakdown column
+//     const breakdown = incomeBreakdown(s);
+//     const hasCustomRate = s.customRate != null;
+//     const breakdownDisplay = hasCustomRate
+//       ? `${breakdown} <span class="custom-rate-active">اختصاصی</span>`
+//       : breakdown;
+
+//     return `<tr class="${sp ? 'row--special' : ''}" data-shift-id="${s.id}">
+//       <td>${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}</td>
+//       <td>${J.PERSIAN_WEEKDAYS[wi]}</td>
+//       <td>${typeIcon}</td>
+//       <td>${escapeHtml(pharmacyName(s.pharmacyId))}</td>
+//       <td class="num">${s.start}</td>
+//       <td class="num">${s.end}</td>
+//       <td class="num">${J.toPersianDigits(h.toFixed(1))}</td>
+//       <td class="num rate-cell breakdown-cell">${breakdownDisplay}</td>
+//       <td class="num">${formatToman(income)}</td>
+//      <td class="deputy-cell">${s.deputyId ? `<span class="deputy-badge"> ${escapeHtml(deputyName(s.deputyId))}</span>` : ''}</td>
+//       <td><button class="rowedit" data-id="${s.id}" data-datekey="${s.dateKey}" type="button">ویرایش</button></td>
+//     </tr>`;
+//   }).join('');
+//   // Deputy breakdown — show what's owed to each deputy this month
+//   const deputyBreakdown = {};
+//   ms.forEach((s) => {
+//     if (!s.deputyId) return;
+//     if (!deputyBreakdown[s.deputyId]) deputyBreakdown[s.deputyId] = { count: 0, hours: 0, income: 0 };
+//     deputyBreakdown[s.deputyId].count++;
+//     deputyBreakdown[s.deputyId].hours += S.shiftDurationHours(s.start, s.end);
+//     deputyBreakdown[s.deputyId].income += calcIncome(s);
+//   });
+//   const depEntries = Object.entries(deputyBreakdown);
+//   const depTitleEl = document.getElementById('deputyBreakdownTitle');
+//   const depWrapEl = document.getElementById('deputyBreakdownWrap');
+//   if (depTitleEl) depTitleEl.style.display = depEntries.length > 0 ? '' : 'none';
+//   if (depWrapEl) depWrapEl.style.display = depEntries.length > 0 ? '' : 'none';
+//   if (depEntries.length > 0) {
+//     document.querySelector('#deputyBreakdownTable tbody').innerHTML =
+//       depEntries.sort((a, b) => b[1].income - a[1].income).map(([did, d]) => `<tr>
+//         <td>${escapeHtml(deputyName(did))}</td>
+//         <td>${J.toPersianDigits(d.count)}</td>
+//         <td>${J.toPersianDigits(d.hours.toFixed(1))}</td>
+//         <td class="num">${formatToman(d.income)}</td>
+//       </tr>`).join('');
+//   }
+//   tbody.querySelectorAll('.rowedit').forEach((btn) => {
+//     btn.addEventListener('click', () => {
+//       const { jy, jm, jd } = J.parseJalaliKey(btn.dataset.datekey);
+//       openDaySheetForEdit(jy, jm, jd, btn.dataset.id);
+//     });
+//   });
+// }
 
 /* =================== SETTINGS + PWA INSTALL =================== */
 function bindSettings() {
@@ -1610,15 +2236,17 @@ function importJsonBackup(jsonText) {
 
   // Merge settings — only fill in rates if currently zero/unset
   if (data.settings && typeof data.settings === 'object') {
-    if (!settings.rateNormal && data.settings.rateNormal)
-      settings.rateNormal = data.settings.rateNormal;
-    if (!settings.rateSpecial && data.settings.rateSpecial)
-      settings.rateSpecial = data.settings.rateSpecial;
+    const inc = data.settings;
+    if (!(settings.bankAccounts && settings.bankAccounts.length) && Array.isArray(inc.bankAccounts)) {
+      settings.bankAccounts = inc.bankAccounts;
+    }
+    if (!(settings.profile && settings.profile.fullName) && inc.profile) {
+      settings.profile = inc.profile;
+    }
     S.saveSettings(settings);
-    document.getElementById('rateNormal').value = settings.rateNormal || '';
-    document.getElementById('rateSpecial').value = settings.rateSpecial || '';
+    renderBankAccountsList();
+    renderProfileHeader();
   }
-
   // Refresh all views
   renderCalendar();
   renderPharmacyList();
@@ -1784,192 +2412,149 @@ function exportJsonBackup() {
 }
 
 
+function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).catch(() => {});
+      return;
+    }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  } catch (e) { /* ignore */ }
+}
+
 function exportSms() {
-  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all', financialYear, financialMonth);
+  const ms = getMonthShifts(financialPharmacyFilter, financialDeputyFilter || 'all');
+  if (ms.length === 0) { showToast('شیفتی برای ارسال وجود ندارد'); return; }
 
-  if (ms.length === 0) {
-    showToast('شیفتی برای ارسال وجود ندارد');
-    return;
-  }
-
-  const payments   = S.loadPayments();
   const monthLabel = `${J.PERSIAN_MONTHS[viewMonth - 1]} ${J.toPersianDigits(viewYear)}`;
-  const isSingle   = financialPharmacyFilter !== 'all';
-  const lines      = [];
+  const isSingle = financialPharmacyFilter !== 'all';
+  const money = (n) => J.toPersianDigits(Math.round(n).toLocaleString('en')) + ' تومان';
+  const hrs = (n) => J.toPersianDigits(n.toFixed(1));
+  const lines = [`گزارش شیفت — ${monthLabel}`];
 
-  // ── Header ──────────────────────────────────────────────
-  lines.push(`گزارش شیفت — ${monthLabel}`);
-
-  // ── Group shifts by pharmacy ────────────────────────────
   const byPharmacy = {};
-  ms.forEach((s) => {
-    if (!byPharmacy[s.pharmacyId]) byPharmacy[s.pharmacyId] = [];
-    byPharmacy[s.pharmacyId].push(s);
-  });
+  ms.forEach((s) => { (byPharmacy[s.pharmacyId] = byPharmacy[s.pharmacyId] || []).push(s); });
 
-  Object.entries(byPharmacy).forEach(([pid, pShifts]) => {
-    const pname  = pharmacyName(pid);
-    const pkey   = S.paymentKey(viewYear, viewMonth, pid);
-    const isPaid = !!payments[pkey];
+  Object.entries(byPharmacy).forEach(([pid, list]) => {
+    lines.push('', pharmacyName(pid), '──────────');
 
-    lines.push('');
-    lines.push(`${pname}`);
-    lines.push('━━━━━━━━━━━━━━');
+    list.forEach((s) => {
+      const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
+      const dayFa = J.PERSIAN_WEEKDAYS[J.jalaliWeekday(jy, jm, jd)];
+      const h = S.shiftDurationHours(s.start, s.end);
 
-    // Each shift as a date+time line
-    pShifts.sort((a, b) => a.dateKey.localeCompare(b.dateKey) || a.start.localeCompare(b.start))
-      .forEach((s) => {
-        const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
-        const wi       = J.jalaliWeekday(jy, jm, jd);
-        const dateFa   = `${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]}`;
-        const dayFa    = J.PERSIAN_WEEKDAYS[wi];
-        const h        = S.shiftDurationHours(s.start, s.end);
-        const hFa      = J.toPersianDigits(h.toFixed(1));
+      const tags = [];
+      if (s.isHoliday) tags.push('تعطیل');
+      else if (S.splitShiftHours(s.start, s.end).nightHours > 0) tags.push('شب');
+      if (s.deputyId) tags.push('قائم مقام: ' + deputyName(s.deputyId));
 
+      lines.push(
+        `${J.toPersianDigits(jd)} ${J.PERSIAN_MONTHS[jm - 1]} (${dayFa}) ${s.start} تا ${s.end} — ${hrs(h)} ساعت` +
+        (tags.length ? ` [${tags.join('، ')}]` : '')
+      );
+    });
 
-        lines.push(
-          `${dateFa} (${dayFa}) — ${s.start} تا ${s.end} (${hFa}h)${typeTag}${depTag}`
-        );
-      });
-
-    // Pharmacy subtotal
-    const totalH   = pShifts.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
-    const totalInc = pShifts.reduce((sum, s) => sum + calcIncome(s), 0);
-
-    // Breakdown by type
     let dayH = 0, nightH = 0, holidayH = 0;
-    pShifts.forEach((s) => {
-      if (s.isHoliday) {
-        holidayH += S.shiftDurationHours(s.start, s.end);
-      } else {
+    list.forEach((s) => {
+      if (s.isHoliday) holidayH += S.shiftDurationHours(s.start, s.end);
+      else {
         const { dayHours, nightHours } = S.splitShiftHours(s.start, s.end);
-        dayH   += dayHours;
-        nightH += nightHours;
+        dayH += dayHours; nightH += nightHours;
       }
     });
+    const totalH = list.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
+    const totalInc = list.reduce((sum, s) => sum + calcIncome(s), 0);
 
-    lines.push('━━━━━━━━━━━━━━');
-    lines.push(`مجموع: ${J.toPersianDigits(pShifts.length)} شیفت | ${J.toPersianDigits(totalH.toFixed(1))} ساعت`);
-
-    const hourParts = [];
-    if (dayH     > 0) hourParts.push(` ${J.toPersianDigits(dayH.toFixed(1))}h عادی`);
-    if (nightH   > 0) hourParts.push(` ${J.toPersianDigits(nightH.toFixed(1))}h شب`);
-    if (holidayH > 0) hourParts.push(` ${J.toPersianDigits(holidayH.toFixed(1))}h تعطیل`);
-    if (hourParts.length > 0) lines.push(hourParts.join(' | '));
-
-    if (totalInc > 0)
-      lines.push(` درآمد: ${J.toPersianDigits(Math.round(totalInc).toLocaleString('en'))} تومان`);
-
+    lines.push('──────────');
+    lines.push(`مجموع: ${J.toPersianDigits(list.length)} شیفت | ${hrs(totalH)} ساعت`);
+    const parts = [];
+    if (dayH > 0)     parts.push(`${hrs(dayH)} عادی`);
+    if (nightH > 0)   parts.push(`${hrs(nightH)} شب`);
+    if (holidayH > 0) parts.push(`${hrs(holidayH)} تعطیل`);
+    if (parts.length) lines.push(parts.join(' | '));
+    if (totalInc > 0) lines.push(`درآمد: ${money(totalInc)}`);
   });
 
-  // ── Grand total (only when showing all pharmacies) ──────
   if (!isSingle && Object.keys(byPharmacy).length > 1) {
-    const grandTotal    = ms.reduce((sum, s) => sum + calcIncome(s), 0);
-    const grandH        = ms.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
-    const grandPaid     = Object.entries(byPharmacy).reduce((sum, [pid, pShifts]) => {
-      const pkey = S.paymentKey(viewYear, viewMonth, pid);
-      return sum + (payments[pkey] ? pShifts.reduce((s, x) => s + calcIncome(x), 0) : 0);
-    }, 0);
-    const grandUnpaid   = grandTotal - grandPaid;
-
-    lines.push('');
-    lines.push('━━━━━━━━━━━━━━');
-    lines.push(` جمع کل: ${J.toPersianDigits(ms.length)} شیفت | ${J.toPersianDigits(grandH.toFixed(1))} ساعت`);
-    lines.push(`درآمد کل: ${J.toPersianDigits(Math.round(grandTotal).toLocaleString('en'))} تومان`);
+    const grandH = ms.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
+    const grandInc = ms.reduce((sum, s) => sum + calcIncome(s), 0);
+    lines.push('', '══════════');
+    lines.push(`جمع کل: ${J.toPersianDigits(ms.length)} شیفت | ${hrs(grandH)} ساعت`);
+    if (grandInc > 0) lines.push(`درآمد کل: ${money(grandInc)}`);
   }
 
-  // ── Bank accounts ────────────────────────────────────────
-  const accounts = (settings.bankAccounts || []);
+  const accounts = settings.bankAccounts || [];
   if (accounts.length > 0) {
-    lines.push('');
-    lines.push('━━━━━━━━━━━━━━');
-    lines.push(' اطلاعات حساب:');
+    lines.push('', '══════════', 'اطلاعات حساب:');
     accounts.forEach((acc) => {
-      if (acc.type === 'card') {
-        const formatted = acc.number.replace(/(.{4})/g, '$1-').replace(/-$/, '');
-        lines.push(`${escapeHtml(acc.bankName)}: ${formatted}`);
-      } else {
-        // SHEBA: group digits and add IR prefix
-        const grouped = acc.number.replace(/(.{4})/g, '$1 ').trimEnd();
-        lines.push(`${escapeHtml(acc.bankName)}: IR${grouped}`);
-      }
-      if (acc.ownerName) lines.push(` به نام: ${acc.ownerName}`);
+      const num = acc.type === 'card'
+        ? acc.number.replace(/(.{4})/g, '$1-').replace(/-$/, '')
+        : 'IR' + acc.number.replace(/(.{4})/g, '$1 ').trimEnd();
+      lines.push(`${acc.bankName}: ${num}`);
+      if (acc.ownerName) lines.push(`به نام: ${acc.ownerName}`);
     });
   }
 
-  // ── Footer ───────────────────────────────────────────────
-  lines.push('');
-  lines.push('دفتر شیفت — @amrqhz');
-
+  lines.push('', 'دفتر شیفت — @amrqhz');
   const body = lines.join('\n');
 
-  const smsLink = document.createElement('a');
-  smsLink.href  = `sms:?body=${encodeURIComponent(body)}`;
-  smsLink.style.display = 'none';
-  document.body.appendChild(smsLink);
-  smsLink.click();
-  document.body.removeChild(smsLink);
+  // keep a copy in the clipboard as a fallback (desktop / very long messages)
+  copyToClipboard(body);
 
-  showToast('در حال باز کردن پیام‌رسان...');
+  const isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  window.location.href = `sms:${isIOS ? '&' : '?'}body=${encodeURIComponent(body)}`;
+
+  showToast('در حال باز کردن پیام‌رسان… اگر باز نشد، متن کپی شده را Paste کنید');
 }
 
 /* =================== CSV EXPORT =================== */
 
 function exportCsv(mode) {
-  const filter = mode === 'financial' ? financialPharmacyFilter : reportPharmacyFilter;
-  const ms = getMonthShifts(filter);
+  const isFin = mode === 'financial';
+  const filter = isFin ? financialPharmacyFilter : reportPharmacyFilter;
+  const depFilter = (isFin ? financialDeputyFilter : reportDeputyFilter) || 'all';
+  const ms = getMonthShifts(filter, depFilter);
   if (ms.length === 0) { showToast('شیفتی برای خروجی‌گیری وجود ندارد'); return; }
 
+  const dateText = (s) => {
+    const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
+    return { text: `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`, wd: J.PERSIAN_WEEKDAYS[J.jalaliWeekday(jy, jm, jd)] };
+  };
+
   let header, rows;
-  if (mode === 'financial') {
-    header = ['تاریخ', 'روز هفته', 'نوع شیفت', 'داروخانه', 'شروع', 'پایان', 'مدت (ساعت)', 'نرخ (تومان/ساعت)', 'درآمد (تومان)', 'یادداشت'];
+  if (isFin) {
+    header = ['تاریخ', 'روز هفته', 'نوع شیفت', 'داروخانه', 'قائم مقام', 'شروع', 'پایان', 'مدت (ساعت)',
+              'نرخ (تومان/ساعت)', 'منبع نرخ', 'درآمد (تومان)', 'یادداشت'];
     rows = ms.map((s) => {
-      const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
-      const wi = J.jalaliWeekday(jy, jm, jd);
-      const h = S.shiftDurationHours(s.start, s.end);
-      const sp = isSpecialShift(s);
-      const rate = effectiveRate(s);
-      const rateType = s.customRate != null ? 'اختصاصی' : 'پایه';
-      // const rate = sp ? settings.rateSpecial : settings.rateNormal;
-      return [
-        `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`,
-        J.PERSIAN_WEEKDAYS[wi],
-        sp ? 'شب/تعطیل' : 'عادی',
-        pharmacyName(s.pharmacyId),
-        s.start, s.end,
-        h.toFixed(2),
-        rate,
-        rateType,
-        Math.round(h * rate),
-        s.note || '',
-      ];
+      const d = dateText(s);
+      return [d.text, d.wd, shiftTypeLabel(s), pharmacyName(s.pharmacyId), s.deputyId ? deputyName(s.deputyId) : '',
+              s.start, s.end, S.shiftDurationHours(s.start, s.end).toFixed(2),
+              rateLabel(s), rateSource(s), Math.round(calcIncome(s)), s.note || ''];
     });
-    const totalInc = ms.reduce((s, x) => s + calcIncome(x), 0);
-    rows.push([], ['', '', '', '', '', 'مجموع درآمد:', '', '', Math.round(totalInc), '']);
+    const totalInc = ms.reduce((sum, s) => sum + calcIncome(s), 0);
+    rows.push([], ['', '', '', '', '', '', '', '', '', 'مجموع درآمد:', Math.round(totalInc), '']);
   } else {
-    header = ['تاریخ', 'روز هفته', 'نوع شیفت', 'داروخانه', 'شروع', 'پایان', 'مدت (ساعت)', 'نرخ (تومان/ساعت)', 'نوع نرخ', 'درآمد (تومان)', 'یادداشت'];
+    header = ['تاریخ', 'روز هفته', 'نوع شیفت', 'داروخانه', 'قائم مقام', 'شروع', 'پایان', 'مدت (ساعت)', 'یادداشت'];
     rows = ms.map((s) => {
-      const { jy, jm, jd } = J.parseJalaliKey(s.dateKey);
-      const wi = J.jalaliWeekday(jy, jm, jd);
-      const h = S.shiftDurationHours(s.start, s.end);
-      return [
-        `${jy}/${String(jm).padStart(2, '0')}/${String(jd).padStart(2, '0')}`,
-        J.PERSIAN_WEEKDAYS[wi],
-        isSpecialShift(s) ? 'شب/تعطیل' : 'عادی',
-        pharmacyName(s.pharmacyId),
-        s.start, s.end,
-        h.toFixed(2),
-        s.note || '',
-      ];
+      const d = dateText(s);
+      return [d.text, d.wd, shiftTypeLabel(s), pharmacyName(s.pharmacyId), s.deputyId ? deputyName(s.deputyId) : '',
+              s.start, s.end, S.shiftDurationHours(s.start, s.end).toFixed(2), s.note || ''];
     });
-    const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
-    rows.push([], ['', '', '', '', 'مجموع ساعت:', totalH.toFixed(2), '', '']);
+    const totalH = ms.reduce((sum, s) => sum + S.shiftDurationHours(s.start, s.end), 0);
+    rows.push([], ['', '', '', '', '', '', 'مجموع ساعت:', totalH.toFixed(2), '']);
   }
 
   const csv = '\uFEFF' + [header, ...rows].map((r) => r.map(csvEsc).join(',')).join('\n');
   const scopeSlug = filter === 'all' ? 'all' : slugify(pharmacyName(filter));
-  const prefix = mode === 'financial' ? 'financial' : 'shifts';
-  downloadFile(`${prefix}-${viewYear}-${String(viewMonth).padStart(2, '0')}-${scopeSlug}.csv`, csv, 'text/csv;charset=utf-8');
+  downloadFile(`${isFin ? 'financial' : 'shifts'}-${viewYear}-${String(viewMonth).padStart(2, '0')}-${scopeSlug}.csv`, csv, 'text/csv;charset=utf-8');
   showToast('فایل CSV دانلود شد');
 }
 
@@ -1994,7 +2579,7 @@ function prHead(title, period, genAt) {
 
 function exportPdf(mode) {
   const filter = mode === 'financial' ? financialPharmacyFilter : reportPharmacyFilter;
-  const ms = getMonthShifts(filter);
+  const ms = getMonthShifts(filter, (mode === 'financial' ? financialDeputyFilter : reportDeputyFilter) || 'all');
   if (ms.length === 0) { showToast('شیفتی برای خروجی‌گیری وجود ندارد'); return; }
 
   const isSingle = filter !== 'all';
@@ -2048,19 +2633,20 @@ function exportPdf(mode) {
 
   } else { // financial
     const totalInc = ms.reduce((s, x) => s + calcIncome(x), 0);
-    const normInc = ms.filter((x) => !isSpecialShift(x)).reduce((s, x) => s + calcIncome(x), 0);
-    const specInc = ms.filter((x) => isSpecialShift(x)).reduce((s, x) => s + calcIncome(x), 0);
+    const normInc  = ms.reduce((s, x) => s + incomeParts(x).normal, 0);
+    const specInc  = ms.reduce((s, x) => s + incomeParts(x).special, 0);
+
     const totalH = ms.reduce((s, x) => s + S.shiftDurationHours(x.start, x.end), 0);
 
-    html += prHead(isSingle ? `گزارش مالی — ${escapeHtml(pharmacyName(filter))}` : 'گزارش مالی ماهانه', period, genAt);
-    html += profilePdfBlock();
-    html += `<div class="pr-rates-note">نرخ عادی: ${settings.rateNormal.toLocaleString()} تومان/ساعت &nbsp;|&nbsp; نرخ شب/تعطیل: ${settings.rateSpecial.toLocaleString()} تومان/ساعت</div>`;
-    html += `<div class="pr-stats">
-      <div class="pr-stat"><span class="pr-stat__value">${J.toPersianDigits(ms.length)}</span><span class="pr-stat__label">شیفت</span></div>
-      <div class="pr-stat"><span class="pr-stat__value" style="font-size:11px">${Math.round(totalInc).toLocaleString()}</span><span class="pr-stat__label">درآمد کل (تومان)</span></div>
-      <div class="pr-stat"><span class="pr-stat__value" style="font-size:11px">${Math.round(normInc).toLocaleString()}</span><span class="pr-stat__label">درآمد عادی</span></div>
-      <div class="pr-stat pr-stat--special"><span class="pr-stat__value" style="font-size:11px">${Math.round(specInc).toLocaleString()}</span><span class="pr-stat__label">درآمد شب/تعطیل</span></div>
-    </div>`;
+    // html += prHead(isSingle ? `گزارش مالی — ${escapeHtml(pharmacyName(filter))}` : 'گزارش مالی ماهانه', period, genAt);
+    // html += profilePdfBlock();
+    // html += `<div class="pr-rates-note">نرخ عادی: ${settings.rateNormal.toLocaleString()} تومان/ساعت &nbsp;|&nbsp; نرخ شب/تعطیل: ${settings.rateSpecial.toLocaleString()} تومان/ساعت</div>`;
+    // html += `<div class="pr-stats">
+    //   <div class="pr-stat"><span class="pr-stat__value">${J.toPersianDigits(ms.length)}</span><span class="pr-stat__label">شیفت</span></div>
+    //   <div class="pr-stat"><span class="pr-stat__value" style="font-size:11px">${Math.round(totalInc).toLocaleString()}</span><span class="pr-stat__label">درآمد کل (تومان)</span></div>
+    //   <div class="pr-stat"><span class="pr-stat__value" style="font-size:11px">${Math.round(normInc).toLocaleString()}</span><span class="pr-stat__label">درآمد عادی</span></div>
+    //   <div class="pr-stat pr-stat--special"><span class="pr-stat__value" style="font-size:11px">${Math.round(specInc).toLocaleString()}</span><span class="pr-stat__label">درآمد شب/تعطیل</span></div>
+    // </div>`;
 
     if (!isSingle) {
       const bk = {};

@@ -207,6 +207,13 @@
           <tbody></tbody>
         </table>
       </div>
+      <div class="danger-zone">
+        <div class="danger-zone__text">
+          <strong>حذف همه شیفت‌های این ماه</strong>
+          <small>همه شیفت‌های ماهِ انتخاب‌شده (همه داروخانه‌ها) پاک می‌شود. قبل از آن از تنظیمات پشتیبان بگیرید.</small>
+        </div>
+        <button class="linebtn linebtn--danger" id="deleteMonthBtn" type="button">حذف ماه</button>
+      </div>
     </main>
 
     <!-- ===================== FINANCIAL VIEW ===================== -->
@@ -250,23 +257,8 @@
         </div>
         <div class="trend-chart-legend" id="trendChartLegend"></div>
       </div> -->
-      <!-- Rate settings inline -->
-      <div class="rate-card">
-        <h3 class="rate-card__title">نرخ دستمزد (تومان / ساعت)</h3>
-        <div class="rate-card__fields">
-          <div class="rate-field">
-            <label for="rateNormal">شیفت عادی</label>
-            <input type="number" id="rateNormal" min="0" step="10000" placeholder="۰" inputmode="numeric">
-            <span class="rate-field__unit">تومان</span>
-          </div>
-          <div class="rate-field">
-            <label for="rateSpecial">شیفت شب / تعطیل</label>
-            <input type="number" id="rateSpecial" min="0" step="10000" placeholder="۰" inputmode="numeric">
-            <span class="rate-field__unit">تومان</span>
-          </div>
-        </div>
-        <button class="linebtn linebtn--solid" id="saveRatesBtn" type="button">ذخیره نرخ‌ها</button>
-      </div>
+
+
       <!-- BANK ACCOUNTS -->
       <div class="bank-card" id="bankCard">
         <div class="bank-card__head">
@@ -342,7 +334,7 @@
       <div class="statgrid" id="financialStatGrid"></div>
 
       <h3 class="sectiontitle">تفکیک درآمد بر اساس داروخانه</h3>
-      <p class="rate-card__note">شیفت‌هایی که نرخ اختصاصی ندارند از این نرخ استفاده می‌کنند</p>
+      <p class="rate-card__note">نرخ هر شیفت: ۱) نرخ اختصاصی شیفت ← ۲) نرخ داروخانه ← ۳) نرخ پیش‌فرض</p>
       <div class="table-wrap">
         <table class="datatable" id="financialBreakdownTable">
           <thead>
@@ -403,11 +395,45 @@
       <div class="panel-head">
         <h2>داروخانه‌ها</h2>
       </div>
+      <!-- DEFAULT RATES -->
+      <div class="rate-card" id="defaultRatesCard">
+        <h3 class="rate-card__title">نرخ پیش‌فرض دستمزد (تومان / ساعت)</h3>
+        <p class="rate-card__note">برای داروخانه‌هایی که نرخ اختصاصی ندارند استفاده می‌شود</p>
+        <div class="rate-card__fields rate-card__fields--3">
+          <div class="rate-field">
+            <label for="defRateDay">☀️ شیفت عادی</label>
+            <input type="text" id="defRateDay" inputmode="numeric">
+            <span class="rate-field__unit">تومان</span>
+          </div>
+          <div class="rate-field">
+            <label for="defRateNight">🌙 شیفت شب</label>
+            <input type="text" id="defRateNight" inputmode="numeric">
+            <span class="rate-field__unit">تومان</span>
+          </div>
+          <div class="rate-field">
+            <label for="defRateHoliday">🗓️ شیفت تعطیل</label>
+            <input type="text" id="defRateHoliday" inputmode="numeric">
+            <span class="rate-field__unit">تومان</span>
+          </div>
+        </div>
+        <div class="field-row field-row--actions" style="margin-top:0">
+          <button class="linebtn linebtn--solid" id="saveDefaultRatesBtn" type="button">ذخیره نرخ‌های پیش‌فرض</button>
+          <button class="linebtn" id="resetDefaultRatesBtn" type="button">بازنشانی</button>
+        </div>
+      </div>
+
+      <!-- ADD PHARMACY -->
       <form class="inline-form" id="pharmacyForm">
         <input type="text" id="pharmacyNameInput" placeholder="نام داروخانه" required>
         <input type="text" id="pharmacyAddrInput" placeholder="آدرس (اختیاری)">
+        <div class="rate-inputs-3">
+          <label class="rate-mini"><span>☀️ نرخ عادی</span><input type="text" id="newPharmRateDay" inputmode="numeric"></label>
+          <label class="rate-mini"><span>🌙 نرخ شب</span><input type="text" id="newPharmRateNight" inputmode="numeric"></label>
+          <label class="rate-mini"><span>🗓️ نرخ تعطیل</span><input type="text" id="newPharmRateHoliday" inputmode="numeric"></label>
+        </div>
         <button type="submit" class="linebtn linebtn--solid">افزودن</button>
       </form>
+
       <ul class="pharmacy-list" id="pharmacyList"></ul>
 
       <!-- Edit pharmacy form — hidden until edit is clicked -->
@@ -421,6 +447,11 @@
         <div class="field">
           <label for="editPharmacyAddr">آدرس (اختیاری)</label>
           <input type="text" id="editPharmacyAddr" placeholder="آدرس">
+        </div>
+        <div class="rate-inputs-3" style="margin-bottom:14px">
+          <label class="rate-mini"><span>☀️ نرخ عادی</span><input type="text" id="editPharmRateDay" inputmode="numeric"></label>
+          <label class="rate-mini"><span>🌙 نرخ شب</span><input type="text" id="editPharmRateNight" inputmode="numeric"></label>
+          <label class="rate-mini"><span>🗓️ نرخ تعطیل</span><input type="text" id="editPharmRateHoliday" inputmode="numeric"></label>
         </div>
         <div class="field-row field-row--actions">
           <button class="linebtn linebtn--solid" id="savePharmacyEditBtn" type="button">ذخیره تغییرات</button>
@@ -662,7 +693,7 @@
         <h3 class="settings-section__title">درباره</h3>
         <div class="settings-about" style="align-items: center; justify-content: center; text-align: center;">
           <p class="settings-about__name">دفتر شیفت</p>
-          <p class="settings-about__dev">2.1.4 version</p>
+          <p class="settings-about__dev">3.0.0 version</p>
           <p class="settings-about__dev">طراحی و توسعه: امیرحسین قلی‌زاده</p>
           <p class="settings-about__social">سوشال مدیا: <span>@amrqhz</span></p>
           <p style="font-size: 13px;">این برنامه به صورت رایگان توسعه داده شده است.<br> برای اطلاع از اپدیت ها و سایر
@@ -675,15 +706,15 @@
               Share this project
             </button></span>
         </div>
-        <!-- <a class="support-btn" href="https://donito.me/amrqhz" target="_blank" rel="noopener">
-            <span class="support-btn__icon">☕</span>
+        <a class="support-btn" href="https://donito.me/amrqhz" target="_blank" rel="noopener">
+            <!-- <span class="support-btn__icon">☕</span> -->
             <span class="support-btn__text">
               <strong>حمایت مالی از توسعه‌دهنده</strong>
-            </span> -->
-        <!-- <svg class="support-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            </span>
+            <svg class="support-btn__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"/>
               <polyline points="12 5 19 12 12 19"/>
-            </svg> -->
+            </svg>
         </a>
       </div>
     </main>
@@ -711,6 +742,21 @@
         <div class="field">
           <label for="shiftPharmacySelect">داروخانه</label>
           <select id="shiftPharmacySelect" required></select>
+        </div>
+        <div class="inline-pharmacy" id="inlinePharmacyForm" style="display:none;">
+          <strong class="inline-pharmacy__title">افزودن داروخانه جدید</strong>
+          <input type="text" id="inlinePharmName" placeholder="نام داروخانه">
+          <input type="text" id="inlinePharmAddr" placeholder="آدرس (اختیاری)">
+          <div class="rate-inputs-3">
+            <label class="rate-mini"><span>☀️ عادی</span><input type="text" id="inlineRateDay" inputmode="numeric"></label>
+            <label class="rate-mini"><span>🌙 شب</span><input type="text" id="inlineRateNight" inputmode="numeric"></label>
+            <label class="rate-mini"><span>🗓️ تعطیل</span><input type="text" id="inlineRateHoliday" inputmode="numeric"></label>
+          </div>
+          <small class="inline-pharmacy__hint">نرخ‌ها اختیاری است؛ خالی = نرخ پیش‌فرض</small>
+          <div class="field-row field-row--actions">
+            <button type="button" class="linebtn linebtn--solid" id="inlinePharmSave">افزودن و انتخاب</button>
+            <button type="button" class="linebtn" id="inlinePharmCancel">انصراف</button>
+          </div>
         </div>
         <div class="field">
           <label for="shiftDeputySelect">
@@ -744,6 +790,23 @@
           </div>
           <div class="duration-preview" id="durationPreview"></div>
         </div>
+        <div class="multi-day" id="multiDayBlock">
+          <label class="multi-day__toggle">
+            <input type="checkbox" id="multiDayToggle">
+            <span>📅 ثبت همین شیفت برای چند روز دیگر</span>
+          </label>
+          <div class="multi-day__panel" id="multiDayPanel" style="display:none;">
+            <span class="multi-day__quick-label">انتخاب سریع (همه …‌های این ماه):</span>
+            <div class="multi-day__quick-btns" id="multiDayQuick"></div>
+            <div class="multi-day__weekhead" id="multiDayWeekHead"></div>
+            <div class="multi-day__grid" id="multiDayGrid"></div>
+            <div class="multi-day__footer">
+              <span class="multi-day__count" id="multiDayCount">۱ روز انتخاب شده</span>
+              <button type="button" class="multi-day__clear" id="multiDayClear">پاک کردن</button>
+              <button type="button" class="multi-day__all" id="multiDayAll">همه روزهای ماه</button>
+            </div>
+          </div>
+        </div>
         <!-- Night/holiday auto-detection feedback + manual override -->
         <div class="shift-type-row" id="shiftTypeRow">
           <div class="shift-type-badge" id="shiftTypeBadge">شیفت عادی</div>
@@ -759,7 +822,7 @@
             <span class="field__hint">(خالی = از نرخ پایه)</span>
           </label>
           <div class="custom-rate-input-wrap">
-            <input type="number" id="shiftCustomRate" min="0" step="10000" placeholder="از نرخ پایه استفاده شود"
+            <input type="text" id="shiftCustomRate" min="0" step="10000" placeholder="از نرخ پایه استفاده شود"
               inputmode="numeric">
             <span class="custom-rate-input-wrap__unit">تومان / ساعت</span>
           </div>
