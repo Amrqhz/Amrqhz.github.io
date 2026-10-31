@@ -2718,32 +2718,32 @@ document.addEventListener('DOMContentLoaded', init);
 const shareBtn = document.getElementById('shareBtn');
 const successMessage = document.getElementById('successMessage');
 
-shareBtn.addEventListener('click', async () => {
-  // Data to share
-  const shareData = {
-    title: 'My Awesome Project',
-    text: 'Check out this cool project I built!',
-    url: window.location.href  // Current page URL
-  };
+// shareBtn.addEventListener('click', async () => {
+//   // Data to share
+//   const shareData = {
+//     title: 'My Awesome Project',
+//     text: 'Check out this cool project I built!',
+//     url: window.location.href  // Current page URL
+//   };
 
-  try {
-    // Check if Web Share API is supported
-    if (navigator.share) {
-      await navigator.share(shareData);
-      showSuccess();
-    } else {
-      // Fallback: Copy link to clipboard
-      await fallbackCopyLink();
-    }
-  } catch (err) {
-    // User cancelled or error occurred
-    if (err.name !== 'AbortError') {
-      console.error('Error sharing:', err);
-      await fallbackCopyLink();
-    }
-  }
-  document.addEventListener('DOMContentLoaded', init);
-});
+//   try {
+//     // Check if Web Share API is supported
+//     if (navigator.share) {
+//       await navigator.share(shareData);
+//       showSuccess();
+//     } else {
+//       // Fallback: Copy link to clipboard
+//       await fallbackCopyLink();
+//     }
+//   } catch (err) {
+//     // User cancelled or error occurred
+//     if (err.name !== 'AbortError') {
+//       console.error('Error sharing:', err);
+//       await fallbackCopyLink();
+//     }
+//   }
+//   document.addEventListener('DOMContentLoaded', init);
+// });
 
 async function fallbackCopyLink() {
   try {
